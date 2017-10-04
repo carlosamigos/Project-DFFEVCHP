@@ -3,7 +3,7 @@ import simplejson, urllib.request as urlReq
 
 
 
-def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType = "",apikey):
+def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType,apikey):
 	# max 10 coordinates
 	# transport by default is car
 	maxCoor = 10
@@ -61,6 +61,7 @@ def test():
 	apikey = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
 	matrix = calculateTravelTimeMatrixFromCoordVector(coordVector,transportType,apikey)
 	print(matrix)
+
 
 
 
