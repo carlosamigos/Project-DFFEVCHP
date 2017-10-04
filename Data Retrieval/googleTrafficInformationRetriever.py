@@ -1,9 +1,7 @@
 #-*- coding: utf-8 -*-
 import simplejson, urllib.request as urlReq
 
-
-
-def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType,apikey):
+def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType,apikey, writeToFile = True):
 	# max 10 coordinates
 	# transport by default is car
 	maxCoor = 10
@@ -42,14 +40,27 @@ def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType,apikey):
 					secondCoor = maxCoor*d + j
 					secondMatrix[firstCoor][secondCoor] = seconds
 					coordinatesUsed[firstCoor][secondCoor]+=1
+	if (writeToFile):
+		writeMatrixToFile(secondMatrix,transportType)
 	return secondMatrix
 
+def writeMatrixToFile(matrix, transportType):
+	if transportType == "":
+		transportType = "car"
+	fil = open("travelTimes_"+transportType+".txt","w")	
+	writeString = ""
+	for row in matrix:
+		for elem in row:
+			writeString+=str(elem) + " "
+		writeString = writeString[:-1]+"\n"
+	fil.write(writeString[:-1])
+	fil.close()
 
 def makeStringListFromCoordinateVector(coordVector):
 	ret = ""
 	for coor in coordVector:
 		ret+= str(coor[0])+","+str(coor[1])+"|"
-	ret = ret[:-2]
+	ret = ret[:-1]
 	return ret
 
 
@@ -57,10 +68,12 @@ def test():
 
 	coordVector = [(63.427057, 10.3925251),(63.4222027, 10.3955179),(63.4367, 10.3988199),(63.4188848, 10.4044),(63.4225, 10.431944)]
 	print("number of coordinates",len(coordVector))
-	transportType = "bicycling"
+	transportType = ""
 	apikey = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
 	matrix = calculateTravelTimeMatrixFromCoordVector(coordVector,transportType,apikey)
 	print(matrix)
+
+
 
 
 
