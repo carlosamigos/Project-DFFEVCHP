@@ -1,0 +1,200 @@
+model DVFFEVRP
+
+options explterm
+options noimplicit
+
+uses "mmxprs";
+
+parameters
+	DataFile = 'examples/example1.txt';
+end-parameters
+
+! --- Start of declaration of Sets --- !
+declarations
+	nVisits : integer;
+	numPNodes :		integer;
+	numCNodes :		integer;
+	nodes  : set of integer;
+	pNodes : set of integer;
+	cNodes : set of integer;
+	rNodes : set of integer;
+	nodeSubsetIndexes: set of integer;
+	operators : set of integer;
+	aOperators : set of integer;
+end-declarations
+
+initializations from DataFile
+	nVisits;
+	numPNodes;
+	numCNodes;
+	nodes;
+	pNodes;
+	cNodes;
+	rNodes;
+	nodeSubsetIndexes;
+	operators;
+	aOperators;
+end-initializations
+
+declarations
+	visits : array(nodes, 1..nVisits) of integer;
+end-declarations
+
+initializations from DataFile
+	visits;
+end-initializations
+! --- End of declaration of Sets --- !
+
+
+! --- Start of declaration of Parameters --- !
+declarations
+	originOperator : array(operators) of integer;
+	destinationOperator : array(operators) of integer;
+	startNodeOperator : array(operators) of integer;
+	chargingSlotsAvailable: array(cNodes) of integer;
+	costOfDeviation : array(nodeSubsetIndexes) of integer;
+	costOfPostponedCharging : integer;
+	travelTimeVehicle: array(nodes,nodes) of real;
+	travelTimeBike : array(nodes,nodes) of real;
+	handlingTimeP : real;
+	handlingTimeC : real;
+	travelTimeToOrigin : array(operators) of integer;
+	timeLimit : integer;
+	initialHandling : array(operators) of integer;
+	initialRegularInP : array(pNodes) of integer;
+	initialInNeedP : array(pNodes) of integer;
+	finishedDuringC : array(cNodes) of integer;
+	idealStateP : array(pNodes) of integer;
+end-declarations
+
+initializations from DataFile
+	originOperator;
+	destinationOperator;
+	startNodeOperator;
+	chargingSlotsAvailable;
+	costOfDeviation;
+	costOfPostponedCharging;
+	travelTimeVehicle;
+	travelTimeBike;
+	handlingTimeP;
+	handlingTimeC;
+	travelTimeToOrigin;
+	timeLimit;
+	initialHandling;
+	initialRegularInP;
+	initialInNeedP;
+	finishedDuringC;
+	idealStateP;
+end-initializations
+! --- End of declaration of Parameters --- !
+
+! --- Start of declaration of Variables --- !
+declarations
+	x: dynamic array(nodes,1..nVisits,nodes,1..nVisits,operators) of mpvar;
+	
+end-declarations
+! --- End of declaration of Variables --- !
+(!
+declarations
+	InUse:		dynamic array(Plants, Times)	of mpvar;
+	Starts:		dynamic array(Plants, Times)	of mpvar;
+	Produced:	dynamic array(Plants, Times)	of mpvar;
+end-declarations
+
+forall (ii in Plants) do
+	forall (jj in Times) do
+		create(InUse(ii,jj));
+		create(Starts(ii,jj));
+		create(Produced(ii,jj));
+	end-do
+end-do
+
+forall (ii in Plants) do
+	forall (jj in Times) do
+		InUse(ii,jj) is_binary;
+		Starts(ii,jj) is_binary;
+		Produced(ii,jj) is_semint 0;
+	end-do
+end-do
+
+
+declarations
+	TotalCost:									linctr;
+	FirstPeriodConst:	array(Plants)		 of linctr;
+	DemandConst: 		array(Times) 		 of linctr;
+	IsStartedConst:		array(Plants, Times) of linctr;
+	ProduceIfStarted:	array(Plants, Times) of linctr;
+	WaterConst:									linctr;
+	SumFixed: linctr;
+	SumStart: linctr;
+end-declarations
+
+TotalCost := 
+	sum (ii in Plants) (sum (jj in Times) (InUse(ii,jj)*FixedCost(ii) + Starts(ii,jj)*StartCost(ii)+ Produced(ii,jj)*VariableCost(ii)));
+
+forall (ii in Plants) do
+	FirstPeriodConst(ii) := InUse(ii,1) = 0;
+end-do
+
+forall (ii in Times) do
+	DemandConst(ii) := (sum (jj in Plants) Produced(jj,ii)) >= 1.1*Demand(ii);
+end-do
+
+forall (ii in Plants) do
+	forall(jj in Times-{1}) do
+		IsStartedConst(ii,jj) := InUse(ii,jj) - InUse(ii,jj-1) <= Starts(ii,jj);
+	end-do
+end-do
+
+forall (ii in Plants) do
+	forall(jj in Times) do
+		ProduceIfStarted(ii,jj) := Produced(ii,jj) <= InUse(ii,jj)*Capacity(ii);
+	end-do
+end-do
+
+WaterConst := sum (ii in Plants) (sum (jj in Times) WaterUsage(ii)*Produced(ii,jj)) <= AvailableWater;
+
+SumFixed := sum(jj in Plants) (sum(ii in Times) InUse(jj,ii)*FixedCost(jj));
+SumStart := sum(jj in Plants) (sum(ii in Times) Starts(jj,ii)*StartCost(jj));
+
+minimize(TotalCost);
+fopen("task3_sol.txt", F_OUTPUT);
+
+setparam("REALFMT", "%1.0f");
+writeln('Objective value: ', getobjval);
+writeln('Total fixed cost: ', getact(SumFixed));
+writeln('Total start cost: ', getact(SumStart));
+
+writeln('');
+writeln('-----------------------------');
+writeln('------ Produced amount ------');
+writeln('-----------------------------');
+writeln('');
+forall(ii in Times) do
+	writeln('Time-period ', ii-1);
+	forall (jj in Plants) do
+		writeln('Plant ', jj,': ', getsol(Produced(jj,ii)));
+	end-do
+	writeln('');
+end-do
+
+writeln('');
+writeln('-----------------------------');
+writeln('------- Starting times ------');
+writeln('-----------------------------');
+writeln('');
+
+forall(ii in Times-{1}) do
+	writeln('Time-period ', ii-1);
+	forall (jj in Plants) do
+		if getsol(Starts(jj,ii)) >= 1 then
+			writeln('Plant ', jj,' started');
+		end-if
+	end-do
+	writeln('');
+end-do
+
+fclose(F_OUTPUT);!)
+end-model
+
+
