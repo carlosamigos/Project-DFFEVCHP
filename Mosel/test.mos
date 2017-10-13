@@ -1,7 +1,7 @@
 model DVFFEVRP
 
-options explterm
-options noimplicit
+!options explterm
+!options noimplicit
 
 uses "mmxprs";
 
@@ -9,68 +9,137 @@ parameters
 	DataFile = 'examples/example1.txt';
 end-parameters
 
-! --- Start of declaration of Sets --- !
 declarations
-	nVisits : integer;
-	numPNodes :		integer;
-	numCNodes :		integer;
-	nodes  : set of integer;
-	pNodes : set of integer;
-	cNodes : set of integer;
-	rNodes : set of integer;
-	nodeSubsetIndexes: set of integer;
-	operators : set of integer;
-	aOperators : set of integer;
+	print : boolean;
+end-declarations
+
+print := false;
+
+(! ### Start of initialization of set sizes ### !)
+declarations
+	numVisits     : integer; ! Max number of visits for all nodes
+	numPNodes     :	integer; ! Number of parking nodes
+	numCNodes     :	integer; ! Number of charging nodes
+	numANodes     :	integer; ! Number of artificial nodes
+	numRNodes     :	integer; ! Number of real nodes
+	numNodes      :	integer; ! Total number of nodes
+	numROperators : integer; ! Number of real operators
+	numAOperators : integer; ! Number of artificial operators
 end-declarations
 
 initializations from DataFile
-	nVisits;
+	numVisits;
 	numPNodes;
 	numCNodes;
-	nodes;
-	pNodes;
-	cNodes;
-	rNodes;
-	nodeSubsetIndexes;
-	operators;
-	aOperators;
+	numROperators;
+	numAOperators;
 end-initializations
 
+numRNodes := numCNodes + numPNodes;
+numANodes := numROperators * 2;
+numNodes  := numRNodes + numANodes;
+! ### End of initialization of set sizes ### !
+
+
+! ### Start of declaration of sets ### !
 declarations
-	visits : array(nodes, 1..nVisits) of integer;
+	nodes      : set of integer; ! Set of all nodes
+	pNodes     : set of integer; ! Set of all parking nodes. A subset of nodes.
+	cNodes     : set of integer; ! Set of all charging nodes. A subset of nodes.
+	rNodes     : set of integer; ! Set of all real nodes. A subset of nodes.
+	aNodes     : set of integer; ! Set of all artificial nodes. A subset of nodes.
+	rOperators : set of integer; ! Set of all real operators.
+	aOperators : set of integer; ! Set of all artificial operators
+	visits     : set of integer; ! Set of all possible visits
 end-declarations
 
 initializations from DataFile
-	visits;
+	numVisits;
+	numPNodes;
+	numCNodes;
+	numROperators;
+	numAOperators;
 end-initializations
-! --- End of declaration of Sets --- !
+
+visits := 1..numVisits;
+
+! Initialize all node sets ! 
+pNodes    := 1 .. numPNodes;
+cNodes    := (numPNodes + 1) .. numRNodes;
+rNodes    := pNodes + cNodes;
+aNodes    := (numRNodes + 1) .. (numRNodes + numANodes);
+nodes     := rNodes + aNodes;
+
+! Initialize all operator sets !
+rOperators := 1 .. numROperators;
+aOperators := 1 .. numAOperators;
+
+! ### End of initialization of sets ### !
+
+if print then
+	writeln('------ Counts ------');
+	writeln('Total number of nodes:          ', numNodes);
+	writeln('Number of real nodes:           ', numRNodes);
+	writeln('Number of parking nodes:        ', numPNodes);
+	writeln('Number of charging nodes:       ', numCNodes);
+	writeln('Number of artificial nodes:     ', numANodes);
+	writeln('Number of operators:            ', numROperators);
+	writeln('Number of artificial operators: ', numAOperators);
+	writeln('Number of visits:               ', numVisits);
+	
+	writeln('');
+	writeln('------ Sets ------');
+	writeln('All nodes:            ', nodes);
+	writeln('Real nodes:           ', rNodes);
+	writeln('Parking nodes:        ', pNodes);
+	writeln('Charging nodes:       ', cNodes);
+	writeln('Artificial nodes:     ', aNodes);
+	writeln('Operators:            ', rOperators);
+	writeln('Artificial operators: ', aOperators);
+	writeln('Visits:               ', visits);
+	writeln('');
+end-if
 
 
-! --- Start of declaration of Parameters --- !
+! ### Start of declaration of Parameters ### !
 declarations
-	originOperator : array(operators) of integer;
-	destinationOperator : array(operators) of integer;
-	startNodeOperator : array(operators) of integer;
-	chargingSlotsAvailable: array(cNodes) of integer;
-	costOfDeviation : array(nodeSubsetIndexes) of integer;
-	costOfPostponedCharging : integer;
-	travelTimeVehicle: array(nodes,nodes) of real;
-	travelTimeBike : array(nodes,nodes) of real;
-	handlingTimeP : real;
-	handlingTimeC : real;
-	travelTimeToOrigin : array(operators) of integer;
-	timeLimit : integer;
-	initialHandling : array(operators) of integer;
-	initialRegularInP : array(pNodes) of integer;
-	initialInNeedP : array(pNodes) of integer;
-	finishedDuringC : array(cNodes) of integer;
-	idealStateP : array(pNodes) of integer;
+	! Nodes !
+	originNodeROperator       : array(rOperators) of integer; ! Origin nodes for all real operators
+	destinationNodeROperator  : array(rOperators)  of integer; ! Artificial destination node of real operators
+	startNodeROperator        : array(rOperators) of integer; ! Actual start node for real operators
+	chargingNodeAOperator     : array(aOperators) of integer; ! Origin nodes for all artificial operators
+	parkingNodeAOperator      : array(aOperators) of integer; ! Actual start node for artificial operator
+	
+	
+	chargingSlotsAvailable    : array(cNodes)     of integer; ! Available charging slots at charging nodes
+	
+	! Costs !
+	costOfDeviation         : real;
+	costOfPostponedCharging : real;
+	
+	! Times !
+	travelTimeVehicle    : array(rNodes,rNodes) of real;
+	travelTimeBike       : array(rNodes,rNodes) of real;
+	handlingTimeP        : real;
+	handlingTimeC        : real;
+	timeLimit            : real;
+	
+	! Initial state !
+	travelTimeToOriginR  : array(rOperators) of real;
+	travelTimeToParkingA : array(aOperators) of real;
+	initialHandling      : array(rOperators) of integer;
+	initialRegularInP    : array(pNodes)     of integer;
+	initialInNeedP       : array(pNodes)     of integer;
+	finishedDuringC      : array(cNodes)     of integer;
+	idealStateP          : array(pNodes)     of integer;
 end-declarations
 
 initializations from DataFile
-	originOperator;
-	destinationOperator;
-	startNodeOperator;
+	originNodeROperator;
+	destinationNodeROperator;
+	startNodeROperator;
+	chargingNodeAOperator;
+	parkingNodeAOperator;
 	chargingSlotsAvailable;
 	costOfDeviation;
 	costOfPostponedCharging;
@@ -78,22 +147,125 @@ initializations from DataFile
 	travelTimeBike;
 	handlingTimeP;
 	handlingTimeC;
-	travelTimeToOrigin;
 	timeLimit;
+	travelTimeToOriginR;
+	travelTimeToParkingA;
 	initialHandling;
 	initialRegularInP;
 	initialInNeedP;
 	finishedDuringC;
 	idealStateP;
 end-initializations
-! --- End of declaration of Parameters --- !
+! ### End of initialization of Parameters ### !
 
-! --- Start of declaration of Variables --- !
+if print then
+	writeln('------ Parameters ------');
+	writeln('Origin nodes for real operators:                                         ', originNodeROperator);
+	writeln('Destination nodes for real operators:                                    ', destinationNodeROperator);
+	writeln('Actual starting node for real operators:                                 ', startNodeROperator);
+	writeln('Origin nodes for real operators:                                         ',originNodeROperator);
+	writeln('Destination nodes for real operators:                                    ',destinationNodeROperator);
+	writeln('Actual starting node for real operators:                                 ',startNodeROperator);
+	writeln('Charging nodes for artificial operators:                                 ',chargingNodeAOperator);
+	writeln('Parking nodes for artificial operators:                                  ',parkingNodeAOperator);
+	writeln('Available slots at charging stations:                                    ',chargingSlotsAvailable);
+	writeln('Cost per vehicle deviation in each node:                                 ',costOfDeviation);
+	writeln('Cost per vehicle of postponing chargning:                                ',costOfPostponedCharging);
+	writeln('Travel times between real nodes using vehicle:                           ',travelTimeVehicle);
+	writeln('Travel times between real nodes using bikes:                             ',travelTimeBike);
+	writeln('Time to park a car:                                                      ',handlingTimeP);
+	writeln('Time to handle a car:                                                    ',handlingTimeC);
+	writeln('Time limit for planning period:                                          ',timeLimit);
+	writeln('Remaining travel time to origin node for real operators:                 ',travelTimeToOriginR);
+	writeln('Remaining travel time to parking node for artificial operators:          ',travelTimeToParkingA);
+	writeln('Initial handling for real operators:                                     ',initialHandling);
+	writeln('Initial number of parked cars in each parking node:                      ',initialRegularInP);
+	writeln('Initial number of cars in a parking node in need of charging:            ',initialInNeedP);
+	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
+	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
+end-if
+
+
+
+! ### Start of declaration of Variables ### !
 declarations
-	x: dynamic array(nodes,1..nVisits,nodes,1..nVisits,operators) of mpvar;
-	
+	x      : dynamic array(nodes, visits, nodes, visits, rOperators)  of mpvar;
+	h      : dynamic array((nodes - cNodes), visits, nodes, visits, rOperators) of mpvar;
+	hA     : dynamic array(cNodes, visits, pNodes, visits, aOperators)of mpvar;
+	c      : dynamic array(cNodes, visits, rOperators)                of mpvar;
+	q      : dynamic array(rNodes, visits, rOperators)                of mpvar;
+	t      : dynamic array(nodes, visits)                             of mpvar;
+	s      : dynamic array(nodes, visits)                             of mpvar;
+	sC     : dynamic array(pNodes, visits)                            of mpvar;
+	sPlus  : dynamic array(pNodes)                                    of mpvar;
+	sMinus : dynamic array(pNodes)                                    of mpvar;
 end-declarations
-! --- End of declaration of Variables --- !
+
+
+forall(pp in rOperators) do
+	forall (ii in nodes | ii <> destinationNodeROperator(pp)) do
+		forall(mm in visits, jj in nodes, nn in visits) do
+			create(x(ii, mm, jj, nn, pp));
+			x(ii, mm, jj, nn, pp) is_binary;
+		end-do
+	end-do
+end-do
+
+forall(pp in rOperators) do
+	forall (ii in (nodes - cNodes) | ii <> destinationNodeROperator(pp)) do
+		forall(mm in visits, jj in nodes, nn in visits) do
+			create(h(ii ,mm, jj, nn, pp));
+			h(ii, mm, jj, nn, pp) is_binary;
+		end-do
+	end-do
+end-do
+
+forall(pp in aOperators, mm in visits, nn in visits) do
+	create(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+	hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) is_binary;
+end-do
+
+forall(jj in cNodes, mm in visits, pp in rOperators) do
+	create(c(jj, mm, pp));
+	c(jj, mm, pp) is_binary;
+end-do
+
+forall(jj in rNodes, mm in visits, pp in rOperators) do
+	create(q(jj, mm, pp));
+	q(jj, mm, pp) is_binary;
+end-do
+
+forall(ii in nodes, mm in visits) do
+	create(t(ii, mm));
+	create(s(ii, mm));
+	t(ii, mm) is_semcont 0;
+	s(ii, mm) is_semint 0;
+end-do
+
+forall(ii in pNodes, mm in visits) do
+	create(sC(ii, mm));
+	sC(ii, mm) is_semint 0;
+end-do
+
+forall(ii in pNodes) do 
+	create(sPlus(ii));
+	create(sMinus(ii));
+	sPlus(ii) is_semint 0;
+	sMinus(ii) is_semint 0;
+end-do
+
+! ### End of declaration of Variables ### !
+
+
+! ### Start of declaration of objective ### !
+declarations
+		Objective: linctr;
+end-declarations
+
+Objective :=  costOfDeviation * sum(ii in pNodes) sMinus(ii) + 
+			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
+			  
+minimize(Objective);
 (!
 declarations
 	InUse:		dynamic array(Plants, Times)	of mpvar;
