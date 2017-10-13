@@ -1,4 +1,4 @@
-numVisits : 5
+numVisits : 2
 numPNodes : 6
 numCNodes : 2
 numROperators : 3
@@ -13,9 +13,9 @@ nodeSubsets : [1 2
 	   5 2
            6 2]
 
-originNodeROperator : [9 11 13]
+originNodeROperator : [9 10 11]
 chargingNodeAOperator : [7]
-destinationNodeROperator : [10 12 14]
+destinationNodeROperator : [12 13 14]
 startNodeROperator : [1 7 3]
 parkingNodeAOperator : [4]
 
