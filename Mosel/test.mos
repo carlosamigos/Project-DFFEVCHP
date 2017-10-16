@@ -14,7 +14,7 @@ declarations
 	printResults : boolean;
 end-declarations
 
-printParams := false;
+printParams := true;
 printResults := true;
 
 (! ### Start of initialization of set sizes ### !)
@@ -122,7 +122,7 @@ declarations
 	chargingSlotsAvailable    : array(cNodes)     of integer; ! Available charging slots at charging Nodes
 	
 	! Costs !
-	costOfDeviation         : real;
+	costOfDeviation         : real; !SIMEN: Should be a set !
 	costOfPostponedCharging : real;
 	
 	! Times !
@@ -211,10 +211,11 @@ end-declarations
 
 !Define x
 forall(pp in rOperators) do
-	forall (ii in Nodes - aNodes + {originNodeROperator(pp)}) do
+	forall (ii in Nodes - aNodes + {originNodeROperator(pp)}) do 
 		if ii = originNodeROperator(pp) then
 			forall(nn in visits) do
 				create(x(ii, 1, startNodeROperator(pp), nn, pp));
+				x(ii, 1, startNodeROperator(pp), nn, pp) is_binary;  
 			end-do
 		else	
 			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)} | jj <> ii) do
@@ -233,6 +234,7 @@ forall(pp in rOperators) do
 		if ii = originNodeROperator(pp) then
 			forall(nn in visits) do
 				create(h(ii, 1, startNodeROperator(pp), nn, pp));
+				h(ii, 1, startNodeROperator(pp), nn, pp) is_binary;
 			end-do
 		else	
 			forall(jj in Nodes - aNodes | jj <> ii) do
@@ -258,7 +260,7 @@ forall(jj in cNodes, mm in visits, pp in rOperators) do
 end-do
 
 !Define q
-forall(jj in rNodes, mm in visits, pp in rOperators) do
+forall(jj in pNodes, mm in visits, pp in rOperators) do 
 	create(q(jj, mm, pp));
 	q(jj, mm, pp) is_binary;
 end-do
@@ -266,7 +268,7 @@ end-do
 !Define t, part 1
 forall(ii in Nodes - aNodes, mm in visits) do
 	create(t(ii,mm));
-	t(ii,mm) is_semcont 0;
+	t(ii,mm) is_semcont 0; 
 end-do
 
 !Define t, part 2
@@ -310,7 +312,7 @@ Objective :=  costOfDeviation * sum(ii in pNodes) sMinus(ii) +
 			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
 !)
 
-Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+Objective := + sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 ! ### End of declaration of objective ### !			 
 		
