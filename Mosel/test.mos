@@ -312,12 +312,12 @@ Objective :=  costOfDeviation * sum(ii in pNodes) sMinus(ii) +
 			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
 !)
 
-Objective := + sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 ! ### End of declaration of objective ### !			 
 		
 
-! ### Start of declaration of routing constraints ### !		
+! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
 declarations
 	operatorStart: dynamic array(rOperators)                 of linctr;
 	operatorEnd  : dynamic array(rOperators)                 of linctr;
@@ -348,10 +348,67 @@ forall(ii in rNodes, mm in visits) do
 	maxVisitOut(ii, mm) := sum(pp in rOperators, jj in Nodes - aDestinationNodes, nn in visits) x(jj, nn, ii, mm, pp) +
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) <= 1;
 end-do
-! ### End of declaration of routing constraints ### !	
+! ### End of declaration of routing constraints ### !
+
+! ### Start of declaration of HANDLING CONSTRAINTS (5.3) ### !
+! Handling by real operators
+declarations
+	handleOnlyIfX : dynamic array(rNodes - aNodes+aOriginNodes, visits, rNodes, visits, rOperators) of linctr;
+	chargeOnlyIfHandle : dynamic array(cNodes, visits, rOperators) of linctr;
+	dropOnlyIfHandle : dynamic array(pNodes, visits, rOperators) of linctr;
+	lowEffort : dynamic array(rNodes, visits, rNodes, visits, rOperators) of linctr;
+end-declarations 
+
+forall(pp in rOperators) do
+	forall(ii in rNodes - cNodes + {originNodeROperator(pp)}, jj in rNodes, nn in visits) do
+		if ii = originNodeROperator(pp) then
+			handleOnlyIfX(ii,1,jj,nn,pp) := h(ii,1,jj,nn,pp) <= x(ii,1,jj,nn,pp);
+		else
+			forall(mm in visits) do
+				handleOnlyIfX(ii,mm,jj,nn,pp) := h(ii,mm,jj,nn,pp) <= x(ii,mm,jj,nn,pp);
+			end-do
+		end-if
+	end-do
+end-do
+
+! INCLUDED these are most likely not good constraints, do NOT INCLUDE !
+forall(jj in cNodes, nn in visits, pp in rOperators) do
+	chargeOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes - (aDestinationNodes + cNodes), mm in visits) h(ii, mm, jj, nn, pp) = c(jj, nn, pp);
+end-do
+
+forall(jj in pNodes, nn in visits, pp in rOperators) do
+	dropOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes - (aDestinationNodes + cNodes), mm in visits) h(ii, mm, jj, nn, pp) = q(jj, nn, pp);
+end-do
+
+
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
+	lowEffort(ii, mm, jj, nn, pp) := h(ii, nn, jj, mm, pp)+ sum(kk in rNodes, ll in visits) h(jj, mm, kk, ll, pp) >= x(ii, nn, jj, mm, pp);
+end-do
+
+! Initial handling by real
+declarations
+	startLoad : dynamic array(rOperators) of linctr;
+end-declarations
+
+forall(pp in rOperators) do
+	startLoad(pp) := sum(nn in visits) h(originNodeROperator(pp), 1, startNodeROperator(pp), nn, pp) = initialHandling(pp);
+end-do
+
+! Handling by artificial operators
+declarations
+	handlingArtificial : dynamic array(aOperators) of linctr;
+end-declarations
+
+forall(pp in aOperators) do
+	handlingArtificial(pp) := sum(mm in visits, nn in visits) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) = 1;
+end-do
+
+
+! ### End of declaration of handling constraints ### !		
 
 ! ### Start of declaration of time constraints ### !
-! Time constraints for real operators
+
+! Time constraints for real operators !
 
 declarations
 	travelTimeCharging : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
@@ -364,12 +421,12 @@ end-declarations
 
 !handlingTimeC*c(ii, mm, pp) + c and q are not included yet
 forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
-	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp)  <= 
+	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
 											  t(jj,nn) + timeLimit*(1 - x(ii,mm,jj,nn,pp));
 end-do
 !handlingTimeP*q(ii, mm, pp) +
 forall(pp in rOperators, ii in pNodes, mm in visits, jj in rNodes, nn in visits) do
-	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
+	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
 											 t(jj,nn) + timeLimit*(1 - x(ii,mm,jj,nn,pp));
 end-do
 
@@ -407,61 +464,7 @@ end-do
 ! ### End of declaration of time constraints ### !
 	
 
-! ### Start of declaration of handling constraints ### !
-! Handling by real operators
-declarations
-	handleOnlyIfX : dynamic array(rNodes - aNodes+aOriginNodes, visits, rNodes, visits, rOperators) of linctr;
-	chargeOnlyIfHandle : dynamic array(cNodes, visits, rOperators) of linctr;
-	dropOnlyIfHandle : dynamic array(pNodes, visits, rOperators) of linctr;
-	lowEffort : dynamic array(rNodes, visits, rNodes, visits, rOperators) of linctr;
-end-declarations 
-
-forall(pp in rOperators) do
-	forall(ii in rNodes - cNodes + {originNodeROperator(pp)}, jj in rNodes, nn in visits) do
-		if ii = originNodeROperator(pp) then
-			handleOnlyIfX(ii,1,jj,nn,pp) := h(ii,1,jj,nn,pp) <= x(ii,1,jj,nn,pp);
-		else
-			forall(mm in visits) do
-				handleOnlyIfX(ii,mm,jj,nn,pp) := h(ii,mm,jj,nn,pp) <= x(ii,mm,jj,nn,pp);
-			end-do
-		end-if
-	end-do
-end-do
-
-(! these are most likely not good constraints, do NOT INCLUDE
-forall(jj in cNodes, nn in visits, pp in rOperators) do
-	chargeOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes - (aDestinationNodes + cNodes), mm in visits) h(ii, mm, jj, nn, pp) = c(jj, nn, pp);
-end-do
-
-forall(jj in pNodes, nn in visits, pp in rOperators) do
-	dropOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes - (aDestinationNodes + cNodes), mm in visits) h(ii, mm, jj, nn, pp) = q(jj, nn, pp);
-end-do
-!)
-
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
-	lowEffort(ii, mm, jj, nn, pp) := h(ii, nn, jj, mm, pp)+ sum(kk in rNodes, ll in visits) h(jj, mm, kk, ll, pp) >= x(ii, nn, jj, mm, pp);
-end-do
-
-! Initial handling by real
-declarations
-	startLoad : dynamic array(rOperators) of linctr;
-end-declarations
-
-forall(pp in rOperators) do
-	startLoad(pp) := sum(nn in visits) h(originNodeROperator(pp), 1, startNodeROperator(pp), nn, pp) = initialHandling(pp);
-end-do
-
-! Handling by artificial operators
-declarations
-	handlingArtificial : dynamic array(aOperators) of linctr;
-end-declarations
-
-forall(pp in aOperators) do
-	handlingArtificial(pp) := sum(mm in visits, nn in visits) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) = 1;
-end-do
-
-
-! ### End of declaration of handling constraints ### !		
+	
 
 
 
