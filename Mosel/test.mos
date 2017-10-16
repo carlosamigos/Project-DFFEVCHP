@@ -308,7 +308,7 @@ declarations
 end-declarations
 
 
-Objective :=  costOfDeviation * sum(ii in pNodes) sMinus(ii) + 
+Objective :=  costOfDeviation * sum(ii in pNodes) sPlus(ii) + 
 			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
 
 
@@ -427,14 +427,18 @@ forall(ii in pNodes, mm in visits) do
 											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = initialRegularInP(ii);
 	else 
 		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
-											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) - 
 											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp) - 
 											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = s(ii,mm-1);
 	end-if
 end-do
 
 forall(ii in pNodes) do
-	endStateDeviation(ii) := s(ii, numVisits) + sPlus(ii) - sMinus(ii) = idealStateP(ii);
+	endStateDeviation(ii) := s(ii, numVisits) - sum(jj in pNodes, nn in visits, pp in rOperators) h(ii, numVisits,jj,nn,pp) +
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, numVisits, pp) + 
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,numVisits,pp) + 
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,numVisits,pp)  
+											   + sPlus(ii) - sMinus(ii) = idealStateP(ii);
 end-do
 
 
@@ -706,6 +710,16 @@ if printResults then
 	end-do
 	!)
 end-if
+
+forall(ii in pNodes) do
+	writeln('State in node: ', ii, ' last visit: ', getsol(sPlus(ii))) 
+end-do
+
+forall(ii in pNodes) do
+	writeln('Charging State in node: ', ii, ' last visit: ', getsol(sC(ii, numVisits))) 
+end-do
+
+
 !fclose(F_OUTPUT);!)
 end-model
 
