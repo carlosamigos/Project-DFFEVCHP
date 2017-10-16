@@ -468,27 +468,34 @@ end-do
 ! ### Start of declaration of state constraints ### !		
 ! State constraints for parking nodes for cars not in need of charging
 declarations
-	initialStateBalanceNotInNeed : dynamic array(pNodes) of linctr;
-	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits - {1}) of linctr;
+	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
 	endStateDeviation : dynamic array(pNodes) of linctr;
 end-declarations
 
 
-(!
-forall(ii in pNodes) do
-	initialStateBalanceNotInNeed(ii) := s(ii, 1) = initialRegularInP(ii); 
-end-do
-!)
 
-(!
+
+
 forall(ii in pNodes, mm in visits) do 
-	if mm = 2 then
-		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators)
+	if mm = 1 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1)<= initialRegularInP(ii);
+	elif mm = 2 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp)+
+											   sum(pp in rOperators, nn in visits) h(originNodeROperator(pp),nn,ii,mm-1,pp) = initialRegularInP(ii);
 	else 
-		h
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp)+
+											   sum(pp in rOperators, nn in visits) h(originNodeROperator(pp),nn,ii,mm-1,pp) = s(ii,mm-1);
 	end-if
 end-do
-!)
+
+
+
+
+
 
 
 ! State constraints for parking nodes for cars in need of charging
@@ -573,8 +580,12 @@ if printResults then
 				else
 					write('(h: ', getsol(h(currNode, currVisit, currLowestNode, lowest, pp)), ')');	
 				end-if
+				if currLowestNode in rNodes then
+					write(' -> (', currLowestNode, ', ', lowest, ", sPnC= ",getsol(s(currLowestNode,lowest)),')');	
+				else
+					write(' -> (', currLowestNode, ', ', lowest,')');
+				end-if
 				
-				write(' -> (', currLowestNode, ', ', lowest,')');	
 				if(currLowestNode <> destinationNodeROperator(pp)) then
 					write('(t: ', getsol(t(currLowestNode, lowest)));
 				
