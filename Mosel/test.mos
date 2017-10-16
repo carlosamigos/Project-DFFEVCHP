@@ -207,6 +207,7 @@ declarations
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
 	sPlus  : dynamic array(pNodes)                                    of mpvar;
 	sMinus : dynamic array(pNodes)                                    of mpvar;
+	sEndC  : dynamic array(pNodes)									  of mpvar;								
 end-declarations
 
 !Define x
@@ -281,7 +282,7 @@ end-do
 
 !Define s
 forall(ii in rNodes, mm in visits) do
-	create(t(ii, mm));
+	create(s(ii, mm));
 	s(ii, mm) is_semint 0;
 end-do
 
@@ -299,6 +300,11 @@ forall(ii in pNodes) do
 	sMinus(ii) is_semint 0;
 end-do
 
+forall(ii in pNodes) do 
+	create(sEndC(ii));
+	sEndC(ii) is_semint 0;
+end-do
+
 ! ### End of declaration of Variables ### !
 
 
@@ -308,8 +314,8 @@ declarations
 end-declarations
 
 
-Objective :=  costOfDeviation * sum(ii in pNodes) sPlus(ii) + 
-			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
+Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii));
 
 
 !Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
@@ -451,6 +457,7 @@ end-do
 declarations
 	!initialStateBalanceInNeed : dynamic array(pNodes) of linctr;!
 	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
+	endStateDeviationInNeed: dynamic array(pNodes) of linctr;
 end-declarations
 
 forall(ii in pNodes, mm in visits) do 
@@ -464,10 +471,15 @@ forall(ii in pNodes, mm in visits) do
 end-do
 
 
+forall(ii in pNodes) do
+	endStateDeviationInNeed(ii) := sC(ii, numVisits) - sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,numVisits,jj,nn,pp) <= sEndC(ii);
+end-do
+
 ! State constraints for charging nodes
 declarations
 	!initialStateBalanceCharging : dynamic array(cNodes) of linctr;!
 	stateBalanceCharging : dynamic array(cNodes, visits) of linctr;
+	stateMaxLimitChargingLast : dynamic array(cNodes) of linctr;
 	stateMaxLimitCharging : dynamic array(cNodes, visits - {1}) of linctr;
 end-declarations
 
@@ -489,6 +501,11 @@ end-do
 
 forall(ii in cNodes, mm in visits - {1}) do
 	stateMaxLimitCharging(ii, mm) := s(ii, mm) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
+end-do
+
+forall(ii in cNodes) do
+	stateMaxLimitChargingLast(ii) := s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
+											   sum(pp in rOperators) c(ii, numVisits, pp) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
 end-do
 
 !TODO HERE
@@ -712,7 +729,11 @@ if printResults then
 end-if
 
 forall(ii in pNodes) do
-	writeln('State in node: ', ii, ' last visit: ', getsol(sPlus(ii))) 
+	writeln(' Plus State in node: ', ii, ' last visit: ', getsol(sPlus(ii))) 
+end-do
+
+forall(ii in rNodes) do
+	writeln('State in node: ', ii, ' last visit: ', getsol(s(ii, numVisits))) 
 end-do
 
 forall(ii in pNodes) do
