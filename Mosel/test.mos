@@ -14,7 +14,7 @@ declarations
 	printResults : boolean;
 end-declarations
 
-printParams := false;
+printParams := true;
 printResults := true;
 
 (! ### Start of initialization of set sizes ### !)
