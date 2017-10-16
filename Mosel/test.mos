@@ -14,7 +14,7 @@ declarations
 	printResults : boolean;
 end-declarations
 
-printParams := true;
+printParams := false;
 printResults := true;
 
 (! ### Start of initialization of set sizes ### !)
@@ -480,7 +480,15 @@ forall(ii in pNodes) do
 end-do
 !)
 
-
+(!
+forall(ii in pNodes, mm in visits) do 
+	if mm = 2 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators)
+	else 
+		h
+	end-if
+end-do
+!)
 
 
 ! State constraints for parking nodes for cars in need of charging
