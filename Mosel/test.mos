@@ -307,12 +307,12 @@ declarations
 		Objective: linctr;
 end-declarations
 
-(!
+
 Objective :=  costOfDeviation * sum(ii in pNodes) sMinus(ii) + 
 			  costOfPostponedCharging * sum(ii in pNodes) sC(ii, numVisits);
-!)
 
-Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+
+!Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 ! ### End of declaration of objective ### !			 
 		
@@ -404,9 +404,94 @@ forall(pp in aOperators) do
 end-do
 
 
-! ### End of declaration of handling constraints ### !		
+! ### End of declaration of handling constraints ### !	
 
-! ### Start of declaration of time constraints ### !
+! ### Start of declaration of STATE constraints (5.4) ### !		
+! State constraints for parking nodes for cars not in need of charging
+declarations
+	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
+	endStateDeviation : dynamic array(pNodes) of linctr;
+end-declarations
+
+
+
+
+
+forall(ii in pNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1) <= initialRegularInP(ii);
+	elif mm = 2 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp) -
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = initialRegularInP(ii);
+	else 
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp) - 
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = s(ii,mm-1);
+	end-if
+end-do
+
+forall(ii in pNodes) do
+	endStateDeviation(ii) := s(ii, numVisits) + sPlus(ii) - sMinus(ii) = idealStateP(ii);
+end-do
+
+
+
+
+
+
+
+! State constraints for parking nodes for cars in need of charging
+declarations
+	!initialStateBalanceInNeed : dynamic array(pNodes) of linctr;!
+	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
+end-declarations
+
+forall(ii in pNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceParkingInNeed(ii,mm) := sC(ii, 1) <= initialInNeedP(ii);
+	elif mm = 2 then
+		stateBalanceParkingInNeed(ii,mm) := sC(ii,mm) + sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp) = initialInNeedP(ii);
+	else 
+		stateBalanceParkingInNeed(ii,mm) := sC(ii,mm) + sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp) = sC(ii,mm-1);
+	end-if
+end-do
+
+
+! State constraints for charging nodes
+declarations
+	!initialStateBalanceCharging : dynamic array(cNodes) of linctr;!
+	stateBalanceCharging : dynamic array(cNodes, visits) of linctr;
+	stateMaxLimitCharging : dynamic array(cNodes, visits - {1}) of linctr;
+end-declarations
+
+forall(ii in cNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceCharging(ii,mm) := s(ii, 1) <= finishedDuringC(ii);
+		
+	elif mm = 2 then
+		stateBalanceCharging(ii,mm) := s(ii,mm) + 
+											   sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, mm-1, parkingNodeAOperator(pp), nn, pp) -
+											   sum(pp in rOperators) c(ii, mm-1, pp) = finishedDuringC(ii);
+	
+	else 
+		stateBalanceCharging(ii,mm) := s(ii,mm) + 
+											   sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, mm-1, parkingNodeAOperator(pp), nn, pp) -
+											   sum(pp in rOperators) c(ii, mm-1, pp) = s(ii, mm-1); 
+	end-if
+end-do
+
+forall(ii in cNodes, mm in visits - {1}) do
+	stateMaxLimitCharging(ii, mm) := s(ii, mm) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
+end-do
+
+!TODO HERE
+
+! ### End of declaration of state constraints ### !		
+
+! ### Start of declaration of TIME constraints (5.5) ### !
 
 ! Time constraints for real operators !
 
@@ -468,55 +553,7 @@ end-do
 
 
 
-! ### Start of declaration of state constraints ### !		
-! State constraints for parking nodes for cars not in need of charging
-declarations
-	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
-	endStateDeviation : dynamic array(pNodes) of linctr;
-end-declarations
-
-
-
-
-
-forall(ii in pNodes, mm in visits) do 
-	if mm = 1 then
-		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1)<= initialRegularInP(ii);
-	elif mm = 2 then
-		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
-											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
-											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp)+
-											   sum(pp in rOperators, nn in visits) h(originNodeROperator(pp),nn,ii,mm-1,pp) = initialRegularInP(ii);
-	else 
-		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
-											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
-											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp)+
-											   sum(pp in rOperators, nn in visits) h(originNodeROperator(pp),nn,ii,mm-1,pp) = s(ii,mm-1);
-	end-if
-end-do
-
-
-
-
-
-
-
-! State constraints for parking nodes for cars in need of charging
-declarations
-	initialStateBalanceInNeed : dynamic array(pNodes) of linctr;
-	stateBalanceParkingInNeed : dynamic array(pNodes, visits - {1}) of linctr;
-end-declarations
-
-! State constraints for charging nodes
-declarations
-	initialStateBalanceCharging : dynamic array(cNodes) of linctr;
-	stateBalanceCharging : dynamic array(cNodes, visits - {1}) of linctr;
-	stateMaxLimitCharging : dynamic array(cNodes, visits - {1}) of linctr;
-end-declarations
-
-!TODO HERE
-
-! ### End of declaration of state constraints ### !		
+	
 
 
 
@@ -584,7 +621,7 @@ if printResults then
 					write('(h: ', getsol(h(currNode, currVisit, currLowestNode, lowest, pp)), ')');	
 				end-if
 				if currLowestNode in rNodes then
-					write(' -> (', currLowestNode, ', ', lowest, ", sPnC= ",getsol(s(currLowestNode,lowest)),')');	
+					write(' -> (', currLowestNode, ', ', lowest, ", sPnC = ",getsol(s(currLowestNode,lowest)),')');	
 				else
 					write(' -> (', currLowestNode, ', ', lowest,')');
 				end-if
