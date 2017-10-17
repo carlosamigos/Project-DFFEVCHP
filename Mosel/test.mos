@@ -6,15 +6,15 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example1.txt';
+	DataFile = 'examples/example2.txt';
 end-parameters
 
 declarations
-	printParams : boolean;
+	printParams  : boolean;
 	printResults : boolean;
 end-declarations
 
-printParams := true;
+printParams  := true;
 printResults := true;
 
 (! ### Start of initialization of set sizes ### !)
@@ -45,16 +45,16 @@ numNodes  := numRNodes + numANodes;
 
 ! ### Start of declaration of sets ### !
 declarations
-	Nodes      : set of integer; ! Set of all Nodes
-	pNodes     : set of integer; ! Set of all parking Nodes. A subset of Nodes.
-	cNodes     : set of integer; ! Set of all charging Nodes. A subset of Nodes.
-	rNodes     : set of integer; ! Set of all real Nodes. A subset of Nodes.
-	aNodes     : set of integer; ! Set of all artificial Nodes. A subset of Nodes.
-	aOriginNodes : set of integer;
+	Nodes             : set of integer; ! Set of all Nodes
+	pNodes            : set of integer; ! Set of all parking Nodes. A subset of Nodes.
+	cNodes     		  : set of integer; ! Set of all charging Nodes. A subset of Nodes.
+	rNodes            : set of integer; ! Set of all real Nodes. A subset of Nodes.
+	aNodes            : set of integer; ! Set of all artificial Nodes. A subset of Nodes.
+	aOriginNodes      : set of integer;
 	aDestinationNodes : set of integer;
-	rOperators : set of integer; ! Set of all real operators.
-	aOperators : set of integer; ! Set of all artificial operators
-	visits     : set of integer; ! Set of all possible visits
+	rOperators        : set of integer; ! Set of all real operators.
+	aOperators        : set of integer; ! Set of all artificial operators
+	visits            : set of integer; ! Set of all possible visits
 end-declarations
 
 initializations from DataFile
@@ -68,13 +68,13 @@ end-initializations
 visits := 1..numVisits;
 
 ! Initialize all node sets ! 
-pNodes    := 1 .. numPNodes;
-cNodes    := (numPNodes + 1) .. numRNodes;
-rNodes    := pNodes + cNodes;
-aOriginNodes := (numRNodes + 1) .. (numRNodes + numROperators)
+pNodes            := 1 .. numPNodes;
+cNodes   	      := (numPNodes + 1) .. numRNodes;
+rNodes    	      := pNodes + cNodes;
+aOriginNodes      := (numRNodes + 1) .. (numRNodes + numROperators)
 aDestinationNodes := (1+ numRNodes + numROperators) .. (numRNodes + numANodes);
-aNodes    := aOriginNodes + aDestinationNodes;
-Nodes     := rNodes + aNodes;
+aNodes            := aOriginNodes + aDestinationNodes;
+Nodes             := rNodes + aNodes;
 
 ! Initialize all operator sets !
 rOperators := 1 .. numROperators;
@@ -95,16 +95,16 @@ if printParams then
 	
 	writeln('');
 	writeln('------ Sets ------');
-	writeln('All Nodes:            ', Nodes);
-	writeln('Real Nodes:           ', rNodes);
-	writeln('Parking Nodes:        ', pNodes);
-	writeln('Charging Nodes:       ', cNodes);
-	writeln('Artificial Nodes:     ', aNodes);
+	writeln('All Nodes:               ', Nodes);
+	writeln('Real Nodes:              ', rNodes);
+	writeln('Parking Nodes:           ', pNodes);
+	writeln('Charging Nodes:          ', cNodes);
+	writeln('Artificial Nodes:        ', aNodes);
 	writeln('Artificial destinations: ', aDestinationNodes);
-	writeln('Artificial origin: ', aOriginNodes);
-	writeln('Operators:            ', rOperators);
-	writeln('Artificial operators: ', aOperators);
-	writeln('Visits:               ', visits);
+	writeln('Artificial origin:       ', aOriginNodes);
+	writeln('Operators:               ', rOperators);
+	writeln('Artificial operators:    ', aOperators);
+	writeln('Visits:                  ', visits);
 	writeln('');
 end-if
 
@@ -113,7 +113,7 @@ end-if
 declarations
 	! Nodes !
 	originNodeROperator       : array(rOperators) of integer; ! Origin Nodes for all real operators
-	destinationNodeROperator  : array(rOperators)  of integer; ! Artificial destination node of real operators
+	destinationNodeROperator  : array(rOperators) of integer; ! Artificial destination node of real operators
 	startNodeROperator        : array(rOperators) of integer; ! Actual start node for real operators
 	chargingNodeAOperator     : array(aOperators) of integer; ! Origin Nodes for all artificial operators
 	parkingNodeAOperator      : array(aOperators) of integer; ! Actual start node for artificial operator
@@ -362,9 +362,9 @@ end-do
 ! Handling by real operators
 declarations
 	handleOnlyIfX : dynamic array(rNodes - aNodes+aOriginNodes, visits, rNodes, visits, rOperators) of linctr;
-	chargeOnlyIfHandle : dynamic array(cNodes, visits, rOperators) of linctr;
-	dropOnlyIfHandle : dynamic array(pNodes, visits, rOperators) of linctr;
-	lowEffort : dynamic array(rNodes, visits, rNodes, visits, rOperators) of linctr;
+	chargeOnlyIfHandle : dynamic array(cNodes, visits, rOperators)                                  of linctr;
+	dropOnlyIfHandle : dynamic array(pNodes, visits, rOperators) 				                    of linctr;
+	lowEffort : dynamic array(rNodes, visits, rNodes, visits, rOperators)                           of linctr;
 end-declarations 
 
 forall(pp in rOperators) do
@@ -418,7 +418,7 @@ end-do
 ! State constraints for parking nodes for cars not in need of charging
 declarations
 	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
-	endStateDeviation : dynamic array(pNodes) of linctr;
+	endStateDeviation            : dynamic array(pNodes)          of linctr;
 end-declarations
 
 
@@ -452,7 +452,7 @@ end-do
 ! State constraints for parking nodes for cars in need of charging
 declarations
 	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
-	endStateDeviationInNeed: dynamic array(pNodes) of linctr;
+	endStateDeviationInNeed   : dynamic array(pNodes)         of linctr;
 end-declarations
 
 forall(ii in pNodes, mm in visits) do 
@@ -471,9 +471,9 @@ end-do
 
 ! State constraints for charging nodes
 declarations
-	stateBalanceCharging : dynamic array(cNodes, visits) of linctr;
-	stateMaxLimitChargingLast : dynamic array(cNodes) of linctr;
-	stateMaxLimitCharging : dynamic array(cNodes, visits - {1}) of linctr;
+	stateBalanceCharging      : dynamic array(cNodes, visits)       of linctr;
+	stateMaxLimitChargingLast : dynamic array(cNodes)               of linctr;
+	stateMaxLimitCharging     : dynamic array(cNodes, visits - {1}) of linctr;
 end-declarations
 
 forall(ii in cNodes, mm in visits) do 
@@ -508,12 +508,12 @@ end-do
 ! Time constraints for real operators !
 
 declarations
-	travelTimeCharging : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
-	travelTimeParking  : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
-	travelTimeToDestination : dynamic array(rOperators, rNodes, visits) of linctr;
-	startTime : dynamic array(rOperators, visits) of linctr;
-	travelFlow : dynamic array(Nodes, visits - {numVisits}) of linctr;
-	endTime : dynamic array(rNodes) of linctr;
+	travelTimeCharging      : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
+	travelTimeParking       : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
+	travelTimeToDestination : dynamic array(rOperators, rNodes, visits)                 of linctr;
+	startTime               : dynamic array(rOperators, visits)                         of linctr;
+	travelFlow              : dynamic array(Nodes, visits - {numVisits})                of linctr;
+	endTime                 : dynamic array(rNodes)                                     of linctr;
 end-declarations 
 
 
@@ -543,7 +543,7 @@ end-do
 ! Time constraints for artificial operators
 declarations
 	timeConstraintArtificial : dynamic array(aOperators, visits, visits) of linctr;
-	startTimeArtificial : dynamic array(aOperators, visits, visits) of linctr;
+	startTimeArtificial      : dynamic array(aOperators, visits, visits) of linctr;
 end-declarations
 
 forall(pp in aOperators, mm in visits, nn in visits) do
@@ -559,17 +559,6 @@ forall(pp in aOperators, mm in visits, nn in visits) do
 end-do
 
 ! ### End of declaration of time constraints ### !
-	
-
-	
-
-
-
-	
-
-
-
-
 
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
@@ -577,12 +566,12 @@ writeln('Objective function value: ', getobjval);
 
 ! ### Variables used for printing ### !
 declarations
-	currNode : integer;
-	currLowest : integer;
-	currVisit: integer;
+	currNode       : integer;
+	currLowest     : integer;
+	currVisit      : integer;
 	currLowestNode : integer;
-	foundX : boolean;
-	lastVisit : array(Nodes) of integer;
+	foundX         : boolean;
+	lastVisit      : array(Nodes) of integer;
 end-declarations
 
 if printResults then
