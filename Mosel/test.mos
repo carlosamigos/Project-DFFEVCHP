@@ -207,7 +207,8 @@ declarations
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
 	sPlus  : dynamic array(pNodes)                                    of mpvar;
 	sMinus : dynamic array(pNodes)                                    of mpvar;
-	sEndC  : dynamic array(pNodes)									  of mpvar;								
+	sEndC  : dynamic array(pNodes)									  of mpvar;	
+	sEndAc : dynamic array(cNodes)									  of mpvar;							
 end-declarations
 
 !Define x
@@ -305,6 +306,11 @@ forall(ii in pNodes) do
 	sEndC(ii) is_semint 0;
 end-do
 
+forall(ii in cNodes) do
+	create(sEndAc(ii));
+	sEndAc(ii) is_semint 0;
+end-do
+
 ! ### End of declaration of Variables ### !
 
 
@@ -315,7 +321,7 @@ end-declarations
 
 
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
-			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii)) + sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii));
 
 
 !Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
@@ -474,6 +480,7 @@ declarations
 	stateBalanceCharging      : dynamic array(cNodes, visits)       of linctr;
 	stateMaxLimitChargingLast : dynamic array(cNodes)               of linctr;
 	stateMaxLimitCharging     : dynamic array(cNodes, visits - {1}) of linctr;
+	endStateBalance: dynamic array(cNodes) of linctr;
 end-declarations
 
 forall(ii in cNodes, mm in visits) do 
@@ -500,6 +507,12 @@ forall(ii in cNodes) do
 	stateMaxLimitChargingLast(ii) := s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
 											   sum(pp in rOperators) c(ii, numVisits, pp) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
 end-do
+
+forall(ii in cNodes) do
+	endStateBalance(ii) := sEndAc(ii) >= s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
+											   sum(pp in rOperators) c(ii, numVisits, pp);
+end-do
+
 
 ! ### End of declaration of state constraints ### !		
 
@@ -710,21 +723,21 @@ end-if
 
 
 forall(ii in pNodes) do
-	writeln(' Plus State in node: ', ii, ' last visit: ', getsol(sPlus(ii))) 
+	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
 end-do
 
 forall(ii in pNodes) do
-	writeln(' Minus State in node: ', ii, ' last visit: ', getsol(sMinus(ii))) 
+	writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
 end-do
 
-forall(ii in rNodes) do
-	writeln('State in node: ', ii, ' last visit: ', getsol(s(ii, numVisits))) 
+forall(ii in cNodes) do
+	writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
 end-do
 
 forall(ii in pNodes) do
-	writeln('Charging State in node: ', ii, ' last visit: ', getsol(sC(ii, numVisits))) 
+	writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
 end-do
-
+(!
 forall(mm in visits, jj in rNodes + aNodes, nn in visits, pp in rOperators) do
 	if getsol(x(4, mm, jj, nn, pp)) = 1 then 
 		writeln('X from variables: in visit: ', mm, ' to node: ', jj, ' to visit: ', nn, ' by person: ', pp)
@@ -733,7 +746,7 @@ forall(mm in visits, jj in rNodes + aNodes, nn in visits, pp in rOperators) do
 		writeln('X to variables: in visit: ', mm, ' from node: ', jj, ' to visit: ', nn, ' by person: ', pp)
 	end-if
 end-do
-
+!)
 
 !fclose(F_OUTPUT);!)
 end-model
