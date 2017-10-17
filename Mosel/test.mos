@@ -308,20 +308,20 @@ end-do
 ! ### End of declaration of Variables ### !
 
 
-! ### Start of declaration of objective ### !
+! ### Start of declaration of OBJECTIVE ### !
 declarations
 		Objective: linctr;
 end-declarations
 
 
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
-			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii));
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii)) + sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 
 !Objective := - sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 ! ### End of declaration of objective ### !			 
-		
+
 
 ! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
 declarations
@@ -358,6 +358,7 @@ end-do
 ! ### End of declaration of routing constraints ### !
 
 ! ### Start of declaration of HANDLING CONSTRAINTS (5.3) ### !
+
 ! Handling by real operators
 declarations
 	handleOnlyIfX : dynamic array(rNodes - aNodes+aOriginNodes, visits, rNodes, visits, rOperators) of linctr;
@@ -378,7 +379,6 @@ forall(pp in rOperators) do
 	end-do
 end-do
 
-! INCLUDED these are most likely not good constraints, do NOT INCLUDE !
 forall(jj in cNodes, nn in visits, pp in rOperators) do
 	chargeOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes - (aDestinationNodes + cNodes), mm in visits) h(ii, mm, jj, nn, pp) = c(jj, nn, pp);
 end-do
@@ -401,7 +401,7 @@ forall(pp in rOperators) do
 	startLoad(pp) := sum(nn in visits) h(originNodeROperator(pp), 1, startNodeROperator(pp), nn, pp) = initialHandling(pp);
 end-do
 
-! Handling by artificial operators
+! Initial handling by artificial operators
 declarations
 	handlingArtificial : dynamic array(aOperators) of linctr;
 end-declarations
@@ -413,15 +413,13 @@ end-do
 
 ! ### End of declaration of handling constraints ### !	
 
-! ### Start of declaration of STATE constraints (5.4) ### !		
+! ### Start of declaration of STATE CONSTRAINTS (5.4) ### !		
+
 ! State constraints for parking nodes for cars not in need of charging
 declarations
 	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
 	endStateDeviation : dynamic array(pNodes) of linctr;
 end-declarations
-
-
-
 
 
 forall(ii in pNodes, mm in visits) do 
@@ -451,13 +449,8 @@ end-do
 
 
 
-
-
-
-
 ! State constraints for parking nodes for cars in need of charging
 declarations
-	!initialStateBalanceInNeed : dynamic array(pNodes) of linctr;!
 	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
 	endStateDeviationInNeed: dynamic array(pNodes) of linctr;
 end-declarations
@@ -472,14 +465,12 @@ forall(ii in pNodes, mm in visits) do
 	end-if
 end-do
 
-
 forall(ii in pNodes) do
 	endStateDeviationInNeed(ii) := sC(ii, numVisits) - sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,numVisits,jj,nn,pp) <= sEndC(ii);
 end-do
 
 ! State constraints for charging nodes
 declarations
-	!initialStateBalanceCharging : dynamic array(cNodes) of linctr;!
 	stateBalanceCharging : dynamic array(cNodes, visits) of linctr;
 	stateMaxLimitChargingLast : dynamic array(cNodes) of linctr;
 	stateMaxLimitCharging : dynamic array(cNodes, visits - {1}) of linctr;
@@ -510,11 +501,9 @@ forall(ii in cNodes) do
 											   sum(pp in rOperators) c(ii, numVisits, pp) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
 end-do
 
-!TODO HERE
-
 ! ### End of declaration of state constraints ### !		
 
-! ### Start of declaration of TIME constraints (5.5) ### !
+! ### Start of declaration of TIME CONSTRAINTS (5.5) ### !
 
 ! Time constraints for real operators !
 
@@ -527,12 +516,12 @@ declarations
 	endTime : dynamic array(rNodes) of linctr;
 end-declarations 
 
-!handlingTimeC*c(ii, mm, pp) + c and q are not included yet
+
 forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
 	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
 											  t(jj,nn) + timeLimit*(1 - x(ii,mm,jj,nn,pp));
 end-do
-!handlingTimeP*q(ii, mm, pp) +
+
 forall(pp in rOperators, ii in pNodes, mm in visits, jj in rNodes, nn in visits) do
 	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
 											 t(jj,nn) + timeLimit*(1 - x(ii,mm,jj,nn,pp));
@@ -562,9 +551,9 @@ forall(pp in aOperators, mm in visits, nn in visits) do
 											t(parkingNodeAOperator(pp), nn) + 
 											timeLimit*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
 end-do
-									
+						
 forall(pp in aOperators, mm in visits, nn in visits) do
-	timeConstraintArtificial(pp, mm, nn) := t(parkingNodeAOperator(pp), mm) <= 
+	timeConstraintArtificial(pp, mm, nn) := t(parkingNodeAOperator(pp), mm) >= 
 											travelTimeToParkingA(pp) * 
 											hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp);
 end-do
@@ -730,6 +719,7 @@ if printResults then
 	!)
 end-if
 
+
 forall(ii in pNodes) do
 	writeln(' Plus State in node: ', ii, ' last visit: ', getsol(sPlus(ii))) 
 end-do
@@ -744,6 +734,15 @@ end-do
 
 forall(ii in pNodes) do
 	writeln('Charging State in node: ', ii, ' last visit: ', getsol(sC(ii, numVisits))) 
+end-do
+
+forall(mm in visits, jj in rNodes + aNodes, nn in visits, pp in rOperators) do
+	if getsol(x(4, mm, jj, nn, pp)) = 1 then 
+		writeln('X from variables: in visit: ', mm, ' to node: ', jj, ' to visit: ', nn, ' by person: ', pp)
+	end-if
+	if getsol(x(jj, mm, 4, nn, pp)) = 1 then
+		writeln('X to variables: in visit: ', mm, ' from node: ', jj, ' to visit: ', nn, ' by person: ', pp)
+	end-if
 end-do
 
 
