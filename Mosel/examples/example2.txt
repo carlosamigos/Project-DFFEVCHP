@@ -1,4 +1,4 @@
-numVisits : 6
+numVisits : 8
 numPNodes : 4
 numCNodes : 1
 numROperators : 3
@@ -37,8 +37,8 @@ handlingTimeP : 0.1
 handlingTimeC : 0.15
 travelTimeToOriginR : [0.0 0.0 1.0]
 travelTimeToParkingA : [2.0 3.0]
-timeLimit : 30.0
-timeLimitLastVisit : 50.0
+timeLimit : 10.0
+timeLimitLastVisit : 20.0
 initialHandling : [0 0 1]
 initialRegularInP : [3 0 1 0]
 initialInNeedP : [4 1 1 0]
