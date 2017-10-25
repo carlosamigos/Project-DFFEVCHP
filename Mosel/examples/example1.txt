@@ -43,9 +43,9 @@ travelTimeBike    : [0.0 2.0 4.0 2.0 3.4 4.4 2.0 4.4
 
 handlingTimeP : 0.1
 handlingTimeC : 0.15
-travelTimeToOriginR : [0.0 2.0 2.0]
-travelTimeToParkingA : [1.0]
-timeLimit : 8.0
+travelTimeToOriginR : [1.0 2.0 0.0]
+travelTimeToParkingA : [0.0]
+timeLimit : 5.0
 timeLimitLastVisit : 5.0
 initialHandling : [0 1 0]
 initialRegularInP : [1 0 1 0 0 1]
