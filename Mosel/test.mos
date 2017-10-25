@@ -355,7 +355,6 @@ Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
 
 ! ### End of declaration of objective ### !			 
 
-
 ! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
 declarations
 	operatorStart: dynamic array(rOperators)                 of linctr;
@@ -481,7 +480,6 @@ forall(ii in pNodes) do
 end-do
 
 
-
 ! State constraints for parking nodes for cars in need of charging
 declarations
 	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
@@ -536,7 +534,7 @@ forall(ii in cNodes) do
 end-do
 
 forall(ii in cNodes) do
-	endStateBalance(ii) := sEndAc(ii) >= s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
+	endStateBalance(ii) := sEndAc(ii) = s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
 											   sum(pp in rOperators) c(ii, numVisits, pp);
 end-do
 
@@ -560,13 +558,23 @@ end-declarations
 
 
 forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
-	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
+	if (nn >= numVisits) then
+		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
 											  t(jj,nn) + (timeLimit+timeLimitLastVisit)*(1 - x(ii,mm,jj,nn,pp));
+	else	
+		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
+											  t(jj,nn) + (timeLimit)*(1 - x(ii,mm,jj,nn,pp));
+	end-if									 
 end-do
 !Add an if that covers the big M
 forall(pp in rOperators, ii in pNodes, mm in visits, jj in rNodes, nn in visits) do
-	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
+	if (nn = numVisits) then
+		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
 											 t(jj,nn) + (timeLimit+timeLimitLastVisit)*(1 - x(ii,mm,jj,nn,pp));
+	else
+		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
+											 t(jj,nn) + (timeLimit)*(1 - x(ii,mm,jj,nn,pp));
+	end-if
 end-do
 
 
@@ -583,7 +591,7 @@ forall(ii in rNodes) do
 end-do
 
 forall(ii in rNodes) do
-	endTimeFree(ii) := t(ii, numVisits) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii,numVisits, destinationNodeROperator(pp),1,pp));
+	endTimeFree(ii) := t(ii, numVisits) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators, nn in visits) x(ii,numVisits, destinationNodeROperator(pp),nn,pp));
 end-do
 
 forall(ii in rNodes) do
@@ -599,9 +607,15 @@ declarations
 end-declarations
 
 forall(pp in aOperators, mm in visits, nn in visits) do
-	timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
+	if (nn = numVisits) then
+		timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
 											t(parkingNodeAOperator(pp), nn) + 
 											(timeLimit+timeLimitLastVisit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+	else
+		timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
+											t(parkingNodeAOperator(pp), nn) + 
+											(timeLimit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+	end-if
 end-do
 						
 forall(pp in aOperators, mm in visits, nn in visits) do
@@ -784,7 +798,6 @@ end-do
 forall(ii in Nodes - aNodes) do
 	writeln('Undertime used in node: ', ii, ' Is: ', getsol(tPlus(ii)))
 end-do
-
 
 (!
 forall(mm in visits, jj in rNodes + aNodes, nn in visits, pp in rOperators) do

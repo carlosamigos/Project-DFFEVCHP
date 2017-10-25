@@ -21,7 +21,7 @@ parkingNodeAOperator : [4]
 chargingSlotsAvailable : [1 1]
 costOfDeviation : 10
 costOfPostponedCharging : 10
-costOfExtraTime : 0.2
+costOfExtraTime : 1
 costOfTravel : 1
 
 travelTimeVehicle : [0.0 1.0 2.0 1.0 1.7 2.2 1.0 2.2 
@@ -45,7 +45,7 @@ handlingTimeP : 0.1
 handlingTimeC : 0.15
 travelTimeToOriginR : [0.0 2.0 2.0]
 travelTimeToParkingA : [1.0]
-timeLimit : 3.0
+timeLimit : 8.0
 timeLimitLastVisit : 5.0
 initialHandling : [0 1 0]
 initialRegularInP : [1 0 1 0 0 1]
