@@ -562,11 +562,11 @@ forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits)
 	if (nn = numVisits) then
 		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
 											  t(jj,nn) + 
-											  (timeLimit + timeLimitLastVisit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));							 
+											  (10+timeLimit + timeLimitLastVisit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));							 
 	else
 		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
 											  t(jj,nn) + 
-											  (timeLimit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));	
+											  (10+timeLimit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));	
 	end-if
 end-do
 
@@ -620,7 +620,7 @@ forall(pp in aOperators, mm in visits, nn in visits) do
 	else
 		timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
 											t(parkingNodeAOperator(pp), nn) + 
-											(timeLimit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+											(timeLimit+10)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
 	end-if
 end-do
 						
