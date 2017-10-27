@@ -12,7 +12,7 @@ done
 rm tex/*.aux
 rm tex/*.log
 
-if [ "$1" == "git" ] 
+if [ "$1" == "git" ] || [ "$2" == "git" ]
 then
 	git add tex/snapshot_*.tex
 	git commit -m "Test run"
