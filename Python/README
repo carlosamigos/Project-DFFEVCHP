@@ -1,0 +1,21 @@
+Running: The runner.sh script runs the python file tikz_generator.py. Normal running is achieved by writing:
+         ./runner.sh
+
+Video: If you want to generate an output video call with the argument "video":
+       ./runner.sh video
+
+Git: If you want to push to git after having run the script call with the argument "git":
+     ./runner.sh git
+
+Video and Git: Arguments can be combined in any permutation, which means that the following are equivalent:
+               ./runner.sh git video
+               ./runner.sh video git
+
+   KNOWN ISSUES:
+1. To run the script runner.sh you must install ImageMagick. Brew:
+   brew install imagemagick
+
+2. There might be permission issues with the runner.sh file as well, fix this by typing:
+   chmod -x runner.sh
+
+3. Make sure there exists a folder named tex within this folder.
