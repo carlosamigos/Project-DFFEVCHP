@@ -1,2 +1,7 @@
 *.pyc
+*.o
 *.bim
+*DS_Store
+*.mp4
+
+Python/tex/*.pdf
