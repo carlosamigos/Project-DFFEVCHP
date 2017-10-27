@@ -12,7 +12,7 @@ Video and Git: Arguments can be combined in any permutation, which means that th
                ./runner.sh video git
 
    KNOWN ISSUES:
-1. To run the script runner.sh you must install ImageMagick. Brew:
+1. OSX: To run the script runner.sh with the video option you must install ImageMagick. Brew:
    brew install imagemagick
 
 2. There might be permission issues with the runner.sh file as well, fix this by typing:
