@@ -388,14 +388,14 @@ forall(ii in rNodes, mm in visits) do
 	maxVisitOut(ii, mm) := sum(pp in rOperators, jj in rNodes, nn in visits) x(jj, nn, ii, mm, pp) + sum(pp in rOperators)x(originNodeROperator(pp), 1, ii, mm, pp)+
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) <= 1;
 end-do
-(!
+
 forall(ii in pNodes, mm in visits - {numVisits}) do 
-	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp))) +
-	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >= 
-	(sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp))) + 
+	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm, pp))) +
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >=  
+	(sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm+1, pp))) + 
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm+1, pp) 
 end-do
-!)
+
 forall(ii in cNodes, mm in visits - {numVisits}) do
 	vSymmetryC(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp))) +
 	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) >=
@@ -569,7 +569,7 @@ declarations
 	travelTimeToDestination : dynamic array(rOperators, rNodes, visits)                 of linctr;
 	startTime               : dynamic array(rOperators, visits)                         of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
-	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
+	travelFlowZero			: dynamic array(pNodes, visits)                             of linctr;
 	endTimeSecondLastVisit  : dynamic array(rNodes)                                     of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
@@ -595,11 +595,14 @@ end-do
 
 forall(ii in rNodes, mm in visits - {numVisits}) do
 	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
-		((1 - (sum(pp in rOperators) (sum(jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp)))) * (timeLimit + timeLimitLastVisit));
+		((1 - sum(pp in rOperators) (sum(jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp)) - sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm+1, pp) -
+		sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm+1, parkingNodeAOperator(pp), nn, pp)) *
+		(timeLimit + timeLimitLastVisit));
 end-do
 
-forall(ii in rNodes, mm in visits) do
-	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * (sum(pp in rOperators) (sum( jj in pNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp)));
+forall(ii in pNodes, mm in visits) do
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp)) +
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm, pp));
 end-do
 
 
@@ -618,12 +621,23 @@ end-do
 declarations
 	timeConstraintArtificial : dynamic array(aOperators, visits, visits) of linctr;
 	startTimeArtificial      : dynamic array(aOperators, visits, visits) of linctr;
+	travelFlowZeroA			 : dynamic array(rNodes, visits)             of linctr;
 end-declarations
 
 forall(pp in aOperators, mm in visits, nn in visits) do
 	timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
 											t(parkingNodeAOperator(pp), nn) + 
 											(timeLimit+timeLimitLastVisit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+end-do
+(!
+forall(ii in cNodes, mm in visits - {numVisits}) do
+	travelFlowA(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
+		(1 - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm+1, parkingNodeAOperator(pp), nn, pp)) * (timeLimit + timeLimitLastVisit);
+end-do
+!)
+forall(ii in cNodes, mm in visits) do
+	travelFlowZeroA(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * (sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm, parkingNodeAOperator(pp), nn, pp) +
+	sum(pp in rOperators) (sum(jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp)));
 end-do
 						
 forall(pp in aOperators, mm in visits, nn in visits) do
