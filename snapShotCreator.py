@@ -1,4 +1,4 @@
-#snapshot creator from outputServiceOperatorsPath.txt
+#snapshot creator from mosel outputs
 
 def readPaths(filename):
 	fil = open(filename,"r")
@@ -216,7 +216,6 @@ def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths)
 		operators.append(operatorSnapshot)
 	return operators
 
-
 def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
 	realNodes = inputProblem["nodes"]
 	fromIndex = From["node"]
@@ -232,9 +231,6 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
 	return travelTime
 
 
-
-
-
 def main():
 	pathFileName = "./Mosel/outputServiceOperatorsPath.txt"
 	artificialFilename = "./Mosel/outputArtificialServiceOperators.txt"
@@ -242,8 +238,22 @@ def main():
 	inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
 	realOperatorsPaths = readPaths(pathFileName)
 	artificialPaths = readPaths(artificialFilename)
-	operators = createSnapshotFromTime(6,inputProblem,realOperatorsPaths,artificialPaths)
-	print(operators)
+
+	snapshots = []
+	maxTime = 5
+	steps = 10
+	stepLength = float(maxTime) / steps
+	for step in range(0,steps):
+		t = step*stepLength
+		snapshot = {}
+		snapshot["cars_parked"] = [1,0,1,0,0,1]
+		snapshot["cars_need"] = [0,1,0,0,1,0]
+		snapshot["charging"] = [1,0]
+		operators = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
+		snapshot["operators"] = operators
+		snapshots.append(snapshot)
+	print(snapshots)
+
 
 
 main()
