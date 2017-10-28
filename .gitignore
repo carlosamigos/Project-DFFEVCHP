@@ -1,1 +1,7 @@
 *.pyc
+*.o
+*.bim
+*DS_Store
+*.mp4
+*.pdf
+
