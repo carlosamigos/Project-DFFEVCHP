@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example1.txt';
+	DataFile = 'examples/example2.txt';
 end-parameters
 
 declarations
@@ -211,9 +211,9 @@ declarations
 	hA     : dynamic array(cNodes, visits, pNodes, visits, aOperators)of mpvar;
 	c      : dynamic array(cNodes, visits, rOperators)                of mpvar;
 	q      : dynamic array(rNodes, visits, rOperators)                of mpvar;
-	t      : dynamic array(Nodes, visits)                            of mpvar;
-	tPlus  : dynamic array(rNodes)                                    of mpvar;
-	tMinus : dynamic array(rNodes)                                    of mpvar;
+	t      : dynamic array(Nodes, visits)                             of mpvar;
+	tPlus  : dynamic array(rNodes, visits)                            of mpvar;
+	tMinus : dynamic array(rNodes, visits)                            of mpvar;
 	s      : dynamic array(rNodes, visits)                            of mpvar;
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
 	sPlus  : dynamic array(pNodes)                                    of mpvar;
@@ -284,13 +284,13 @@ end-do
 
 !Create t, part 1
 forall(ii in Nodes - aNodes) do
-	create(tPlus(ii));
-	create(tMinus(ii));
-	tPlus(ii) is_semcont 0;
-	tMinus(ii) is_semcont 0;
 	forall(mm in visits) do
 		create(t(ii,mm));
 		t(ii,mm) is_semcont 0; 
+		create(tPlus(ii, mm));
+		create(tMinus(ii, mm));
+		tPlus(ii, mm) is_semcont 0;
+		tMinus(ii, mm) is_semcont 0;
 	end-do
 end-do
 
@@ -347,7 +347,7 @@ end-declarations
 
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
-			  (costOfExtraTime * (sum(ii in rNodes) tMinus(ii))) + 
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravel  * sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 
@@ -362,6 +362,8 @@ declarations
 	inEqualsOut  : dynamic array(rOperators, rNodes, visits) of linctr;
 	maxVisitIn   : dynamic array(rNodes, visits)             of linctr;
 	maxVisitOut  : dynamic array(rNodes, visits)             of linctr;
+	vSymmetryP   : dynamic array(pNodes, visits)             of linctr;
+	vSymmetryC   : dynamic array(cNodes, visits)             of linctr;
 end-declarations 
 
 forall(pp in rOperators) do
@@ -386,6 +388,21 @@ forall(ii in rNodes, mm in visits) do
 	maxVisitOut(ii, mm) := sum(pp in rOperators, jj in rNodes, nn in visits) x(jj, nn, ii, mm, pp) + sum(pp in rOperators)x(originNodeROperator(pp), 1, ii, mm, pp)+
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) <= 1;
 end-do
+(!
+forall(ii in pNodes, mm in visits - {numVisits}) do 
+	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp))) +
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >= 
+	(sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp))) + 
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm+1, pp) 
+end-do
+!)
+forall(ii in cNodes, mm in visits - {numVisits}) do
+	vSymmetryC(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp))) +
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) >=
+	(sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp))) +
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm+1, parkingNodeAOperator(pp), nn, pp) 
+end-do
+
 
 ! ### End of declaration of routing constraints ### !
 
@@ -551,34 +568,24 @@ declarations
 	travelTimeParking       : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
 	travelTimeToDestination : dynamic array(rOperators, rNodes, visits)                 of linctr;
 	startTime               : dynamic array(rOperators, visits)                         of linctr;
-	travelFlow              : dynamic array(Nodes, visits - {numVisits})                of linctr;
+	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
+	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
 	endTimeSecondLastVisit  : dynamic array(rNodes)                                     of linctr;
-	endTimeFree             : dynamic array(rNodes)                                     of linctr;
-	endTimeLastVisit        : dynamic array(rNodes)                                     of linctr;
+	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
+	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
 end-declarations 
 
 
 forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
-	if (nn = numVisits) then
-		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
+	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
 											  t(jj,nn) + 
-											  (10+timeLimit + timeLimitLastVisit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));							 
-	else
-		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
-											  t(jj,nn) + 
-											  (10+timeLimit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));	
-	end-if
+											  (timeLimit + timeLimitLastVisit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));							 
 end-do
 
 
 forall(pp in rOperators, ii in pNodes, mm in visits, jj in rNodes, nn in visits) do
-	if (nn = numVisits) then
-		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
+	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
 											 t(jj,nn) + (timeLimit + timeLimitLastVisit + handlingTimeP + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));
-	else
-		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
-											 t(jj,nn) + (timeLimit + handlingTimeP + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));
-	end-if
 end-do
 
 
@@ -587,21 +594,22 @@ forall(pp in rOperators, mm in visits) do
 end-do
 
 forall(ii in rNodes, mm in visits - {numVisits}) do
-	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1);
+	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
+		((1 - (sum(pp in rOperators) (sum(jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp)))) * (timeLimit + timeLimitLastVisit));
 end-do
 
-forall(ii in rNodes) do
-	endTime(ii) := t(ii, numVisits-1) <= timeLimit;
-end-do
-
-
-forall(ii in rNodes) do
-	endTimeFree(ii) := t(ii, numVisits) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, numVisits, destinationNodeROperator(pp),1,pp));
+forall(ii in rNodes, mm in visits) do
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * (sum(pp in rOperators) (sum( jj in pNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp)));
 end-do
 
 
-forall(ii in rNodes) do
-	endTimeLastVisit(ii) := t(ii, numVisits)  + tPlus(ii) - tMinus(ii) = timeLimit;
+forall(ii in rNodes, mm in visits) do
+	endTimeFree(ii, mm) := t(ii, mm) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp),1,pp));
+end-do
+
+
+forall(ii in rNodes, mm in visits) do
+	endTimeLastVisit(ii, mm) := t(ii, mm)  + tPlus(ii, mm) - tMinus(ii, mm) = timeLimit;
 end-do
 
 
@@ -613,15 +621,9 @@ declarations
 end-declarations
 
 forall(pp in aOperators, mm in visits, nn in visits) do
-	if (nn = numVisits) then
-		timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
+	timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
 											t(parkingNodeAOperator(pp), nn) + 
 											(timeLimit+timeLimitLastVisit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
-	else
-		timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
-											t(parkingNodeAOperator(pp), nn) + 
-											(timeLimit+10)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
-	end-if
 end-do
 						
 forall(pp in aOperators, mm in visits, nn in visits) do
@@ -798,11 +800,11 @@ forall(ii in pNodes) do
 end-do
 
 forall(ii in Nodes - aNodes) do
-	writeln('Overtime used in node: ', ii, ' Is: ', getsol(tMinus(ii)))
+	writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
 end-do
 
 forall(ii in Nodes - aNodes) do
-	writeln('Undertime used in node: ', ii, ' Is: ', getsol(tPlus(ii)))
+	writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
 end-do
 
 forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
