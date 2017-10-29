@@ -299,7 +299,7 @@ def main():
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
     maxTime = 5
-    steps = 10
+    steps = 30
     snapshots = []
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
