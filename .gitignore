@@ -4,5 +4,6 @@
 *.DS_Store
 *.mp4
 *.png
+*.swp
 !Python/tex/img/*.png
 Python/tex/*.pdf
