@@ -182,7 +182,7 @@ def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths)
                 if(thisTime == time):
                     fromNode = node["node"]
                     toNode = node["node"]
-                elif(thisTime - travelTime < time): 
+                elif(thisTime - travelTime <= time): 
                     #oeprator is travelling
                     toNode = node["node"]
                     remainingTime = thisTime - time
@@ -203,8 +203,8 @@ def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths)
             prevNode = node
 
         if not didFindRoomForOperator:
-            lastNode = path[-1]
-            nodeId = lastNode["node"]
+            secondLastNode = path[-2]
+            nodeId = secondLastNode["node"]
             operatorSnapshot["id"] = operator
             operatorSnapshot["to"] = nodeId
             operatorSnapshot["from"] = nodeId
@@ -241,7 +241,7 @@ def main():
     maxTime = 5
     steps = 10
     stepLength = float(maxTime) / steps
-    for step in range(0,steps):
+    for step in range(0,steps+1):
         t = step*stepLength
         snapshot = {}
         snapshot["cars_parked"] = [1,0,1,0,0,1]
@@ -250,4 +250,8 @@ def main():
         operators = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshot["operators"] = operators
         snapshots.append(snapshot)
+        print(snapshot)
     return snapshots
+
+
+main()
