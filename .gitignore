@@ -1,7 +1,8 @@
 *.pyc
 *.o
 *.bim
-*DS_Store
+*.DS_Store
 *.mp4
-
+*.png
+!Python/tex/img/*.png
 Python/tex/*.pdf
