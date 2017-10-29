@@ -229,7 +229,6 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
             if time < node["time"]:
                 break
             else:
-                #print(node,isHandling)
                 if isHandling and pathIndex == 1:
                     
                     if isParkingNode:
@@ -240,7 +239,6 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
                     prevNode = path[pathIndex-1]
                     isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
                     if isParkingNode:
-                        print(isTravelling)
                         if(not isTravelling):
                             carsParked[node["node"]] +=1
                         carsParked[prevNode["node"]] -=1
