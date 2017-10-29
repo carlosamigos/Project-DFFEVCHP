@@ -135,7 +135,7 @@ def stringListToIntAndFloatList(array):
     for i in range(len(array)):
         element = array[i]
         if(i == len(array)-1):
-            newList.append(float(element))	
+            newList.append(float(element))  
         else:
             newList.append(int(element))
     return newList
@@ -231,8 +231,12 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
                     prevNode = path[pathIndex-1]  
                     if pathIndex!=1:
                         isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
-                        if isTravelling:
+                        if isTravelling and isParkingNode:
+                            #print(operator,prevNode["node"],node["node"],time,isHandling,isTravelling)
+                            #None
                             carsParked[prevNode["node"]] -=1
+                        if isTravelling and not isParkingNode:
+                            carsInNeed[prevNode["node"]] -=1
                 break
             else:
                 #print(node,isHandling)
@@ -251,6 +255,7 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
                             carsParked[node["node"]] +=1
                         carsParked[prevNode["node"]] -=1
                     else:
+                        
                         carsCharging[node["node"]-numberOfParkingNodes] +=1
                         carsInNeed[prevNode["node"]] -=1
 
@@ -306,6 +311,7 @@ def main():
         t = step*stepLength
         snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshots.append(snapshot)
+        #print(step,t,snapshot,"\n")
     return snapshots
 #main()
 
