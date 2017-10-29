@@ -227,6 +227,12 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
             isHandling = node["handling"]
 
             if time < node["time"]:
+                if isHandling:
+                    prevNode = path[pathIndex-1]  
+                    if pathIndex!=1:
+                        isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
+                        if isTravelling:
+                            carsParked[prevNode["node"]] -=1
                 break
             else:
                 #print(node,isHandling)
@@ -240,7 +246,7 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
                     prevNode = path[pathIndex-1]
                     isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
                     if isParkingNode:
-                        print(isTravelling)
+                        #print(isTravelling)
                         if(not isTravelling):
                             carsParked[node["node"]] +=1
                         carsParked[prevNode["node"]] -=1
@@ -292,15 +298,14 @@ def main():
     inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
-
-    snapshots = []
     maxTime = 5
     steps = 10
+    snapshots = []
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
         t = step*stepLength
         snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshots.append(snapshot)
     return snapshots
-
+#main()
 
