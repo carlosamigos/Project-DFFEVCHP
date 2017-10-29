@@ -239,7 +239,7 @@ def main():
 
     snapshots = []
     maxTime = 5
-    steps = 100
+    steps = 10
     stepLength = float(maxTime) / steps
     for step in range(0,steps):
         t = step*stepLength

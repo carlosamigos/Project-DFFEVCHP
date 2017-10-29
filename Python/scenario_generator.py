@@ -20,8 +20,6 @@ def draw_operators(operator_info):
         handling = current_operator_info["handling"]
         operator_id = current_operator_info["id"]
 
-        if to_node >= n_nodes and to_node < n_nodes + c_nodes:
-            to_node = general_info["c_to_p"][to_node - n_nodes]
 
         if from_node >= n_nodes + c_nodes:
             origin_list.append(current_operator_info)
@@ -31,11 +29,15 @@ def draw_operators(operator_info):
                     obj = "car_black"
                 else:
                     obj = "bike"
+                if to_node >= n_nodes and to_node < n_nodes + c_nodes:
+                    to_node = general_info["c_to_p"][to_node - n_nodes]
                 s += draw_moving_object(from_node, to_node, covered, operator_id, obj)
             else:
+                if to_node >= n_nodes and to_node < n_nodes + c_nodes:
+                    to_node = general_info["c_to_p"][to_node - n_nodes]
                 operator_in_node[to_node].append(current_operator_info)
 
-    for node in range(c_nodes):
+    for node in range(n_nodes):
         if len(operator_in_node[node]) > 0:
             s += fill_node_with_operators(node, operator_in_node[node])
     s += fill_origin_list(origin_list)

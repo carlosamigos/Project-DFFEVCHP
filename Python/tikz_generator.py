@@ -3,7 +3,7 @@ import car_generator
 import scenario_generator
 
 edge = "edge[dotted]"
-start = "\\documentclass[margin=10pt]{standalone}\n" +\
+start = "\\documentclass[png]{standalone}\n" +\
         "\\usepackage{tikz}\n" +\
         "\\usepackage{graphicx}\n" +\
         "\\usetikzlibrary{positioning,calc}\n" +\

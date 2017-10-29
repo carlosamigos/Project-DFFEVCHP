@@ -84,7 +84,7 @@ def fill_origin_list(operator_info):
             text_dist = "0.55cm"
         relative_string = "[below = 1.2cm of sidebar_time_to_header.west, anchor=west]"
         s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ") {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
-        s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
+        #s += "    \\node[above left = -0.2cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
         s += "    \\node[right =" + text_dist + " of operator_" + str(operator_id) + "] (operator_string_" + str(operator_id) +\
                 ") {" + str(time) + " time units to node " + str(to_node) + "};\n"
 
@@ -95,8 +95,8 @@ def fill_origin_list(operator_info):
                 operator = operator_info[i]
                 operator_id = operator["id"]
                 handling = operator["handling"]
-                time = operator_info[0]["remaining_time"]
-                to_node = operator_info[0]["to"]
+                time = operator_info[i]["remaining_time"]
+                to_node = operator_info[i]["to"]
                 if handling == 1:
                     obj = "car_black"
                 else:
@@ -105,7 +105,7 @@ def fill_origin_list(operator_info):
                 relative_string = "[below =1.2cm of operator_" + str(prev_operator) + ".west, anchor=west]"
                 s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ")"+\
                         "{\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
-                s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
+                #s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
                 s += "    \\node at (operator_string_" + str(prev_operator) + " |- operator_" + str(operator_id) + ")"+\
                 "{" + str(time) + " time units to node " + str(to_node) + "};\n"
                 prev_operator = operator_id
@@ -129,9 +129,9 @@ def fill_node_with_operators(node, operators_in_node):
     x = "{:.2f}".format(x_mid_from_node(node, step, columns))
     y = "{:.2f}".format(y_mid_from_node(node, step, columns))
     relative = [("left", "1.2cm"), ("right", "1.2cm"), ("above", "1.2cm"), ("below", "1.2cm")]
+
     if len(operators_in_node) > 0:
         operator_id = operators_in_node[0]["id"]
-        handling = operators_in_node[0]["handling"]
         s += "    \\node at (" + x + "," + y + ") (operator_" + str(operator_id) + ")"+\
                 " {\\includegraphics[height=" + man_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
         s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
