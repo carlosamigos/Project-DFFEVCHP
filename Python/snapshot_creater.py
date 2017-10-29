@@ -299,13 +299,11 @@ def main():
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
         t = step*stepLength
-        print("\n",t)
+        #print("\n",t)
         snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshots.append(snapshot)
-        print("parked: ",snapshot["cars_parked"])
-        print("inNeed: ",snapshot["cars_need"])
-        print("charging: ",snapshot["charging"])
+        #print(snapshot)
     return snapshots
 
 
-main()
+#main()
