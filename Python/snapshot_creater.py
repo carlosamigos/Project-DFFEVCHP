@@ -250,7 +250,6 @@ def main():
         operators = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshot["operators"] = operators
         snapshots.append(snapshot)
-        print(snapshot)
     return snapshots
 
 

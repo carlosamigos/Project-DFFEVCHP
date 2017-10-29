@@ -86,7 +86,7 @@ def fill_origin_list(operator_info):
         s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ") {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
         #s += "    \\node[above left = -0.2cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
         s += "    \\node[right =" + text_dist + " of operator_" + str(operator_id) + "] (operator_string_" + str(operator_id) +\
-                ") {" + str(time) + " time units to node " + str(to_node) + "};\n"
+                ") {" + "{:.2f}".format(time) + " time units to node " + str(to_node) + "};\n"
 
         counter += 1
         prev_operator = operator_id
@@ -107,7 +107,7 @@ def fill_origin_list(operator_info):
                         "{\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
                 #s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
                 s += "    \\node at (operator_string_" + str(prev_operator) + " |- operator_" + str(operator_id) + ")"+\
-                "{" + str(time) + " time units to node " + str(to_node) + "};\n"
+                        "{" + "{:.2f}".format(time) + " time units to node " + str(to_node) + "};\n"
                 prev_operator = operator_id
         break
     return s

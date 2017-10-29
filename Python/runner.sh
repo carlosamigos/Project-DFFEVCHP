@@ -66,7 +66,7 @@ else
 		fi
 
 		rm -f *.mp4
-		ffmpeg -framerate 2 -i tex/snapshot_%d.png -pix_fmt yuv420p output.mp4
+		ffmpeg -framerate 2 -i tex/snapshot_%2d.png -pix_fmt yuv420p output.mp4
 	fi
 
 fi

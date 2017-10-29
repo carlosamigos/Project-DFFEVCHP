@@ -49,18 +49,10 @@ def draw():
 
 
 def get_file_ending(i, n):
-    zeros = 0
-    if i == 0:
-        curr = i+1
-    else:
-        curr = i
-    while True:
-        curr *= 10
-        if curr < n:
-            zeros += 1
-        else:
-            break
-    
+    n_string = str(n)
+    i_string = str(i)
+
+    zeros = len(n_string) - len(i_string)
     return zeros*"0" + str(i)
     
 draw()
