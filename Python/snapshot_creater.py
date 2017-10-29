@@ -1,4 +1,5 @@
 #snapshot creator from mosel outputs
+import copy
 
 def readPaths(filename):
     fil = open(filename,"r")
@@ -157,11 +158,7 @@ def addNodesZeroIndexed(inputProblem):
     inputProblem["cNodes"] = cNodes
     return inputProblem
 
-def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths):
-    snapshot = {}
-    snapshot["cars_parked"] = inputProblem["initialRegularInP"]
-    snapshot["cars_need"] = inputProblem["initialInNeedP"]
-    snapshot["charging"] = inputProblem["finishedDuringC"]
+def findOperatorStates(time,inputProblem,realOperatorsPaths):
     operators = []
     for operator in range(inputProblem["numROperators"]):
         path = realOperatorsPaths[operator]
@@ -214,6 +211,66 @@ def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths)
         operators.append(operatorSnapshot)
     return operators
 
+
+def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
+    carsParked = copy.deepcopy(inputProblem["initialRegularInP"])
+    carsInNeed = copy.deepcopy(inputProblem["initialInNeedP"])
+    carsCharging = copy.deepcopy(inputProblem["finishedDuringC"])
+    numberOfParkingNodes = len(carsParked)
+    parkingNodes = inputProblem["pNodes"]
+    chargingNodes = inputProblem["cNodes"]
+    for operator in range(inputProblem["numROperators"]):
+        path = realOperatorsPaths[operator]
+        for pathIndex in range(1,len(path)-1):
+            node = path[pathIndex]
+            isParkingNode = node["node"] in parkingNodes
+            isHandling = node["handling"]
+
+            if time < node["time"]:
+                break
+            else:
+                #print(node,isHandling)
+                if isHandling and pathIndex == 1:
+                    
+                    if isParkingNode:
+                        carsParked[node["node"]] +=1
+                    else:
+                        carsCharging[node["node"]-numberOfParkingNodes] +=1
+                elif isHandling:
+                    prevNode = path[pathIndex-1]
+                    isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
+                    if isParkingNode:
+                        print(isTravelling)
+                        if(not isTravelling):
+                            carsParked[node["node"]] +=1
+                        carsParked[prevNode["node"]] -=1
+                    else:
+                        carsCharging[node["node"]-numberOfParkingNodes] +=1
+                        carsInNeed[prevNode["node"]] -=1
+
+    for aOperator in range(inputProblem["numAOperators"]):
+        path = artificialPaths[aOperator]
+        chargingNode = path[0]
+        parkingNode = path[1]
+        if time >= parkingNode["time"]:
+            carsCharging[chargingNode["node"]-numberOfParkingNodes] -=1
+            carsParked[parkingNode["node"]] +=1
+    return carsParked, carsInNeed, carsCharging
+
+
+def isOperatorTravellingFromNodeToNode(fromNode,toNode,time, travelTime):
+    return (toNode["time"] - travelTime < time) and time > fromNode["time"] and time < toNode["time"]
+
+def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths):
+    snapshot = {}
+    carsParked,carsInNeed, carsCharging = addStates(time,inputProblem,realOperatorsPaths,artificialPaths)
+    snapshot["cars_parked"] = carsParked
+    snapshot["cars_need"] = carsInNeed
+    snapshot["charging"] = carsCharging
+    operators = findOperatorStates(time,inputProblem,realOperatorsPaths)
+    snapshot["operators"] = operators
+    return snapshot
+
 def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
     realNodes = inputProblem["nodes"]
     fromIndex = From["node"]
@@ -228,7 +285,6 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
         travelTime = inputProblem["travelTimeToOriginR"][operator]
     return travelTime
 
-
 def main():
     pathFileName = "../Mosel/outputServiceOperatorsPath.txt"
     artificialFilename = "../Mosel/outputArtificialServiceOperators.txt"
@@ -239,18 +295,16 @@ def main():
 
     snapshots = []
     maxTime = 5
-    steps = 2
+    steps = 10
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
         t = step*stepLength
-        snapshot = {}
-        snapshot["cars_parked"] = [1,0,1,0,0,1]
-        snapshot["cars_need"] = [0,1,0,0,1,0]
-        snapshot["charging"] = [1,0]
-        operators = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
-        snapshot["operators"] = operators
+        print("\n",t)
+        snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
         snapshots.append(snapshot)
-        print(snapshot)
+        print("parked: ",snapshot["cars_parked"])
+        print("inNeed: ",snapshot["cars_need"])
+        print("charging: ",snapshot["charging"])
     return snapshots
 
 
