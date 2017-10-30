@@ -136,7 +136,7 @@ def stringListToIntAndFloatList(array):
     for i in range(len(array)):
         element = array[i]
         if(i == len(array)-1):
-            newList.append(float(element))  
+            newList.append(float(element))	
         else:
             newList.append(int(element))
     return newList
@@ -233,8 +233,6 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
                     if pathIndex!=1:
                         isTravelling = isOperatorTravellingFromNodeToNode(prevNode,node,time,inputProblem["travelTimeVehicle"][prevNode["node"]][node["node"]])
                         if isTravelling and isParkingNode:
-                            #print(operator,prevNode["node"],node["node"],time,isHandling,isTravelling)
-                            #None
                             carsParked[prevNode["node"]] -=1
                         if isTravelling and not isParkingNode:
                             carsInNeed[prevNode["node"]] -=1
