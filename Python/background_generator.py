@@ -21,7 +21,7 @@ def draw_parking():
         x = x_left_from_node(node, step, columns) + sign_dist
         y = y_top_from_node(node, step, columns) - sign_dist
         s += "    \\node at (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y) + ") (p_sign_" + str(node) + ") {\\includegraphics[width=" +\
-                "{:.2f}".format(sign_width) + "cm]{\"tex/img/psign\".pdf}};"
+                "{:.2f}".format(sign_width) + "cm]{\"tex/img/psign\".pdf}};\n"
 
     return s
 
@@ -32,7 +32,7 @@ def draw_charging():
     for node in range(general_info["n_c_nodes"]):
         p_node = general_info["c_to_p"][node]
         s += "    \\node[right = " + "{:.2f}".format(sign_dist) + "pt of p_sign_" +  str(p_node) + "] {\\includegraphics[width=" +\
-                "{:.2f}".format(sign_width) + "cm]{\"tex/img/csign\".pdf}};"
+                "{:.2f}".format(sign_width) + "cm]{\"tex/img/csign\".pdf}};\n"
 
     return s
 
@@ -50,26 +50,24 @@ def draw_sidebar():
 def draw_legend():
     s = ""
 
-    legend_width = width/3.6
-    legend_height = legend_width/1.8
+    legend_width = width/2
+    legend_height = width/5
 
-    left_x = width - legend_width
-    right_x = width
-    top_y = -.5
-    bottom_y = - (legend_height - .5)
+    left_x = "{:.2f}".format(0)
+    right_x = "{:.2f}".format(legend_width)
+    top_y = "{:.2f}".format(-0.5)
+    bottom_y = "{:.2f}".format(- (legend_height - .5))
     
-    right_x_string = "{:.2f}".format(right_x)
-    left_x_string = "{:.2f}".format(left_x)
-    top_y_string = "{:.2f}".format(top_y)
-    bottom_y_string = "{:.2f}".format(bottom_y)
+    s += "    \\node at (" + left_x + "," + top_y + ") (legend_left_top) {};\n"
+    s += "    \\node at (" + left_x + "," + bottom_y + ") (legend_left_bottom) {};\n"
+    s += "    \\node at (" + right_x + "," + bottom_y + ") (legend_right_bottom) {};\n"
+    s += "    \\node at (" + right_x + "," + top_y + ") (legend_right_top) {};\n"
+    s += "    \\path[" + path_options + "] (legend_left_top.center) edge (legend_left_bottom.center);\n"
+    s += "    \\path[" + path_options + "] (legend_left_bottom.center) edge (legend_right_bottom.center);\n"
+    s += "    \\path[" + path_options + "] (legend_right_bottom.center) edge (legend_right_top.center);\n"
+    s += "    \\path[" + path_options + "] (legend_right_top.center) edge (legend_left_top.center);\n"
 
-    s = "   \\path[" + path_options + "] (" + left_x_string + "," + top_y_string + ") edge (" +\
-            left_x_string + "," + bottom_y_string + ")\n       (" + left_x_string + "," + bottom_y_string + ") edge ("+\
-            right_x_string + "," + bottom_y_string +")\n       (" + right_x_string + "," + bottom_y_string + ") edge ("+\
-            right_x_string + "," + top_y_string + ")\n       (" + right_x_string + "," + top_y_string + ") edge ("+\
-            left_x_string + "," + top_y_string + ");\n"
-
-    s += draw_object("car_green", "legend_green", [left_x + 1.2, top_y - .8])
+    s += draw_object("car_green", "legend_green", 0, ["below right", "legend_left_top"])
     s += draw_object("car_orange", "legend_orange", 0, ["below", "legend_green"])
     s += draw_object("car_red", "legend_red", 0, ["below", "legend_orange"])
 
