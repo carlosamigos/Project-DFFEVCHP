@@ -37,8 +37,8 @@ handlingTimeP : 0.1
 handlingTimeC : 0.15
 travelTimeToOriginR : [0.0 0.0 1.0]
 travelTimeToParkingA : [2.0 3.0]
-timeLimit : 15.0
-timeLimitLastVisit : 4.0
+timeLimit : 4.0
+timeLimitLastVisit : 2.0
 initialHandling : [0 0 1]
 initialRegularInP : [3 0 1 0]
 initialInNeedP : [4 1 1 0]

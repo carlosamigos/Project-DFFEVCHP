@@ -6,16 +6,18 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example1.txt';
+	DataFile = 'examples/example2.txt';
 end-parameters
 
 declarations
 	printParams  : boolean;
 	printResults : boolean;
+	writeToFile  : boolean;
 end-declarations
 
 printParams  := true;
 printResults := true;
+writeToFile  := true;
 
 (! ### Start of initialization of set sizes ### !)
 declarations
@@ -608,19 +610,20 @@ end-do
 
 forall(ii in rNodes, mm in visits) do
 	chargingCarVisit(ii, mm) := sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm, pp) + 
-	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm, parkingNodeAOperator(pp), nn, pp) = r(ii, mm);
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm, parkingNodeAOperator(pp), nn, pp) + 
+	sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) +
+	sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp), 1, pp) = r(ii, mm);
 end-do
 
 forall(ii in rNodes, mm in visits - {numVisits}) do
 	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
-		((1 - sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm+1, jj, nn, pp) - r(ii, mm+1) - sum(pp in rOperators) x(ii, mm+1, destinationNodeROperator(pp), 1, pp)) *
+		((1 - r(ii, mm+1)) *
 		(timeLimit + timeLimitLastVisit));
 end-do
 
 
 forall(ii in rNodes, mm in visits) do
-	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * (sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) + r(ii, mm) +
-	sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp), 1, pp));
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
 end-do
 
 
@@ -842,41 +845,97 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 	end-do
 	
 end-do
-(!
-forall(mm in visits, jj in rNodes + aNodes, nn in visits, pp in rOperators) do
-	if getsol(x(4, mm, jj, nn, pp)) = 1 then 
-		writeln('X from variables: in visit: ', mm, ' to node: ', jj, ' to visit: ', nn, ' by person: ', pp)
-	end-if
-	if getsol(x(jj, mm, 4, nn, pp)) = 1 then
-		writeln('X to variables: in visit: ', mm, ' from node: ', jj, ' to visit: ', nn, ' by person: ', pp)
-	end-if
-end-do
-!)
-(!
-forall(ii in Nodes) do
-	writeln("Out from node: ", " To node: ", ii, " Is: ", getsol(x
-!)
-!fclose(F_OUTPUT);!)
 
-(!
-	if (nn >= numVisits) then
-		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
-											  t(jj,nn) + (timeLimit+timeLimitLastVisit)*(1 - x(ii,mm,jj,nn,pp));
-	else	
-		travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm) + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj) <= 
-											  t(jj,nn) + (timeLimit*(1 - x(ii,mm,jj,nn,pp)));
-	end-if	
-!)	
 
-(!
-	if (nn = numVisits) then
-		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
-											 t(jj,nn) + (timeLimit+timeLimitLastVisit)*(1 - x(ii,mm,jj,nn,pp));
-	else
-		travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
-											 t(jj,nn) + (timeLimit)*(1 - x(ii,mm,jj,nn,pp));
-	end-if
-!)
+if writeToFile then
+	fopen("outputServiceOperatorsPath.txt", F_OUTPUT);
+	forall(pp in rOperators) do
+		currNode := originNodeROperator(pp);
+		currVisit := 1;
+		foundX := true;
+		forall(ii in Nodes) do
+			lastVisit(ii) := 0;
+		end-do
+		write(pp, ': ');
+		write('(', currNode, ',1,0,0),');
+		while(foundX) do
+			lowest := numVisits+1;
+			foundX := false;
+			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)}, nn in visits) do
+				if getsol(x(currNode, currVisit, jj, nn, pp)) >= 0.5 then
+					if (nn > lastVisit(jj) and nn < lowest) then
+						foundX := true;
+						lowest := nn;
+						currLowestNode := jj;
+					end-if
+				end-if
+			end-do
+			
+			if foundX then			
+				isCurrC := false;
+				isNextC := false;
+				forall(nn in cNodes) do
+					if nn = currNode then
+						isCurrC := true;
+					end-if
+					if nn = currLowestNode then
+						isNextC := true;
+					end-if
+				end-do
+				
+				
+				
+		
+				write('(', currLowestNode, ',', lowest,',');	
+				if isCurrC then
+					write('0,');
+				else
+					write(getsol(h(currNode, currVisit, currLowestNode, lowest, pp)),',');	
+				end-if
+
+			
+				
+				if(currLowestNode <> destinationNodeROperator(pp)) then
+					write(getsol(t(currLowestNode, lowest)),"),");
+					else
+						write(getsol(t(currNode, lastVisit(currNode))),")")	;
+						
+				end-if
+				if currLowestNode = destinationNodeROperator(pp) then
+					foundX := false;
+				else
+					lastVisit(currLowestNode) := lowest;
+					currNode := currLowestNode;
+					currVisit := lowest;
+				end-if
+			end-if
+			
+		end-do
+		writeln('');
+	end-do
+	fclose(F_OUTPUT);
+	
+	
+	!todo fake service operators
+	fopen("outputArtificialServiceOperators.txt", F_OUTPUT);
+	
+	forall(pp in aOperators) do
+		write(pp, ': ');
+		forall(mm in visits, nn in visits) do
+			if getsol(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp)) >=0.5 then
+				write("(",chargingNodeAOperator(pp),",",mm,",",0,",",getsol(t(chargingNodeAOperator(pp),mm)),"),(",parkingNodeAOperator(pp),",",nn,",",1,",",getsol(t(parkingNodeAOperator(pp),nn)),")");
+			end-if
+		end-do
+		writeln('');
+	end-do
+	
+	
+	
+	
+	fclose(F_OUTPUT)
+	
+end-if
+
 end-model
 
 
