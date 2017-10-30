@@ -10,8 +10,8 @@ car_height = step / 14
 man_height = step / 10
 car_dist_y = car_height / 6
 car_dist_x = 3*car_dist_y
-car_height_string = str(car_height) + "cm"
-car_dist_y_string = str(car_dist_y) + "cm"
+car_height_string = "{:.2f}".format(car_height) + "cm"
+car_dist_y_string = "{:.2f}".format(car_dist_y) + "cm"
 man_height_string = "{:.2f}".format(man_height) + "cm"
 
 c_to_p = general_info["c_to_p"]
@@ -76,6 +76,8 @@ def fill_origin_list(operator_info):
         operator_id = operator_info[counter]["id"]
         handling = operator_info[counter]["handling"]
         to_node = operator_info[counter]["to"]
+        if to_node >= n_nodes:
+            to_node = c_to_p[to_node - n_nodes]
         if handling == 1:
             obj = "car_black"
             text_dist = "0.2cm"
@@ -97,6 +99,8 @@ def fill_origin_list(operator_info):
                 handling = operator["handling"]
                 time = operator_info[i]["remaining_time"]
                 to_node = operator_info[i]["to"]
+                if to_node >= n_nodes:
+                    to_node = c_to_p[to_node - n_nodes]
                 if handling == 1:
                     obj = "car_black"
                 else:
@@ -186,4 +190,13 @@ def draw_moving_object(from_node, to_node, covered, operator, obj):
 
         
 
+def draw_object_below(obj, x, identifier):
+    if obj == "bike" or "car" in obj:
+        height = car_height_string
+    else:
+        height = man_height_string
 
+    relative_string = "[below = 1.2cm of " + x + ".west, anchor=west]"
+    s = "    \\node" + relative_string + " (" + str(identifier) + ")"+\
+            "{\\includegraphics[height=" + height + "]{\"tex/img/" + obj + "\".png}};\n"
+    return s

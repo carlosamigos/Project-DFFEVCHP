@@ -2,6 +2,7 @@
 
 if [ "$1" == "png" ]
 then
+	rm -f tex/*png
 	echo "Starting png conversion..."
 	for file in $(ls -d tex/snapshot_*.pdf)
 	do
@@ -12,6 +13,7 @@ else
 	rm -f tex/*aux
 	rm -f tex/*log
 	rm -f tex/*tex
+	rm -f tex/*pdf
 
 	echo "Starting python..."
 	python3 tikz_generator.py
@@ -20,7 +22,7 @@ else
 
 	for file in $(ls -d tex/snapshot_*.tex)
 	do
-		latex -output-directory=tex -output-format="pdf" $file > /dev/null
+		#latex -output-directory=tex -output-format="pdf" $file > /dev/null
 		echo "Succesfully compiled ${file}"
 	done
 
@@ -66,7 +68,7 @@ else
 		fi
 
 		rm -f *.mp4
-		ffmpeg -framerate 2 -i tex/snapshot_%2d.png -pix_fmt yuv420p output.mp4
+		ffmpeg -framerate 5 -i tex/snapshot_%3d.png -vb 20M -pix_fmt yuv420p output.mp4
 	fi
 
 fi
