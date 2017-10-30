@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example2.txt';
+	DataFile = 'examples/example1.txt';
 end-parameters
 
 declarations
@@ -577,7 +577,6 @@ end-do
 declarations
 	travelTimeCharging      : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
 	travelTimeParking       : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
-	travelTimeToDestination : dynamic array(rOperators, rNodes, visits)                 of linctr;
 	startTime               : dynamic array(rOperators, visits)                         of linctr;
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
@@ -651,13 +650,13 @@ end-do
 
 						
 forall(pp in aOperators, mm in visits, nn in visits) do
-	timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) >= 
+	startTimeArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) >= 
 											travelTimeToParkingA(pp) * 
 											hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp);
 end-do
 
 ! ### End of declaration of time constraints ### !
-
+setparam("XPRS_MAXTIME", -200);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
