@@ -5,12 +5,14 @@ package tio4500;
 public class Main {
 
     public static void main(String[] args) {
-	    System.out.println("Hello, world!");
-	    RollingHorizon rolling = new RollingHorizon();
-	    rolling.run();
+	    System.out.println("Hello, rolling horizon!");
 	    
-	    // Generates general_info.txt in the Mosel folder based on information in Constants.java
-	    InputGenerator input = new InputGenerator();
+	    DynamicProblem dynamicProblem = new DynamicProblem(3);
+	    dynamicProblem.solve();
+    }
+    
+    public static void generateGeneralInfo() {
+    	InputGenerator input = new InputGenerator();
 	    input.generateGeneralInfo();
     }
 }

@@ -4,6 +4,7 @@ public class Constants {
 
 	// Folders
 	public final static String INPUT_FOLDER = "../Mosel/examples/";
+	public final static String PROBLEM_FOLDER = "../Mosel/problems/";
 	public final static String MOSEL_FOLDER= "../Mosel/";
 	
 	// Files
@@ -29,4 +30,7 @@ public class Constants {
 	public final static String C_TO_P = "[3 5]";
 	public final static int VERTICAL_NODES = 3;
 	public final static int HORIZONTAL_NODES = 2;
+	
+	// Variables for Mosel
+	public final static int MAX_DURATION = 200; // In seconds
 }
