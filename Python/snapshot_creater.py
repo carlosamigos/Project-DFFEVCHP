@@ -1,4 +1,5 @@
 #snapshot creator from mosel outputs
+from output_reader import general_info
 import copy
 
 def readPaths(filename):
@@ -294,15 +295,14 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
         travelTime = inputProblem["travelTimeToOriginR"][operator]
     return travelTime
 
-def main():
+def generate_snapshots(steps):
     pathFileName = "../Mosel/outputServiceOperatorsPath.txt"
     artificialFilename = "../Mosel/outputArtificialServiceOperators.txt"
     exampleFileName = "../Mosel/examples/example1.txt"
     inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
-    maxTime = 5
-    steps = 30
+    maxTime = general_info["max_time"]
     snapshots = []
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
@@ -311,5 +311,4 @@ def main():
         snapshots.append(snapshot)
         #print(step,t,snapshot,"\n")
     return snapshots
-#main()
 
