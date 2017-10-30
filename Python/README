@@ -1,17 +1,20 @@
-Running: The runner.sh script runs the python file tikz_generator.py. Normal running is achieved by writing:
-         ./runner.sh
+GENERATE TIKZ:
+make
 
-Video: If you want to generate an output video call with the argument "video":
-       ./runner.sh video
+GENERATE PNG:
+./runner.sh png
 
-Git: If you want to push to git after having run the script call with the argument "git":
-     ./runner.sh git
+GENERATE PNG & VIDEO:
+./runner.sh png video
 
-Video and Git: Arguments can be combined in any permutation, which means that the following are equivalent:
-               ./runner.sh git video
-               ./runner.sh video git
+GENERATE VIDEO:
+./runner.sh video
 
-   KNOWN ISSUES:
+ADDITIONAL INFORMATION:
+The tikz files generated is based of the latest output files combined with the input file defined in tikz_generator.py. (line 21)
+The number of tikz files generated is defined in tikz_generator.py (line 21)
+
+KNOWN ISSUES:
 1. OSX: To run the script runner.sh with the video option you must install ImageMagick. Brew:
    brew install imagemagick
 

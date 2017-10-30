@@ -3,10 +3,10 @@ import snapshot_creater
 from car_generator import fill_parking, fill_charging, draw_moving_object, fill_origin_list, fill_node_with_operators
 from background_generator import draw_nodes
 
-n_nodes = general_info["n_nodes"]
-c_nodes = general_info["n_c_nodes"]
-n_operators = general_info["n_operators"]
-max_time = general_info["max_time"]
+n_nodes = general_info["numPNodes"]
+c_nodes = general_info["numCNodes"]
+n_operators = general_info["numOperators"]
+max_time = general_info["timeLimit"]
 
 def draw_operators(operator_info):
     s = ""
@@ -30,11 +30,11 @@ def draw_operators(operator_info):
                 else:
                     obj = "bike"
                 if to_node >= n_nodes and to_node < n_nodes + c_nodes:
-                    to_node = general_info["c_to_p"][to_node - n_nodes]
+                    to_node = general_info["cToP"][to_node - n_nodes]
                 s += draw_moving_object(from_node, to_node, covered, operator_id, obj)
             else:
                 if to_node >= n_nodes and to_node < n_nodes + c_nodes:
-                    to_node = general_info["c_to_p"][to_node - n_nodes]
+                    to_node = general_info["cToP"][to_node - n_nodes]
                 operator_in_node[to_node].append(current_operator_info)
 
     for node in range(n_nodes):
@@ -44,7 +44,7 @@ def draw_operators(operator_info):
     return s
 
 def draw_snapshot(snapshot, i, time_step):
-    s = draw_nodes()
+    s = draw_nodes(snapshot["ideal_state"], snapshot["capacity"])
     time_elapsed = "{:.1f}".format(i*time_step)
     s += "    \\node[right = 0cm of sidebar_header] {\\Huge " + time_elapsed + "/" + "{:.1f}".format(max_time) + "};\n"
     for parking_node in range(n_nodes):

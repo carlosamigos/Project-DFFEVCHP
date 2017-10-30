@@ -265,11 +265,30 @@ def addStates(time,inputProblem,realOperatorsPaths,artificialPaths):
             carsParked[parkingNode["node"]] +=1
     return carsParked, carsInNeed, carsCharging
 
+def readIdealState(exampleFileName):
+    with open(exampleFileName, "r") as f:
+        for line in f:
+            if "idealStateP" in line:
+                return  line.strip("idealStateP : [").replace("]", "").strip().split()
+
+def readCapacity(exampleFileName):
+    with open(exampleFileName, "r") as f:
+        for line in f:
+            if "chargingSlotsAvailable" in line:
+                available = list(map(int, line.strip("chargingSlotsAvailable : [").replace("]","").strip().split()))
+            elif "finishedDuringC" in line:
+                finished = list(map(int, line.strip("finishedDuringC : [").replace("]","").strip().split()))
+    
+    capacity = []
+    for i in range(len(available)):
+        capacity.append(available[i] + finished[i])
+
+    return capacity
 
 def isOperatorTravellingFromNodeToNode(fromNode,toNode,time, travelTime):
     return (toNode["time"] - travelTime < time) and time > fromNode["time"] and time < toNode["time"]
 
-def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths):
+def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths,exampleFileName):
     snapshot = {}
     carsParked,carsInNeed, carsCharging = addStates(time,inputProblem,realOperatorsPaths,artificialPaths)
     snapshot["cars_parked"] = carsParked
@@ -277,6 +296,8 @@ def createSnapshotFromTime(time,inputProblem,realOperatorsPaths,artificialPaths)
     snapshot["charging"] = carsCharging
     operators = findOperatorStates(time,inputProblem,realOperatorsPaths)
     snapshot["operators"] = operators
+    snapshot["ideal_state"] = readIdealState(exampleFileName)
+    snapshot["capacity"] = readCapacity(exampleFileName)
     return snapshot
 
 def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
@@ -293,20 +314,18 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
         travelTime = inputProblem["travelTimeToOriginR"][operator]
     return travelTime
 
-def generate_snapshots(steps):
+def generate_snapshots(steps,exampleFileName):
     pathFileName = "../Mosel/outputServiceOperatorsPath.txt"
     artificialFilename = "../Mosel/outputArtificialServiceOperators.txt"
-    exampleFileName = "../Mosel/examples/example1.txt"
     inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
-    maxTime = general_info["max_time"]
+    maxTime = int(general_info["timeLimit"])
     snapshots = []
     stepLength = float(maxTime) / steps
     for step in range(0,steps+1):
         t = step*stepLength
-        snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths)
+        snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths,exampleFileName)
         snapshots.append(snapshot)
-        #print(step,t,snapshot,"\n")
     return snapshots
 

@@ -2,8 +2,8 @@ from output_reader import general_info
 from helpers import *
 
 step = 10
-columns = general_info["w_nodes"]
-rows = general_info["h_nodes"]
+columns = general_info["wNodes"]
+rows = general_info["hNodes"]
 width = columns*step
 height = rows*step
 car_height = step / 14
@@ -14,9 +14,9 @@ car_height_string = "{:.2f}".format(car_height) + "cm"
 car_dist_y_string = "{:.2f}".format(car_dist_y) + "cm"
 man_height_string = "{:.2f}".format(man_height) + "cm"
 
-c_to_p = general_info["c_to_p"]
-n_nodes = general_info["n_nodes"]
-c_nodes = general_info["n_c_nodes"]
+c_to_p = general_info["cToP"]
+n_nodes = general_info["numNodes"]
+c_nodes = general_info["numCNodes"]
 
 def filler(id_string, color, number):
     s = ""

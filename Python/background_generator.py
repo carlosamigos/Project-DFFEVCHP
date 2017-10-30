@@ -3,10 +3,8 @@ from car_generator import draw_object, draw_object_below, car_height_string
 from helpers import x_left_from_node, y_top_from_node, row_from_node, x_right_from_node
 
 step = 10
-columns = general_info["w_nodes"]
-rows = general_info["h_nodes"]
-ideal_state = general_info["ideal_state"]
-capacity = general_info["capacity"]
+columns = general_info["wNodes"]
+rows = general_info["hNodes"]
 width = columns*step
 height = rows*step
 
@@ -14,12 +12,12 @@ sign_width = "{:.2f}".format(step / 8)
 sign_dist = step / 10
 path_options = "ultra thin"
 
-def draw_parking():
+def draw_parking(ideal_state):
     width_string = "{:.2f}".format(width)
     height_string = "{:.2f}".format(height)
     s = "   \\draw[step=" + str(step) + ", thick] (0,0) grid (" + width_string + "," + height_string + ");\n"
 
-    for node in range(general_info["n_nodes"]):
+    for node in range(general_info["numPNodes"]):
         x = x_left_from_node(node, step, columns) + sign_dist
         y = y_top_from_node(node, step, columns) - sign_dist
         s += "    \\node at (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y) + ") (p_sign_" + str(node) + ") {\\includegraphics[width=" +\
@@ -35,11 +33,11 @@ def draw_parking():
     return s
 
 
-def draw_charging():
+def draw_charging(capacity):
     s = ""
 
-    for node in range(general_info["n_c_nodes"]):
-        p_node = general_info["c_to_p"][node]
+    for node in range(general_info["numCNodes"]):
+        p_node = general_info["cToP"][node]
         s += "    \\node[right = " + "{:.2f}".format(sign_dist) + "pt of p_sign_" +  str(p_node) + "] {\\includegraphics[width=" +\
                 sign_width + "cm]{\"tex/img/csign\".pdf}};\n"
         s += "    \\node[below = 1mm of ideal_png_" + str(p_node) + "] (capacity_png_" + str(p_node) + ") {\\includegraphics[height=" +\
@@ -108,10 +106,10 @@ def draw_legend():
 
 
 
-def draw_nodes():
+def draw_nodes(ideal_state, capacity):
     s = ""
-    s += draw_parking()
-    s += draw_charging()
+    s += draw_parking(ideal_state)
+    s += draw_charging(capacity)
     s += draw_legend()
     s += draw_sidebar()
     return s
