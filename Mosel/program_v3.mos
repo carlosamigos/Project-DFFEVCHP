@@ -158,6 +158,7 @@ initializations from DataFile
 	costOfPostponedCharging;
 	costOfExtraTime;
 	costOfTravel;
+	costOfTimeUse;
 	travelTimeVehicle;
 	travelTimeBike;
 	handlingTimeP;
@@ -639,10 +640,11 @@ forall(ii in rNodes, mm in visits) do
 end-do
 
 ! Maxtime punishment 
-
+(!
 forall(ii in rNodes, mm in visits) do
 	maxTime(ii,mm) := tMax(ii) >= t(ii, mm);
 end-do
+!)
 
 ! Time constraints for artificial operators
 declarations
