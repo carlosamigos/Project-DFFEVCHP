@@ -1,7 +1,13 @@
 *.pyc
 *.o
 *.bim
-*DS_Store
+*.DS_Store
 *.mp4
-*.pdf
-
+*.png
+*.swp
+*.class
+*.classpath
+*.project
+Java/.gitignore
+!Python/tex/img/*.png
+Python/tex/*.pdf

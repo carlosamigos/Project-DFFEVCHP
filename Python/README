@@ -1,0 +1,24 @@
+GENERATE TIKZ:
+make
+
+GENERATE PNG:
+./runner.sh png
+
+GENERATE PNG & VIDEO:
+./runner.sh png video
+
+GENERATE VIDEO:
+./runner.sh video
+
+ADDITIONAL INFORMATION:
+The tikz files generated is based of the latest output files combined with the input file defined in tikz_generator.py. (line 21)
+The number of tikz files generated is defined in tikz_generator.py (line 21)
+
+KNOWN ISSUES:
+1. OSX: To run the script runner.sh with the video option you must install ImageMagick. Brew:
+   brew install imagemagick
+
+2. There might be permission issues with the runner.sh file as well, fix this by typing:
+   chmod -x runner.sh
+
+3. Make sure there exists a folder named tex within this folder.
