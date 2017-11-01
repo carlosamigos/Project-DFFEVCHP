@@ -21,11 +21,8 @@ writeToFile  := true;
 
 (! ### Start of initialization of set sizes ### !)
 
-(! This implementation includes, beyond v1:
-- MaxTime implementation - e.g. Tracking max time for each person 
-- Sequence control
-- Demand implementation 
-- More than one objective function 
+(! This implementation includes, beyond v3:
+- Variable visit implementation
 !)
 
 declarations
@@ -261,13 +258,13 @@ end-declarations
 forall(pp in rOperators) do
 	forall (ii in Nodes - aNodes + {originNodeROperator(pp)}) do 
 		if ii = originNodeROperator(pp) then
-			forall(nn in visits) do
+			forall(nn in visits | nn <= visitList(startNodeROperator(pp))) do
 				create(x(ii, 1, startNodeROperator(pp), nn, pp));
 				x(ii, 1, startNodeROperator(pp), nn, pp) is_binary;  
 			end-do
 		else	
 			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)} | jj <> ii) do
-				forall(mm in visits, nn in visits) do
+				forall(mm in visits, nn in visits | mm <= visitList(ii) and nn <= visitList(jj)) do
 					create(x(ii, mm, jj, nn, pp));
 					x(ii, mm, jj, nn, pp) is_binary;
 				end-do
@@ -280,13 +277,13 @@ end-do
 forall(pp in rOperators) do
 	forall (ii in Nodes - aNodes + {originNodeROperator(pp)} - cNodes) do
 		if ii = originNodeROperator(pp) then
-			forall(nn in visits) do
+			forall(nn in visits | nn <= visitList(startNodeROperator(pp))) do
 				create(h(ii, 1, startNodeROperator(pp), nn, pp));
 				h(ii, 1, startNodeROperator(pp), nn, pp) is_binary;
 			end-do
 		else	
 			forall(jj in Nodes - aNodes | jj <> ii) do
-				forall(mm in visits, nn in visits) do
+				forall(mm in visits, nn in visits | mm <= visitList(ii) and nn <= visitList(jj)) do
 					create(h(ii, mm, jj, nn, pp));
 					h(ii, mm, jj, nn, pp) is_binary;
 				end-do
@@ -296,26 +293,26 @@ forall(pp in rOperators) do
 end-do
 
 !Create hA
-forall(pp in aOperators, mm in visits, nn in visits) do
+forall(pp in aOperators, mm in visits, nn in visits | mm <= visitList(chargingNodeAOperator(pp)) and nn <= visitList(parkingNodeAOperator(pp))) do
 	create(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
 	hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) is_binary;
 end-do
 
 !Create c
-forall(jj in cNodes, mm in visits, pp in rOperators) do
+forall(jj in cNodes, mm in visits, pp in rOperators | mm <= visitList(jj)) do
 	create(c(jj, mm, pp));
 	c(jj, mm, pp) is_binary;
 end-do
 
 !Create q
-forall(jj in pNodes, mm in visits, pp in rOperators) do 
+forall(jj in pNodes, mm in visits, pp in rOperators | mm <= visitList(jj)) do 
 	create(q(jj, mm, pp));
 	q(jj, mm, pp) is_binary;
 end-do
 
 !Create t, part 1
 forall(ii in Nodes - aNodes) do
-	forall(mm in visits) do
+	forall(mm in visits | mm <= visitList(ii)) do
 		create(t(ii,mm));
 		t(ii,mm) is_semcont 0; 
 		create(tPlus(ii, mm));
@@ -335,20 +332,20 @@ forall(pp in rOperators) do
 end-do
 
 !Create r
-forall(ii in rNodes, mm in visits) do 
+forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do 
 	create(r(ii, mm));
 	r(ii, mm) is_binary;
 end-do
 
 
 !Create s
-forall(ii in rNodes, mm in visits) do
+forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
 	create(s(ii, mm));
 	s(ii, mm) is_semint 0;
 end-do
 
 !Create sC
-forall(ii in pNodes, mm in visits) do
+forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	create(sC(ii, mm));
 	sC(ii, mm) is_semint 0;
 end-do
@@ -375,7 +372,7 @@ end-do
 
 ! Create u - sequence variabel 
 forall(pp in rOperators) do
-	forall(ii in rNodes, mm in visits) do
+	forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
 		create(u(ii, mm, pp));
 		u(ii, mm, pp) is_semint 0; 
 	end-do
@@ -451,6 +448,8 @@ forall(ii in cNodes, mm in visits - {numVisits}) do
 	(sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp))) +
 	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm+1, parkingNodeAOperator(pp), nn, pp) 
 end-do
+
+
 
 
 ! ### End of declaration of routing constraints ### !
@@ -995,6 +994,7 @@ if writeToFile then
 end-if
 
 end-model
+
 
 
 

@@ -21,11 +21,8 @@ writeToFile  := true;
 
 (! ### Start of initialization of set sizes ### !)
 
-(! This implementation includes, beyond v1:
-- MaxTime implementation - e.g. Tracking max time for each person 
-- Sequence control
-- Demand implementation 
-- More than one objective function 
+(! This implementation includes:
+- MaxTime implementation - e.g. Tracking of the maximum time used in each node
 !)
 
 declarations
@@ -136,8 +133,6 @@ declarations
 	costOfPostponedCharging : real;
 	costOfExtraTime         : real;
 	costOfTravel            : real;
-	costOfTimeUse 			: real;
-	costOfMaxTravel         : real;
 	
 	! Times !
 	travelTimeVehicle    : array(rNodes,rNodes) of real;
@@ -147,7 +142,7 @@ declarations
 	timeLimit            : real;
 	timeLimitLastVisit   : real;
 	
-	! Initial and ideal state !
+	! Initial state !
 	travelTimeToOriginR  : array(rOperators) of real;
 	travelTimeToParkingA : array(aOperators) of real;
 	initialHandling      : array(rOperators) of integer;
@@ -155,16 +150,6 @@ declarations
 	initialInNeedP       : array(pNodes)     of integer;
 	finishedDuringC      : array(cNodes)     of integer;
 	idealStateP          : array(pNodes)     of integer;
-	demandP              : array(pNodes)     of integer;
-	
-	!Objective function
-	mode : integer;
-	
-	! Big Ms
-	sequenceBigM : integer;
-	
-	!Visits
-	visitList : array(Nodes)               of integer;
 end-declarations
 
 initializations from DataFile
@@ -179,7 +164,6 @@ initializations from DataFile
 	costOfExtraTime;
 	costOfTravel;
 	costOfTimeUse;
-	costOfMaxTravel;
 	travelTimeVehicle;
 	travelTimeBike;
 	handlingTimeP;
@@ -193,10 +177,6 @@ initializations from DataFile
 	initialInNeedP;
 	finishedDuringC;
 	idealStateP;
-	demandP;
-	visitList;
-	mode;
-	sequenceBigM;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -227,7 +207,6 @@ if printParams then
 	writeln('Initial number of cars in a parking node in need of charging:            ',initialInNeedP);
 	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
 	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
-	writeln('Demand in the different nodes:                                           ',demandP);
 end-if
 
 
@@ -243,14 +222,14 @@ declarations
 	t      : dynamic array(Nodes, visits)                             of mpvar;
 	tPlus  : dynamic array(rNodes, visits)                            of mpvar;
 	tMinus : dynamic array(rNodes, visits)                            of mpvar;
+	tMax   : dynamic array(rNodes)									  of mpvar;
 	r      : dynamic array(rNodes, visits)                            of mpvar;
 	s      : dynamic array(rNodes, visits)                            of mpvar;
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
 	sPlus  : dynamic array(pNodes)                                    of mpvar;
 	sMinus : dynamic array(pNodes)                                    of mpvar;
 	sEndC  : dynamic array(pNodes)									  of mpvar;	
-	sEndAc : dynamic array(cNodes)									  of mpvar;	
-	u      : dynamic array(Nodes, visits, rOperators)				  of mpvar; 					
+	sEndAc : dynamic array(cNodes)									  of mpvar;							
 end-declarations
 
 ! ### End of declaration of Variables ### !
@@ -315,6 +294,8 @@ end-do
 
 !Create t, part 1
 forall(ii in Nodes - aNodes) do
+	create(tMax(ii));
+	tMax(ii) is_semcont 0;
 	forall(mm in visits) do
 		create(t(ii,mm));
 		t(ii,mm) is_semcont 0; 
@@ -325,6 +306,7 @@ forall(ii in Nodes - aNodes) do
 	end-do
 end-do
 
+!Do we need this??
 
 !Define t, part 2
 forall(pp in rOperators) do 
@@ -373,14 +355,6 @@ forall(ii in cNodes) do
 	sEndAc(ii) is_semint 0;
 end-do
 
-! Create u - sequence variabel 
-forall(pp in rOperators) do
-	forall(ii in rNodes, mm in visits) do
-		create(u(ii, mm, pp));
-		u(ii, mm, pp) is_semint 0; 
-	end-do
-end-do
-
 ! ### End of creation of Variables ### !
 
 
@@ -389,17 +363,14 @@ declarations
 		Objective: linctr;
 end-declarations
 
-! Standard 
+
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
-			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+			  costOfTravel  * sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 
-! Max travel 
-if(mode = 2) then
-	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
-end-if
+!Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 ! ### End of declaration of objective ### !			 
 
@@ -542,7 +513,7 @@ forall(ii in pNodes) do
 											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, numVisits, pp) + 
 											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,numVisits,pp) + 
 											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,numVisits,pp)  +
-											   sPlus(ii) - sMinus(ii) - demandP(ii) = idealStateP(ii);
+											   sPlus(ii) - sMinus(ii) = idealStateP(ii);
 											   
 end-do
 
@@ -619,8 +590,10 @@ declarations
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
+	endTimeSecondLastVisit  : dynamic array(rNodes)                                     of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
+	maxTime                 : dynamic array(rNodes, visits)								of linctr;
 end-declarations 
 
 
@@ -671,8 +644,12 @@ forall(ii in rNodes, mm in visits) do
 	endTimeLastVisit(ii, mm) := t(ii, mm)  + tPlus(ii, mm) - tMinus(ii, mm) = timeLimit;
 end-do
 
-
-
+! Maxtime punishment 
+(!
+forall(ii in rNodes, mm in visits) do
+	maxTime(ii,mm) := tMax(ii) >= t(ii, mm);
+end-do
+!)
 
 ! Time constraints for artificial operators
 declarations
@@ -694,27 +671,6 @@ forall(pp in aOperators, mm in visits, nn in visits) do
 end-do
 
 ! ### End of declaration of time constraints ### !
-
-! ### Start of declaration of valid inequalities ### !
-
-declarations
-	sequenceControl        : dynamic array(rNodes, visits, Nodes, visits, rOperators) of linctr;
-end-declarations
-
-
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
-	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + sequenceBigM*x(ii, mm, jj, nn, pp) + (sequenceBigM-2)*x(jj, nn, ii, mm, pp) <= sequenceBigM-1;
-end-do
-
-! ### End of declaration of valid inequalities ### !
-
-! ### Start of declaration of mode constraints ### !
-
-
-! ### End of declaration of mode constraints ### !
-
-
-
 setparam("XPRS_MAXTIME", -300);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
@@ -995,7 +951,6 @@ if writeToFile then
 end-if
 
 end-model
-
 
 
 

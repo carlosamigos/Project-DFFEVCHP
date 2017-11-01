@@ -23,6 +23,8 @@ costOfDeviation : 10
 costOfPostponedCharging : 20
 costOfExtraTime : 1
 costOfTravel : 1
+costOfTimeUse: 0.5
+costOfMaxTravel: 0.5
 
 travelTimeVehicle : [0.0 1.0 1.0 1.7
 		     1.0 0.0 1.7 1.0
@@ -40,7 +42,12 @@ travelTimeToParkingA : [2.0 3.0]
 timeLimit : 15.5
 timeLimitLastVisit : 0.0
 initialHandling : [0 0 1]
+mode: 1
 initialRegularInP : [3 0 1 0]
 initialInNeedP : [4 1 1 0]
 finishedDuringC : [2]
 idealStateP : [0 3 1 2]
+demandP : [0 0 0 0]
+visitList : [8 8 8 8 8 1 1 1 1 1 1]
+mode : 1
+sequenceBigM : 12

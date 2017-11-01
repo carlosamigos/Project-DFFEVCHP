@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example2.txt';
+	DataFile = 'examples/example1.txt';
 end-parameters
 
 declarations
@@ -22,8 +22,8 @@ writeToFile  := true;
 (! ### Start of initialization of set sizes ### !)
 
 (! This implementation includes, beyond v1:
-- MaxTime implementation - e.g. Tracking max time for each person 
-- Sequence control
+- MaxTime implementation - e.g. Tracking max time for each person, with constraint 
+- Sequence control, with min max effort constraint
 - Demand implementation 
 - More than one objective function 
 !)
@@ -162,9 +162,6 @@ declarations
 	
 	! Big Ms
 	sequenceBigM : integer;
-	
-	!Visits
-	visitList : array(Nodes)               of integer;
 end-declarations
 
 initializations from DataFile
@@ -194,7 +191,6 @@ initializations from DataFile
 	finishedDuringC;
 	idealStateP;
 	demandP;
-	visitList;
 	mode;
 	sequenceBigM;
 end-initializations
@@ -228,6 +224,7 @@ if printParams then
 	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
 	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
 	writeln('Demand in the different nodes:                                           ',demandP);
+	writeln('Mode in the different nodes:                                             ',mode);
 end-if
 
 
@@ -243,6 +240,8 @@ declarations
 	t      : dynamic array(Nodes, visits)                             of mpvar;
 	tPlus  : dynamic array(rNodes, visits)                            of mpvar;
 	tMinus : dynamic array(rNodes, visits)                            of mpvar;
+	tMaxP  : dynamic array(rNodes, rOperators)						  of mpvar;
+	tMax   : 								                          mpvar;
 	r      : dynamic array(rNodes, visits)                            of mpvar;
 	s      : dynamic array(rNodes, visits)                            of mpvar;
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
@@ -250,7 +249,8 @@ declarations
 	sMinus : dynamic array(pNodes)                                    of mpvar;
 	sEndC  : dynamic array(pNodes)									  of mpvar;	
 	sEndAc : dynamic array(cNodes)									  of mpvar;	
-	u      : dynamic array(Nodes, visits, rOperators)				  of mpvar; 					
+	u      : dynamic array(Nodes, visits, rOperators)				  of mpvar; 
+	uMax   :                              					          mpvar;						
 end-declarations
 
 ! ### End of declaration of Variables ### !
@@ -334,6 +334,15 @@ forall(pp in rOperators) do
 	t(destinationNodeROperator(pp),1) is_semcont 0;
 end-do
 
+!Define t, part 3
+tMax is_semcont 0;
+forall(pp in rOperators) do
+	forall(ii in rNodes) do
+		create(tMaxP(ii, pp));
+		tMaxP(ii, pp) is_semcont 0;
+	end-do
+end-do
+
 !Create r
 forall(ii in rNodes, mm in visits) do 
 	create(r(ii, mm));
@@ -374,6 +383,7 @@ forall(ii in cNodes) do
 end-do
 
 ! Create u - sequence variabel 
+uMax is_semint 0;
 forall(pp in rOperators) do
 	forall(ii in rNodes, mm in visits) do
 		create(u(ii, mm, pp));
@@ -392,12 +402,25 @@ end-declarations
 ! Standard 
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
-			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +  
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
+! Standard with max move cost
+if (mode = 2) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
+			  costOfMaxTravel * uMax;
+end-if
 
+if (mode = 3) then 
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
+			  costOfTimeUse * tMax;
+end-if
 ! Max travel 
-if(mode = 2) then
+if(mode = 4) then
 	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 end-if
 
@@ -698,7 +721,7 @@ end-do
 ! ### Start of declaration of valid inequalities ### !
 
 declarations
-	sequenceControl        : dynamic array(rNodes, visits, Nodes, visits, rOperators) of linctr;
+	sequenceControl        : dynamic array(rNodes, visits, rNodes, visits, rOperators) of linctr;
 end-declarations
 
 
@@ -710,6 +733,28 @@ end-do
 
 ! ### Start of declaration of mode constraints ### !
 
+declarations
+	maxTime                 : dynamic array(rNodes, visits, rOperators)				 of linctr;
+	maxTimeP 				: dynamic array(rNodes, rOperators)						 of linctr; 
+	maxTravel 				: dynamic array(rNodes, visits, rOperators)			     of linctr; 
+end-declarations
+
+! MAKES THE SOLUTION PAINFULLY SLOW ATM
+! Maxtime for each operator calculation 
+forall(ii in rNodes, mm in visits, pp in rOperators) do
+	maxTime(ii,mm, pp) := tMaxP(ii, pp) >= t(ii, mm) - ((timeLimit+timeLimitLastVisit) *
+		(1 - sum(jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) - x(ii, mm, destinationNodeROperator(pp), 1, pp)));
+end-do
+
+forall(ii in rNodes, pp in rOperators) do
+	maxTimeP(ii, pp) := tMax >= tMaxP(ii, pp);
+end-do	
+
+! Maxtravels for each operator
+
+forall(ii in rNodes, mm in visits, pp in rOperators) do
+	maxTravel(ii, mm, pp) := uMax >= u(ii, mm, pp);
+end-do
 
 ! ### End of declaration of mode constraints ### !
 
@@ -995,6 +1040,7 @@ if writeToFile then
 end-if
 
 end-model
+
 
 
 

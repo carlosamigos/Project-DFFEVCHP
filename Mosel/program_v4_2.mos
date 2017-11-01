@@ -21,11 +21,9 @@ writeToFile  := true;
 
 (! ### Start of initialization of set sizes ### !)
 
-(! This implementation includes, beyond v1:
-- MaxTime implementation - e.g. Tracking max time for each person 
-- Sequence control
-- Demand implementation 
-- More than one objective function 
+
+(! This implementation includes, beyond v3:
+- Variable visit implementation
 !)
 
 declarations
@@ -194,9 +192,9 @@ initializations from DataFile
 	finishedDuringC;
 	idealStateP;
 	demandP;
-	visitList;
 	mode;
 	sequenceBigM;
+	visitList;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -412,6 +410,7 @@ declarations
 	maxVisitOut  : dynamic array(rNodes, visits)             of linctr;
 	vSymmetryP   : dynamic array(pNodes, visits)             of linctr;
 	vSymmetryC   : dynamic array(cNodes, visits)             of linctr;
+	maxVisits    : dynamic array(rNodes)				     of linctr;
 end-declarations 
 
 forall(pp in rOperators) do
@@ -452,6 +451,11 @@ forall(ii in cNodes, mm in visits - {numVisits}) do
 	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm+1, parkingNodeAOperator(pp), nn, pp) 
 end-do
 
+forall(ii in rNodes) do
+	maxVisits(ii) := sum(mm in visits, jj in rNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) + 
+		sum(pp in rOperators, mm in visits) x(ii, mm, destinationNodeROperator(pp), 1, pp) + 
+		sum(pp in rOperators, nn in visits) x(originNodeROperator(pp), 1, ii, nn, pp)!) <= visitList(ii);
+end-do 
 
 ! ### End of declaration of routing constraints ### !
 
