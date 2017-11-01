@@ -1,11 +1,13 @@
 package tio4500.simulations.Travels;
 
 import tio4500.simulations.Entities.Car;
+import tio4500.simulations.Entities.Operator;
 import tio4500.simulations.Nodes.ParkingNode;
 
 public class OperatorTravel {
 
-    private Car.Operator operator;
+    private Operator operator;
+    private Car car;
     private double pickupTime;
     private ParkingNode pickupNode;
     private double arrivalTime;
@@ -14,7 +16,9 @@ public class OperatorTravel {
     private double arrivalBatteryLevel;
 
 
-    public OperatorTravel(double pickupTime, ParkingNode pickupNode, double arrivalTime, ParkingNode arrivalNode, double pickupBatteryLevel, double arrivalBatteryLevel) {
+    public OperatorTravel(Operator operator, Car car, double pickupTime, ParkingNode pickupNode, double arrivalTime, ParkingNode arrivalNode, double pickupBatteryLevel, double arrivalBatteryLevel) {
+        this.operator = operator;
+        this.car = car;
         this.pickupTime = pickupTime;
         this.pickupNode = pickupNode;
         this.arrivalTime = arrivalTime;

@@ -16,12 +16,9 @@ public class Main {
 	    input.generateGeneralInfo();
     }
 
-    public static void generateSimulationEnvironment(){
+    public static void runSimulation(){
 
-		// 0. Generate travel times
-		// 1. get initial state
-    	// 2. generate arrivals
-		// 3. generate pickups
+		SimulationModel simModel = new SimulationModel(1);
 
 	}
 }

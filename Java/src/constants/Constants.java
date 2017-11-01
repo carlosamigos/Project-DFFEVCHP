@@ -2,11 +2,17 @@ package constants;
 
 public class Constants {
 
+	// Example specification
+	public final static int EXAMPLE_NUMBER = 1;
+
 	// Folders
-	public final static String INPUT_FOLDER = "../Mosel/examples/";
-	public final static String PROBLEM_FOLDER = "../Mosel/problems/";
 	public final static String MOSEL_FOLDER= "../Mosel/";
-	
+	public final static String PROBLEM_FOLDER = "../Mosel/problems/";
+	public final static String MOSEL_OUTPUT= "../Mosel/output";
+	public final static String STATE_FOLDER = "../Mosel/states/";
+	public final static String INITIAL_STATE_FOLDER = "../Mosel/initialStates/";
+	public final static String SIMULATIONS_FOLDER = "../Simulations/";
+
 	// Files
 	public final static String MOSEL_FILE = "test.mos";
 	public final static String MOSEL_BIM_FILE = "test.bim";

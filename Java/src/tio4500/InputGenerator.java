@@ -10,6 +10,7 @@ public class InputGenerator {
 
 	public void generateGeneralInfo() {
 		String info = "";
+		info += "exampleFile : "+ Integer.toString(Constants.EXAMPLE_NUMBER) + "\n";
 		info += "numNodes : " + Integer.toString(Constants.N_NODES) + "\n";
 		info += "numPNodes : " + Integer.toString(Constants.P_NODES) + "\n";
 		info += "numCNodes : " + Integer.toString(Constants.C_NODES) + "\n";
