@@ -20,6 +20,11 @@ printResults := true;
 writeToFile  := true;
 
 (! ### Start of initialization of set sizes ### !)
+
+(! This implementation includes:
+- MaxTime implementation - e.g. Tracking of the maximum time used in each node
+!)
+
 declarations
 	numVisits     : integer; ! Max number of visits for all Nodes
 	numPNodes     :	integer; ! Number of parking Nodes
