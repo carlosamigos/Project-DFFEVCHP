@@ -19,26 +19,10 @@ public class Constants {
 	public final static String GENERAL_INFO_FILE = "general_info.txt";
 	
 	// Time specific parameters
-	public final static double TOTAL_TIME = 100;
-	public final static double TIME_LIMIT_STEP = 3.5;
-	public final static double TIME_LIMIT_LAST_VISIT = 5.0;
-	public final static int VISITS = 3;
-	
-	// Node specific parameters
-	public final static int N_NODES = 8;
-	public final static int P_NODES = 6;
-	public final static int C_NODES = 2;
-	
-	// Operator specific parameters
-	public final static int N_OPERATORS = 3;
+	public final static double TOTAL_TIME_DURING_DAY = 60*24; // Minutes
 
-	// Settings for drawing code
-	public final static String C_TO_P = "[3 5]";
-	public final static int VERTICAL_NODES = 3;
-	public final static int HORIZONTAL_NODES = 2;
-	
 	// Variables for Mosel
-	public final static int MAX_DURATION = 200; // In minute
+	public final static int MAX_DURATION = 200; // In minutes
 
 	// Variables for simulation environment
 	public final static double HIGH_RATE_LAMBDA = 1.0; // Average waiting time before next arrival

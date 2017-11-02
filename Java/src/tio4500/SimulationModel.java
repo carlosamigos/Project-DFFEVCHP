@@ -10,6 +10,7 @@ public class SimulationModel {
 
     public void createNewDaySimulationModel(){
         System.out.println("Creating new simulation model");
+        //simulate pickups
 
     }
 

@@ -1,23 +1,15 @@
 package tio4500.simulations.Nodes;
 
-public class ParkingNode {
+public class ParkingNode extends Node{
 
-    private final int nodeId;
-    private int numberOfFullyChargedCars;
-    private int numberOfCarsInNeed;
 
-    public ParkingNode(int nodeId, int numberOfFullyChargedCars, int numberOfCarsInNeed) {
-        this.nodeId = nodeId;
-        this.numberOfFullyChargedCars = numberOfFullyChargedCars;
-        this.numberOfCarsInNeed = numberOfCarsInNeed;
+    private int numberOfFullyChargedCars = 0;
+    private int numberOfCarsInNeed = 0;
+
+    public ParkingNode(int nodeId) {
+        super(nodeId);
     }
 
-
-    // Getters and Setters
-
-    public int getNodeId() {
-        return nodeId;
-    }
 
     public int getNumberOfFullyChargedCars() {
         return numberOfFullyChargedCars;

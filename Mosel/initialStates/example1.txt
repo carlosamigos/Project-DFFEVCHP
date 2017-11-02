@@ -19,6 +19,7 @@ startNodeROperator : [1 7 3]
 parkingNodeAOperator : [4]
 
 chargingSlotsAvailable : [1 1]
+totalNumberOfChargingSlots : [5 5]
 costOfDeviation : 10
 costOfPostponedCharging : 10
 costOfExtraTime : 1
@@ -52,3 +53,7 @@ initialRegularInP : [1 0 1 0 0 1]
 initialInNeedP : [0 1 0 0 1 0]
 finishedDuringC : [1 0]
 idealStateP : [2 1 0 0 0 1]
+
+cToP : [3 5]
+hNodes : 2
+wNodes : 3
