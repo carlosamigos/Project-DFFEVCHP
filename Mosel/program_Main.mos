@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/example2.txt';
+	DataFile = 'states/example4.txt';
 end-parameters
 
 declarations
@@ -194,7 +194,7 @@ initializations from DataFile
 	finishedDuringC;
 	idealStateP;
 	demandP;
-	visitList;
+	!visitList;
 	mode;
 	sequenceBigM;
 end-initializations
@@ -723,7 +723,7 @@ end-do
 
 
 
-setparam("XPRS_MAXTIME", -300);
+setparam("XPRS_MAXTIME", -500);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
