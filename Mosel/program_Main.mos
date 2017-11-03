@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example2.txt';
+	DataFile = 'states/example2.txt';
 end-parameters
 
 declarations
@@ -395,6 +395,14 @@ Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
+!Try to do the least handling 
+if(mode = 1) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
+			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+end-if
 
 ! Max travel 
 if(mode = 2) then
@@ -703,7 +711,7 @@ end-declarations
 
 
 forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
-	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + sequenceBigM*x(ii, mm, jj, nn, pp) + (sequenceBigM-2)*x(jj, nn, ii, mm, pp) <= sequenceBigM-1;
+	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
 end-do
 
 ! ### End of declaration of valid inequalities ### !
@@ -906,7 +914,7 @@ end-do
 
 
 if writeToFile then
-	fopen("outputServiceOperatorsPath.txt", F_OUTPUT);
+	fopen("output/outputServiceOperatorsPath.txt", F_OUTPUT);
 	forall(pp in rOperators) do
 		currNode := originNodeROperator(pp);
 		currVisit := 1;
@@ -975,7 +983,7 @@ if writeToFile then
 	
 	
 	!todo fake service operators
-	fopen("outputArtificialServiceOperators.txt", F_OUTPUT);
+	fopen("output/outputArtificialServiceOperators.txt", F_OUTPUT);
 	
 	forall(pp in aOperators) do
 		write(pp, ': ');

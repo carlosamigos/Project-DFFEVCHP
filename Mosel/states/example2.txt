@@ -42,7 +42,6 @@ travelTimeToParkingA : [2.0 3.0]
 timeLimit : 15.5
 timeLimitLastVisit : 0.0
 initialHandling : [0 0 1]
-mode: 1
 initialRegularInP : [3 0 1 0]
 initialInNeedP : [4 1 1 0]
 finishedDuringC : [2]
