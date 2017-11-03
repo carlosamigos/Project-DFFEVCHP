@@ -10,20 +10,14 @@ public class Main {
 	    //DynamicProblem dynamicProblem = new DynamicProblem(3);
 	    //dynamicProblem.solve();
 
-		createProblemInstance();
+		int exampleNumber = 1;
+		int dayNumber = 1;
+		ProblemInstance instance = new ProblemInstance(exampleNumber);
+		System.out.println(instance);
+		SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
+		simulationModel.createNewDaySimulationModel();
     }
     
 
-    public static void createProblemInstance(){
-    	int exampleNumber = 1;
-    	ProblemInstance instance = new ProblemInstance(exampleNumber);
-    	System.out.println(instance);
-	}
 
-    public static void runSimulation(){
-
-		SimulationModel simModel = new SimulationModel(1);
-
-
-	}
 }

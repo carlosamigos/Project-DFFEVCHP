@@ -1,5 +1,6 @@
 package tio4500.simulations.Nodes;
 
+import constants.Constants;
 import tio4500.simulations.Entities.Car;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ public class ParkingNode extends Node{
 
     private ArrayList<Car> carsInNeed;
     private ArrayList<Car> carsRegular;
+    private Double demandRate = 0.0;
+    private Constants.nodeDemandGroup demandGroup = null;
 
     public ParkingNode(int nodeId) {
         super(nodeId);
@@ -19,6 +22,13 @@ public class ParkingNode extends Node{
         return carsInNeed;
     }
 
+    public void setDemandRate(double rate){
+        this.demandRate = rate;
+    }
+
+    public Double getDemandRate() {
+        return demandRate;
+    }
 
     public ArrayList<Car> getCarsRegular() {
         return carsRegular;
@@ -36,6 +46,15 @@ public class ParkingNode extends Node{
         carsInNeed.remove(car);
         carsRegular.remove(car);
     }
+
+    public Constants.nodeDemandGroup getDemandGroup() {
+        return demandGroup;
+    }
+
+    public void setDemandGroup(Constants.nodeDemandGroup demandGroup) {
+        this.demandGroup = demandGroup;
+    }
+
 
     @Override
     public String toString() {

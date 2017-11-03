@@ -11,14 +11,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.37818614">
+    <splitter split-orientation="horizontal" split-proportion="0.7765264">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/Main.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="225">
-                  <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+                <state relative-caret-position="345">
+                  <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -27,50 +27,55 @@
           <file leaf-file-name="ParkingNode.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ParkingNode.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="309">
-                  <caret line="26" column="33" lean-forward="false" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
+                <state relative-caret-position="420">
+                  <caret line="30" column="5" lean-forward="false" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
                   <folding>
                     <element signature="imports" expanded="true" />
-                    <element signature="e#417#418#0" expanded="true" />
-                    <element signature="e#450#451#0" expanded="true" />
-                    <element signature="e#497#498#0" expanded="true" />
-                    <element signature="e#531#532#0" expanded="true" />
-                    <element signature="e#572#573#0" expanded="true" />
-                    <element signature="e#613#614#0" expanded="true" />
-                    <element signature="e#653#654#0" expanded="true" />
+                    <element signature="e#540#541#0" expanded="true" />
+                    <element signature="e#573#574#0" expanded="true" />
+                    <element signature="e#618#619#0" expanded="true" />
+                    <element signature="e#656#657#0" expanded="true" />
                     <element signature="e#693#694#0" expanded="true" />
-                    <element signature="e#855#856#0" expanded="true" />
-                    <element signature="e#914#915#0" expanded="true" />
+                    <element signature="e#726#727#0" expanded="true" />
+                    <element signature="e#772#773#0" expanded="true" />
+                    <element signature="e#806#807#0" expanded="true" />
+                    <element signature="e#847#848#0" expanded="true" />
+                    <element signature="e#888#889#0" expanded="true" />
+                    <element signature="e#928#929#0" expanded="true" />
+                    <element signature="e#968#969#0" expanded="true" />
+                    <element signature="e#1341#1342#0" expanded="true" />
+                    <element signature="e#1400#1401#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ProblemInstance.java" pinned="false" current-in-tab="false">
+          <file leaf-file-name="ProblemInstance.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/tio4500/ProblemInstance.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="301">
-                  <caret line="230" column="26" lean-forward="false" selection-start-line="230" selection-start-column="26" selection-end-line="230" selection-end-column="26" />
+                <state relative-caret-position="243">
+                  <caret line="221" column="10" lean-forward="false" selection-start-line="221" selection-start-column="4" selection-end-line="221" selection-end-column="10" />
                   <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#8867#8868#0" expanded="true" />
-                    <element signature="e#8903#8904#0" expanded="true" />
-                    <element signature="e#8958#8959#0" expanded="true" />
-                    <element signature="e#8993#8994#0" expanded="true" />
-                    <element signature="e#9050#9051#0" expanded="true" />
-                    <element signature="e#9086#9087#0" expanded="true" />
-                    <element signature="e#9135#9136#0" expanded="true" />
-                    <element signature="e#9167#9168#0" expanded="true" />
-                    <element signature="e#9228#9229#0" expanded="true" />
-                    <element signature="e#9266#9267#0" expanded="true" />
-                    <element signature="e#9327#9328#0" expanded="true" />
-                    <element signature="e#9365#9366#0" expanded="true" />
-                    <element signature="e#9429#9430#0" expanded="true" />
-                    <element signature="e#9467#9468#0" expanded="true" />
-                    <element signature="e#9668#9669#0" expanded="true" />
-                    <element signature="e#9705#9706#0" expanded="true" />
-                    <element signature="e#9787#9788#0" expanded="true" />
-                    <element signature="e#9839#9840#0" expanded="true" />
+                    <element signature="method#setUpOperators#0;class#ProblemInstance#0" expanded="false" />
+                    <element signature="method#setUpNodesAndCars#0;class#ProblemInstance#0" expanded="false" />
+                    <element signature="e#9982#9983#0" expanded="true" />
+                    <element signature="e#10018#10019#0" expanded="true" />
+                    <element signature="e#10073#10074#0" expanded="true" />
+                    <element signature="e#10108#10109#0" expanded="true" />
+                    <element signature="e#10165#10166#0" expanded="true" />
+                    <element signature="e#10201#10202#0" expanded="true" />
+                    <element signature="e#10250#10251#0" expanded="true" />
+                    <element signature="e#10282#10283#0" expanded="true" />
+                    <element signature="e#10343#10344#0" expanded="true" />
+                    <element signature="e#10381#10382#0" expanded="true" />
+                    <element signature="e#10442#10443#0" expanded="true" />
+                    <element signature="e#10480#10481#0" expanded="true" />
+                    <element signature="e#10544#10545#0" expanded="true" />
+                    <element signature="e#10582#10583#0" expanded="true" />
+                    <element signature="e#10783#10784#0" expanded="true" />
+                    <element signature="e#10820#10821#0" expanded="true" />
+                    <element signature="e#10902#10903#0" expanded="true" />
+                    <element signature="e#10954#10955#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -79,7 +84,7 @@
           <file leaf-file-name="Travel.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/Travel.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="116">
+                <state relative-caret-position="360">
                   <caret line="24" column="5" lean-forward="false" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
                   <folding>
                     <element signature="imports" expanded="true" />
@@ -116,13 +121,30 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="InputTester.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/tests/InputTester.java">
+          <file leaf-file-name="SimulationModel.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/tio4500/SimulationModel.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="315">
-                  <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+                <state relative-caret-position="413">
+                  <caret line="65" column="5" lean-forward="false" selection-start-line="65" selection-start-column="5" selection-end-line="65" selection-end-column="5" />
                   <folding>
                     <element signature="imports" expanded="true" />
+                    <element signature="e#1952#1953#0" expanded="true" />
+                    <element signature="e#2010#2011#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="DemandRequest.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/DemandRequest/DemandRequest.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="300">
+                  <caret line="21" column="5" lean-forward="false" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
+                  <folding>
+                    <element signature="e#366#367#0" expanded="true" />
+                    <element signature="e#393#394#0" expanded="true" />
+                    <element signature="e#424#425#0" expanded="true" />
+                    <element signature="e#451#452#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -131,18 +153,8 @@
           <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/constants/Constants.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="195">
-                  <caret line="13" column="45" lean-forward="false" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="39" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="ChargingNode.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ChargingNode.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="330">
-                  <caret line="30" column="38" lean-forward="false" selection-start-line="30" selection-start-column="38" selection-end-line="30" selection-end-column="38" />
+                <state relative-caret-position="432">
+                  <caret line="38" column="46" lean-forward="false" selection-start-line="38" selection-start-column="46" selection-end-line="38" selection-end-column="46" />
                   <folding />
                 </state>
               </provider>
@@ -163,11 +175,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Operator.java" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Operator.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Entities/Operator.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="405">
-                  <caret line="29" column="23" lean-forward="false" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+                <state relative-caret-position="390">
+                  <caret line="28" column="13" lean-forward="false" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
                   <folding>
                     <element signature="e#276#277#0" expanded="true" />
                     <element signature="e#322#323#0" expanded="true" />
@@ -183,8 +195,8 @@
           <file leaf-file-name="Node.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/Node.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="30">
-                  <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+                <state relative-caret-position="195">
+                  <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
                   <folding>
                     <element signature="e#116#117#0" expanded="true" />
                     <element signature="e#152#153#0" expanded="true" />
@@ -200,8 +212,8 @@
           <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/Main.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="375">
-                  <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+                <state relative-caret-position="255">
+                  <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -210,11 +222,28 @@
           <file leaf-file-name="ParkingNode.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ParkingNode.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
-                  <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+                <state relative-caret-position="305">
+                  <caret line="46" column="23" lean-forward="false" selection-start-line="49" selection-start-column="37" selection-end-line="49" selection-end-column="51" />
                   <folding>
-                    <element signature="e#262#263#0" expanded="true" />
-                    <element signature="e#372#373#0" expanded="true" />
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#540#541#0" expanded="true" />
+                    <element signature="e#573#574#0" expanded="true" />
+                    <element signature="e#618#619#0" expanded="true" />
+                    <element signature="e#656#657#0" expanded="true" />
+                    <element signature="e#693#694#0" expanded="true" />
+                    <element signature="e#726#727#0" expanded="true" />
+                    <element signature="e#772#773#0" expanded="true" />
+                    <element signature="e#806#807#0" expanded="true" />
+                    <element signature="e#847#848#0" expanded="true" />
+                    <element signature="e#888#889#0" expanded="true" />
+                    <element signature="e#928#929#0" expanded="true" />
+                    <element signature="e#968#969#0" expanded="true" />
+                    <element signature="e#1141#1142#0" expanded="true" />
+                    <element signature="e#1175#1176#0" expanded="true" />
+                    <element signature="e#1248#1249#0" expanded="true" />
+                    <element signature="e#1294#1295#0" expanded="true" />
+                    <element signature="e#1341#1342#0" expanded="true" />
+                    <element signature="e#1400#1401#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -233,24 +262,40 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="CustomerTravel.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/CustomerTravel.java">
+          <file leaf-file-name="DynamicProblem.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/tio4500/DynamicProblem.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="195">
-                  <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+                <state relative-caret-position="410">
+                  <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="DemandRequest.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/DemandRequest/DemandRequest.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="420">
+                  <caret line="30" column="1" lean-forward="false" selection-start-line="30" selection-start-column="1" selection-end-line="30" selection-end-column="1" />
                   <folding>
                     <element signature="imports" expanded="true" />
+                    <element signature="e#424#425#0" expanded="true" />
+                    <element signature="e#451#452#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="SimulationModel.java" pinned="false" current-in-tab="false">
+          <file leaf-file-name="SimulationModel.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/tio4500/SimulationModel.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="150">
-                  <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="26" />
-                  <folding />
+                <state relative-caret-position="446">
+                  <caret line="33" column="54" lean-forward="false" selection-start-line="33" selection-start-column="54" selection-end-line="33" selection-end-column="54" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#1952#1953#0" expanded="true" />
+                    <element signature="e#2010#2011#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -258,14 +303,24 @@
           <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/constants/Constants.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="420">
-                  <caret line="31" column="22" lean-forward="false" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+                <state relative-caret-position="345">
+                  <caret line="31" column="51" lean-forward="false" selection-start-line="31" selection-start-column="51" selection-end-line="31" selection-end-column="51" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ProblemInstance.java" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Node.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/Node.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="165">
+                  <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ProblemInstance.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/tio4500/ProblemInstance.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="561">
@@ -289,16 +344,6 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="StaticProblem.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/tio4500/StaticProblem.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="489">
-                  <caret line="44" column="66" lean-forward="false" selection-start-line="44" selection-start-column="66" selection-end-line="44" selection-end-column="66" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
         </leaf>
       </split-second>
     </splitter>
@@ -314,6 +359,7 @@
     <findStrings>
       <find>initial</find>
       <find>finished</find>
+      <find>demandGroup</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -325,21 +371,23 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/tio4500/RollingHorizon.java" />
-        <option value="$PROJECT_DIR$/src/tio4500/DynamicProblem.java" />
-        <option value="$PROJECT_DIR$/src/tio4500/SimulationModel.java" />
         <option value="$PROJECT_DIR$/src/tio4500/InputGenerator.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Travels/CustomerTravel.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Travels/OperatorTravel.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Travels/Travel.java" />
         <option value="$PROJECT_DIR$/src/tests/InputTester.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Nodes/Node.java" />
-        <option value="$PROJECT_DIR$/src/tio4500/Main.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Nodes/ChargingNode.java" />
-        <option value="$PROJECT_DIR$/src/tio4500/simulations/Nodes/ParkingNode.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Entities/Car.java" />
         <option value="$PROJECT_DIR$/src/tio4500/simulations/Entities/Operator.java" />
-        <option value="$PROJECT_DIR$/src/tio4500/ProblemInstance.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/Main.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/simulations/DemandRequest.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/simulations/Nodes/ParkingNode.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/simulations/DemandRequest/DemandRequest.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/DynamicProblem.java" />
         <option value="$PROJECT_DIR$/src/constants/Constants.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/SimulationModel.java" />
+        <option value="$PROJECT_DIR$/src/tio4500/ProblemInstance.java" />
       </list>
     </option>
   </component>
@@ -395,6 +443,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="tio4500" type="462c0819:PsiDirectoryNode" />
               <item name="simulations" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="tio4500" type="462c0819:PsiDirectoryNode" />
+              <item name="simulations" type="462c0819:PsiDirectoryNode" />
+              <item name="DemandRequest" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Java" type="b2602c69:ProjectViewProjectNode" />
@@ -538,7 +594,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -650,7 +706,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="26" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1952#1953#0" expanded="true" />
+            <element signature="e#2010#2011#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -667,8 +727,21 @@
         <state relative-caret-position="90">
           <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
           <folding>
-            <element signature="e#262#263#0" expanded="true" />
-            <element signature="e#372#373#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#540#541#0" expanded="true" />
+            <element signature="e#573#574#0" expanded="true" />
+            <element signature="e#618#619#0" expanded="true" />
+            <element signature="e#656#657#0" expanded="true" />
+            <element signature="e#693#694#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#772#773#0" expanded="true" />
+            <element signature="e#806#807#0" expanded="true" />
+            <element signature="e#847#848#0" expanded="true" />
+            <element signature="e#888#889#0" expanded="true" />
+            <element signature="e#928#929#0" expanded="true" />
+            <element signature="e#968#969#0" expanded="true" />
+            <element signature="e#1341#1342#0" expanded="true" />
+            <element signature="e#1400#1401#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -695,14 +768,6 @@
     <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/Operator.java" />
     <entry file="file://$PROJECT_DIR$/src/tio4500/SimulationGenerator.java" />
     <entry file="file://$PROJECT_DIR$/src/tio4500/RollingHorizon.java" />
-    <entry file="file://$PROJECT_DIR$/src/tio4500/DynamicProblem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="65" lean-forward="false" selection-start-line="23" selection-start-column="65" selection-end-line="23" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/tio4500/InputGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="37">
@@ -721,9 +786,92 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/CustomerTravel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/InputTester.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/StaticProblem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="489">
+          <caret line="44" column="66" lean-forward="false" selection-start-line="44" selection-start-column="66" selection-end-line="44" selection-end-column="66" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ChargingNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="35" column="0" lean-forward="false" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding>
+            <element signature="e#204#205#0" expanded="true" />
+            <element signature="e#233#234#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Entities/Car.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="5" lean-forward="false" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
+          <folding>
+            <element signature="e#644#645#0" expanded="true" />
+            <element signature="e#678#679#0" expanded="true" />
+            <element signature="e#730#731#0" expanded="true" />
+            <element signature="e#776#777#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/ArrayList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="428" column="0" lean-forward="false" selection-start-line="428" selection-start-column="0" selection-end-line="428" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Entities/Operator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="28" column="13" lean-forward="false" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
+          <folding>
+            <element signature="e#276#277#0" expanded="true" />
+            <element signature="e#322#323#0" expanded="true" />
+            <element signature="e#348#349#0" expanded="true" />
+            <element signature="e#373#374#0" expanded="true" />
+            <element signature="e#409#410#0" expanded="true" />
+            <element signature="e#443#444#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/Travel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
+        <state relative-caret-position="360">
           <caret line="24" column="5" lean-forward="false" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -759,46 +907,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Travels/CustomerTravel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests/InputTester.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/StaticProblem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="489">
-          <caret line="44" column="66" lean-forward="false" selection-start-line="44" selection-start-column="66" selection-end-line="44" selection-end-column="66" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/SimulationModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/Node.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        <state relative-caret-position="195">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding>
             <element signature="e#116#117#0" expanded="true" />
             <element signature="e#152#153#0" expanded="true" />
@@ -806,88 +918,96 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ChargingNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="35" column="0" lean-forward="false" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding>
-            <element signature="e#204#205#0" expanded="true" />
-            <element signature="e#233#234#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Nodes/ParkingNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+        <state relative-caret-position="420">
+          <caret line="30" column="5" lean-forward="false" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
           <folding>
-            <element signature="e#262#263#0" expanded="true" />
-            <element signature="e#372#373#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#540#541#0" expanded="true" />
+            <element signature="e#573#574#0" expanded="true" />
+            <element signature="e#618#619#0" expanded="true" />
+            <element signature="e#656#657#0" expanded="true" />
+            <element signature="e#693#694#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#772#773#0" expanded="true" />
+            <element signature="e#806#807#0" expanded="true" />
+            <element signature="e#847#848#0" expanded="true" />
+            <element signature="e#888#889#0" expanded="true" />
+            <element signature="e#928#929#0" expanded="true" />
+            <element signature="e#968#969#0" expanded="true" />
+            <element signature="e#1341#1342#0" expanded="true" />
+            <element signature="e#1400#1401#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/DemandRequest/DemandRequest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="300">
+          <caret line="21" column="5" lean-forward="false" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
+          <folding>
+            <element signature="e#366#367#0" expanded="true" />
+            <element signature="e#393#394#0" expanded="true" />
+            <element signature="e#424#425#0" expanded="true" />
+            <element signature="e#451#452#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/DynamicProblem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Entities/Car.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="5" lean-forward="false" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
-          <folding>
-            <element signature="e#644#645#0" expanded="true" />
-            <element signature="e#678#679#0" expanded="true" />
-            <element signature="e#730#731#0" expanded="true" />
-            <element signature="e#776#777#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/ArrayList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="428" column="0" lean-forward="false" selection-start-line="428" selection-start-column="0" selection-end-line="428" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tio4500/simulations/Entities/Operator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="29" column="23" lean-forward="false" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
-          <folding>
-            <element signature="e#276#277#0" expanded="true" />
-            <element signature="e#322#323#0" expanded="true" />
-            <element signature="e#348#349#0" expanded="true" />
-            <element signature="e#373#374#0" expanded="true" />
-            <element signature="e#409#410#0" expanded="true" />
-            <element signature="e#443#444#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/constants/Constants.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="31" column="22" lean-forward="false" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+        <state relative-caret-position="432">
+          <caret line="38" column="46" lean-forward="false" selection-start-line="38" selection-start-column="46" selection-end-line="38" selection-end-column="46" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tio4500/SimulationModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="413">
+          <caret line="65" column="5" lean-forward="false" selection-start-line="65" selection-start-column="5" selection-end-line="65" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1952#1953#0" expanded="true" />
+            <element signature="e#2010#2011#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tio4500/ProblemInstance.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="42" column="41" lean-forward="true" selection-start-line="42" selection-start-column="41" selection-end-line="42" selection-end-column="41" />
+        <state relative-caret-position="243">
+          <caret line="221" column="10" lean-forward="false" selection-start-line="221" selection-start-column="4" selection-end-line="221" selection-end-column="10" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#readProblemFromFile#0;class#ProblemInstance#0" expanded="false" />
-            <element signature="method#setTravelTimesBike#0;class#ProblemInstance#0" expanded="false" />
+            <element signature="method#setUpOperators#0;class#ProblemInstance#0" expanded="false" />
+            <element signature="method#setUpNodesAndCars#0;class#ProblemInstance#0" expanded="false" />
+            <element signature="e#9982#9983#0" expanded="true" />
+            <element signature="e#10018#10019#0" expanded="true" />
+            <element signature="e#10073#10074#0" expanded="true" />
+            <element signature="e#10108#10109#0" expanded="true" />
+            <element signature="e#10165#10166#0" expanded="true" />
+            <element signature="e#10201#10202#0" expanded="true" />
+            <element signature="e#10250#10251#0" expanded="true" />
+            <element signature="e#10282#10283#0" expanded="true" />
+            <element signature="e#10343#10344#0" expanded="true" />
+            <element signature="e#10381#10382#0" expanded="true" />
+            <element signature="e#10442#10443#0" expanded="true" />
+            <element signature="e#10480#10481#0" expanded="true" />
+            <element signature="e#10544#10545#0" expanded="true" />
+            <element signature="e#10582#10583#0" expanded="true" />
+            <element signature="e#10783#10784#0" expanded="true" />
+            <element signature="e#10820#10821#0" expanded="true" />
+            <element signature="e#10902#10903#0" expanded="true" />
+            <element signature="e#10954#10955#0" expanded="true" />
           </folding>
         </state>
       </provider>

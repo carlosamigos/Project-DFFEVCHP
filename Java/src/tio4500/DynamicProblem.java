@@ -13,6 +13,8 @@ public class DynamicProblem {
 
 		//TODO: 2. Repeat for all steps during day:
 
+			//TODO: 2.0. Create new state for Solver given problemInstance
+
 			//TODO: 2.1. Use Solver
 
 			//TODO: 2.2. Get Operator Paths
@@ -23,7 +25,7 @@ public class DynamicProblem {
 
 				//TODO: 2.3.2. Some cars may be finished charging
 
-		//TODO: 3. Create new state for Solver
+
 
 
 	}

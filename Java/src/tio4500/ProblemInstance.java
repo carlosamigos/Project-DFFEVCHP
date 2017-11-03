@@ -55,7 +55,7 @@ public class ProblemInstance {
 
     }
 
-    public void readProblemFromFile() throws IOException{
+    private void readProblemFromFile() throws IOException{
         BufferedReader br = new BufferedReader(new FileReader(Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
@@ -100,21 +100,21 @@ public class ProblemInstance {
                 sb.append(System.lineSeparator());
                 line = br.readLine();
             }
-            String everything = sb.toString();
         } finally {
             br.close();
         }
     }
 
-    public void handleInputFileMap(){
+    private void handleInputFileMap(){
         numPNodes = Integer.parseInt(inputFileMap.get("numPNodes"));
         numCNodes = Integer.parseInt(inputFileMap.get("numCNodes"));
         numROperators = Integer.parseInt(inputFileMap.get("numROperators"));
         setUpNodesAndCars();
         setUpOperators();
+        addInitialDemandRatesToNodes();
     }
 
-    public void setUpOperators(){
+    private void setUpOperators(){
         String startNodesString = inputFileMap.get("startNodeROperator");
         String[] startNodeList = startNodesString.substring(1,startNodesString.length()-1).split(" ");
         for (int operatorId = Constants.START_INDEX; operatorId < startNodeList.length+Constants.START_INDEX; operatorId++) {
@@ -126,7 +126,7 @@ public class ProblemInstance {
         }
     }
 
-    public void setUpNodesAndCars() {
+    private void setUpNodesAndCars() {
         String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").substring(1, inputFileMap.get("totalNumberOfChargingSlots").length() - 1).split(" ");
         ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
         int i;
@@ -187,8 +187,32 @@ public class ProblemInstance {
         }
     }
 
-    public void addNodeToNodeMap(Node node){
+    private void addNodeToNodeMap(Node node){
         this.nodeMap.put(node.getNodeId(),node);
+    }
+
+    private void addInitialDemandRatesToNodes(){
+        int nodesWithVaryingDemand;
+        int nodesWithHighDemand;
+        try{
+            nodesWithVaryingDemand =  (int) Math.round(numPNodes*Constants.PERCENTAGE_AFFECTED_BY_RUSH_HOUR);
+            nodesWithHighDemand = (int) Math.round(nodesWithVaryingDemand*Constants.PERCENTAGE_RUSH_HOUR_SPLIT);
+        } catch (Exception e){
+            System.out.println("Casting Error");
+            nodesWithVaryingDemand = 0;
+            nodesWithHighDemand = 0;
+        }
+
+        for (int i = Constants.START_INDEX; i < numPNodes + Constants.START_INDEX; i++) {
+            ParkingNode parkingNode = (ParkingNode) nodeMap.get(i);
+            if(i >= nodesWithVaryingDemand + Constants.START_INDEX){
+                parkingNode.setDemandGroup(Constants.nodeDemandGroup.NEUTRAL);
+            }else if( i < nodesWithHighDemand+Constants.START_INDEX){
+                parkingNode.setDemandGroup(Constants.nodeDemandGroup.MORNING_RUSH);
+            } else {
+                parkingNode.setDemandGroup(Constants.nodeDemandGroup.MIDDAY_RUSH);
+            }
+        }
     }
 
     public int getExampleNumber() {
