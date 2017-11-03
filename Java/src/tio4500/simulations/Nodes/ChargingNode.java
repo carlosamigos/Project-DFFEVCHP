@@ -1,19 +1,12 @@
 package tio4500.simulations.Nodes;
 
-public class ChargingNode {
+public class ChargingNode extends Node{
 
-    public final int nodeId;
-    private int numberOfCarsCharging;
-    private int numberOfTotalChargingSpots;
+    private int numberOfCarsCharging = 0;
+    private int numberOfTotalChargingSlots = 0;
 
-    public ChargingNode(int nodeId, int numberOfCarsCharging, int numberOfTotalChargingSpots) {
-        this.nodeId = nodeId;
-        this.numberOfCarsCharging = numberOfCarsCharging;
-        this.numberOfTotalChargingSpots = numberOfTotalChargingSpots;
-    }
-
-    public int getNodeId() {
-        return nodeId;
+    public ChargingNode(int nodeId) {
+        super(nodeId);
     }
 
     public int getNumberOfCarsCharging() {
@@ -24,12 +17,19 @@ public class ChargingNode {
         this.numberOfCarsCharging = numberOfCarsCharging;
     }
 
-    public int getNumberOfTotalChargingSpots() {
-        return numberOfTotalChargingSpots;
+    public int getNumberOfTotalChargingSlots() {
+        return numberOfTotalChargingSlots;
     }
 
-    public void setNumberOfTotalChargingSpots(int numberOfTotalChargingSpots) {
-        this.numberOfTotalChargingSpots = numberOfTotalChargingSpots;
+    public void setNumberOfTotalChargingSpots(int numberOfTotalChargingSlots) {
+        this.numberOfTotalChargingSlots = numberOfTotalChargingSlots;
+    }
+
+    @Override
+    public String toString() {
+        return "ChargingNode{" +
+                    super.getNodeId()+
+                '}';
     }
 }
 
