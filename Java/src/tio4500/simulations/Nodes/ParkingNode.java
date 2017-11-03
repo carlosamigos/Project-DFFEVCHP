@@ -1,29 +1,44 @@
 package tio4500.simulations.Nodes;
 
+import tio4500.simulations.Entities.Car;
+
+import java.util.ArrayList;
+
 public class ParkingNode extends Node{
 
-
-    private int numberOfFullyChargedCars = 0;
-    private int numberOfCarsInNeed = 0;
+    private ArrayList<Car> carsInNeed;
+    private ArrayList<Car> carsRegular;
 
     public ParkingNode(int nodeId) {
         super(nodeId);
+        carsInNeed = new ArrayList<>();
+        carsRegular = new ArrayList<>();
+    }
+
+    public ArrayList<Car> getCarsInNeed() {
+        return carsInNeed;
     }
 
 
-    public int getNumberOfFullyChargedCars() {
-        return numberOfFullyChargedCars;
+    public ArrayList<Car> getCarsRegular() {
+        return carsRegular;
     }
 
-    public int getNumberOfCarsInNeed() {
-        return numberOfCarsInNeed;
+    public void addRegularCar(Car car){
+        this.carsRegular.add(car);
     }
 
-    public void setNumberOfFullyChargedCars(int numberOfFullyChargedCars) {
-        this.numberOfFullyChargedCars = numberOfFullyChargedCars;
+    public void addCarInNeed(Car car){
+        this.carsInNeed.add(car);
     }
 
-    public void setNumberOfCarsInNeed(int numberOfCarsInNeed) {
-        this.numberOfCarsInNeed = numberOfCarsInNeed;
+    public void removeCarFromNode(Car car){
+        carsInNeed.remove(car);
+        carsRegular.remove(car);
+    }
+
+    @Override
+    public String toString() {
+        return "ParkingNode{"+super.getNodeId()+"}";
     }
 }

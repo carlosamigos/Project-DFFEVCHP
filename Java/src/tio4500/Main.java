@@ -17,6 +17,7 @@ public class Main {
     public static void createProblemInstance(){
     	int exampleNumber = 1;
     	ProblemInstance instance = new ProblemInstance(exampleNumber);
+    	System.out.println(instance);
 	}
 
     public static void runSimulation(){

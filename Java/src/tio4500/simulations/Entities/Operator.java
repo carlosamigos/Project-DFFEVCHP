@@ -22,4 +22,12 @@ public class Operator {
     public Node getCurrentNode() {
         return currentNode;
     }
+
+    @Override
+    public String toString() {
+        return "Operator{" +
+                "id=" + id +
+                ", node=" + currentNode +
+                '}';
+    }
 }
