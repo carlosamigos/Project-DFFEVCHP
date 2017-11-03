@@ -182,7 +182,7 @@ class World:
                 string += " "
             else:
                 string += "] \n"
-        string += "travelTimeToOriginA: ["
+        string += "travelTimeToParkingA: ["
         for i in range(len(self.fCCars)):
             string += str(self.fCCars[i].remainingTime)
             if (i < len(self.fCCars) - 1):
@@ -219,7 +219,7 @@ class World:
                 string += " "
             else:
                 string += "] \n"
-        string += "ideaStateP: ["
+        string += "idealStateP: ["
         for i in range(len(self.pNodes)):
             string += str(self.pNodes[i].iState)
             if (i < len(self.pNodes) - 1):
