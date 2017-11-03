@@ -32,5 +32,23 @@ public class Constants {
 	public final static int HORIZONTAL_NODES = 2;
 	
 	// Variables for Mosel
-	public final static int MAX_DURATION = 200; // In seconds
+	public final static int MAX_DURATION = 200; // In minute
+
+	// Variables for simulation environment
+	public final static double HIGH_RATE_LAMBDA = 1.0; // Average waiting time before next arrival
+	public final static double MEDIUM_RATE_LAMBDA = 5.0;
+	public final static double LOW_RATE_LAMBDA = 10.0;
+	public final static double PERCENTAGE_AFFECTED_BY_RUSH_HOUR = 2.0/3.0;
+	public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
+
+	public final static double CHARGING_TIME_FULL = 3*60; //3 hours, in minutes
+	public final static double CHARGING_THRESHOLD = 0.40;
+	public final static double BATTERY_RANGE = 3*60; //3 hours, in minutes
+	public final static double PERCENTAGE_BATTERY_USED_PER_TIME_UNIT = 1.0/BATTERY_RANGE;
+
+	public final static int NUMBER_OF_CARS_LOCKED_IN_OPERATOR_PATH = 1;
+
+
+
+
 }
