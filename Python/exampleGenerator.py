@@ -316,12 +316,13 @@ def createCNodes(world):
     for i in range(numCNodes):
         print("\n")
         print("Creating charging node: ", i+1)
-        pNode = world.pNodes[int(input("Which parking node should it be located in: "))-1]
+        pNodeNum = int(input("Which parking node should it be located in: "))
+        pNode = world.pNodes[pNodeNum-1]
         capacity = int(input("What is the capacity: "))
         fCCars = input("How many cars are charging there now, that will finish during the planning period: ")
-        for i in range(fCCars):
+        for j in range(fCCars):
             time = random.randint(0, 59)
-            createFCCars(world, time, i + len(world.pNodes) +1, pNode)
+            createFCCars(world, time, i + len(world.pNodes) + 1, pNodeNum)
         cN = cNode(pNode.xCord, pNode.yCord, capacity, fCCars)
         world.addcNodes(cN)
         world.addNodes(cN)
