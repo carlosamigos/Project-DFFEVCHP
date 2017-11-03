@@ -1,0 +1,1009 @@
+model DVFFEVRP
+
+!options explterm
+!options noimplicit
+
+uses "mmxprs";
+
+parameters
+	DataFile = 'states/example4.txt';
+end-parameters
+
+declarations
+	printParams  : boolean;
+	printResults : boolean;
+	writeToFile  : boolean;
+end-declarations
+
+printParams  := true;
+printResults := true;
+writeToFile  := true;
+
+(! ### Start of initialization of set sizes ### !)
+
+(! This implementation includes, beyond v1:
+- MaxTime implementation - e.g. Tracking max time for each person 
+- Sequence control
+- Demand implementation 
+- More than one objective function 
+!)
+
+declarations
+	numVisits     : integer; ! Max number of visits for all Nodes
+	numPNodes     :	integer; ! Number of parking Nodes
+	numCNodes     :	integer; ! Number of charging Nodes
+	numANodes     :	integer; ! Number of artificial Nodes
+	numRNodes     :	integer; ! Number of real Nodes
+	numNodes      :	integer; ! Total number of Nodes
+	numROperators : integer; ! Number of real operators
+	numAOperators : integer; ! Number of artificial operators
+end-declarations
+
+initializations from DataFile
+	numVisits;
+	numPNodes;
+	numCNodes;
+	numROperators;
+	numAOperators;
+end-initializations
+
+numRNodes := numCNodes + numPNodes;
+numANodes := numROperators * 2;
+numNodes  := numRNodes + numANodes;
+! ### End of initialization of set sizes ### !
+
+
+! ### Start of declaration of sets ### !
+declarations
+	Nodes             : set of integer; ! Set of all Nodes
+	pNodes            : set of integer; ! Set of all parking Nodes. A subset of Nodes.
+	cNodes     		  : set of integer; ! Set of all charging Nodes. A subset of Nodes.
+	rNodes            : set of integer; ! Set of all real Nodes. A subset of Nodes.
+	aNodes            : set of integer; ! Set of all artificial Nodes. A subset of Nodes.
+	aOriginNodes      : set of integer;
+	aDestinationNodes : set of integer;
+	rOperators        : set of integer; ! Set of all real operators.
+	aOperators        : set of integer; ! Set of all artificial operators
+	visits            : set of integer; ! Set of all possible visits
+end-declarations
+
+initializations from DataFile
+	numVisits;
+	numPNodes;
+	numCNodes;
+	numROperators;
+	numAOperators;
+end-initializations
+
+visits := 1..numVisits;
+
+! Initialize all node sets ! 
+pNodes            := 1 .. numPNodes;
+cNodes   	      := (numPNodes + 1) .. numRNodes;
+rNodes    	      := pNodes + cNodes;
+aOriginNodes      := (numRNodes + 1) .. (numRNodes + numROperators)
+aDestinationNodes := (1+ numRNodes + numROperators) .. (numRNodes + numANodes);
+aNodes            := aOriginNodes + aDestinationNodes;
+Nodes             := rNodes + aNodes;
+
+! Initialize all operator sets !
+rOperators := 1 .. numROperators;
+aOperators := 1 .. numAOperators;
+
+! ### End of initialization of sets ### !
+
+if printParams then
+	writeln('------ Counts ------');
+	writeln('Total number of Nodes:          ', numNodes);
+	writeln('Number of real Nodes:           ', numRNodes);
+	writeln('Number of parking Nodes:        ', numPNodes);
+	writeln('Number of charging Nodes:       ', numCNodes);
+	writeln('Number of artificial Nodes:     ', numANodes);
+	writeln('Number of operators:            ', numROperators);
+	writeln('Number of artificial operators: ', numAOperators);
+	writeln('Number of visits:               ', numVisits);
+	
+	writeln('');
+	writeln('------ Sets ------');
+	writeln('All Nodes:               ', Nodes);
+	writeln('Real Nodes:              ', rNodes);
+	writeln('Parking Nodes:           ', pNodes);
+	writeln('Charging Nodes:          ', cNodes);
+	writeln('Artificial Nodes:        ', aNodes);
+	writeln('Artificial destinations: ', aDestinationNodes);
+	writeln('Artificial origin:       ', aOriginNodes);
+	writeln('Operators:               ', rOperators);
+	writeln('Artificial operators:    ', aOperators);
+	writeln('Visits:                  ', visits);
+	writeln('');
+end-if
+
+
+! ### Start of declaration of Parameters ### !
+declarations
+	! Nodes !
+	originNodeROperator       : array(rOperators) of integer; ! Origin Nodes for all real operators
+	destinationNodeROperator  : array(rOperators) of integer; ! Artificial destination node of real operators
+	startNodeROperator        : array(rOperators) of integer; ! Actual start node for real operators
+	chargingNodeAOperator     : array(aOperators) of integer; ! Origin Nodes for all artificial operators
+	parkingNodeAOperator      : array(aOperators) of integer; ! Actual start node for artificial operator
+	
+	
+	chargingSlotsAvailable    : array(cNodes)     of integer; ! Available charging slots at charging Nodes
+	
+	! Costs !
+	costOfDeviation         : real; 
+	costOfPostponedCharging : real;
+	costOfExtraTime         : real;
+	costOfTravel            : real;
+	costOfTimeUse 			: real;
+	costOfMaxTravel         : real;
+	
+	! Times !
+	travelTimeVehicle    : array(rNodes,rNodes) of real;
+	travelTimeBike       : array(rNodes,rNodes) of real;
+	handlingTimeP        : real;
+	handlingTimeC        : real;
+	timeLimit            : real;
+	timeLimitLastVisit   : real;
+	
+	! Initial and ideal state !
+	travelTimeToOriginR  : array(rOperators) of real;
+	travelTimeToParkingA : array(aOperators) of real;
+	initialHandling      : array(rOperators) of integer;
+	initialRegularInP    : array(pNodes)     of integer;
+	initialInNeedP       : array(pNodes)     of integer;
+	finishedDuringC      : array(cNodes)     of integer;
+	idealStateP          : array(pNodes)     of integer;
+	demandP              : array(pNodes)     of integer;
+	
+	!Objective function
+	mode : integer;
+	
+	! Big Ms
+	sequenceBigM : integer;
+	
+	!Visits
+	visitList : array(Nodes)               of integer;
+end-declarations
+
+initializations from DataFile
+	originNodeROperator;
+	destinationNodeROperator;
+	startNodeROperator;
+	chargingNodeAOperator;
+	parkingNodeAOperator;
+	chargingSlotsAvailable;
+	costOfDeviation;
+	costOfPostponedCharging;
+	costOfExtraTime;
+	costOfTravel;
+	costOfTimeUse;
+	costOfMaxTravel;
+	travelTimeVehicle;
+	travelTimeBike;
+	handlingTimeP;
+	handlingTimeC;
+	timeLimit;
+	timeLimitLastVisit;
+	travelTimeToOriginR;
+	travelTimeToParkingA;
+	initialHandling;
+	initialRegularInP;
+	initialInNeedP;
+	finishedDuringC;
+	idealStateP;
+	demandP;
+	!visitList;
+	mode;
+	sequenceBigM;
+end-initializations
+! ### End of initialization of Parameters ### !
+
+if printParams then
+	writeln('------ Parameters ------');
+	writeln('Origin Nodes for real operators:                                         ', originNodeROperator);
+	writeln('Destination Nodes for real operators:                                    ', destinationNodeROperator);
+	writeln('Actual starting node for real operators:                                 ', startNodeROperator);
+	writeln('Origin Nodes for real operators:                                         ',originNodeROperator);
+	writeln('Destination Nodes for real operators:                                    ',destinationNodeROperator);
+	writeln('Actual starting node for real operators:                                 ',startNodeROperator);
+	writeln('Charging Nodes for artificial operators:                                 ',chargingNodeAOperator);
+	writeln('Parking Nodes for artificial operators:                                  ',parkingNodeAOperator);
+	writeln('Available slots at charging stations:                                    ',chargingSlotsAvailable);
+	writeln('Cost per vehicle deviation in each node:                                 ',costOfDeviation);
+	writeln('Cost of extra time:                                                      ',costOfExtraTime);
+	writeln('Cost per vehicle of postponing chargning:                                ',costOfPostponedCharging);
+	writeln('Travel times between real Nodes using vehicle:                           ',travelTimeVehicle);
+	writeln('Travel times between real Nodes using bikes:                             ',travelTimeBike);
+	writeln('Time to park a car:                                                      ',handlingTimeP);
+	writeln('Time to handle a car:                                                    ',handlingTimeC);
+	writeln('Time limit for planning period:                                          ',timeLimit);
+	writeln('Time limit for last visit:                                               ',timeLimitLastVisit);
+	writeln('Remaining travel time to origin node for real operators:                 ',travelTimeToOriginR);
+	writeln('Remaining travel time to parking node for artificial operators:          ',travelTimeToParkingA);
+	writeln('Initial handling for real operators:                                     ',initialHandling);
+	writeln('Initial number of parked cars in each parking node:                      ',initialRegularInP);
+	writeln('Initial number of cars in a parking node in need of charging:            ',initialInNeedP);
+	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
+	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
+	writeln('Demand in the different nodes:                                           ',demandP);
+end-if
+
+
+
+! ### Start of declaration of Variables ### !
+
+declarations
+	x      : dynamic array(Nodes, visits, Nodes, visits, rOperators)  of mpvar;
+	h      : dynamic array(Nodes, visits, Nodes, visits, rOperators)  of mpvar;
+	hA     : dynamic array(cNodes, visits, pNodes, visits, aOperators)of mpvar;
+	c      : dynamic array(cNodes, visits, rOperators)                of mpvar;
+	q      : dynamic array(rNodes, visits, rOperators)                of mpvar;
+	t      : dynamic array(Nodes, visits)                             of mpvar;
+	tPlus  : dynamic array(rNodes, visits)                            of mpvar;
+	tMinus : dynamic array(rNodes, visits)                            of mpvar;
+	r      : dynamic array(rNodes, visits)                            of mpvar;
+	s      : dynamic array(rNodes, visits)                            of mpvar;
+	sC     : dynamic array(pNodes, visits)                            of mpvar;
+	sPlus  : dynamic array(pNodes)                                    of mpvar;
+	sMinus : dynamic array(pNodes)                                    of mpvar;
+	sEndC  : dynamic array(pNodes)									  of mpvar;	
+	sEndAc : dynamic array(cNodes)									  of mpvar;	
+	u      : dynamic array(Nodes, visits, rOperators)				  of mpvar; 					
+end-declarations
+
+! ### End of declaration of Variables ### !
+
+! ### Start of creation of Variables ### !
+
+!Create x
+forall(pp in rOperators) do
+	forall (ii in Nodes - aNodes + {originNodeROperator(pp)}) do 
+		if ii = originNodeROperator(pp) then
+			forall(nn in visits) do
+				create(x(ii, 1, startNodeROperator(pp), nn, pp));
+				x(ii, 1, startNodeROperator(pp), nn, pp) is_binary;  
+			end-do
+		else	
+			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)} | jj <> ii) do
+				forall(mm in visits, nn in visits) do
+					create(x(ii, mm, jj, nn, pp));
+					x(ii, mm, jj, nn, pp) is_binary;
+				end-do
+			end-do
+		end-if
+	end-do
+end-do
+
+!Create h
+forall(pp in rOperators) do
+	forall (ii in Nodes - aNodes + {originNodeROperator(pp)} - cNodes) do
+		if ii = originNodeROperator(pp) then
+			forall(nn in visits) do
+				create(h(ii, 1, startNodeROperator(pp), nn, pp));
+				h(ii, 1, startNodeROperator(pp), nn, pp) is_binary;
+			end-do
+		else	
+			forall(jj in Nodes - aNodes | jj <> ii) do
+				forall(mm in visits, nn in visits) do
+					create(h(ii, mm, jj, nn, pp));
+					h(ii, mm, jj, nn, pp) is_binary;
+				end-do
+			end-do
+		end-if
+	end-do
+end-do
+
+!Create hA
+forall(pp in aOperators, mm in visits, nn in visits) do
+	create(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+	hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) is_binary;
+end-do
+
+!Create c
+forall(jj in cNodes, mm in visits, pp in rOperators) do
+	create(c(jj, mm, pp));
+	c(jj, mm, pp) is_binary;
+end-do
+
+!Create q
+forall(jj in pNodes, mm in visits, pp in rOperators) do 
+	create(q(jj, mm, pp));
+	q(jj, mm, pp) is_binary;
+end-do
+
+!Create t, part 1
+forall(ii in Nodes - aNodes) do
+	forall(mm in visits) do
+		create(t(ii,mm));
+		t(ii,mm) is_semcont 0; 
+		create(tPlus(ii, mm));
+		create(tMinus(ii, mm));
+		tPlus(ii, mm) is_semcont 0;
+		tMinus(ii, mm) is_semcont 0;
+	end-do
+end-do
+
+
+!Define t, part 2
+forall(pp in rOperators) do 
+	create(t(originNodeROperator(pp),1));
+	create(t(destinationNodeROperator(pp),1));
+	t(originNodeROperator(pp),1) is_semcont 0;
+	t(destinationNodeROperator(pp),1) is_semcont 0;
+end-do
+
+!Create r
+forall(ii in rNodes, mm in visits) do 
+	create(r(ii, mm));
+	r(ii, mm) is_binary;
+end-do
+
+
+!Create s
+forall(ii in rNodes, mm in visits) do
+	create(s(ii, mm));
+	s(ii, mm) is_semint 0;
+end-do
+
+!Create sC
+forall(ii in pNodes, mm in visits) do
+	create(sC(ii, mm));
+	sC(ii, mm) is_semint 0;
+end-do
+
+!Create sPlus and sMinus
+forall(ii in pNodes) do 
+	create(sPlus(ii));
+	create(sMinus(ii));
+	sPlus(ii) is_semint 0;
+	sMinus(ii) is_semint 0;
+end-do
+
+! Create sEncC - End state for cars in need of charging in parking nodes
+forall(ii in pNodes) do 
+	create(sEndC(ii));
+	sEndC(ii) is_semint 0;
+end-do
+
+! Create SEndAc - End state charging nodes
+forall(ii in cNodes) do
+	create(sEndAc(ii));
+	sEndAc(ii) is_semint 0;
+end-do
+
+! Create u - sequence variabel 
+forall(pp in rOperators) do
+	forall(ii in rNodes, mm in visits) do
+		create(u(ii, mm, pp));
+		u(ii, mm, pp) is_semint 0; 
+	end-do
+end-do
+
+! ### End of creation of Variables ### !
+
+
+! ### Start of declaration of OBJECTIVE ### !
+declarations
+		Objective: linctr;
+end-declarations
+
+! Standard 
+Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+
+!Try to do the least handling 
+if(mode = 1) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
+			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+end-if
+
+! Max travel 
+if(mode = 2) then
+	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+end-if
+
+! ### End of declaration of objective ### !			 
+
+! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
+declarations
+	operatorStart: dynamic array(rOperators)                 of linctr;
+	operatorEnd  : dynamic array(rOperators)                 of linctr;
+	inEqualsOut  : dynamic array(rOperators, rNodes, visits) of linctr;
+	maxVisitIn   : dynamic array(rNodes, visits)             of linctr;
+	maxVisitOut  : dynamic array(rNodes, visits)             of linctr;
+	vSymmetryP   : dynamic array(pNodes, visits)             of linctr;
+	vSymmetryC   : dynamic array(cNodes, visits)             of linctr;
+end-declarations 
+
+forall(pp in rOperators) do
+	operatorStart(pp) := sum(nn in visits) x(originNodeROperator(pp), 1, startNodeROperator(pp), nn, pp) = 1;
+end-do
+
+forall(pp in rOperators) do
+	operatorEnd(pp) := sum(ii in rNodes, mm in visits ) x(ii, mm, destinationNodeROperator(pp), 1, pp) = 1;
+end-do
+
+forall(pp in rOperators, ii in rNodes, mm in visits) do
+	inEqualsOut(pp, ii, mm) := sum(jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) + x(ii,mm,destinationNodeROperator(pp),1,pp)=
+				               sum(jj in rNodes, nn in visits) x(jj, nn, ii, mm, pp) + x(originNodeROperator(pp),1,ii,mm,pp);
+end-do
+
+forall(ii in rNodes, mm in visits) do
+	maxVisitIn(ii, mm) := sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp)+ sum(pp in rOperators)x(ii,mm,destinationNodeROperator(pp),1,pp) +
+						  sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) <= 1;
+end-do
+
+forall(ii in rNodes, mm in visits) do
+	maxVisitOut(ii, mm) := sum(pp in rOperators, jj in rNodes, nn in visits) x(jj, nn, ii, mm, pp) + sum(pp in rOperators)x(originNodeROperator(pp), 1, ii, mm, pp)+
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) <= 1;
+end-do
+
+! Routing constraints - Symmetry breaking !
+forall(ii in pNodes, mm in visits - {numVisits}) do 
+	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm, pp))) +
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >=  
+	(sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm+1, pp))) + 
+	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm+1, pp) 
+end-do
+
+forall(ii in cNodes, mm in visits - {numVisits}) do
+	vSymmetryC(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm, jj, nn, pp))) +
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) >=
+	(sum(pp in rOperators) (sum( jj in rNodes + {destinationNodeROperator(pp)}, nn in visits) x(ii, mm+1, jj, nn, pp))) +
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm+1, parkingNodeAOperator(pp), nn, pp) 
+end-do
+
+
+! ### End of declaration of routing constraints ### !
+
+! ### Start of declaration of HANDLING CONSTRAINTS (5.3) ### !
+
+! Handling by real operators
+
+declarations
+	handleOnlyIfX : dynamic array(rNodes - aNodes+aOriginNodes, visits, rNodes, visits, rOperators) of linctr;
+	chargeOnlyIfHandle : dynamic array(cNodes, visits, rOperators)                                  of linctr;
+	dropOnlyIfHandle : dynamic array(pNodes, visits, rOperators) 				                    of linctr;
+	lowEffort : dynamic array(rNodes, visits, rNodes, visits, rOperators)                           of linctr;
+end-declarations 
+
+forall(pp in rOperators) do
+	forall(ii in rNodes - cNodes + {originNodeROperator(pp)}, jj in rNodes, nn in visits) do
+		if ii = originNodeROperator(pp) then
+			handleOnlyIfX(ii,1,jj,nn,pp) := h(ii,1,jj,nn,pp) <= x(ii,1,jj,nn,pp);
+		else
+			forall(mm in visits) do
+				handleOnlyIfX(ii,mm,jj,nn,pp) := h(ii,mm,jj,nn,pp) <= x(ii,mm,jj,nn,pp);
+			end-do
+		end-if
+	end-do
+end-do
+
+forall(jj in cNodes, nn in visits, pp in rOperators) do
+	chargeOnlyIfHandle(jj, nn, pp) := sum(ii in pNodes +{originNodeROperator(pp)}, mm in visits) h(ii, mm, jj, nn, pp) = c(jj, nn, pp);
+end-do
+
+forall(jj in pNodes, nn in visits, pp in rOperators) do
+	dropOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes +{originNodeROperator(pp)}, mm in visits) h(ii, mm, jj, nn, pp) = q(jj, nn, pp);
+end-do
+
+
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
+	lowEffort(ii, mm, jj, nn, pp) := h(ii, nn, jj, mm, pp)+ sum(kk in rNodes, ll in visits) h(jj, mm, kk, ll, pp) >= x(ii, nn, jj, mm, pp);
+end-do
+
+! Initial handling by real
+declarations
+	startLoad : dynamic array(rOperators) of linctr;
+end-declarations
+
+forall(pp in rOperators) do
+	startLoad(pp) := sum(nn in visits) h(originNodeROperator(pp), 1, startNodeROperator(pp), nn, pp) = initialHandling(pp);
+end-do
+
+! Initial handling by artificial operators
+declarations
+	handlingArtificial : dynamic array(aOperators) of linctr;
+end-declarations
+
+forall(pp in aOperators) do
+	handlingArtificial(pp) := sum(mm in visits, nn in visits) hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp) = 1;
+end-do
+
+
+! ### End of declaration of handling constraints ### !	
+
+! ### Start of declaration of STATE CONSTRAINTS (5.4) ### !		
+
+! State constraints for parking nodes for cars not in need of charging
+declarations
+	stateBalanceParkingNotInNeed : dynamic array(pNodes, visits ) of linctr;
+	endStateDeviation            : dynamic array(pNodes)          of linctr;
+end-declarations
+
+
+forall(ii in pNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1) <= initialRegularInP(ii);
+	elif mm = 2 then
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp) -
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = initialRegularInP(ii);
+	else 
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) - 
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,mm-1,pp) - 
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,mm-1,pp) = s(ii,mm-1);
+	end-if
+end-do
+
+forall(ii in pNodes) do
+	endStateDeviation(ii) := s(ii, numVisits) - sum(jj in pNodes, nn in visits, pp in rOperators) h(ii, numVisits,jj,nn,pp) +
+											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii ) hA(chargingNodeAOperator(pp), nn, ii, numVisits, pp) + 
+											   sum(pp in rOperators, jj in pNodes, nn in visits) h(jj,nn,ii,numVisits,pp) + 
+											   sum(pp in rOperators) h(originNodeROperator(pp),1,ii,numVisits,pp)  +
+											   sPlus(ii) - sMinus(ii) - demandP(ii) = idealStateP(ii);
+											   
+end-do
+
+
+! State constraints for parking nodes for cars in need of charging
+declarations
+	stateBalanceParkingInNeed : dynamic array(pNodes, visits) of linctr;
+	endStateDeviationInNeed   : dynamic array(pNodes)         of linctr;
+end-declarations
+
+forall(ii in pNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceParkingInNeed(ii,mm) := sC(ii, 1) <= initialInNeedP(ii);
+	elif mm = 2 then
+		stateBalanceParkingInNeed(ii,mm) := sC(ii,mm) + sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp) = initialInNeedP(ii);
+	else 
+		stateBalanceParkingInNeed(ii,mm) := sC(ii,mm) + sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp) = sC(ii,mm-1);
+	end-if
+end-do
+
+forall(ii in pNodes) do
+	endStateDeviationInNeed(ii) := sC(ii, numVisits) - sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,numVisits,jj,nn,pp) <= sEndC(ii);
+end-do
+
+! State constraints for charging nodes
+declarations
+	stateBalanceCharging      : dynamic array(cNodes, visits)       of linctr;
+	stateMaxLimitChargingLast : dynamic array(cNodes)               of linctr;
+	stateMaxLimitCharging     : dynamic array(cNodes, visits - {1}) of linctr;
+	endStateBalance		      : dynamic array(cNodes)               of linctr;
+end-declarations
+
+forall(ii in cNodes, mm in visits) do 
+	if mm = 1 then
+		stateBalanceCharging(ii,mm) := s(ii, 1) <= finishedDuringC(ii);
+		
+	elif mm = 2 then
+		stateBalanceCharging(ii,mm) := s(ii,mm) + 
+											   sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, mm-1, parkingNodeAOperator(pp), nn, pp) -
+											   sum(pp in rOperators) c(ii, mm-1, pp) = finishedDuringC(ii);
+	
+	else 
+		stateBalanceCharging(ii,mm) := s(ii,mm) + 
+											   sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, mm-1, parkingNodeAOperator(pp), nn, pp) -
+											   sum(pp in rOperators) c(ii, mm-1, pp) = s(ii, mm-1); 
+	end-if
+end-do
+
+forall(ii in cNodes, mm in visits - {1}) do
+	stateMaxLimitCharging(ii, mm) := s(ii, mm) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
+end-do
+
+forall(ii in cNodes) do
+	stateMaxLimitChargingLast(ii) := s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
+											   sum(pp in rOperators) c(ii, numVisits, pp) <= chargingSlotsAvailable(ii) + finishedDuringC(ii);
+end-do
+
+forall(ii in cNodes) do
+	endStateBalance(ii) := sEndAc(ii) = s(ii, numVisits) - sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii ) hA(ii, numVisits, parkingNodeAOperator(pp), nn, pp) +
+											   sum(pp in rOperators) c(ii, numVisits, pp);
+end-do
+
+
+! ### End of declaration of state constraints ### !		
+
+! ### Start of declaration of TIME CONSTRAINTS (5.5) ### !
+
+! Time constraints for real operators !
+
+declarations
+	travelTimeCharging      : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
+	travelTimeParking       : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
+	startTime               : dynamic array(rOperators, visits)                         of linctr;
+	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
+	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
+	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
+	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
+	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
+end-declarations 
+
+
+
+forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
+	travelTimeCharging(pp, ii, mm, jj, nn) := t(ii, mm)  + (c(ii, mm, pp) * handlingTimeC) + travelTimeBike(ii,jj)  <= 
+											  t(jj,nn) + 
+											  (timeLimit + timeLimitLastVisit + handlingTimeC + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));							 
+end-do
+
+
+forall(pp in rOperators, ii in pNodes, mm in visits, jj in rNodes, nn in visits) do
+	travelTimeParking(pp, ii, mm, jj, nn) := t(ii, mm) + (q(ii, mm, pp) * handlingTimeP) +  travelTimeBike(ii,jj) + (travelTimeVehicle(ii,jj)-travelTimeBike(ii,jj))*h(ii,mm,jj,nn,pp) <= 
+											 t(jj,nn) + (timeLimit + timeLimitLastVisit + handlingTimeP + travelTimeBike(ii, jj))*(1 - x(ii,mm,jj,nn,pp));
+end-do
+
+
+forall(pp in rOperators, mm in visits) do
+	startTime(pp, mm) := t(startNodeROperator(pp), mm) >= travelTimeToOriginR(pp)*x(originNodeROperator(pp), 1, startNodeROperator(pp), mm, pp);
+end-do
+
+! Time constraint for extra time !
+
+forall(ii in rNodes, mm in visits) do
+	chargingCarVisit(ii, mm) := sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm, pp) + 
+	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(ii, mm, parkingNodeAOperator(pp), nn, pp) + 
+	sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) +
+	sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp), 1, pp) = r(ii, mm);
+end-do
+
+forall(ii in rNodes, mm in visits - {numVisits}) do
+	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
+		((1 - r(ii, mm+1)) *
+		(timeLimit + timeLimitLastVisit));
+end-do
+
+
+forall(ii in rNodes, mm in visits) do
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
+end-do
+
+
+forall(ii in rNodes, mm in visits) do
+	endTimeFree(ii, mm) := t(ii, mm) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp),1,pp));
+end-do
+
+forall(ii in rNodes, mm in visits) do
+	endTimeLastVisit(ii, mm) := t(ii, mm)  + tPlus(ii, mm) - tMinus(ii, mm) = timeLimit;
+end-do
+
+
+
+
+! Time constraints for artificial operators
+declarations
+	timeConstraintArtificial : dynamic array(aOperators, visits, visits) of linctr;
+	startTimeArtificial      : dynamic array(aOperators, visits, visits) of linctr;
+end-declarations
+
+forall(pp in aOperators, mm in visits, nn in visits) do
+	timeConstraintArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) <= 
+											t(parkingNodeAOperator(pp), nn) + 
+											(timeLimit+timeLimitLastVisit)*(1 - hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp));
+end-do
+
+						
+forall(pp in aOperators, mm in visits, nn in visits) do
+	startTimeArtificial(pp, mm, nn) := t(chargingNodeAOperator(pp), mm) >= 
+											travelTimeToParkingA(pp) * 
+											hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp);
+end-do
+
+! ### End of declaration of time constraints ### !
+
+! ### Start of declaration of valid inequalities ### !
+
+declarations
+	sequenceControl        : dynamic array(rNodes, visits, Nodes, visits, rOperators) of linctr;
+end-declarations
+
+
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
+	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
+end-do
+
+! ### End of declaration of valid inequalities ### !
+
+! ### Start of declaration of mode constraints ### !
+
+
+! ### End of declaration of mode constraints ### !
+
+
+
+setparam("XPRS_MAXTIME", -500);
+minimize(Objective);
+writeln('Objective function value: ', getobjval);
+
+
+! ### Variables used for printing ### !
+declarations
+	currNode       : integer;
+	currLowest     : integer;
+	currVisit      : integer;
+	currLowestNode : integer;
+	foundX         : boolean;
+	lastVisit      : array(Nodes) of integer;
+end-declarations
+
+if printResults then
+	forall(pp in rOperators) do
+		currNode := originNodeROperator(pp);
+		currVisit := 1;
+		foundX := true;
+		forall(ii in Nodes) do
+			lastVisit(ii) := 0;
+		end-do
+		write('Route of operator ', pp, ': ');
+		write('(', currNode, ', 1) -> ');
+		while(foundX) do
+			lowest := numVisits+1;
+			foundX := false;
+			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)}, nn in visits) do
+				if getsol(x(currNode, currVisit, jj, nn, pp)) >= 0.5 then
+					(!
+					if pp = 3 then
+						writeln('');
+						writeln('ii: ',currNode, ', mm: ', currVisit, ', jj: ', jj, ', nn: ', nn);
+						writeln('last visit: ', lastVisit(jj), 'lowest: ', lowest);
+					end-if
+					!)
+					if (nn > lastVisit(jj) and nn < lowest) then
+						foundX := true;
+						lowest := nn;
+						currLowestNode := jj;
+					end-if
+				end-if
+			end-do
+			
+			if foundX then			
+				isCurrC := false;
+				isNextC := false;
+				forall(nn in cNodes) do
+					if nn = currNode then
+						isCurrC := true;
+					end-if
+					if nn = currLowestNode then
+						isNextC := true;
+					end-if
+				end-do
+				
+				if isCurrC then
+					write('(h: 0)');
+				else
+					write('(h: ', getsol(h(currNode, currVisit, currLowestNode, lowest, pp)), ')');	
+				end-if
+				if currLowestNode in rNodes then
+					write(' -> (', currLowestNode, ', ', lowest, ", sPnC = ",getsol(s(currLowestNode,lowest)),')');	
+				else
+					write(' -> (', currLowestNode, ', ', lowest,')');
+				end-if
+				
+				if(currLowestNode <> destinationNodeROperator(pp)) then
+					write('(t: ', getsol(t(currLowestNode, lowest)));
+				
+					if isNextC then
+						write(', c: ', getsol(c(currLowestNode, lowest, pp)), ')');
+					else
+						write(')');	
+					end-if
+				end-if
+				if currLowestNode = destinationNodeROperator(pp) then
+					foundX := false;
+				else
+					write(' -> ');
+					lastVisit(currLowestNode) := lowest;
+					currNode := currLowestNode;
+					currVisit := lowest;
+				end-if
+			end-if
+			
+		end-do
+		writeln('');
+	end-do
+	writeln('');
+	
+	forall(pp in aOperators) do
+		write('Route of artificial operator ', pp, ': ');
+		write(chargingNodeAOperator(pp), ' -> ');
+		forall(mm in visits, nn in visits) do
+			if getsol(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp)) = 1 then
+				write('(', mm, ', ', nn, ') -> ');
+			end-if
+		end-do
+		write(parkingNodeAOperator(pp));
+		writeln('');
+	end-do
+	
+	(!
+	writeln('');
+	forall(ii in Nodes, nn in visits, mm in visits, jj in Nodes) do
+		if getsol(x(ii, nn, jj, mm, 3)) = 1 then
+			writeln("Going from: ", ii, " on visit: ", nn, " to node: ", jj, " on visit: ", mm);
+		end-if
+	end-do
+	
+	writeln('');
+	forall(ii in Nodes, nn in visits, mm in visits, jj in Nodes) do
+		if getsol(x(ii, nn, jj, mm, 2)) = 1 then
+			writeln("Going from: ", ii, " on visit: ", nn, " to node: ", jj, " on visit: ", mm);
+		end-if
+	end-do
+	
+	writeln(getsol(h(10, 1, 7, 1, 2)));
+	writeln(getsol(h(10, 1, 7, 2, 2)));
+	writeln(getsol(h(10, 1, 7, 3, 2)));
+	
+	writeln(getsol(x(10, 1, 7, 1, 2)));
+	writeln(getsol(x(10, 1, 7, 2, 2)));
+	writeln(getsol(x(10, 1, 7, 3, 2)));
+	
+	!writeln(getsol(t(2,1)));
+	!writeln(getsol(t(2,2)));
+	
+	writeln('t2,3: ', getsol(t(2,3)));
+	writeln('TH', handlingTimeP);
+	writeln('q2,3: ', getsol(q(2, 3, 2)));
+	writeln('tP: ', travelTimeBike(2,7));
+	writeln('tR: ', travelTimeVehicle(2,7));
+	writeln('h2,3,7,2: ', getsol(h(2,3,7,2,2)));
+	writeln('t7,2: ', getsol(t(7, 2)));
+	writeln('x2,3,7,2: ', getsol(x(2,3,7,2,2)));
+	writeln('Time limit', timeLimit);
+	
+	
+	forall(ii in rNodes, nn in visits) do
+		if getsol(x(ii, nn, 14, 1, 3)) = 1 then
+			writeln(ii, ':',nn);
+		end-if
+	end-do
+	!)
+end-if
+
+
+forall(ii in pNodes) do
+	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
+end-do
+
+forall(ii in pNodes) do
+	writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
+end-do
+
+forall(ii in cNodes) do
+	writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
+end-do
+
+forall(ii in pNodes) do
+	writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
+end-do
+
+forall(ii in Nodes - aNodes) do
+	writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
+end-do
+
+forall(ii in Nodes - aNodes) do
+	writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
+end-do
+
+forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
+	if(getsol(x(ii,mm,jj,nn,pp)) = 1) then
+		writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
+	end-if
+end-do
+writeln("HANDLING")
+forall(pp in rOperators, ii in Nodes, mm in visits)do
+	forall(jj in Nodes, nn in visits) do 
+		if(getsol(h(ii,mm,jj,nn,pp)) >= 0.5) then
+			writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
+		end-if
+	end-do
+	
+end-do
+
+
+if writeToFile then
+	fopen("output/outputServiceOperatorsPath.txt", F_OUTPUT);
+	forall(pp in rOperators) do
+		currNode := originNodeROperator(pp);
+		currVisit := 1;
+		foundX := true;
+		forall(ii in Nodes) do
+			lastVisit(ii) := 0;
+		end-do
+		write(pp, ': ');
+		write('(', currNode, ',1,0,0),');
+		while(foundX) do
+			lowest := numVisits+1;
+			foundX := false;
+			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)}, nn in visits) do
+				if getsol(x(currNode, currVisit, jj, nn, pp)) >= 0.5 then
+					if (nn > lastVisit(jj) and nn < lowest) then
+						foundX := true;
+						lowest := nn;
+						currLowestNode := jj;
+					end-if
+				end-if
+			end-do
+			
+			if foundX then			
+				isCurrC := false;
+				isNextC := false;
+				forall(nn in cNodes) do
+					if nn = currNode then
+						isCurrC := true;
+					end-if
+					if nn = currLowestNode then
+						isNextC := true;
+					end-if
+				end-do
+				
+				
+				
+		
+				write('(', currLowestNode, ',', lowest,',');	
+				if isCurrC then
+					write('0,');
+				else
+					write(getsol(h(currNode, currVisit, currLowestNode, lowest, pp)),',');	
+				end-if
+
+			
+				
+				if(currLowestNode <> destinationNodeROperator(pp)) then
+					write(getsol(t(currLowestNode, lowest)),"),");
+					else
+						write(getsol(t(currNode, lastVisit(currNode))),")")	;
+						
+				end-if
+				if currLowestNode = destinationNodeROperator(pp) then
+					foundX := false;
+				else
+					lastVisit(currLowestNode) := lowest;
+					currNode := currLowestNode;
+					currVisit := lowest;
+				end-if
+			end-if
+			
+		end-do
+		writeln('');
+	end-do
+	fclose(F_OUTPUT);
+	
+	
+	!todo fake service operators
+	fopen("output/outputArtificialServiceOperators.txt", F_OUTPUT);
+	
+	forall(pp in aOperators) do
+		write(pp, ': ');
+		forall(mm in visits, nn in visits) do
+			if getsol(hA(chargingNodeAOperator(pp), mm, parkingNodeAOperator(pp), nn, pp)) >=0.5 then
+				write("(",chargingNodeAOperator(pp),",",mm,",",0,",",getsol(t(chargingNodeAOperator(pp),mm)),"),(",parkingNodeAOperator(pp),",",nn,",",1,",",getsol(t(parkingNodeAOperator(pp),nn)),")");
+			end-if
+		end-do
+		writeln('');
+	end-do
+	
+	
+	
+	
+	fclose(F_OUTPUT)
+	
+end-if
+
+end-model
+
+
+
+
