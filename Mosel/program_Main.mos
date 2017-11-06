@@ -396,12 +396,14 @@ Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 !Try to do the least handling 
+! Additions: Make a cost matrix for travelling, instead of just a single paramter
+! Additions: Punish only travel that does not include 
 if(mode = 1) then
 	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
 			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
-			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) (x(ii,mm,jj,nn,pp));
 end-if
 
 ! Max travel 
@@ -723,7 +725,7 @@ end-do
 
 
 
-setparam("XPRS_MAXTIME", -500);
+setparam("XPRS_MAXTIME", -800);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
