@@ -26,6 +26,7 @@ public class ProblemInstance {
     private ArrayList<CustomerTravel> customerTravels;
     private ArrayList<ArrayList<Double>> travelTimesBike;
     private ArrayList<ArrayList<Double>> travelTimesCar;
+
     private HashMap<Integer,Node> nodeMap;
     private HashMap<Integer,Operator> operatorMap;
 
@@ -254,6 +255,14 @@ public class ProblemInstance {
 
     public void setTravelTimesCar(ArrayList<ArrayList<Double>> travelTimesCar) {
         this.travelTimesCar = travelTimesCar;
+    }
+
+    public HashMap<Integer, Node> getNodeMap() {
+        return nodeMap;
+    }
+
+    public HashMap<Integer, Operator> getOperatorMap() {
+        return operatorMap;
     }
 
     @Override
