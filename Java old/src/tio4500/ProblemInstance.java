@@ -27,6 +27,7 @@ public class ProblemInstance {
     private ArrayList<ArrayList<Double>> travelTimesBike;
     private ArrayList<ArrayList<Double>> travelTimesCar;
     private HashMap<Integer,Node> nodeMap;
+    private HashMap<Integer,Operator> operatorMap;
 
     private int numPNodes = 0;
     private int numCNodes = 0;
@@ -45,14 +46,13 @@ public class ProblemInstance {
         this.travelTimesBike = new ArrayList<>();
         this.travelTimesCar = new ArrayList<>();
         nodeMap = new HashMap<>();
+        operatorMap = new HashMap<>();
         try {
             readProblemFromFile();
         } catch (IOException e){
             System.out.println("File could not be read for example "+exampleNumber);
         }
         handleInputFileMap();
-
-
     }
 
     private void readProblemFromFile() throws IOException{
@@ -123,6 +123,7 @@ public class ProblemInstance {
             Operator newOperator = new Operator(operatorId);
             newOperator.setCurrentNode(node);
             operators.add(newOperator);
+            operatorMap.put(operatorId,newOperator);
         }
     }
 

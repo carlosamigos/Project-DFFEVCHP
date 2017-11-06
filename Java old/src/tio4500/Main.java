@@ -6,6 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 	    System.out.println("Hello, rolling horizon!");
+
 	    
 	    //DynamicProblem dynamicProblem = new DynamicProblem(3);
 	    //dynamicProblem.solve();
@@ -18,7 +19,8 @@ public class Main {
 		simulationModel.createNewDaySimulationModel();
 		simulationModel.saveDaySimulationModel();
     }
-    
+
+
 
 
 }
