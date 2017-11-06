@@ -89,7 +89,7 @@ class World:
         self.TIMELIMITLAST = timeLimitLast
 
     def writeToFile(self, example):
-        fileName = "example" + str(example) + ".txt"
+        fileName = "../Mosel/initialStates/initialState" + str(example) + ".txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
@@ -124,8 +124,9 @@ class World:
             string += str(i + len(self.nodes) + len(self.operators) +1)
             if (i < len(self.operators) - 1):
                 string += " "
-            else:
-                string += "] \n"
+            
+        string += "] \n"
+
         string += "startNodeROperator: ["
         for i in range(len(self.operators)):
             string += str(self.operators[i].startNode)
@@ -138,8 +139,7 @@ class World:
             string += str(self.fCCars[i].parkingNode)
             if (i < len(self.fCCars) - 1):
                 string += " "
-            else:
-                string += "] \n"
+        string += "] \n"
         string += "\n"
         string += "chargingSlotsAvailable: ["
         for i in range(len(self.cNodes)):
@@ -187,8 +187,8 @@ class World:
             string += str(self.fCCars[i].remainingTime)
             if (i < len(self.fCCars) - 1):
                 string += " "
-            else:
-                string += "] \n"
+            
+        string += "] \n"
         string += "timeLimit: " + str(self.TIMELIMIT) + "\n"
         string += "timeLimitLastVisit: " + str(self.TIMELIMITLAST) + "\n"
         string += "initialHandling: ["
