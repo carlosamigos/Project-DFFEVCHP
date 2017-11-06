@@ -117,8 +117,8 @@ class World:
             string += str(self.fCCars[i].startNode)
             if (i < len(self.fCCars) - 1):
                 string += " "
-            else:
-                string += "] \n"
+            
+        string += "] \n"
         string += "destinationNodeROperator: ["
         for i in range(len(self.operators)):
             string += str(i + len(self.nodes) + len(self.operators) +1)
