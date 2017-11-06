@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'examples/example2.txt';
+	DataFile = '../Mosel/states/example1.txt';
 end-parameters
 
 declarations
@@ -910,7 +910,7 @@ end-do
 
 
 if writeToFile then
-	fopen("outputServiceOperatorsPath.txt", F_OUTPUT);
+	fopen("../Mosel/output/outputServiceOperatorsPath.txt", F_OUTPUT);
 	forall(pp in rOperators) do
 		currNode := originNodeROperator(pp);
 		currVisit := 1;
@@ -979,7 +979,7 @@ if writeToFile then
 	
 	
 	!todo fake service operators
-	fopen("outputArtificialServiceOperators.txt", F_OUTPUT);
+	fopen("../Mosel/output/outputArtificialServiceOperators.txt", F_OUTPUT);
 	
 	forall(pp in aOperators) do
 		write(pp, ': ');

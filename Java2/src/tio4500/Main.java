@@ -19,7 +19,9 @@ public class Main {
         simulationModel.createNewDaySimulationModel();
         simulationModel.saveDaySimulationModel();
         simulationModel.readSimulationModelFromFile();
-
         instance.writeProblemInstanceToFile();
+
+        DynamicProblem dynProb = new DynamicProblem(instance);
+        dynProb.solve();
     }
 }

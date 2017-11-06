@@ -5,26 +5,19 @@ package tio4500;
  */
 
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
-//import com.dashoptimization.*;
+import com.dashoptimization.*;
+
+import java.io.IOException;
 
 public class StaticProblem {
 
-    //XPRM mosel;
-    static String moselFile;
-    static String bimFile;
-    static int problemNo;
-    static int subproblemNo;
+    private XPRM mosel;
+    private XPRMModel model = null;
 
-    /**
-     * Creates a static subproblem.
-     * @param problemNo: Dynamic problem number
-     * @param subproblemNo: Static subproblem number
-     */
-    public StaticProblem(int problemNo, int subproblemNo) {
-        this.problemNo = problemNo;
-        this.subproblemNo = subproblemNo;
-        this.moselFile = Constants.PROBLEM_FOLDER +  Integer.toString(problemNo) + "/" + Integer.toString(subproblemNo) + ".mos";
+    public StaticProblem() {
+        this.mosel = new XPRM();
     }
 
     /**
@@ -32,18 +25,35 @@ public class StaticProblem {
      * Documentation for the XPRM framework can be found here: http://homepages.ulb.ac.be/~bfortz/moselug.pdf
      */
     public void compile() {
-        System.out.println("Starting to compile " + this.moselFile);
-        //this.mosel.compile(this.moselFile);
-        System.out.println("Done compiling      " + this.moselFile);
-        this.bimFile = Constants.PROBLEM_FOLDER + Integer.toString(this.problemNo) + "/" + Integer.toString(subproblemNo) + ".bim";
+        System.out.println("Starting to compile " + Constants.MOSEL_FILE);
+
+        try{
+            this.mosel.compile(Constants.PROBLEM_FOLDER + Constants.MOSEL_FILE);
+            System.out.println("Done compiling      " + Constants.PROBLEM_FOLDER + Constants.MOSEL_FILE);
+        } catch (XPRMCompileException e){
+            System.out.println("Could not compile mosel file");
+        }
     }
 
     /**
      * Solves this static subproblem
      */
     public void solve() {
-        System.out.println("Starting to solve   " + this.bimFile);
-        //this.mosel.loadModel(this.bimFile);
-        System.out.println("Done solving        " + this.bimFile);
+        System.out.println("Starting to solve   " +Constants.MOSEL_BIM_FILE);
+        try{
+            this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER +Constants.MOSEL_BIM_FILE);
+            model.run();
+            System.out.println("Done solving        " + Constants.MOSEL_BIM_FILE);
+        } catch (IOException e){
+            System.out.println("Could not load mosel bim file");
+        }
+    }
+
+    public XPRM getMosel(){
+        return this.mosel;
+    }
+
+    public XPRMModel getModel(){
+        return this.model;
     }
 }

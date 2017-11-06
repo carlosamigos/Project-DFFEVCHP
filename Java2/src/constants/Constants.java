@@ -7,7 +7,7 @@ public class Constants {
 
     // Folders
     public final static String MOSEL_FOLDER= "../Mosel/";
-    public final static String PROBLEM_FOLDER = "../Mosel/problems/";
+    public final static String PROBLEM_FOLDER = "../Mosel/";
     public final static String MOSEL_OUTPUT= "../Mosel/output";
     public final static String STATE_FOLDER = "../Mosel/states/";
     public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/initialStates/initialExample"; //without numbering
@@ -17,15 +17,15 @@ public class Constants {
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
 
     // Files
-    public final static String MOSEL_FILE = "test.mos";
-    public final static String MOSEL_BIM_FILE = "test.bim";
+    public final static String MOSEL_FILE = "program_v4_2.mos";
+    public final static String MOSEL_BIM_FILE = "program_v4_2.bim";
     public final static String GENERAL_INFO_FILE = "general_info.txt";
     public final static String DEMAND_REQUESTS = "demand_request";
 
     // Time specific parameters : Minutes
     public final static int TOTAL_TIME_DURING_DAY = 60*12;
     public final static int START_TIME = 6*60; // Minutes from midnight
-    public final static int TIME_INCREMENTS = 60;
+    public final static int TIME_INCREMENTS = 60*6;
 
     // Variables for Mosel
     public final static int MAX_DURATION = 200; // In minutes
