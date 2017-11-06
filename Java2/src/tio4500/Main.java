@@ -12,16 +12,14 @@ public class Main {
         //dynamicProblem.solve();
 
         int exampleNumber = 1;
-        int dayNumber = 3;
+        int dayNumber = 1;
         ProblemInstance instance = new ProblemInstance(exampleNumber);
         System.out.println(instance);
         SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
         simulationModel.createNewDaySimulationModel();
         simulationModel.saveDaySimulationModel();
         simulationModel.readSimulationModelFromFile();
+
+        instance.writeProblemInstanceToFile();
     }
-
-
-
-
 }

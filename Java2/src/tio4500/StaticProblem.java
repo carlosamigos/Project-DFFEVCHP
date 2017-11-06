@@ -35,7 +35,7 @@ public class StaticProblem {
         System.out.println("Starting to compile " + this.moselFile);
         //this.mosel.compile(this.moselFile);
         System.out.println("Done compiling      " + this.moselFile);
-        this.bimFile = Constants.PROBLEM_FOLDER + Integer.toString(this.problemNo) + "/" + Integer.toString(subproblemNo) + ".mos";
+        this.bimFile = Constants.PROBLEM_FOLDER + Integer.toString(this.problemNo) + "/" + Integer.toString(subproblemNo) + ".bim";
     }
 
     /**

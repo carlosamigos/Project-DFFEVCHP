@@ -38,7 +38,7 @@ public class SimulationModel {
         for (ParkingNode pNode : problemInstance.getParkingNodes()) {
             createAllDemandRequestsForNode(pNode);
         }
-        System.out.println("Finished creating new simulation model...");
+        System.out.println("Finished creating new simulation model.");
 
     }
 
@@ -91,7 +91,7 @@ public class SimulationModel {
                 else {
                     line.trim(); line = line.replace("\n","");
                     String[] parts = line.split(",");
-                    int parkingNodeId = Integer.parseInt(parts[0].trim()); double number = Double.parseDouble(parts[1].trim());
+                    int parkingNodeId = Integer.parseInt(parts[0].trim()) - Constants.START_INDEX; double number = Double.parseDouble(parts[1].trim());
                     try{
                         ParkingNode pNode = (ParkingNode) problemInstance.getNodeMap().get(parkingNodeId);
                         DemandRequest demandRequest = new DemandRequest(pNode, number);

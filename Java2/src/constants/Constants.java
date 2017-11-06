@@ -14,7 +14,7 @@ public class Constants {
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
 
     // Indexing
-    public final static int START_INDEX = 0; //1 means 1 indexed mosel
+    public final static int START_INDEX = 1; //1 means 1 indexed mosel
 
     // Files
     public final static String MOSEL_FILE = "test.mos";
@@ -22,9 +22,10 @@ public class Constants {
     public final static String GENERAL_INFO_FILE = "general_info.txt";
     public final static String DEMAND_REQUESTS = "demand_request";
 
-    // Time specific parameters
-    public final static double TOTAL_TIME_DURING_DAY = 60*12; // Minutes
-    public final static double START_TIME = 6*60; // Minutes from midnight
+    // Time specific parameters : Minutes
+    public final static int TOTAL_TIME_DURING_DAY = 60*12;
+    public final static int START_TIME = 6*60; // Minutes from midnight
+    public final static int TIME_INCREMENTS = 60;
 
     // Variables for Mosel
     public final static int MAX_DURATION = 200; // In minutes

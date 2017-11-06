@@ -6,12 +6,17 @@ public class Car {
 
     private final int carId;
     private double batteryLevel;
-    private Node currentNode;
+    private double previousBatteryLevel;
+    private Node currentNextNode = null;
+    private Node previousNode = null;
+    private double timeRemainingToCurrentNextNode = 0;
+    private double remainingChargingTime = 0;
 
-    public Car(int carId, double batteryLevel, Node currentNode) {
+
+    public Car(int carId, double batteryLevel) {
         this.carId = carId;
         this.batteryLevel = batteryLevel;
-        this.currentNode = currentNode;
+        this.previousBatteryLevel = batteryLevel;
     }
 
     public int getCarId() {
@@ -26,12 +31,44 @@ public class Car {
         this.batteryLevel = batteryLevel;
     }
 
-    public Node getCurrentNode() {
-        return currentNode;
+    public Node getCurrentNextNode() {
+        return currentNextNode;
     }
 
-    public void setCurrentNode(Node currentNode) {
-        this.currentNode = currentNode;
+    public void setCurrentNextNode(Node currentNextNode) {
+        this.currentNextNode = currentNextNode;
+    }
+
+    public double getTimeRemainingToCurrentNextNode() {
+        return timeRemainingToCurrentNextNode;
+    }
+
+    public void setTimeRemainingToCurrentNextNode(double timeRemainingToCurrentNextNode) {
+        this.timeRemainingToCurrentNextNode = timeRemainingToCurrentNextNode;
+    }
+
+    public double getRemainingChargingTime() {
+        return remainingChargingTime;
+    }
+
+    public void setRemainingChargingTime(double remainingChargingTime) {
+        this.remainingChargingTime = remainingChargingTime;
+    }
+
+    public Node getPreviousNode() {
+        return previousNode;
+    }
+
+    public double getPreviousBatteryLevel() {
+        return previousBatteryLevel;
+    }
+
+    public void setPreviousBatteryLevel(double previousBatteryLevel) {
+        this.previousBatteryLevel = previousBatteryLevel;
+    }
+
+    public void setPreviousNode(Node previousNode) {
+        this.previousNode = previousNode;
     }
 
     @Override
@@ -39,7 +76,7 @@ public class Car {
         return "Car{" +
                 "id=" + carId +
                 ", lvl=" + batteryLevel +
-                ", node=" + currentNode.getNodeId()+
+                ", node=" + currentNextNode.getNodeId()+
                 '}';
     }
 }

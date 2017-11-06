@@ -11,6 +11,7 @@ public class ParkingNode extends Node{
     private ArrayList<Car> carsRegular;
     private Double demandRate = 0.0;
     private Constants.nodeDemandGroup demandGroup = null;
+    private int idealNumberOfAvailableCars = 0;
 
     public ParkingNode(int nodeId) {
         super(nodeId);
@@ -55,6 +56,13 @@ public class ParkingNode extends Node{
         this.demandGroup = demandGroup;
     }
 
+    public int getIdealNumberOfAvailableCars() {
+        return idealNumberOfAvailableCars;
+    }
+
+    public void setIdealNumberOfAvailableCars(int idealNumberOfAvailableCars) {
+        this.idealNumberOfAvailableCars = idealNumberOfAvailableCars;
+    }
 
     @Override
     public String toString() {
