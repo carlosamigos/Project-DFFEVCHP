@@ -20,6 +20,7 @@ public class Constants {
 	public final static String MOSEL_FILE = "test.mos";
 	public final static String MOSEL_BIM_FILE = "test.bim";
 	public final static String GENERAL_INFO_FILE = "general_info.txt";
+	public final static String DEMAND_REQUESTS = "demand_request";
 	
 	// Time specific parameters
 	public final static double TOTAL_TIME_DURING_DAY = 60*12; // Minutes

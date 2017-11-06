@@ -27,7 +27,7 @@ public class ChargingNode extends Node{
 
     @Override
     public String toString() {
-        return "ChargingNode{" +
+        return "cNode{" +
                     super.getNodeId()+
                 '}';
     }

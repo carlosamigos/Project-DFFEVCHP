@@ -1,10 +1,15 @@
 package tio4500;
 
 
+import com.sun.tools.internal.jxc.ap.Const;
 import constants.Constants;
 import tio4500.simulations.DemandRequest.DemandRequest;
 import tio4500.simulations.Nodes.ParkingNode;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,12 +31,28 @@ public class SimulationModel {
         for (ParkingNode pNode : problemInstance.getParkingNodes()) {
             createAllDemandRequestsForNode(pNode);
         }
+        System.out.println(demandRequests);
         System.out.println("Finished creating new simulation model...");
 
     }
 
     public void saveDaySimulationModel(){
         System.out.println("Saving simulation model");
+        try{
+            NumberFormat formatter = new DecimalFormat("#0.000");
+            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_probleminstance_"+Integer.toString(problemInstance.getExampleNumber())+".txt", "UTF-8");
+            for (ParkingNode pNode : demandRequests.keySet()) {
+                for (DemandRequest req : demandRequests.get(pNode)) {
+                    writer.println(Integer.toString(req.getNode().getNodeId())+","+formatter.format(req.getTime()));
+                }
+            }
+            writer.close();
+        }
+        catch (IOException e){
+            System.out.println("Simulation day could not be saved");
+        }
+
+
 
 
     }

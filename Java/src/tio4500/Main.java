@@ -16,6 +16,7 @@ public class Main {
 		System.out.println(instance);
 		SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
 		simulationModel.createNewDaySimulationModel();
+		simulationModel.saveDaySimulationModel();
     }
     
 

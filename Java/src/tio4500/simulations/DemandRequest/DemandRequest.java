@@ -3,6 +3,9 @@ package tio4500.simulations.DemandRequest;
 import tio4500.simulations.Nodes.Node;
 import tio4500.simulations.Nodes.ParkingNode;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class DemandRequest {
 
     private ParkingNode node;
@@ -23,9 +26,10 @@ public class DemandRequest {
 
     @Override
     public String toString() {
-        return "DemandRequest{" +
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        return "DemandReq{" +
                 "node=" + node +
-                ", time=" + time +
+                ", t=" + formatter.format(time) +
                 '}';
     }
 }
