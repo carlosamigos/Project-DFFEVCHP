@@ -5,28 +5,24 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class DynamicProblem {
 
-    static int noOfSubproblems;
+    private ProblemInstance problemInstance;
 
-    public DynamicProblem(int noOfSubproblems) {
-        this.noOfSubproblems = noOfSubproblems;
+    public DynamicProblem() {
 
     }
 
     public void solve() {
 
-
+        int subproblemNo = 0;
         for (int time = Constants.START_TIME; time <= Constants.START_TIME + Constants.TOTAL_TIME_DURING_DAY; time += Constants.TIME_INCREMENTS) {
-
-        }
-
-
-
-        for(int subproblemNo = 0; subproblemNo < noOfSubproblems; subproblemNo++) {
-            StaticProblem staticProblem = new StaticProblem(this.noOfSubproblems, subproblemNo);
+            problemInstance.writeProblemInstanceToFile();
+            StaticProblem staticProblem = new StaticProblem(problemInstance.getExampleNumber(),subproblemNo);
             staticProblem.compile();
             staticProblem.solve();
             //generateNextSubproblem();
+            subproblemNo++;
         }
+
     }
 
     public void generateNextSubproblem() {
