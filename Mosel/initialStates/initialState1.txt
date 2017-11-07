@@ -9,8 +9,8 @@ originNodeROperator: [11]
 chargingNodeAOperator: [destinationNodeROperator: [12] 
 startNodeROperator: [5] 
 parkingNodeAOperator: [] 
-
-chargingSlotsAvailable: [2] 
+chargingSlotsAvailable: [2]
+ 
 costOfDeviation : 20
 costOfPostponedCharging : 20
 costOfExtraTime : 1

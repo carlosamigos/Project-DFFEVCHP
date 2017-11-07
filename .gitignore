@@ -5,9 +5,11 @@
 *.mp4
 *.png
 *.swp
+*.bdg
 *.class
 *.classpath
 *.project
 Java/.gitignore
 !Python/tex/img/*.png
 Python/tex/*.pdf
+*.xml
