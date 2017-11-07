@@ -20,6 +20,7 @@ public class Main {
 
         DynamicProblem dynProb = new DynamicProblem(instance, simulationModel);
         dynProb.solve();
+        System.out.println();
     }
 
 }
