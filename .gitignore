@@ -5,6 +5,7 @@
 *.mp4
 *.png
 *.swp
+*.bdg
 *.class
 *.classpath
 *.project

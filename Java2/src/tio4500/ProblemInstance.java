@@ -9,11 +9,10 @@ import tio4500.simulations.Nodes.ParkingNode;
 import tio4500.simulations.Travels.CustomerTravel;
 import tio4500.simulations.Travels.OperatorTravel;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ProblemInstance {
 
@@ -29,14 +28,18 @@ public class ProblemInstance {
     private ArrayList<CustomerTravel> customerTravels;
     private ArrayList<ArrayList<Double>> travelTimesBike;
     private ArrayList<ArrayList<Double>> travelTimesCar;
+
     private HashMap<Integer,Node> nodeMap;
     private HashMap<Integer,Operator> operatorMap;
+    private HashSet<String> stateSpecificKeys = new HashSet<>();
+    private HashMap<ChargingNode,ParkingNode> chargingToParkingNode;
 
     private int numPNodes = 0;
     private int numCNodes = 0;
     private int numROperators = 0;
 
     private HashMap<String, String> inputFileMap = new HashMap<>();
+    private HashMap<String, String> inputFileMapRaw = new HashMap<>();
 
     public ProblemInstance(int exampleNumber) {
         this.exampleNumber = exampleNumber;
@@ -50,12 +53,30 @@ public class ProblemInstance {
         this.travelTimesCar = new ArrayList<>();
         nodeMap = new HashMap<>();
         operatorMap = new HashMap<>();
+        chargingToParkingNode = new HashMap<>();
         try {
             readProblemFromFile();
         } catch (IOException e){
             System.out.println("File could not be read for example "+exampleNumber);
         }
         handleInputFileMap();
+        addStateSpecificStrings();
+        makeChargingToparkingNodeMap();
+
+    }
+
+    private void addStateSpecificStrings(){
+        stateSpecificKeys.add("chargingSlotsAvailable");
+        stateSpecificKeys.add("travelTimeToParkingA");
+        stateSpecificKeys.add("travelTimeToOriginR");
+        stateSpecificKeys.add("initialInNeedP");
+        stateSpecificKeys.add("idealStateP");
+        stateSpecificKeys.add("parkingNodeAOperator");
+        stateSpecificKeys.add("initialRegularInP");
+        stateSpecificKeys.add("startNodeROperator");
+        stateSpecificKeys.add("chargingNodeAOperator");
+        stateSpecificKeys.add("parkingNodeAOperator");
+        stateSpecificKeys.add("numAOperators");
     }
 
     private void readProblemFromFile() throws IOException{
@@ -124,7 +145,7 @@ public class ProblemInstance {
             int nodeId = Integer.parseInt(startNodeList[operatorId-Constants.START_INDEX]);
             Node node = nodeMap.get(nodeId);
             Operator newOperator = new Operator(operatorId);
-            newOperator.setCurrentNode(node);
+            newOperator.setNextOrCurrentNode(node);
             operators.add(newOperator);
             operatorMap.put(operatorId,newOperator);
         }
@@ -164,19 +185,24 @@ public class ProblemInstance {
             remainingChargingTimeArray.add(Double.parseDouble(remainingChargingTime[i]));
         }
 
+        // Create nodes
         int carId = Constants.START_INDEX;
         for (i = Constants.START_INDEX; i < numPNodes+Constants.START_INDEX; i++) {
             ParkingNode newParkingNode = new ParkingNode(i);
             parkingNodes.add(newParkingNode);
             addNodeToNodeMap(newParkingNode);
             for (int j = 0; j < initialRegularInPArray.get(i-Constants.START_INDEX); j++) {
-                Car newRegularCar = new Car(carId,1.0,newParkingNode);
+                Car newRegularCar = new Car(carId,1.0);
+                newRegularCar.setCurrentNextNode(newParkingNode);
+                newRegularCar.setPreviousNode(newParkingNode);
                 carId++;
                 newParkingNode.addRegularCar(newRegularCar);
                 cars.add(newRegularCar);
             }
             for (int j = 0; j < initialInNeedPArray.get(i-Constants.START_INDEX); j++) {
-                Car newCarInNeed = new Car(carId,Constants.CHARGING_THRESHOLD*0.999,newParkingNode);
+                Car newCarInNeed = new Car(carId,Constants.CHARGING_THRESHOLD*0.999);
+                newCarInNeed.setCurrentNextNode(newParkingNode);
+                newCarInNeed.setPreviousNode(newParkingNode);
                 carId++;
                 newParkingNode.addCarInNeed(newCarInNeed);
                 cars.add(newCarInNeed);
@@ -189,6 +215,34 @@ public class ProblemInstance {
             chargingNodes.add(newChargingNodes);
             addNodeToNodeMap(newChargingNodes);
         }
+
+        // Get travel times vehicle
+        String timeString = inputFileMap.get("travelTimeVehicle");
+        String[] timeRows = timeString.substring(1, timeString.length()-1).split(",");
+        for (String timeRow : timeRows) {
+            ArrayList<Double> newTimeRow = new ArrayList<>();
+            for (String timeDouble : timeRow.split(" ")) {
+                newTimeRow.add(Double.parseDouble(timeDouble));
+            }
+            travelTimesCar.add(newTimeRow);
+        }
+
+        // Get travel times bike
+        timeString = inputFileMap.get("travelTimeBike");
+        timeRows = timeString.substring(1, timeString.length()-1).split(",");
+        for (String timeRow : timeRows) {
+            ArrayList<Double> newTimeRow = new ArrayList<>();
+            for (String timeDouble : timeRow.split(" ")) {
+                newTimeRow.add(Double.parseDouble(timeDouble));
+            }
+            travelTimesBike.add(newTimeRow);
+        }
+
+
+
+
+
+
     }
 
     private void addNodeToNodeMap(Node node){
@@ -257,6 +311,116 @@ public class ProblemInstance {
 
     public void setTravelTimesCar(ArrayList<ArrayList<Double>> travelTimesCar) {
         this.travelTimesCar = travelTimesCar;
+    }
+
+    public HashMap<Integer, Node> getNodeMap() {
+        return nodeMap;
+    }
+
+    public HashMap<Integer, Operator> getOperatorMap() {
+        return operatorMap;
+    }
+
+    private void makeChargingToparkingNodeMap(){
+        String[] cToParray = inputFileMap.get("cToP").substring(1,inputFileMap.get("cToP").length()-1).split(" ");
+        for (int i = 0; i < cToParray.length; i++) {
+            int parkingId = Integer.parseInt(cToParray[i]);
+            int chargingId = i + Constants.START_INDEX + parkingNodes.size();
+            if(nodeMap.get(chargingId).getClass() != ChargingNode.class || nodeMap.get(parkingId).getClass() != ParkingNode.class){
+                System.out.println("index error when accessing charging node in node map in makeChargingToparkingNodeMap in ProblemInstance");
+                System.exit(1);
+            } else {
+                ChargingNode cNode = (ChargingNode) nodeMap.get(chargingId);
+                ParkingNode pNode = (ParkingNode) nodeMap.get(parkingId);
+                chargingToParkingNode.put(cNode,pNode);
+            }
+        }
+    }
+
+
+    public void writeProblemInstanceToFile(){
+        System.out.println("Writing state to file...");
+        // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
+        try{
+            PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + "exampleState"+Integer.toString(exampleNumber)+".txt", "UTF-8");
+            for (String key :inputFileMap.keySet()) {
+                if(!stateSpecificKeys.contains(key)){
+                    writer.println(key + " : " + inputFileMap.get(key));
+                }
+            }
+            writer.println();
+
+            // chargingSlotsAvailable
+            String chargingSlotsAvailableArray = "[";
+            for (ChargingNode cNode : chargingNodes) {
+                chargingSlotsAvailableArray += cNode.findNumberOfChargingSpotsAvailableDuringNextPeriod() + " ";
+            }
+            writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
+
+            // Artificial operators
+            int numArtificialOperators = 0;
+            String travelTimeToParkingA = "[";
+            String chargingNodeAOperator = "[";
+            String parkingNodeAOperator = "[";
+
+            for (ChargingNode cNode : chargingNodes) {
+                for(Car car : cNode.getCarsCurrentlyCharging()){
+                    if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+                        assert(car.getPreviousNode().getClass() == ChargingNode.class);
+                        numArtificialOperators ++;
+                        travelTimeToParkingA += car.getRemainingChargingTime()+ " ";
+                        chargingNodeAOperator += car.getPreviousNode().getNodeId() + " ";
+                        parkingNodeAOperator += chargingToParkingNode.get(car.getPreviousNode()).getNodeId() + " ";
+                    }
+                }
+            }
+            if(travelTimeToParkingA.length() > 1){
+                writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
+                writer.println("travelTimeToParkingA : " + travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]");
+                writer.println("chargingNodeAOperator : " + chargingNodeAOperator.substring(0,chargingNodeAOperator.length()-1)+"]");
+                writer.println("parkingNodeAOperator : " + parkingNodeAOperator.substring(0,parkingNodeAOperator.length()-1)+"]");
+            } else {
+                writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
+                writer.println("travelTimeToParkingA : " + travelTimeToParkingA+"]");
+                writer.println("chargingNodeAOperator : " + chargingNodeAOperator+"]");
+                writer.println("parkingNodeAOperator : " + parkingNodeAOperator+"]");
+            }
+
+            // Real operators
+            String travelTimeToOriginR = "[";
+            String startNodeROperator = "[";
+            for (Operator operator : operators) {
+                travelTimeToOriginR += operator.getTimeRemainingToCurrentNextNode() + " ";
+                startNodeROperator += operator.getPreviousNode().getNodeId()+ " ";
+            }
+            writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
+            writer.println("startNodeROperator : "+startNodeROperator.substring(0,startNodeROperator.length()-1)+ "]");
+
+            // initialInNeedP
+            String initialInNeedP = "[";
+            String idealStateP = "[";
+            String initialRegularInP = "[";
+            for (ParkingNode pNode : parkingNodes) {
+                initialInNeedP += pNode.getCarsInNeed().size() + " ";
+                idealStateP += pNode.getIdealNumberOfAvailableCars() + " ";
+                initialRegularInP += pNode.getCarsRegular().size() + " ";
+            }
+            writer.println("initialInNeedP : "+ initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]");
+            writer.println("idealStateP : "+ idealStateP.substring(0,idealStateP.length()-1)+ "]");
+            writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
+
+
+
+
+
+            writer.close();
+        } catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        } catch (UnsupportedEncodingException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("Written to file.");
+
     }
 
     @Override

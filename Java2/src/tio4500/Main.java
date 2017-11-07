@@ -15,12 +15,14 @@ public class Main {
         int dayNumber = 1;
         ProblemInstance instance = new ProblemInstance(exampleNumber);
         System.out.println(instance);
-        //SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
-        //simulationModel.createNewDaySimulationModel();
-        //simulationModel.saveDaySimulationModel();
+        SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
+        simulationModel.createNewDaySimulationModel();
+        simulationModel.saveDaySimulationModel();
+        simulationModel.readSimulationModelFromFile();
+        instance.writeProblemInstanceToFile();
+
+        DynamicProblem dynProb = new DynamicProblem(instance);
+        dynProb.solve();
     }
-
-
-
 
 }
