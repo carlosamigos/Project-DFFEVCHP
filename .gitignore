@@ -12,3 +12,4 @@
 Java/.gitignore
 !Python/tex/img/*.png
 Python/tex/*.pdf
+*.xml
