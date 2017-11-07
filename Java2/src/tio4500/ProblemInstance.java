@@ -16,6 +16,9 @@ import java.util.HashSet;
 
 public class ProblemInstance {
 
+    //TODO: Specificly save problem paramters that are constant throughout the rolling horizon
+
+
     private int exampleNumber;
     private ArrayList<ParkingNode> parkingNodes;
     private ArrayList<ChargingNode> chargingNodes;

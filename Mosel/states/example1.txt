@@ -18,7 +18,7 @@ destinationNodeROperator : [12 13 14]
 startNodeROperator : [1 7 3]
 parkingNodeAOperator : [4]
 
-chargingSlotsAvailable : [0 1]
+chargingSlotsAvailable : [1 1]
 costOfDeviation : 20
 costOfPostponedCharging : 20
 costOfExtraTime : 1
@@ -47,7 +47,7 @@ handlingTimeP : 0.1
 handlingTimeC : 0.15
 travelTimeToOriginR : [1.0 2.0 0.0]
 travelTimeToParkingA : [1.0]
-timeLimit : 8.0
+timeLimit : 4.0
 timeLimitLastVisit : 5.0
 initialHandling : [0 1 0]
 initialRegularInP : [1 0 1 0 0 1]
