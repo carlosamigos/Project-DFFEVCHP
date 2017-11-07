@@ -94,7 +94,7 @@ class World:
         self.TIMELIMITLAST = timeLimitLast
 
     def writeToFile(self, example):
-        fileName = "../Mosel/initialStates/initialExample" + str(example) + ".txt"
+        fileName = "../../Mosel/initialStates/initialExample" + str(example) + ".txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
