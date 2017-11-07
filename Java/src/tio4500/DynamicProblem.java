@@ -54,24 +54,38 @@ public class DynamicProblem {
     public void doPeriodActions(int startTime, int endTime){
         System.out.println();
         HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures = readOperatorArrivalsAndDepartures(startTime);
-        //System.out.println(simulationModel.getDemandRequests());
-        //System.out.println("NextDemand req: "+findNextDemandRequest(startTime));
-        //System.out.println(operatorDepartures);
-        //System.out.println("Earliest departure: "+ findNextOperatorDeparture(startTime,operatorDepartures));
+        System.out.println(simulationModel.getDemandRequests());
+        System.out.println("NextDemand req: "+findNextDemandRequest(startTime));
+        System.out.println("operatorDepartures: "+operatorDepartures);
+        System.out.println("Earliest departure: "+ findNextOperatorDeparture(startTime,operatorDepartures));
     }
 
     public OperatorDeparture findNextOperatorDeparture(double time, HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures){
-        OperatorDeparture earliestOperatorArrival = null;
+        System.out.println(time);
+        OperatorDeparture earliestOperatorHappening = null;
+        double earliestHappeningTime = 0;
         for (Operator operator : operatorDepartures.keySet()) {
             for (OperatorDeparture departure : operatorDepartures.get(operator)) {
-                if(earliestOperatorArrival == null && departure.getDepartureTime() > time){
-                    earliestOperatorArrival = departure;
-                } else if (departure.getDepartureTime() > time && earliestOperatorArrival.getDepartureTime() > departure.getDepartureTime()){
-                    earliestOperatorArrival = departure;
+                System.out.println(departure.getDepartureTime() + " "+ departure.getOperatorArrival().getArrivalTime());
+                double minTimeOverTimeLimit = findEarliestHappeningOverTime(departure,time);
+                if(earliestOperatorHappening == null && minTimeOverTimeLimit >= time){
+                    earliestOperatorHappening = departure;
+                    earliestHappeningTime = minTimeOverTimeLimit;
+                } else if (minTimeOverTimeLimit < earliestHappeningTime){
+                    earliestOperatorHappening = departure;
+                    earliestHappeningTime = minTimeOverTimeLimit;
                 }
             }
         }
-        return earliestOperatorArrival;
+        return earliestOperatorHappening;
+    }
+
+    private double findEarliestHappeningOverTime(OperatorDeparture departure,double time){
+        double arrivalTime = departure.getOperatorArrival().getArrivalTime();
+        double departureTime = departure.getDepartureTime();
+        arrivalTime = arrivalTime >= time ? arrivalTime : Double.MAX_VALUE;
+        departureTime = departureTime >= time ? departureTime : Double.MAX_VALUE;
+        return Math.min(arrivalTime,departureTime);
     }
 
     public DemandRequest findNextDemandRequest(double time){
@@ -109,6 +123,7 @@ public class DynamicProblem {
                 line.trim();
                 String[] stringList = line.split(":");
                 int operatorId = Integer.parseInt(stringList[0].trim()) - (1-Constants.START_INDEX);
+                System.out.println("operatorid: "+operatorId);
                 Operator operator = problemInstance.getOperatorMap().get(operatorId);
                 String[] stringList2 = stringList[1].trim().split("\\),\\(");
                 for (String tuple : stringList2) {
@@ -135,6 +150,7 @@ public class DynamicProblem {
             // Make departures
             double travelTimeBetween, departureTime;
             HashMap<Operator,ArrayList<OperatorDeparture>> departures = new HashMap<>();
+            System.out.println("Arrivals: " + arrivals);
             for (Operator operator : arrivals.keySet()) {
                 for (int operatorArrivalIndex = 0; operatorArrivalIndex < arrivals.get(operator).size()-1; operatorArrivalIndex++) {
 
