@@ -152,37 +152,52 @@ public class ProblemInstance {
     }
 
     private void setUpNodesAndCars() {
-        String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").substring(1, inputFileMap.get("totalNumberOfChargingSlots").length() - 1).split(" ");
-        ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
         int i;
-        for (i = 0; i < totalChargingSlots.length; i++) {
-            totalChargingSlotsArray.add(Integer.parseInt(totalChargingSlots[i]));
+        ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
+        if(inputFileMap.get("chargingSlotsAvailable").length() >2){
+            String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < totalChargingSlots.length; i++) {
+                totalChargingSlotsArray.add(Integer.parseInt(totalChargingSlots[i]));
+            }
+        }
+        ArrayList<Integer> availableChargingSlotsArray = new ArrayList<>();
+        if(inputFileMap.get("chargingSlotsAvailable").length() >2){
+            String[] availableChargingSlots = inputFileMap.get("chargingSlotsAvailable").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < availableChargingSlots.length; i++) {
+                availableChargingSlotsArray.add(Integer.parseInt(availableChargingSlots[i]));
+            }
+        }
+        ArrayList<Integer> initialRegularInPArray = new ArrayList<>();
+        if(inputFileMap.get("initialRegularInP").length() >2){
+            String[] initialRegularInP = inputFileMap.get("initialRegularInP").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < initialRegularInP.length; i++) {
+                initialRegularInPArray.add(Integer.parseInt(initialRegularInP[i]));
+            }
         }
 
-        String[] availableChargingSlots = inputFileMap.get("chargingSlotsAvailable").substring(1, inputFileMap.get("chargingSlotsAvailable").length() - 1).split(" ");
-        ArrayList<Integer> availableChargingSlotsArray = new ArrayList<>();
-        for (i = 0; i < availableChargingSlots.length; i++) {
-            availableChargingSlotsArray.add(Integer.parseInt(availableChargingSlots[i]));
-        }
-        String[] initialRegularInP = inputFileMap.get("initialRegularInP").substring(1, inputFileMap.get("initialRegularInP").length() - 1).split(" ");
-        ArrayList<Integer> initialRegularInPArray = new ArrayList<>();
-        for (i = 0; i < initialRegularInP.length; i++) {
-            initialRegularInPArray.add(Integer.parseInt(initialRegularInP[i]));
-        }
-        String[] initialInNeedP = inputFileMap.get("initialInNeedP").substring(1, inputFileMap.get("initialInNeedP").length() - 1).split(" ");
         ArrayList<Integer> initialInNeedPArray = new ArrayList<>();
-        for (i = 0; i < initialInNeedP.length; i++) {
-            initialInNeedPArray.add(Integer.parseInt(initialInNeedP[i]));
+        if(inputFileMap.get("initialInNeedP").length() >2){
+            String[] initialInNeedP = inputFileMap.get("initialInNeedP").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < initialInNeedP.length; i++) {
+                initialInNeedPArray.add(Integer.parseInt(initialInNeedP[i]));
+            }
         }
-        String[] initialHandling = inputFileMap.get("initialHandling").substring(1, inputFileMap.get("initialHandling").length() - 1).split(" ");
+
         ArrayList<Integer> initialHandlingArray = new ArrayList<>();
-        for (i = 0; i < initialHandling.length; i++) {
-            initialHandlingArray.add(Integer.parseInt(initialHandling[i]));
+        if(inputFileMap.get("initialHandling").length() >2){
+            String[] initialHandling = inputFileMap.get("initialHandling").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < initialHandling.length; i++) {
+                initialHandlingArray.add(Integer.parseInt(initialHandling[i]));
+            }
         }
-        String[] remainingChargingTime = inputFileMap.get("travelTimeToParkingA").substring(1, inputFileMap.get("travelTimeToParkingA").length() - 1).split(" ");
+
         ArrayList<Double> remainingChargingTimeArray = new ArrayList<>();
-        for (i = 0; i < remainingChargingTime.length; i++) {
-            remainingChargingTimeArray.add(Double.parseDouble(remainingChargingTime[i]));
+        if(inputFileMap.get("travelTimeToParkingA").length() >2){
+            String[] remainingChargingTime = inputFileMap.get("travelTimeToParkingA").replace("[","").replace("]","").split(" ");
+            for (i = 0; i < remainingChargingTime.length; i++) {
+                remainingChargingTimeArray.add(Double.parseDouble(remainingChargingTime[i]));
+
+            }
         }
 
         // Create nodes
