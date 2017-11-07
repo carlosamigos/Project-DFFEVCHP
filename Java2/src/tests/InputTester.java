@@ -1,4 +1,4 @@
-package tests;
+/*package tests;
 
 
 import constants.Constants;
@@ -20,3 +20,4 @@ public class InputTester {
     }
 
 }
+*/
