@@ -1,6 +1,6 @@
 general_info = {}
 
-with open("../Mosel/general_info.txt", 'r') as f: 
+with open("../../Mosel/general_info.txt", 'r') as f: 
     for line in f:
         info = line.split(":")
         key = info[0].strip()

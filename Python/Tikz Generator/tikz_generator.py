@@ -18,7 +18,7 @@ def write_file(tex_string, i, n):
 
 
 def draw():
-    snapshots = snapshot_creater.generate_snapshots(10, "../Mosel/examples/example1.txt")
+    snapshots = snapshot_creater.generate_snapshots(10, "../../Mosel/states/example1.txt")
     snapshot_strings = scenario_generator.draw_all_snapshots(snapshots)
     n = len(snapshot_strings)
     for i in range(n):

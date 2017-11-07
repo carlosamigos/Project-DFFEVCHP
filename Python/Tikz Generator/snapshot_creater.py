@@ -315,8 +315,8 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
     return travelTime
 
 def generate_snapshots(steps,exampleFileName):
-    pathFileName = "../Mosel/outputServiceOperatorsPath.txt"
-    artificialFilename = "../Mosel/outputArtificialServiceOperators.txt"
+    pathFileName = "../../Mosel/output/outputServiceOperatorsPath.txt"
+    artificialFilename = "../../Mosel/output/outputArtificialServiceOperators.txt"
     inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
