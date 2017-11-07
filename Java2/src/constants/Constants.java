@@ -20,6 +20,8 @@ public class Constants {
     public final static String MOSEL_FILE = "program_v4_2.mos";
     public final static String MOSEL_BIM_FILE = "program_v4_2.bim";
     public final static String GENERAL_INFO_FILE = "general_info.txt";
+    public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath.txt";
+    public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators.txt";
     public final static String DEMAND_REQUESTS = "demand_request";
 
     // Time specific parameters : Minutes

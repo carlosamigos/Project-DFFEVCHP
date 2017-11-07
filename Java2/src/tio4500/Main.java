@@ -24,4 +24,5 @@ public class Main {
         DynamicProblem dynProb = new DynamicProblem(instance);
         dynProb.solve();
     }
+
 }

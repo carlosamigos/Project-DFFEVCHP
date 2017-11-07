@@ -7,17 +7,17 @@ package tio4500;
 
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
-import com.dashoptimization.*;
+//import com.dashoptimization.*;
 
 import java.io.IOException;
 
 public class StaticProblem {
 
-    private XPRM mosel;
-    private XPRMModel model = null;
+    //private XPRM mosel;
+    //private XPRMModel model = null;
 
     public StaticProblem() {
-        this.mosel = new XPRM();
+        //this.mosel = new XPRM();
     }
 
     /**
@@ -27,12 +27,13 @@ public class StaticProblem {
     public void compile() {
         System.out.println("Starting to compile " + Constants.MOSEL_FILE);
 
-        try{
-            this.mosel.compile(Constants.PROBLEM_FOLDER + Constants.MOSEL_FILE);
+        //try{
+            //this.mosel.compile(Constants.PROBLEM_FOLDER + Constants.MOSEL_FILE);
             System.out.println("Done compiling      " + Constants.PROBLEM_FOLDER + Constants.MOSEL_FILE);
-        } catch (XPRMCompileException e){
-            System.out.println("Could not compile mosel file");
-        }
+        //}
+
+        //catch (XPRMCompileException e){
+            //System.out.println("Could not compile mosel file");}
     }
 
     /**
@@ -40,20 +41,16 @@ public class StaticProblem {
      */
     public void solve() {
         System.out.println("Starting to solve   " +Constants.MOSEL_BIM_FILE);
-        try{
-            this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER +Constants.MOSEL_BIM_FILE);
-            model.run();
+        //try{
+            //this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER +Constants.MOSEL_BIM_FILE);
+            //model.run();
             System.out.println("Done solving        " + Constants.MOSEL_BIM_FILE);
-        } catch (IOException e){
-            System.out.println("Could not load mosel bim file");
-        }
+        //}
+        //catch (IOException e){
+            //System.out.println("Could not load mosel bim file"); }
     }
 
-    public XPRM getMosel(){
-        return this.mosel;
-    }
+    //public XPRM getMosel(){ return this.mosel; }
 
-    public XPRMModel getModel(){
-        return this.model;
-    }
+    //public XPRMModel getModel(){ return this.model; }
 }
