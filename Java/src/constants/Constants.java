@@ -10,7 +10,7 @@ public class Constants {
     public final static String PROBLEM_FOLDER = "../Mosel/";
     public final static String MOSEL_OUTPUT= "../Mosel/output/";
     public final static String STATE_FOLDER = "../Mosel/states/";
-    public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/initialStates/initialExample"; //without numbering
+    public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample"; //without numbering
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
 
     // Indexing
