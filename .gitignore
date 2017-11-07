@@ -1,3 +1,6 @@
+*.xml
+*.jar
+*.iml
 *.pyc
 *.o
 *.bim
@@ -9,5 +12,7 @@
 *.classpath
 *.project
 Java/.gitignore
-!Python/tex/img/*.png
-Python/tex/*.pdf
+!Python/Tikz\ Generator/tex/img/*.png
+Python/Tikz\ Generator/tex/*.pdf
+Python/Tikz\ Generator/tex/*.tex
+*bin/*
