@@ -52,6 +52,6 @@ public class ProblemGenerator {
         // initialInNeedP
         // finishedDuringC
         // idealStateP
-        // deandP
+        // demandP
 
 }
