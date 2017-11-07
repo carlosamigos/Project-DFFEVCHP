@@ -18,3 +18,4 @@ Java/.gitignore
 Python/Tikz\ Generator/tex/*.pdf
 Python/Tikz\ Generator/tex/*.tex
 *bin/*
+Java/.idea/*
