@@ -8,7 +8,7 @@ public class Constants {
     // Folders
     public final static String MOSEL_FOLDER= "../Mosel/";
     public final static String PROBLEM_FOLDER = "../Mosel/";
-    public final static String MOSEL_OUTPUT= "../Mosel/output";
+    public final static String MOSEL_OUTPUT= "../Mosel/output/";
     public final static String STATE_FOLDER = "../Mosel/states/";
     public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/initialStates/initialExample"; //without numbering
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
@@ -30,7 +30,7 @@ public class Constants {
     public final static int TIME_INCREMENTS = 60*6;
 
     // Variables for Mosel
-    public final static int MAX_DURATION = 200; // In minutes
+    public final static int MAX_DURATION = 200; // In seconds, not used at the moment
 
     // Variables for simulation environment
     public final static double HIGH_RATE_LAMBDA = 3.0; // Average waiting time before next arrival
@@ -42,7 +42,7 @@ public class Constants {
     public final static double CHARGING_TIME_FULL = 3*60; //3 hours, in minutes
     public final static double CHARGING_THRESHOLD = 0.40;
     public final static double BATTERY_RANGE = 3*60; //3 hours, in minutes
-    public final static double PERCENTAGE_BATTERY_USED_PER_TIME_UNIT = 1.0/BATTERY_RANGE;
+    public final static double BATTERY_USED_PER_TIME_UNIT = 1.0/BATTERY_RANGE;
 
     public final static int NUMBER_OF_CARS_LOCKED_IN_OPERATOR_PATH = 1;
 

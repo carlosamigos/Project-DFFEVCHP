@@ -38,7 +38,6 @@ public class SimulationModel {
             createAllDemandRequestsForNode(pNode);
         }
         System.out.println("Finished creating new simulation model.");
-
     }
 
     public void saveDaySimulationModel(){
@@ -151,7 +150,7 @@ public class SimulationModel {
         }
     }
 
-
-
-
+    public HashMap<ParkingNode, ArrayList<DemandRequest>> getDemandRequests() {
+        return demandRequests;
+    }
 }
