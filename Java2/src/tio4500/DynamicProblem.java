@@ -68,6 +68,7 @@ public class DynamicProblem {
         }catch (IOException e){
             System.out.println(e.getLocalizedMessage());
         }
+        return new ArrayList<OperatorTravel>();
     }
 
 }
