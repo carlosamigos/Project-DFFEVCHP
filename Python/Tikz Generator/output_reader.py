@@ -1,12 +1,20 @@
 general_info = {}
 
-with open("../../Mosel/general_info.txt", 'r') as f: 
+with open("../../Mosel/states/initialExample1.txt", 'r') as f: 
     for line in f:
+        if len(line.strip()) == 0 or ":" not in line:
+            continue
+        print(line)
         info = line.split(":")
         key = info[0].strip()
         data = info[1].strip()
 
-        if "[" in data:
+        if "[" in data and "]" in data and len(data) == 2:
+            data = []
+
+        elif ("[" in data and data[-1] != "]") :
+            continue
+        elif "[" in data:
             data = data.replace("[", "").replace("]", "")
             data = data.split()
             if "." in data[0]:
@@ -20,3 +28,7 @@ with open("../../Mosel/general_info.txt", 'r') as f:
             data = int(data)
 
         general_info[key] = data
+
+general_info["numNodes"] = general_info["numPNodes"] + general_info["numCNodes"]
+general_info["numOperators"] = general_info["numROperators"]
+general_info["idealState"] = general_info["idealStateP"]
