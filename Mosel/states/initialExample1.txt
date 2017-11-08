@@ -1,4 +1,4 @@
-numVisits: 5
+numVisits: 4
 numPNodes: 6
 numCNodes: 2
 numROperators: 3
@@ -18,8 +18,8 @@ chargingNodeAOperator: [7]
 chargingSlotsAvailable: [1 1] 
 totalNumberOfChargingSlots: [2 1] 
 
-costOfDeviation : 20
-costOfPostponedCharging : 20
+costOfDeviation : 100
+costOfPostponedCharging : 100
 costOfExtraTime : 1
 costOfTravel: 1
 
