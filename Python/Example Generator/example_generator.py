@@ -107,10 +107,14 @@ class World:
         print(travelMatrixCar)
 
         travelMatrixNotHandling = []
+        travelMatrixHandling = []
         for i in range(len(travelMatrixBicycle)):
             for j in range(len(travelMatrixBicycle[i])):
-                travelMatrixNotHandling.append(int(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j]), '.1f')))
-        travelMatrixHandling = []
+                travelMatrixNotHandling.append(float(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j])/60, '.1f')))
+                travelMatrixHandling.append(float(format(travelMatrixCar[i][j]/60, '.1f')))
+        self.distancesC = travelMatrixHandling
+        self.distancesB = travelMatrixNotHandling
+
 
 
     def setConstants(self, visits, mode, sBigM):
@@ -409,7 +413,7 @@ def main():
     world.setCostConstants(20, 20, 1, 1)
     world.setTimeConstants(4, 5, 60, 10)
     world.calculateDistances()
-    #world.calculateRealDistances()
+    world.calculateRealDistances()
     world.writeToFile(1)
 
 main()
