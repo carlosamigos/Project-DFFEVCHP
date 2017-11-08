@@ -418,7 +418,7 @@ def main():
     world.setTimeConstants(4, 5, 60, 10, 30)
     world.calculateDistances()
     world.calculateRealDistances()
-    world.writeToFile(1)
+    world.writeToFile(2)
 
 main()
 
