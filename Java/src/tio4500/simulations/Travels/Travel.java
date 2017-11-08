@@ -1,27 +1,34 @@
 package tio4500.simulations.Travels;
 
 import tio4500.simulations.Entities.Car;
-import tio4500.simulations.Entities.Operator;
+import tio4500.simulations.Nodes.Node;
 import tio4500.simulations.Nodes.ParkingNode;
 
 public class Travel {
 
     private Car car;
-    private double pickupTime;
-    private ParkingNode pickupNode;
+    private double departureTime;
+    private Node pickupNode;
     private double arrivalTime;
-    private ParkingNode arrivalNode;
-    private double pickupBatteryLevel;
-    private double arrivalBatteryLevel;
+    private Node arrivalNode;
+    private double previousTimeStep;
 
-    public Travel(Car car, double pickupTime, ParkingNode pickupNode, double arrivalTime, ParkingNode arrivalNode, double pickupBatteryLevel, double arrivalBatteryLevel) {
-        this.car = car;
-        this.pickupTime = pickupTime;
+
+    public Travel(double departureTime, Node pickupNode, double arrivalTime, Node arrivalNode) {
+        this.departureTime = departureTime;
         this.pickupNode = pickupNode;
         this.arrivalTime = arrivalTime;
         this.arrivalNode = arrivalNode;
-        this.pickupBatteryLevel = pickupBatteryLevel;
-        this.arrivalBatteryLevel = arrivalBatteryLevel;
+        this.previousTimeStep = departureTime;
+
+    }
+
+    public double getPreviousTimeStep() {
+        return previousTimeStep;
+    }
+
+    public void setPreviousTimeStep(double previousTimeStep) {
+        this.previousTimeStep = previousTimeStep;
     }
 
     public Car getCar() {
@@ -32,15 +39,15 @@ public class Travel {
         this.car = car;
     }
 
-    public double getPickupTime() {
-        return pickupTime;
+    public double getDepartureTime() {
+        return departureTime;
     }
 
-    public void setPickupTime(double pickupTime) {
-        this.pickupTime = pickupTime;
+    public void setDepartureTime(double departureTime) {
+        this.departureTime = departureTime;
     }
 
-    public ParkingNode getPickupNode() {
+    public Node getPickupNode() {
         return pickupNode;
     }
 
@@ -56,7 +63,7 @@ public class Travel {
         this.arrivalTime = arrivalTime;
     }
 
-    public ParkingNode getArrivalNode() {
+    public Node getArrivalNode() {
         return arrivalNode;
     }
 
@@ -64,19 +71,13 @@ public class Travel {
         this.arrivalNode = arrivalNode;
     }
 
-    public double getPickupBatteryLevel() {
-        return pickupBatteryLevel;
-    }
 
-    public void setPickupBatteryLevel(double pickupBatteryLevel) {
-        this.pickupBatteryLevel = pickupBatteryLevel;
-    }
-
-    public double getArrivalBatteryLevel() {
-        return arrivalBatteryLevel;
-    }
-
-    public void setArrivalBatteryLevel(double arrivalBatteryLevel) {
-        this.arrivalBatteryLevel = arrivalBatteryLevel;
+    @Override
+    public String toString() {
+        return "Travel{" +
+                "car=" + car +
+                ", depTime=" + departureTime +
+                ", arrTIme=" + arrivalTime +
+                '}';
     }
 }

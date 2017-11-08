@@ -9,13 +9,15 @@ public class OperatorDeparture {
     private Operator operator;
     private double departureTime;
     private OperatorArrival operatorArrival;
+    private boolean isHandling;
 
 
-    public OperatorDeparture(Node node, Operator operator, double departureTime, OperatorArrival operatorArrival) {
+    public OperatorDeparture(Node node, Operator operator, boolean isHandling, double departureTime, OperatorArrival operatorArrival) {
         this.node = node;
         this.operator = operator;
         this.departureTime = departureTime;
         this.operatorArrival = operatorArrival;
+        this.isHandling = isHandling;
     }
 
     public Node getNode() {
@@ -34,13 +36,21 @@ public class OperatorDeparture {
         return operatorArrival;
     }
 
+    public void setDepartureTime(double time){
+        departureTime = time;
+    }
+
+    public boolean isHandling() {
+        return isHandling;
+    }
+
     @Override
     public String toString() {
         return "OperatorDeparture{" +
                 "node=" + node +
                 ", operator=" + operator +
                 ", departureTime=" + departureTime +
-                ", arrivalTIme=" + getOperatorArrival().getArrivalTime()+
+                ", arrivalTIme=" + ((operatorArrival!=null)? operatorArrival.getArrivalTime():"null")+
                 '}';
     }
 }

@@ -216,7 +216,7 @@ public class ProblemInstance {
                 cars.add(newRegularCar);
             }
             for (int j = 0; j < initialInNeedPArray.get(i-Constants.START_INDEX); j++) {
-                Car newCarInNeed = new Car(carId,Constants.CHARGING_THRESHOLD*0.999);
+                Car newCarInNeed = new Car(carId,Constants.SOFT_CHARGING_THRESHOLD*0.999);
                 newCarInNeed.setCurrentNextNode(newParkingNode);
                 newCarInNeed.setPreviousNode(newParkingNode);
                 carId++;
@@ -226,7 +226,6 @@ public class ProblemInstance {
         }
         for (i = numPNodes+Constants.START_INDEX; i < numCNodes + numPNodes+Constants.START_INDEX; i++) {
             ChargingNode newChargingNodes = new ChargingNode(i);
-            newChargingNodes.setNumberOfCarsCharging(0);
             newChargingNodes.setNumberOfTotalChargingSpots(totalChargingSlotsArray.get(i - numPNodes-Constants.START_INDEX));
             chargingNodes.add(newChargingNodes);
             addNodeToNodeMap(newChargingNodes);
@@ -342,7 +341,7 @@ public class ProblemInstance {
         for (int i = 0; i < cToParray.length; i++) {
             int parkingId = Integer.parseInt(cToParray[i]);
             int chargingId = i + Constants.START_INDEX + parkingNodes.size();
-            if(nodeMap.get(chargingId).getClass() != ChargingNode.class || nodeMap.get(parkingId).getClass() != ParkingNode.class){
+            if( !(nodeMap.get(chargingId) instanceof ChargingNode) || !(nodeMap.get(parkingId) instanceof ParkingNode)){
                 System.out.println("index error when accessing charging node in node map in makeChargingToparkingNodeMap in ProblemInstance");
                 System.exit(1);
             } else {
@@ -382,7 +381,6 @@ public class ProblemInstance {
             for (ChargingNode cNode : chargingNodes) {
                 for(Car car : cNode.getCarsCurrentlyCharging()){
                     if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
-                        assert(car.getPreviousNode().getClass() == ChargingNode.class);
                         numArtificialOperators ++;
                         travelTimeToParkingA += car.getRemainingChargingTime()+ " ";
                         chargingNodeAOperator += car.getPreviousNode().getNodeId() + " ";

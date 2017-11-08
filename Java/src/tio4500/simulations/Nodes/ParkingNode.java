@@ -66,6 +66,6 @@ public class ParkingNode extends Node{
 
     @Override
     public String toString() {
-        return "pNode{"+super.getNodeId()+"}";
+        return "pNode{"+super.getNodeId()+", cReg="+carsRegular.size()+", cNeed="+carsInNeed.size()+ "}";
     }
 }

@@ -10,6 +10,7 @@ public class Car {
     private Node currentNextNode = null;
     private Node previousNode = null;
     private double timeRemainingToCurrentNextNode = 0;
+    private double previousTimeStep = 0;
     private double remainingChargingTime = 0;
 
 
@@ -17,6 +18,14 @@ public class Car {
         this.carId = carId;
         this.batteryLevel = batteryLevel;
         this.previousBatteryLevel = batteryLevel;
+    }
+
+    public double getPreviousTimeStep() {
+        return previousTimeStep;
+    }
+
+    public void setPreviousTimeStep(double previousTimeStep) {
+        this.previousTimeStep = previousTimeStep;
     }
 
     public int getCarId() {

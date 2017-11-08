@@ -89,7 +89,8 @@ public class SimulationModel {
                 else {
                     line.trim(); line = line.replace("\n","");
                     String[] parts = line.split(",");
-                    int parkingNodeId = Integer.parseInt(parts[0].trim()) - Constants.START_INDEX; double number = Double.parseDouble(parts[1].trim());
+                    int parkingNodeId = Integer.parseInt(parts[0].trim());
+                    double number = Double.parseDouble(parts[1].trim());
                     try{
                         ParkingNode pNode = (ParkingNode) problemInstance.getNodeMap().get(parkingNodeId);
                         DemandRequest demandRequest = new DemandRequest(pNode, number);
@@ -120,9 +121,9 @@ public class SimulationModel {
 
     private double getDemandRateForNodeAtTime(ParkingNode parkingNode, double time){
         if(parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MIDDAY_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.sin((time-Constants.START_TIME)*Math.asin(1)/Constants.TOTAL_TIME_DURING_DAY)+Constants.LOW_RATE_LAMBDA;
+            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.sin((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
         } else if (parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MORNING_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.cos((time-Constants.START_TIME)*Math.asin(1)/Constants.TOTAL_TIME_DURING_DAY)+Constants.LOW_RATE_LAMBDA;
+            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.cos((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
         } else {
             return Constants.MEDIUM_RATE_LAMBDA;
         }
@@ -135,7 +136,7 @@ public class SimulationModel {
     private void createAllDemandRequestsForNode(ParkingNode parkingNode){
         double startTime = Constants.START_TIME;
         double time = startTime+0;
-        while (time < Constants.TOTAL_TIME_DURING_DAY){
+        while (time < Constants.END_TIME){
             time += drawFromExponentialDistribution(1.0/getDemandRateForNodeAtTime(parkingNode,time));
             DemandRequest newDemandRequest = new DemandRequest(parkingNode,time);
             addDemandRequestToMap(newDemandRequest);
