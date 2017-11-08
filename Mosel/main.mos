@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/initialExample1.txt';
+	DataFile = 'states/initialExample2.txt';
 end-parameters
 
 declarations
@@ -144,7 +144,6 @@ declarations
 	handlingTimeC        : real;
 	timeLimit            : real;
 	timeLimitLastVisit   : real;
-	maxTravelHToC		 : real;
 	
 	! Initial and ideal state !
 	travelTimeToOriginR  : array(rOperators) of real;
@@ -193,7 +192,6 @@ initializations from DataFile
 	demandP;
 	mode;
 	sequenceBigM;
-	maxTravelHToC
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -393,13 +391,15 @@ declarations
 		Objective: linctr;
 end-declarations
 
-! MODE 0: Standard 
+! Standard 
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
-! MODE 1: IF HANDLING, PUNISH TIME USE (e.g. the model will handle from the nearest point if possible)
+!Try to do the least handling 
+!Try to do the least traveling, independent of traveltime to reduce risk in the model (e.g. more travelling -> more risk)
+
 if(mode = 1) then
 	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
@@ -408,15 +408,14 @@ if(mode = 1) then
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) (x(ii,mm,jj,nn,pp));
 end-if
 
-! MODE 2: ONLY MAXIMIZE TRAAVEL (DEBUGGING PURPOSES)
+! Max travel 
 if(mode = 2) then
 	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 end-if
 
 ! ### End of declaration of objective ### !			 
 
-! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !
-		
+! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
 declarations
 	operatorStart: dynamic array(rOperators)                 of linctr;
 	operatorEnd  : dynamic array(rOperators)                 of linctr;
@@ -451,7 +450,6 @@ forall(ii in rNodes, mm in visits) do
 end-do
 
 ! Routing constraints - Symmetry breaking !
-
 forall(ii in pNodes, mm in visits - {numVisits}) do 
 	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm, pp))) +
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >=  
@@ -506,7 +504,6 @@ forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators)
 end-do
 
 ! Initial handling by real
-
 declarations
 	startLoad : dynamic array(rOperators) of linctr;
 end-declarations
@@ -516,7 +513,6 @@ forall(pp in rOperators) do
 end-do
 
 ! Initial handling by artificial operators
-
 declarations
 	handlingArtificial : dynamic array(aOperators) of linctr;
 end-declarations
@@ -637,7 +633,6 @@ declarations
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
-	maxTravelTimeToC		: dynamic array(cNodes, visits)							    of linctr;
 end-declarations 
 
 
@@ -659,11 +654,7 @@ forall(pp in rOperators, mm in visits) do
 	startTime(pp, mm) := t(startNodeROperator(pp), mm) >= travelTimeToOriginR(pp)*x(originNodeROperator(pp), 1, startNodeROperator(pp), mm, pp);
 end-do
 
-forall(jj in cNodes, nn in visits) do
-	maxTravelTimeToC(jj, nn) := sum(ii in pNodes, mm in visits, pp in rOperators) h(ii, mm, jj, nn, pp) * travelTimeVehicle(ii, jj) <= maxTravelHToC
-end-do
-
-! Time constraint for extra time 
+! Time constraint for extra time !
 
 forall(ii in rNodes, mm in visits) do
 	chargingCarVisit(ii, mm) := sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm, pp) + 
@@ -691,6 +682,8 @@ end-do
 forall(ii in rNodes, mm in visits) do
 	endTimeLastVisit(ii, mm) := t(ii, mm)  + tPlus(ii, mm) - tMinus(ii, mm) = timeLimit;
 end-do
+
+
 
 
 ! Time constraints for artificial operators
@@ -727,8 +720,14 @@ end-do
 
 ! ### End of declaration of valid inequalities ### !
 
+! ### Start of declaration of mode constraints ### !
 
-setparam("XPRS_MAXTIME", -100);
+
+! ### End of declaration of mode constraints ### !
+
+
+
+setparam("XPRS_MAXTIME", -800);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
@@ -758,6 +757,13 @@ if printResults then
 			foundX := false;
 			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)}, nn in visits) do
 				if getsol(x(currNode, currVisit, jj, nn, pp)) >= 0.5 then
+					(!
+					if pp = 3 then
+						writeln('');
+						writeln('ii: ',currNode, ', mm: ', currVisit, ', jj: ', jj, ', nn: ', nn);
+						writeln('last visit: ', lastVisit(jj), 'lowest: ', lowest);
+					end-if
+					!)
 					if (nn > lastVisit(jj) and nn < lowest) then
 						foundX := true;
 						lowest := nn;
@@ -826,6 +832,50 @@ if printResults then
 		write(parkingNodeAOperator(pp));
 		writeln('');
 	end-do
+	
+	(!
+	writeln('');
+	forall(ii in Nodes, nn in visits, mm in visits, jj in Nodes) do
+		if getsol(x(ii, nn, jj, mm, 3)) = 1 then
+			writeln("Going from: ", ii, " on visit: ", nn, " to node: ", jj, " on visit: ", mm);
+		end-if
+	end-do
+	
+	writeln('');
+	forall(ii in Nodes, nn in visits, mm in visits, jj in Nodes) do
+		if getsol(x(ii, nn, jj, mm, 2)) = 1 then
+			writeln("Going from: ", ii, " on visit: ", nn, " to node: ", jj, " on visit: ", mm);
+		end-if
+	end-do
+	
+	writeln(getsol(h(10, 1, 7, 1, 2)));
+	writeln(getsol(h(10, 1, 7, 2, 2)));
+	writeln(getsol(h(10, 1, 7, 3, 2)));
+	
+	writeln(getsol(x(10, 1, 7, 1, 2)));
+	writeln(getsol(x(10, 1, 7, 2, 2)));
+	writeln(getsol(x(10, 1, 7, 3, 2)));
+	
+	!writeln(getsol(t(2,1)));
+	!writeln(getsol(t(2,2)));
+	
+	writeln('t2,3: ', getsol(t(2,3)));
+	writeln('TH', handlingTimeP);
+	writeln('q2,3: ', getsol(q(2, 3, 2)));
+	writeln('tP: ', travelTimeBike(2,7));
+	writeln('tR: ', travelTimeVehicle(2,7));
+	writeln('h2,3,7,2: ', getsol(h(2,3,7,2,2)));
+	writeln('t7,2: ', getsol(t(7, 2)));
+	writeln('x2,3,7,2: ', getsol(x(2,3,7,2,2)));
+	writeln('Time limit', timeLimit);
+	
+	
+	forall(ii in rNodes, nn in visits) do
+		if getsol(x(ii, nn, 14, 1, 3)) = 1 then
+			writeln(ii, ':',nn);
+		end-if
+	end-do
+	!)
 end-if
 
 
@@ -867,6 +917,11 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 	end-do
 	
 end-do
+(!
+forall(pp in rOperators) do
+	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
+end-do
+!)
 
 if writeToFile then
 	fopen("output/outputServiceOperatorsPath.txt", F_OUTPUT);
