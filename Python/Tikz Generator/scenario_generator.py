@@ -61,7 +61,7 @@ def draw_snapshot(snapshot, i, time_step):
 
 def draw_all_snapshots(snapshots):
     result = []
-    time_step = max_time / (len(snapshots)+1)
+    time_step = max_time / len(snapshots)
     for snapshot_no in range(len(snapshots)):
         result.append(draw_snapshot(snapshots[snapshot_no], snapshot_no, time_step))
 

@@ -1,5 +1,5 @@
 mosel_dir = "../../Mosel/"
-input_file = mosel_dir + "states/initialExample1.txt"
+input_file = mosel_dir + "states/example5.txt"
 
 output_file_path = mosel_dir + "output/outputServiceOperatorsPath.txt"
 output_file_arti = mosel_dir + "output/outputArtificialServiceOperators.txt"
