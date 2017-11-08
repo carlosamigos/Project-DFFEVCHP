@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 numVisits: 5
 numPNodes: 4
 numCNodes: 1
 numROperators: 1
+=======
+numVisits: 4
+numPNodes: 6
+numCNodes: 2
+numROperators: 3
+>>>>>>> ccaae8be2bb2e5ed2686a87b91076f0a9c239954
 numAOperators: 1
 
 hNodes : 2
@@ -18,8 +25,8 @@ chargingNodeAOperator: [5]
 chargingSlotsAvailable: [2] 
 totalNumberOfChargingSlots: [2] 
 
-costOfDeviation : 20
-costOfPostponedCharging : 20
+costOfDeviation : 100
+costOfPostponedCharging : 100
 costOfExtraTime : 1
 costOfTravel: 1
 
