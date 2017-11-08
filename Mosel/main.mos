@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/example4.txt';
+	DataFile = 'states/example1.txt';
 end-parameters
 
 declarations
@@ -85,7 +85,10 @@ Nodes             := rNodes + aNodes;
 
 ! Initialize all operator sets !
 rOperators := 1 .. numROperators;
-aOperators := 1 .. numAOperators;
+
+if(numAOperators >= 1) then
+	aOperators := 1 .. numAOperators;
+end-if
 
 ! ### End of initialization of sets ### !
 
@@ -133,8 +136,6 @@ declarations
 	costOfPostponedCharging : real;
 	costOfExtraTime         : real;
 	costOfTravel            : real;
-	costOfTimeUse 			: real;
-	costOfMaxTravel         : real;
 	
 	! Times !
 	travelTimeVehicle    : array(rNodes,rNodes) of real;
@@ -175,8 +176,6 @@ initializations from DataFile
 	costOfPostponedCharging;
 	costOfExtraTime;
 	costOfTravel;
-	costOfTimeUse;
-	costOfMaxTravel;
 	travelTimeVehicle;
 	travelTimeBike;
 	handlingTimeP;
@@ -191,7 +190,6 @@ initializations from DataFile
 	finishedDuringC;
 	idealStateP;
 	demandP;
-	!visitList;
 	mode;
 	sequenceBigM;
 end-initializations
@@ -264,9 +262,16 @@ forall(pp in rOperators) do
 			end-do
 		else	
 			forall(jj in Nodes - aNodes + {destinationNodeROperator(pp)} | jj <> ii) do
-				forall(mm in visits, nn in visits) do
-					create(x(ii, mm, jj, nn, pp));
-					x(ii, mm, jj, nn, pp) is_binary;
+				forall(mm in visits) do
+					if jj = destinationNodeROperator(pp) then
+						create(x(ii, mm, destinationNodeROperator(pp), 1, pp))
+						x(ii, mm, destinationNodeROperator(pp), 1, pp) is_binary
+					else
+						forall(nn in visits) do
+							create(x(ii, mm, jj, nn, pp));
+							x(ii, mm, jj, nn, pp) is_binary;
+						end-do
+					end-if
 				end-do
 			end-do
 		end-if
@@ -393,14 +398,14 @@ Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
 !Try to do the least handling 
-! Additions: Make a cost matrix for travelling, instead of just a single paramter
-! Additions: Punish only travel that does not include 
+!Try to do the least traveling, independent of traveltime to reduce risk in the model (e.g. more travelling -> more risk)
+
 if(mode = 1) then
 	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
-			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
 			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
-			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) (x(ii,mm,jj,nn,pp));
+			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) (x(ii,mm,jj,nn,pp));
 end-if
 
 ! Max travel 
@@ -814,6 +819,8 @@ if printResults then
 	end-do
 	writeln('');
 	
+	
+	
 	forall(pp in aOperators) do
 		write('Route of artificial operator ', pp, ': ');
 		write(chargingNodeAOperator(pp), ' -> ');
@@ -897,8 +904,8 @@ forall(ii in Nodes - aNodes) do
 end-do
 
 forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
-	if(getsol(x(ii,mm,jj,nn,pp)) = 1) then
-		writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
+	if(getsol(x(ii,mm,jj,nn,pp)) >= 0.5) then
+		writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp, " X is: ", getsol(x(ii, mm, jj, nn, pp)))
 	end-if
 end-do
 writeln("HANDLING")
@@ -910,7 +917,11 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 	end-do
 	
 end-do
-
+(!
+forall(pp in rOperators) do
+	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
+end-do
+!)
 
 if writeToFile then
 	fopen("output/outputServiceOperatorsPath.txt", F_OUTPUT);
