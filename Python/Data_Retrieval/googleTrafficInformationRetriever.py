@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import simplejson, urllib.request as urlReq
 
+API_KEY_1 = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
+API_KEY_2 = "AIzaSyBK2KN_jQS6ygFfU1UaMjG8CA8vhjeV10k"
+API_KEY_3 = "AIzaSyBLDdoYQf9BzJGHsRyC4W2-O4gMcHR2gIo"
+API_KEY_4 = "AIzaSyCV5xFdq7ryUjSFB_vcXCOGQihe187mf8c"
+
 def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile):
     # max 10 coordinates
     # transport by default is car
@@ -68,16 +73,18 @@ def makeStringListFromCoordinateVector(coordVector):
 
 def test():
     coordVector = [(63.427057, 10.3925251), (63.4222027, 10.3955179), (63.4367, 10.3988199), (63.4188848, 10.4044),
-                   (63.4225, 10.431944)]
+                   (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944)]
     print("number of coordinates", len(coordVector))
     transportType = "transit"
-    apikey = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
+    apikey = API_KEY_1
+    matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
+    matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
     print(matrix)
 
 def run(coordVector, transportType, writeToFile):
-    apikey = "AIzaSyBK2KN_jQS6ygFfU1UaMjG8CA8vhjeV10k"
+    apikey = API_KEY_2
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
 
 
-#test()
+

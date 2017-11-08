@@ -1,9 +1,7 @@
 import math
 import random
 import sys
-
-cord1 = "59956751 10.861843"
-cord2 = "59908674 10.670612"
+import time
 
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
@@ -94,17 +92,16 @@ class World:
 
         for i in range(len(self.cNodes)):
             cords.append(cords[self.cNodes[i].pNode - 1])
-        rememberCar = "[[0, 1056, 1060, 1515], [1008, 0, 1230, 766], [1133, 1254, 0, 1713], [1498, 786, 1720, 0]]"
-        rememberBicycle = "[[0, 3663, 2264, 4926], [2974, 0, 4333, 1325], [2037, 4783, 0, 5931], [4073, 1353, 5433, 0]]"
-        rememberTransit = "[[0, 1885, 669, 2067, 669], [1568, 0, 1510, 797, 1510], [930, 2292, 0, 1891, 0], [1997, 1130, 1501, 0, 1501], [930, 2292, 0, 1891, 0]]"
 
         travelMatrixCar = gI.run(cords, "driving", False)
+        time.sleep(2)
         travelMatrixBicycle = gI.run(cords, "bicycling", False)
+        time.sleep(2)
         travelMatrixTransit = gI.run(cords, "transit", False)
 
-        print(travelMatrixTransit)
-        print(travelMatrixBicycle)
-        print(travelMatrixCar)
+        #print(travelMatrixTransit)
+        #print(travelMatrixBicycle)
+        #print(travelMatrixCar)
 
         travelMatrixNotHandling = []
         travelMatrixHandling = []
