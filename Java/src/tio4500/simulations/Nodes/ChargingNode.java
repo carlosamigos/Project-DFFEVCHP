@@ -21,7 +21,7 @@ public class ChargingNode extends Node{
 
     public int findNumberOfChargingSpotsAvailableDuringNextPeriod(){
         int numberOfCarsFinishingCharging = 0;
-        for (Car car : getCarsCurrentlyCharging()) {
+        for (Car car : carsCurrentlyCharging) {
             if (car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
                 numberOfCarsFinishingCharging +=1;
             }

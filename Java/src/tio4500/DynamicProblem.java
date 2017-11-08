@@ -101,8 +101,6 @@ public class DynamicProblem {
                         newCustomerTravel.setCar(travelCar);
                         travelCar.setPreviousNode(pNode);
                         travelCar.setCurrentNextNode(arrivalNode);
-                        travelCar.setTimeRemainingToCurrentNextNode(travelTime);
-                        travelCar.setPreviousTimeStep(nextDemandReqTime);
                         customerTravels.add(newCustomerTravel);
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
@@ -208,6 +206,25 @@ public class DynamicProblem {
     }
 
     public void updateBatteryLevels(double time, double previousTime){
+        for (Car car : problemInstance.getCars()) {
+            if(!car.getPreviousNode().equals(car.getCurrentNextNode())){
+                // is on the run
+                car.setBatteryLevel(car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT);
+            } else if(car.getCurrentNextNode() instanceof ChargingNode){
+                car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime)*Constants.BATTERY_CHARGED_PER_TIME_UNIT);
+                car.setRemainingChargingTime((1.0-car.getBatteryLevel())*Constants.CHARGING_TIME_FULL);
+                if(car.getBatteryLevel() >=1.0){
+                    car.setRemainingChargingTime(0);
+                    car.setBatteryLevel(1.0);
+                    ChargingNode chargingNode = (ChargingNode) car.getCurrentNextNode();
+                    ParkingNode parkingNode = problemInstance.getChargingToParkingNode().get(chargingNode);
+                    chargingNode.getCarsCurrentlyCharging().remove(car);
+                    parkingNode.getCarsRegular().add(car);
+                    car.setCurrentNextNode(parkingNode);
+                    car.setPreviousNode(parkingNode);
+                }
+            }
+        }
         System.out.println(time + " " + previousTime);
     }
 

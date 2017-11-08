@@ -41,6 +41,7 @@ public class Constants {
 
 
     public final static double CHARGING_TIME_FULL = 3*60; //3 hours, in minutes
+    public final static double BATTERY_CHARGED_PER_TIME_UNIT = 1.0/CHARGING_TIME_FULL;
     public final static double HARD_CHARGING_THRESHOLD = 0.20;
     public final static double SOFT_CHARGING_THRESHOLD = 0.40;
     public final static double BATTERY_RANGE = 3*60; //3 hours, in minutes

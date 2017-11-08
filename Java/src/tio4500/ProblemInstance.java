@@ -437,6 +437,14 @@ public class ProblemInstance {
 
     }
 
+    public ArrayList<Car> getCars() {
+        return cars;
+    }
+
+    public HashMap<ChargingNode, ParkingNode> getChargingToParkingNode() {
+        return chargingToParkingNode;
+    }
+
     @Override
     public String toString() {
         return "\nProblemInstance" + exampleNumber +":"+
