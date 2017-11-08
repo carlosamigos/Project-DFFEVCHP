@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/initialExample1.txt';
+	DataFile = 'states/example5.txt';
 end-parameters
 
 declarations
@@ -687,10 +687,12 @@ end-do
 forall(ii in rNodes, mm in visits) do
 	endTimeFree(ii, mm) := t(ii, mm) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp),1,pp));
 end-do
-
+(!
 forall(ii in rNodes, mm in visits) do
 	endTimeLastVisit(ii, mm) := t(ii, mm)  + tPlus(ii, mm) - tMinus(ii, mm) = timeLimit;
 end-do
+
+!)
 
 
 ! Time constraints for artificial operators
@@ -728,7 +730,7 @@ end-do
 ! ### End of declaration of valid inequalities ### !
 
 
-setparam("XPRS_MAXTIME", -100);
+setparam("XPRS_MAXTIME", -800);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
