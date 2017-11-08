@@ -135,7 +135,6 @@ public class DynamicProblem {
                                 }
                             }
                             else {
-                                System.out.println(departureNode +""+ arrivalNode +""+ operator +""+travel);
                                 Car car = ((ParkingNode) departureNode).getCarsInNeed().remove(0);
                                 if (car!= null){
                                     car.setCurrentNextNode(travel.getArrivalNode());
@@ -158,7 +157,6 @@ public class DynamicProblem {
 
                 } else{
                     //operator arrives
-                    System.out.println("Operator: " + operator);
                     OperatorTravel travel = operatorTravels.get(operator);
                     if (travel != null){
                         operatorTravels.remove(operator);
@@ -225,7 +223,6 @@ public class DynamicProblem {
                 }
             }
         }
-        System.out.println(time + " " + previousTime);
     }
 
     private Car findAvailableCarForCustomerInNode(ParkingNode node){

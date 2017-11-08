@@ -24,8 +24,6 @@ public class ProblemInstance {
     private ArrayList<ChargingNode> chargingNodes;
     private ArrayList<Car> cars;
     private ArrayList<Operator> operators;
-    private ArrayList<OperatorTravel> operatorTravels;
-    private ArrayList<CustomerTravel> customerTravels;
     private ArrayList<ArrayList<Double>> travelTimesBike;
     private ArrayList<ArrayList<Double>> travelTimesCar;
 
@@ -47,8 +45,6 @@ public class ProblemInstance {
         this.chargingNodes = new ArrayList<>();
         this.cars = new ArrayList<>();
         this.operators = new ArrayList<>();
-        this.operatorTravels = new ArrayList<>();
-        this.customerTravels = new ArrayList<>();
         this.travelTimesBike = new ArrayList<>();
         this.travelTimesCar = new ArrayList<>();
         nodeMap = new HashMap<>();
@@ -304,14 +300,6 @@ public class ProblemInstance {
         return operators;
     }
 
-    public ArrayList<OperatorTravel> getOperatorTravels() {
-        return operatorTravels;
-    }
-
-    public ArrayList<CustomerTravel> getCustomerTravels() {
-        return customerTravels;
-    }
-
     public ArrayList<ArrayList<Double>> getTravelTimesBike() {
         return travelTimesBike;
     }
@@ -452,8 +440,6 @@ public class ProblemInstance {
                 "\n\t  chargingNodes=" + chargingNodes +
                 "\n\t  cars=" + cars +
                 "\n\t  operators=" + operators +
-                "\n\t  operatorTravels=" + operatorTravels +
-                "\n\t  customerTravels=" + customerTravels +
                 "\n\t  travelTimesBike=" + travelTimesBike +
                 "\n\t  travelTimesCar=" + travelTimesCar + "\n";
     }
