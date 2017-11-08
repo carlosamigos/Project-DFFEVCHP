@@ -1,16 +1,18 @@
 from output_reader import general_info
-from car_generator import draw_object, draw_object_below, car_height_string
-from helpers import x_left_from_node, y_top_from_node, row_from_node, x_right_from_node
+from car_generator import draw_object, draw_object_below, car_height_string, car_height
+from helpers import x_left_from_node, y_top_from_node, row_from_node, x_right_from_node, y_bottom_from_node
+from setup import size_factor
 
-step = 10
+step = 10*size_factor
 columns = general_info["wNodes"]
 rows = general_info["hNodes"]
 width = columns*step
 height = rows*step
 
-sign_width = "{:.2f}".format(step / 8)
+sign_width = "{:.2f}".format(size_factor*(step / 10))
 sign_dist = step / 10
-path_options = "ultra thin"
+corner_triangle_dist = step / 9
+path_options = "thick"
 
 def draw_parking(ideal_state):
     width_string = "{:.2f}".format(width)
@@ -19,17 +21,27 @@ def draw_parking(ideal_state):
 
     for node in range(general_info["numPNodes"]):
         x = x_left_from_node(node, step, columns) + sign_dist
-        y = y_top_from_node(node, step, columns) - sign_dist
+        y = y_top_from_node(node, step, columns, rows) - sign_dist
         s += "    \\node at (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y) + ") (p_sign_" + str(node) + ") {\\includegraphics[width=" +\
                 sign_width + "cm]{\"tex/img/psign\".pdf}};\n"
 
         x2 = x_right_from_node(node, step, columns)
-        y2 = y_top_from_node(node, step, columns)
+        y2 = y_top_from_node(node, step, columns, rows)
         s += "    \\node at (" + "{:.2f}".format(x2) + "," + "{:.2f}".format(y2) + ") (right_corner_" + str(node) + ") {};\n"
         s += "    \\node[below left = 1mm of right_corner_" + str(node) + "] (ideal_png_" + str(node) + ") {\\includegraphics[height=" +\
                 car_height_string + "]{\"tex/img/car_green\".png}};\n"
         s += "    \\node[left = 1mm of ideal_png_" + str(node) + "] (ideal_text_" + str(node) + ") {Ideal: " + str(ideal_state[node]) + " x};\n"
 
+        y3 = y_bottom_from_node(node, step, columns, rows)
+        x -= sign_dist
+        x3 = x + corner_triangle_dist
+        y4 = y3 + corner_triangle_dist
+
+        x4 = "{:.2f}".format(x + corner_triangle_dist/2.0)
+        y5 = "{:.2f}".format(y3 + corner_triangle_dist/2.0)
+        s += "    \\draw[thick] (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y4) + ") -- (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y4) + ");\n"
+        s += "    \\draw[thick] (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y4) + ") -- (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y3) + ");\n"
+        s += "    \\node at (" + x4 + "," + y5 + ") {" + str(node) + "};\n"
     return s
 
 
@@ -60,8 +72,8 @@ def draw_sidebar():
 def draw_legend():
     s = ""
 
-    legend_width = 2*width/3
-    legend_height = width/6
+    legend_width = 33 + 6*car_height
+    legend_height = 4 + car_height*3
 
     left_x = "{:.2f}".format((width - legend_width)/2)
     right_x = "{:.2f}".format(width - (width - legend_width)/2)
@@ -87,7 +99,6 @@ def draw_legend():
     s += "    \\node[right = .2cm of legend_red] (legend_red_text) {Cars below battery threshold};\n"
 
     s += draw_object("car_black", "legend_black", 0, ["right", "legend_green_text"])
-    #dd:s += "    \\node[right = .2cm of legend_green_text.east] (legend_black) {\\includegraphics[height
     s += draw_object_below("bike", "legend_black", "legend_bike")
     s += draw_object_below("man", "legend_bike", "legend_man")
 
@@ -95,8 +106,8 @@ def draw_legend():
     s += "    \\node[anchor=west] at (legend_black_text.west |- legend_bike) (legend_bike_text) {Operator on bike/public transport};\n"
     s += "    \\node[anchor=west] at (legend_bike_text.west |- legend_man) (legend_man_text) {Idle operator};\n"
 
-    s += "    \\node at ([yshift=-4mm,xshift=2.5cm]legend_black_text.east) (legend_psign) {\\includegraphics[width=" + sign_width + " cm]{\"tex/img/psign\".pdf}};\n"
-    s += "    \\node at ([yshift=-1cm,xshift=1mm]legend_psign.south) (legend_csign) {\\includegraphics[width=" + sign_width + " cm]{\"tex/img/csign\".pdf}};\n"
+    s += "    \\node[anchor=west] at (legend_bike_text.east |- legend_black) (legend_psign) {\\includegraphics[width=" + sign_width + " cm]{\"tex/img/psign\".pdf}};\n"
+    s += "    \\node at ([yshift=-" + sign_width + "cm,xshift=1mm]legend_psign.south) (legend_csign) {\\includegraphics[width=" + sign_width + " cm]{\"tex/img/csign\".pdf}};\n"
 
     s += "    \\node[right = .2cm of legend_psign] (legend_psign_text) {Parking node};\n"
     s += "    \\node[anchor=west] at (legend_psign_text.west |- legend_csign) (legend_csign_text) {Charging node};\n"

@@ -11,8 +11,8 @@ GENERATE VIDEO:
 ./runner.sh video
 
 ADDITIONAL INFORMATION:
-The tikz files generated is based of the latest output files combined with the input file defined in tikz_generator.py. (line 21)
-The number of tikz files generated is defined in tikz_generator.py (line 21)
+The tikz files generated is based of the latest output files combined with the input file defined in setup.py.
+The number of tikz files generated is defined in setup.py.
 
 KNOWN ISSUES:
 1. OSX: To run the script runner.sh with the video option you must install ImageMagick. Brew:

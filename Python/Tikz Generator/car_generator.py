@@ -1,13 +1,14 @@
 from output_reader import general_info
 from helpers import *
+from setup import size_factor
 
-step = 10
+step = 10*size_factor
 columns = general_info["wNodes"]
 rows = general_info["hNodes"]
 width = columns*step
 height = rows*step
-car_height = step / 14
-man_height = step / 10
+car_height = size_factor*(step / 14)
+man_height = size_factor*(step / 10)
 car_dist_y = car_height / 6
 car_dist_x = 3*car_dist_y
 car_height_string = "{:.2f}".format(car_height) + "cm"
@@ -28,7 +29,7 @@ def filler(id_string, color, number):
 def fill_parking(node, cars_parked, cars_need):
     s = ""
     x_above = x_right_from_node(node, step, columns) - car_dist_x*3
-    y = y_bottom_from_node(node, step, columns) + 4*car_dist_y
+    y = y_bottom_from_node(node, step, columns, rows) + 4*car_dist_y
 
     if cars_parked > 0:
         above_string = str(node) + "_above_"
@@ -56,7 +57,7 @@ def fill_charging(c_node, cars_charging):
         charging_string = str(c_node) + "_charging_"
         p_node = c_to_p[c_node]
         x = x_left_from_node(p_node, step, columns) + 3*car_dist_x
-        y = y_bottom_from_node(p_node, step, columns) + 4*car_dist_y
+        y = y_bottom_from_node(p_node, step, columns, rows) + 4*car_dist_y
         s += draw_object("car_orange", charging_string + "0", [x,y])
         if cars_charging > 1:
             s += filler(charging_string, "car_orange", cars_charging)
@@ -119,11 +120,11 @@ def fill_origin_list(operator_info):
 
 def draw_object(obj, identifier, position=0, relative=""):
     if position != 0:
-        s = "   \\node at (" + "{:.2f}".format(position[0]) + "," + "{:.2f}".format(position[1]) + ") (" + identifier + ") \
+        s = "    \\node at (" + "{:.2f}".format(position[0]) + "," + "{:.2f}".format(position[1]) + ") (" + identifier + ") \
                 {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
     else:
         relative_string = "[" + relative[0] + " = " + car_dist_y_string + " of " + relative[1] + "]"
-        s = "   \\node" + relative_string + " (" + identifier + ") {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
+        s = "    \\node" + relative_string + " (" + identifier + ") {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
 
     return s
 
@@ -131,7 +132,7 @@ def fill_node_with_operators(node, operators_in_node):
     s = ""
     obj = "man"
     x = "{:.2f}".format(x_mid_from_node(node, step, columns))
-    y = "{:.2f}".format(y_mid_from_node(node, step, columns))
+    y = "{:.2f}".format(y_mid_from_node(node, step, columns, rows))
     relative = [("left", "1.2cm"), ("right", "1.2cm"), ("above", "1.2cm"), ("below", "1.2cm")]
 
     if len(operators_in_node) > 0:
@@ -160,13 +161,13 @@ def draw_moving_object(from_node, to_node, covered, operator, obj):
         to_node = c_to_p[to_node - n_nodes]
 
     from_x = x_mid_from_node(from_node, step, columns)
-    from_y = y_mid_from_node(from_node, step, columns)
+    from_y = y_mid_from_node(from_node, step, columns, rows)
 
 
     height = car_height_string
 
     to_x = x_mid_from_node(to_node, step, columns)
-    to_y = y_mid_from_node(to_node, step, columns)
+    to_y = y_mid_from_node(to_node, step, columns, rows)
 
     delta_x = from_x - to_x
     delta_y = from_y - to_y
@@ -196,7 +197,7 @@ def draw_object_below(obj, x, identifier):
     else:
         height = man_height_string
 
-    relative_string = "[below = 1.2cm of " + x + ".west, anchor=west]"
+    relative_string = "[below = " + man_height_string + " of " + x + ".west, anchor=west]"
     s = "    \\node" + relative_string + " (" + str(identifier) + ")"+\
             "{\\includegraphics[height=" + height + "]{\"tex/img/" + obj + "\".png}};\n"
     return s

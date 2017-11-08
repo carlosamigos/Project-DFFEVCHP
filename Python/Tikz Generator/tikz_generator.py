@@ -1,3 +1,4 @@
+from setup import input_file, n_steps
 import scenario_generator
 import snapshot_creater
 
@@ -6,11 +7,11 @@ start = "\\documentclass[png]{standalone}\n" +\
         "\\usepackage{tikz}\n" +\
         "\\usepackage{graphicx}\n" +\
         "\\usetikzlibrary{positioning,calc}\n" +\
-        "\\begin{document}\n\\begin{tikzpicture}\n"
+        "\\begin{document}\n\\begin{Huge}\n\\begin{tikzpicture}\n"
 
 nodes = ""
 
-end = "\\end{tikzpicture}\n\\end{document}\n"
+end = "\\end{tikzpicture}\n\\end{Huge}\\end{document}\n"
 
 def write_file(tex_string, i, n):
     with open('tex/snapshot_' + get_file_ending(i, n) + '.tex', 'w') as f:
@@ -18,7 +19,7 @@ def write_file(tex_string, i, n):
 
 
 def draw():
-    snapshots = snapshot_creater.generate_snapshots(10, "../../Mosel/states/example1.txt")
+    snapshots = snapshot_creater.generate_snapshots(n_steps, input_file)
     snapshot_strings = scenario_generator.draw_all_snapshots(snapshots)
     n = len(snapshot_strings)
     for i in range(n):
