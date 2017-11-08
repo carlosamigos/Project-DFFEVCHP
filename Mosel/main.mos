@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/example1.txt';
+	DataFile = 'states/initialExample1.txt';
 end-parameters
 
 declarations
