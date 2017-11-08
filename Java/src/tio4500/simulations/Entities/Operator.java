@@ -49,7 +49,6 @@ public class Operator {
     public String toString() {
         return "Operator{" +
                 "id=" + id +
-                ", node=" + nextOrCurrentNode +
                 '}';
     }
 }

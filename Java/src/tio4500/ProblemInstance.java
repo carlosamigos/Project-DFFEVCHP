@@ -154,7 +154,8 @@ public class ProblemInstance {
     private void setUpNodesAndCars() {
         int i;
         ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
-        if(inputFileMap.get("chargingSlotsAvailable").length() >2){
+        if(inputFileMap.get("totalNumberOfChargingSlots").length() >2){
+            System.out.println(inputFileMap.get("totalNumberOfChargingSlots"));
             String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").replace("[","").replace("]","").split(" ");
             for (i = 0; i < totalChargingSlots.length; i++) {
                 totalChargingSlotsArray.add(Integer.parseInt(totalChargingSlots[i]));

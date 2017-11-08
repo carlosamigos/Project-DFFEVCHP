@@ -40,7 +40,7 @@ public class OperatorDeparture {
                 "node=" + node +
                 ", operator=" + operator +
                 ", departureTime=" + departureTime +
-                ", operatorArrival=" + operatorArrival +
+                ", arrivalTIme=" + getOperatorArrival().getArrivalTime()+
                 '}';
     }
 }
