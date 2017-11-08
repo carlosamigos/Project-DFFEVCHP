@@ -90,8 +90,6 @@ class World:
                 cord = (cordY, cordX)
                 cords.append(cord)
 
-        for i in range(len(self.cNodes)):
-            cords.append(cords[self.cNodes[i].pNode - 1])
 
         travelMatrixCar = gI.run(cords, "driving", False)
         time.sleep(2)
@@ -99,9 +97,15 @@ class World:
         time.sleep(2)
         travelMatrixTransit = gI.run(cords, "transit", False)
 
-        #print(travelMatrixTransit)
-        #print(travelMatrixBicycle)
-        #print(travelMatrixCar)
+        for i in range(len(travelMatrixBicycle)):
+            for j in range(len(self.cNodes)):
+                travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.cNodes[j].pNode-1])
+                travelMatrixTransit[i].append(travelMatrixTransit[i][self.cNodes[j].pNode-1])
+                travelMatrixCar[i].append(travelMatrixCar[i][self.cNodes[j].pNode-1])
+        for i in range(len(self.cNodes)):
+            travelMatrixBicycle.append(travelMatrixBicycle[self.cNodes[i].pNode-1])
+            travelMatrixTransit.append(travelMatrixTransit[self.cNodes[i].pNode-1])
+            travelMatrixCar.append(travelMatrixCar[self.cNodes[i].pNode-1])
 
         travelMatrixNotHandling = []
         travelMatrixHandling = []
