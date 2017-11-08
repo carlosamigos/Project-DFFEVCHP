@@ -1,13 +1,10 @@
 import math
 import random
+import sys
+import time
 
-
-## CONSTANTS ##
-VISITS = 3
-OPERATORS = 3
-CARS = 3
-
-
+sys.path.append('../')
+from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 class World:
 
@@ -33,6 +30,10 @@ class World:
         # WORLD CONSTANTS #
         self.YCORD = 0
         self.XCORD = 0
+
+        # COORDINATE CONSTANTS
+        self.UPPERRIGHT = (0, 0)
+        self.LOWERLEFT = (0, 0)
 
         # ENTETIES #
         self.operators = []
@@ -66,7 +67,7 @@ class World:
         self.distancesC = []
         self.distancesB = []
         maxDistance = math.sqrt(math.pow(self.pNodes[0].xCord - self.pNodes[len(self.pNodes) - 1].xCord, 2) + math.pow(self.pNodes[0].yCord - self.pNodes[len(self.pNodes) - 1].yCord, 2))
-        scale = float(format((self.TIMELIMIT + self.TIMELIMITLAST - 1)/(maxDistance*2), '.1f'))
+        scale = float(format((self.TIMELIMIT + self.TIMELIMITLAST - 1)/(maxDistance*3), '.1f'))
         for x in range(len(self.nodes)):
             for y in range(len(self.nodes)):
                 distance = math.pow(self.nodes[x].xCord - self.nodes[y].xCord, 2) + math.pow(self.nodes[x].yCord - self.nodes[y].yCord, 2)
@@ -75,6 +76,47 @@ class World:
 
                 self.distancesC.append(distanceSq)
                 self.distancesB.append(distanceB)
+
+    def calculateRealDistances(self):
+        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
+        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0])/self.YCORD
+        startX = self.LOWERLEFT[1] + 0.5*stepX
+        startY = self.UPPERRIGHT[0] - 0.5*stepY
+        cords = []
+        for i in range(self.YCORD):
+            for j in range(self.XCORD):
+                cordX = startX + j*stepX
+                cordY = startY - i*stepY
+                cord = (cordY, cordX)
+                cords.append(cord)
+
+
+        travelMatrixCar = gI.run(cords, "driving", False)
+        time.sleep(2)
+        travelMatrixBicycle = gI.run(cords, "bicycling", False)
+        time.sleep(2)
+        travelMatrixTransit = gI.run(cords, "transit", False)
+
+        for i in range(len(travelMatrixBicycle)):
+            for j in range(len(self.cNodes)):
+                travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.cNodes[j].pNode-1])
+                travelMatrixTransit[i].append(travelMatrixTransit[i][self.cNodes[j].pNode-1])
+                travelMatrixCar[i].append(travelMatrixCar[i][self.cNodes[j].pNode-1])
+        for i in range(len(self.cNodes)):
+            travelMatrixBicycle.append(travelMatrixBicycle[self.cNodes[i].pNode-1])
+            travelMatrixTransit.append(travelMatrixTransit[self.cNodes[i].pNode-1])
+            travelMatrixCar.append(travelMatrixCar[self.cNodes[i].pNode-1])
+
+        travelMatrixNotHandling = []
+        travelMatrixHandling = []
+        for i in range(len(travelMatrixBicycle)):
+            for j in range(len(travelMatrixBicycle[i])):
+                travelMatrixNotHandling.append(float(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j])/60, '.1f')))
+                travelMatrixHandling.append(float(format(travelMatrixCar[i][j]/60, '.1f')))
+        self.distancesC = travelMatrixHandling
+        self.distancesB = travelMatrixNotHandling
+
+
 
     def setConstants(self, visits, mode, sBigM):
         self.VISITS = visits
@@ -92,6 +134,11 @@ class World:
         self.HANDLINGTIMEC = handlingTimeC
         self.TIMELIMIT = timeLimit
         self.TIMELIMITLAST = timeLimitLast
+
+    def setCordConstants(self, upperRight, lowerLeft):
+        self.UPPERRIGHT = upperRight
+        self.LOWERLEFT = lowerLeft
+
 
     def writeToFile(self, example):
         fileName = "../../Mosel/states/initialExample" + str(example) + ".txt"
@@ -323,7 +370,7 @@ def createFCCars(world, time, cNode, pNode):
 def createCNodes(world):
     string = "\n You can create a charging node in parking node 1 to: " + str(len(world.pNodes))
     print(string)
-    numCNodes = input("How many do yoy want to create: ")
+    numCNodes = int(input("How many do yoy want to create: "))
     for i in range(numCNodes):
         print("\n")
         print("Creating charging node: ", i+1)
@@ -331,7 +378,7 @@ def createCNodes(world):
         pNode = world.pNodes[pNodeNum-1]
         capacity = int(input("How many available charging slots right now: "))
         totalCapacity = int(input("What is the total capacity: "))
-        fCCars = input("How many cars are charging there now, that will finish during the planning period: ")
+        fCCars = int(input("How many cars are charging there now, that will finish during the planning period: "))
         for j in range(fCCars):
             time = random.randint(0, 59)
             createFCCars(world, time, i + len(world.pNodes) + 1, pNodeNum)
@@ -362,10 +409,12 @@ def main():
     createNodes(world)
     createCNodes(world)
     createOperators(world)
+    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.setConstants(5, 1, 10)
     world.setCostConstants(20, 20, 1, 1)
     world.setTimeConstants(4, 5, 60, 10)
     world.calculateDistances()
+    world.calculateRealDistances()
     world.writeToFile(1)
 
 main()
