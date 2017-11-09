@@ -18,8 +18,8 @@ chargingNodeAOperator: [10]
 chargingSlotsAvailable: [2 2] 
 totalNumberOfChargingSlots: [3 2] 
 
-costOfDeviation : 20
-costOfPostponedCharging : 20
+costOfDeviation : 25
+costOfPostponedCharging : 25
 costOfExtraTime : 0.5
 costOfTravel: 0.5
 
@@ -63,5 +63,5 @@ idealStateP: [3 2 3 3 1 2 1 1 4]
 
 demandP: [-1 0 0 1 1 1 1 0 -1] 
 
-mode: 1
+mode: 2
 sequenceBigM: 10

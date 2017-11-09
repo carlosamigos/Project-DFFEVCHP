@@ -56,7 +56,7 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [0 0 0] 
-initialRegularInP: [1 2 3 3 3 3 1 2 2] 
+initialRegularInP: [2 2 3 3 3 3 1 2 3] 
 initialInNeedP: [1 1 0 0 0 0 1 0 1] 
 finishedDuringC: [0 0] 
 idealStateP: [0 3 1 4 3 3 4 2 3] 

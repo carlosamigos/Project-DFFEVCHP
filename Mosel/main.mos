@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/initialExample2.txt';
+	DataFile = 'states/initialExample1.txt';
 end-parameters
 
 declarations
@@ -391,25 +391,40 @@ declarations
 		Objective: linctr;
 end-declarations
 
-! Standard 
+! MODE 0
+! Do the least moves, and meet optimal state
 Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
-			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + !costOfExtraTime * sum(ii in rNodes) tMax(ii) + 
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 
-!Try to do the least handling 
-!Try to do the least traveling, independent of traveltime to reduce risk in the model (e.g. more travelling -> more risk)
+! MODE 1
+! All in mode 0, and introducing a cost of handeling dependent of distance
+
 
 if(mode = 1) then
 	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
 			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
-			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) (x(ii,mm,jj,nn,pp));
+			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 end-if
 
-! Max travel 
+! MODE 2
+! All in mode 1, but introducing a cost of travel dependent on distance, not just the travel itself
+
 if(mode = 2) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
+			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
+			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp));
+end-if
+
+! MODE 3
+! Max travel, for debugging only 
+
+if(mode = 3) then
 	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
 end-if
 
@@ -727,7 +742,7 @@ end-do
 
 
 
-setparam("XPRS_MAXTIME", -800);
+setparam("XPRS_MAXTIME", -400);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
