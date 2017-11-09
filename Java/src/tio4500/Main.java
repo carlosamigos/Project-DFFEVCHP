@@ -20,6 +20,7 @@ public class Main {
         }
         instance.writeProblemInstanceToFile();
 
+
         DynamicProblem dynProb = new DynamicProblem(instance, simulationModel);
         dynProb.solve();
 

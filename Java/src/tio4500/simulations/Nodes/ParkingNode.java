@@ -11,7 +11,8 @@ public class ParkingNode extends Node{
     private ArrayList<Car> carsRegular;
     private Double demandRate = 0.0;
     private Constants.nodeDemandGroup demandGroup = null;
-    private int idealNumberOfAvailableCars = 0;
+    private int idealNumberOfAvailableCarsThisPeriod = 0;
+    private int predictedNumberOfCarsDemandedThisPeriod = 0;
 
     public ParkingNode(int nodeId) {
         super(nodeId);
@@ -57,11 +58,19 @@ public class ParkingNode extends Node{
     }
 
     public int getIdealNumberOfAvailableCars() {
-        return idealNumberOfAvailableCars;
+        return idealNumberOfAvailableCarsThisPeriod;
     }
 
-    public void setIdealNumberOfAvailableCars(int idealNumberOfAvailableCars) {
-        this.idealNumberOfAvailableCars = idealNumberOfAvailableCars;
+    public void setIdealNumberOfAvailableCarsThisPeriod(int idealNumberOfAvailableCars) {
+        this.idealNumberOfAvailableCarsThisPeriod = idealNumberOfAvailableCars;
+    }
+
+    public int getPredictedNumberOfCarsDemandedThisPeriod() {
+        return predictedNumberOfCarsDemandedThisPeriod;
+    }
+
+    public void setPredictedNumberOfCarsDemandedThisPeriod(int predictedNumberOfCarsDemandedThisPeriod) {
+        this.predictedNumberOfCarsDemandedThisPeriod = predictedNumberOfCarsDemandedThisPeriod;
     }
 
     @Override

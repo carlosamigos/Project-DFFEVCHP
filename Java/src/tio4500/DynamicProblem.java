@@ -38,6 +38,8 @@ public class DynamicProblem {
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         for (int time = Constants.START_TIME; time < Constants.END_TIME; time += Constants.TIME_INCREMENTS) {
             System.out.println(problemInstance);
+            findOptimalNumberOfCarsInParking(time);
+            predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
             StaticProblem staticProblem = new StaticProblem();
             staticProblem.compile();
@@ -246,6 +248,8 @@ public class DynamicProblem {
         }
     }
 
+
+
     private Car findAvailableCarForCustomerInNode(ParkingNode node){
         if(node.getCarsRegular().size()>0){
             return node.getCarsRegular().get(0);
@@ -437,6 +441,61 @@ public class DynamicProblem {
             arrivals.put(operatorArrival.getOperator(), new ArrayList<>());
         }
         arrivals.get(operatorArrival.getOperator()).add(operatorArrival);
+    }
+
+    private void findOptimalNumberOfCarsInParking(double time){
+        double totalCarsPredicted = 0;
+        double nextPeriodDemand;
+        HashMap<ParkingNode,Double> map = new HashMap<>();
+        for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+            if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+            } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+            } else {
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+            }
+            totalCarsPredicted+= nextPeriodDemand;
+            map.put(pNode,nextPeriodDemand);
+        }
+        int numberOfCarsAvailableNextPeriod = 0;
+        for (Car car : problemInstance.getCars()) {
+            if (car.getRemainingChargingTime()==0){
+                numberOfCarsAvailableNextPeriod+=1;
+            }
+        }
+        for (ChargingNode cNode: problemInstance.getChargingNodes()) {
+            for (Car car: cNode.getCarsCurrentlyCharging()) {
+                if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+                    numberOfCarsAvailableNextPeriod+=1;
+                }
+            }
+        }
+
+        for (ParkingNode pNode : map.keySet()) {
+            int demandInteger = (int) Math.floor(map.get(pNode) / totalCarsPredicted * numberOfCarsAvailableNextPeriod);
+            if(time + Constants.TIME_INCREMENTS*2 > Constants.END_TIME){
+                demandInteger = (int) Math.floor(numberOfCarsAvailableNextPeriod / problemInstance.getParkingNodes().size());
+            }
+            pNode.setIdealNumberOfAvailableCarsThisPeriod(demandInteger);
+        }
+    }
+
+    private void predictNumberOfCarsPickedUpNextPeriod(double time){
+        double nextPeriodDemand;
+        ArrayList<Integer> optimalCarsInParking = new ArrayList<>();
+        for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+            if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_INCREMENTS);
+            } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_INCREMENTS);
+            } else {
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_INCREMENTS);
+            }
+            int demandInt = (int) Math.round(nextPeriodDemand);
+            pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
+
+        }
     }
 
 }

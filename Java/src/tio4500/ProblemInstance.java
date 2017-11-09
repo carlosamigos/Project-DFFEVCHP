@@ -405,24 +405,21 @@ public class ProblemInstance {
             writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
             writer.println("startNodeROperator : "+startNodeROperator.substring(0,startNodeROperator.length()-1)+ "]");
 
-            // initialInNeedP
+            // initialInNeedP, idealStateP, initialRegularInP and demandP
             String initialInNeedP = "[";
             String idealStateP = "[";
             String initialRegularInP = "[";
+            String demandP = "[";
             for (ParkingNode pNode : parkingNodes) {
                 initialInNeedP += pNode.getCarsInNeed().size() + " ";
                 idealStateP += pNode.getIdealNumberOfAvailableCars() + " ";
                 initialRegularInP += pNode.getCarsRegular().size() + " ";
+                demandP += pNode.getPredictedNumberOfCarsDemandedThisPeriod() + " ";
             }
             writer.println("initialInNeedP : "+ initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]");
             writer.println("idealStateP : "+ idealStateP.substring(0,idealStateP.length()-1)+ "]");
             writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
-
-
-            // Find optimal number of cars in parking
-
-
-            // forecasted demand in P during period
+            writer.println("demandP : "+ demandP.substring(0,demandP.length()-1)+ "]");
 
 
             writer.close();
@@ -442,6 +439,8 @@ public class ProblemInstance {
     public HashMap<ChargingNode, ParkingNode> getChargingToParkingNode() {
         return chargingToParkingNode;
     }
+
+
 
     @Override
     public String toString() {

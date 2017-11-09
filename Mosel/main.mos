@@ -728,7 +728,7 @@ end-do
 ! ### End of declaration of valid inequalities ### !
 
 
-setparam("XPRS_MAXTIME", -40);
+setparam("XPRS_MAXTIME", -100);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
