@@ -144,6 +144,7 @@ declarations
 	handlingTimeC        : real;
 	timeLimit            : real;
 	timeLimitLastVisit   : real;
+	maxTravelHToC        : real;
 	
 	! Initial and ideal state !
 	travelTimeToOriginR  : array(rOperators) of real;
@@ -192,6 +193,7 @@ initializations from DataFile
 	demandP;
 	mode;
 	sequenceBigM;
+	maxTravelHToC;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -643,6 +645,7 @@ declarations
 	travelTimeCharging      : dynamic array(rOperators, cNodes, visits, rNodes, visits) of linctr;
 	travelTimeParking       : dynamic array(rOperators, pNodes, visits, rNodes, visits) of linctr;
 	startTime               : dynamic array(rOperators, visits)                         of linctr;
+	maxCHandling			: dynamic array(cNodes, visits)								of linctr;
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
@@ -667,6 +670,10 @@ end-do
 
 forall(pp in rOperators, mm in visits) do
 	startTime(pp, mm) := t(startNodeROperator(pp), mm) >= travelTimeToOriginR(pp)*x(originNodeROperator(pp), 1, startNodeROperator(pp), mm, pp);
+end-do
+
+forall(jj in cNodes, nn in visits) do
+	maxCHandling(jj, nn) := sum(ii in rNodes, mm in visits, pp in rOperators) travelTimeVehicle(ii,jj) * h(ii, mm, jj, nn, pp) <= maxTravelHToC;
 end-do
 
 ! Time constraint for extra time !
