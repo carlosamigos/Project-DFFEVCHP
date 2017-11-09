@@ -121,37 +121,47 @@ public class DynamicProblem {
                         OperatorTravel travel = new OperatorTravel(operator,nextOperatorHappeningTime,departureNode, arrivalNode,arrival.getArrivalTime());
                         if(arrival.isHandling()){
 
-                            if(arrivalNode instanceof ParkingNode){
-                                Car car = ((ParkingNode) departureNode).getCarsRegular().remove(0);
-                                if (car != null){
-                                    car.setPreviousNode(travel.getPickupNode());
-                                    car.setCurrentNextNode(travel.getArrivalNode());
-                                    travel.setCar(car);
-                                    travel.setPreviousTimeStep(nextOperatorHappeningTime);
-                                    operatorTravels.put(operator,travel);
-                                    System.out.println("Operator travel made: "+ travel);
-                                } else {
-                                    System.out.println("Car missed by operator... operator will wait.");
+                            if(((ParkingNode) departureNode).getCarsRegular().size()==0){
+                                // car taken by customer, make operator inactive
+                                operatorDepartures.put(operator,new ArrayList<>());
+                            } else {
+                                if(arrivalNode instanceof ParkingNode){
+                                    //take regular car
+                                    Car car = ((ParkingNode) departureNode).getCarsRegular().remove(0);
+                                    if (car != null){
+                                        car.setPreviousNode(travel.getPickupNode());
+                                        car.setCurrentNextNode(travel.getArrivalNode());
+                                        travel.setCar(car);
+                                        travel.setPreviousTimeStep(nextOperatorHappeningTime);
+                                        operatorTravels.put(operator,travel);
+                                        System.out.println("Operator travel made: "+ travel);
+                                    } else {
+                                        System.out.println("Car missed by operator... operator will wait.");
+                                    }
+                                }
+                                else {
+                                    //take car with low battery
+                                    Car car = ((ParkingNode) departureNode).getCarsInNeed().remove(0);
+                                    if (car!= null){
+                                        car.setCurrentNextNode(travel.getArrivalNode());
+                                        car.setPreviousNode(travel.getPickupNode());
+                                        travel.setCar(car);
+                                        travel.setPreviousTimeStep(nextOperatorHappeningTime);
+                                        operatorTravels.put(operator,travel);
+                                        System.out.println("Operator travel made: "+ travel);
+                                    }
                                 }
                             }
-                            else {
-                                Car car = ((ParkingNode) departureNode).getCarsInNeed().remove(0);
-                                if (car!= null){
-                                    car.setCurrentNextNode(travel.getArrivalNode());
-                                    car.setPreviousNode(travel.getPickupNode());
-                                    travel.setCar(car);
-                                    travel.setPreviousTimeStep(nextOperatorHappeningTime);
-                                    operatorTravels.put(operator,travel);
-                                    System.out.println("Operator travel made: "+ travel);
-                                }
-                            }
+
+
                         } else {
-                            //no car
+                            //no car used in travel
                             travel.setPreviousTimeStep(nextOperatorHappeningTime);
                             operatorTravels.put(operator,travel);
                             System.out.println("Operator travel made: "+ travel);
                         }
                     } else{
+                        // last node in operator's path
                         operatorDepartures.get(nextOperatorDepartureOrArrival.getOperator()).remove(nextOperatorDepartureOrArrival);
                     }
 

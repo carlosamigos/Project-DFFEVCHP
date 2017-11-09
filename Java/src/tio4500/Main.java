@@ -1,18 +1,16 @@
 package tio4500;
 
 
+import constants.Constants;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Hello, rolling horizon!");
 
-        int exampleNumber = 1;
-        int dayNumber = 1;
-
-        ProblemInstance instance = new ProblemInstance(exampleNumber);
+        ProblemInstance instance = new ProblemInstance(Constants.EXAMPLE_NUMBER);
         System.out.println(instance);
-        SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
+        SimulationModel simulationModel = new SimulationModel(Constants.DAY_NUMBER,instance);
         simulationModel.createNewDaySimulationModel();
         simulationModel.saveDaySimulationModel();
         //simulationModel.readSimulationModelFromFile();

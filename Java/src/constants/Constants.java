@@ -3,7 +3,8 @@ package constants;
 public class Constants {
 
     // Example specification
-    public final static int EXAMPLE_NUMBER = 1;
+    public final static int EXAMPLE_NUMBER = 2;
+    public final static int DAY_NUMBER = 1;
 
     // Folders
     public final static String MOSEL_FOLDER= "../Mosel/";

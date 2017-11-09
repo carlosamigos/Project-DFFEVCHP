@@ -76,6 +76,7 @@ public class ProblemInstance {
     }
 
     private void readProblemFromFile() throws IOException{
+        System.out.println("reading file: "+ Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt");
         BufferedReader br = new BufferedReader(new FileReader(Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
