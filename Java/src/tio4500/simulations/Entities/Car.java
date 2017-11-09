@@ -71,6 +71,7 @@ public class Car {
                 "id=" + carId +
                 ", lvl=" + batteryLevel +
                 ", node=" + currentNextNode.getNodeId()+
+                ", rem.C.time="+remainingChargingTime +
                 '}';
     }
 }

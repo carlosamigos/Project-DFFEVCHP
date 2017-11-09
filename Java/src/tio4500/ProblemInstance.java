@@ -73,6 +73,10 @@ public class ProblemInstance {
         stateSpecificKeys.add("chargingNodeAOperator");
         stateSpecificKeys.add("parkingNodeAOperator");
         stateSpecificKeys.add("numAOperators");
+        stateSpecificKeys.add("finishedDuringC");
+        stateSpecificKeys.add("demandP");
+        stateSpecificKeys.add("timeLimitLastVisit");
+        stateSpecificKeys.add("timeLimit");
     }
 
     private void readProblemFromFile() throws IOException{
@@ -249,12 +253,6 @@ public class ProblemInstance {
             }
             travelTimesBike.add(newTimeRow);
         }
-
-
-
-
-
-
     }
 
     private void addNodeToNodeMap(Node node){
@@ -353,13 +351,21 @@ public class ProblemInstance {
                 }
             }
             writer.println();
+            //Time limits
+            writer.println("timeLimitLastVisit : "+ Constants.TIME_LIMIT_LAST_VISIT);
+            writer.println("timeLimit : "+ Constants.TIME_LIMIT_STATIC_PROBLEM);
 
-            // chargingSlotsAvailable
+            // chargingSlotsAvailable and finished during period
             String chargingSlotsAvailableArray = "[";
+            String finishedDuringCArray = "[";
             for (ChargingNode cNode : chargingNodes) {
-                chargingSlotsAvailableArray += cNode.findNumberOfChargingSpotsAvailableDuringNextPeriod() + " ";
+                int carsFinishedChargingDuringPeriod = cNode.findNumberOfCarsFinishingChargingDuringNextPeriod();
+                int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
+                chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
+                finishedDuringCArray += carsFinishedChargingDuringPeriod + " ";
             }
             writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
+            writer.println("finishedDuringC : "+ finishedDuringCArray.substring(0,finishedDuringCArray.length()-1)+"]");
 
             // Artificial operators
             int numArtificialOperators = 0;
@@ -369,15 +375,15 @@ public class ProblemInstance {
 
             for (ChargingNode cNode : chargingNodes) {
                 for(Car car : cNode.getCarsCurrentlyCharging()){
-                    if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+                    if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                         numArtificialOperators ++;
                         travelTimeToParkingA += car.getRemainingChargingTime()+ " ";
-                        chargingNodeAOperator += car.getPreviousNode().getNodeId() + " ";
-                        parkingNodeAOperator += chargingToParkingNode.get(car.getPreviousNode()).getNodeId() + " ";
+                        chargingNodeAOperator += cNode.getNodeId() + " ";
+                        parkingNodeAOperator += chargingToParkingNode.get(cNode).getNodeId() + " ";
                     }
                 }
             }
-            if(travelTimeToParkingA.length() > 1){
+            if(numArtificialOperators > 0){
                 writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
                 writer.println("travelTimeToParkingA : " + travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]");
                 writer.println("chargingNodeAOperator : " + chargingNodeAOperator.substring(0,chargingNodeAOperator.length()-1)+"]");
@@ -413,7 +419,10 @@ public class ProblemInstance {
             writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
 
 
+            // Find optimal number of cars in parking
 
+
+            // forecasted demand in P during period
 
 
             writer.close();

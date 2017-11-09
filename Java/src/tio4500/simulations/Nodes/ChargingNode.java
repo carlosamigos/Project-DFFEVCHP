@@ -19,15 +19,14 @@ public class ChargingNode extends Node{
         return carsCurrentlyCharging;
     }
 
-    public int findNumberOfChargingSpotsAvailableDuringNextPeriod(){
+    public int findNumberOfCarsFinishingChargingDuringNextPeriod(){
         int numberOfCarsFinishingCharging = 0;
         for (Car car : carsCurrentlyCharging) {
-            if (car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+            if (car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                 numberOfCarsFinishingCharging +=1;
             }
         }
-        int numberOfAvailableChargingSpotsDuringNextPeriod = getNumberOfTotalChargingSlots() - carsCurrentlyCharging.size()+ numberOfCarsFinishingCharging;
-        return numberOfAvailableChargingSpotsDuringNextPeriod;
+        return numberOfCarsFinishingCharging;
     }
 
     public int getNumberOfTotalChargingSlots() {

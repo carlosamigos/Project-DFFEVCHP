@@ -5,6 +5,7 @@ public class Constants {
     // Example specification
     public final static int EXAMPLE_NUMBER = 2;
     public final static int DAY_NUMBER = 1;
+    public final static boolean CREATE_NEW_SIMULATION_MODEL = false;
 
     // Folders
     public final static String MOSEL_FOLDER= "../Mosel/";
@@ -27,16 +28,19 @@ public class Constants {
 
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*7;
+    public final static int END_TIME = 60*8;
     public final static int TIME_INCREMENTS = 60;
 
     // Variables for Mosel
     public final static int MAX_DURATION = 200; // In seconds, not used at the moment
+    public final static int OBJECTIVE_MODE = 2;
+    public final static int TIME_LIMIT_LAST_VISIT = 10;
+    public final static int TIME_LIMIT_STATIC_PROBLEM = TIME_INCREMENTS;
 
     // Variables for simulation environment
-    public final static double HIGH_RATE_LAMBDA = 5.0; // Average waiting time before next arrival
-    public final static double MEDIUM_RATE_LAMBDA = 30.0;
-    public final static double LOW_RATE_LAMBDA = 60.0;
+    public final static double HIGH_RATE_LAMBDA = 10.0; // Average waiting time before next arrival
+    public final static double MEDIUM_RATE_LAMBDA = 40.0;
+    public final static double LOW_RATE_LAMBDA = 120.0;
     public final static double PERCENTAGE_AFFECTED_BY_RUSH_HOUR = 2.0/3.0;
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
 

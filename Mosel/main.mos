@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'states/initialExample1.txt';
+	DataFile = '../Mosel/states/exampleState2.txt';
 end-parameters
 
 declarations
@@ -728,7 +728,7 @@ end-do
 ! ### End of declaration of valid inequalities ### !
 
 
-setparam("XPRS_MAXTIME", -100);
+setparam("XPRS_MAXTIME", -40);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
 
@@ -869,7 +869,7 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 end-do
 
 if writeToFile then
-	fopen("output/outputServiceOperatorsPath.txt", F_OUTPUT);
+	fopen("../Mosel/output/outputServiceOperatorsPath.txt", F_OUTPUT);
 	forall(pp in rOperators) do
 		currNode := originNodeROperator(pp);
 		currVisit := 1;
@@ -938,7 +938,7 @@ if writeToFile then
 	
 	
 	!todo fake service operators
-	fopen("output/outputArtificialServiceOperators.txt", F_OUTPUT);
+	fopen("../Mosel/output/outputArtificialServiceOperators.txt", F_OUTPUT);
 	
 	forall(pp in aOperators) do
 		write(pp, ': ');

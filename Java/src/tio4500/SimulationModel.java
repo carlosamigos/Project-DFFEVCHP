@@ -50,7 +50,7 @@ public class SimulationModel {
             writer.println(problemInstanceString+" : "+Integer.toString(problemInstance.getExampleNumber()));
             for (ParkingNode pNode : demandRequests.keySet()) {
                 for (DemandRequest req : demandRequests.get(pNode)) {
-                    writer.println(Integer.toString(req.getNode().getNodeId())+","+formatter.format(req.getTime()));
+                    writer.println(Integer.toString(req.getNode().getNodeId())+":"+formatter.format(req.getTime()));
                 }
             }
             writer.close();
@@ -88,7 +88,7 @@ public class SimulationModel {
                 }
                 else {
                     line.trim(); line = line.replace("\n","");
-                    String[] parts = line.split(",");
+                    String[] parts = line.split(":");
                     int parkingNodeId = Integer.parseInt(parts[0].trim());
                     double number = Double.parseDouble(parts[1].trim());
                     try{
