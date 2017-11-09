@@ -13,9 +13,9 @@ public class Main {
         ProblemInstance instance = new ProblemInstance(exampleNumber);
         System.out.println(instance);
         SimulationModel simulationModel = new SimulationModel(dayNumber,instance);
-        //simulationModel.createNewDaySimulationModel();
-        //simulationModel.saveDaySimulationModel();
-        simulationModel.readSimulationModelFromFile();
+        simulationModel.createNewDaySimulationModel();
+        simulationModel.saveDaySimulationModel();
+        //simulationModel.readSimulationModelFromFile();
         instance.writeProblemInstanceToFile();
 
         DynamicProblem dynProb = new DynamicProblem(instance, simulationModel);
