@@ -8,6 +8,7 @@ public class Operator {
     private Node nextOrCurrentNode = null;
     private Node previousNode = null;
     private double timeRemainingToCurrentNextNode = 0;
+    private boolean isHandling = false;
 
 
     public Operator(int id) {
@@ -43,6 +44,14 @@ public class Operator {
 
     public void setTimeRemainingToCurrentNextNode(double timeRemainingToCurrentNextNode) {
         this.timeRemainingToCurrentNextNode = timeRemainingToCurrentNextNode;
+    }
+
+    public boolean isHandling() {
+        return isHandling;
+    }
+
+    public void setHandling(boolean handling) {
+        isHandling = handling;
     }
 
     @Override

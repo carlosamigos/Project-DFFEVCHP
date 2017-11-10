@@ -77,6 +77,7 @@ public class ProblemInstance {
         stateSpecificKeys.add("demandP");
         stateSpecificKeys.add("timeLimitLastVisit");
         stateSpecificKeys.add("timeLimit");
+        stateSpecificKeys.add("initialHandling");
     }
 
     private void readProblemFromFile() throws IOException{
@@ -400,7 +401,7 @@ public class ProblemInstance {
             String startNodeROperator = "[";
             for (Operator operator : operators) {
                 travelTimeToOriginR += operator.getTimeRemainingToCurrentNextNode() + " ";
-                startNodeROperator += operator.getPreviousNode().getNodeId()+ " ";
+                startNodeROperator += operator.getNextOrCurrentNode().getNodeId()+ " ";
             }
             writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
             writer.println("startNodeROperator : "+startNodeROperator.substring(0,startNodeROperator.length()-1)+ "]");
@@ -421,6 +422,13 @@ public class ProblemInstance {
             writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
             writer.println("demandP : "+ demandP.substring(0,demandP.length()-1)+ "]");
 
+
+            //initial handling
+            String initialHandling = "[";
+            for (Operator operator : operators) {
+                initialHandling += (operator.isHandling() ? 1:0) + " ";
+            }
+            writer.println("initialHandling :" + initialHandling.substring(0, initialHandling.length()-1) + "]");
 
             writer.close();
         } catch (FileNotFoundException e){

@@ -28,8 +28,8 @@ public class Constants {
 
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*18;
-    public final static int TIME_INCREMENTS = 60;
+    public final static int END_TIME = 60*8;
+    public final static int TIME_INCREMENTS = 15;
 
     // Variables for Mosel
     public final static int MAX_DURATION = 200; // In seconds, not used at the moment
