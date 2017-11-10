@@ -9,7 +9,7 @@ parameters
 	DataFile = '../Mosel/states/exampleState2.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
-	printParams = true;
+	printParams = false;
 	printResults = true;
 	writeToFile = true;
 	MaxSolveTimeSeconds = 400;
@@ -899,7 +899,7 @@ if printResults then
 	end-do
 	!)
 end-if
-
+(!
 
 forall(ii in pNodes) do
 	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
@@ -939,10 +939,11 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 	end-do
 	
 end-do
-(!
+
 forall(pp in rOperators) do
 	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
 end-do
+
 !)
 
 if writeToFile then

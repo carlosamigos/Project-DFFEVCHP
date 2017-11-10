@@ -16,9 +16,6 @@ import java.util.HashSet;
 
 public class ProblemInstance {
 
-    //TODO: Specificly save problem paramters that are constant throughout the rolling horizon
-
-
     private int exampleNumber;
     private ArrayList<ParkingNode> parkingNodes;
     private ArrayList<ChargingNode> chargingNodes;
@@ -38,6 +35,14 @@ public class ProblemInstance {
 
     private HashMap<String, String> inputFileMap = new HashMap<>();
     private HashMap<String, String> inputFileMapRaw = new HashMap<>();
+
+    private String chargingSlotsAvailableString = "";
+    private String travelTimeToOriginRString = "";
+    private String tavelTimeToParkingAString = "";
+    private String initialRegularInPString = "";
+    private String initialInNeedPString = "";
+    private String idealStatePString = "";
+    private String demandPString  = "";
 
     public ProblemInstance(int exampleNumber) {
         this.exampleNumber = exampleNumber;
@@ -82,7 +87,7 @@ public class ProblemInstance {
     }
 
     private void readProblemFromFile() throws IOException{
-        System.out.println("reading file: "+ Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt");
+        //System.out.println("reading file: "+ Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt");
         BufferedReader br = new BufferedReader(new FileReader(Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
@@ -342,7 +347,7 @@ public class ProblemInstance {
 
 
     public void writeProblemInstanceToFile(){
-        System.out.println("Writing state to file...");
+        //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
             PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + "exampleState"+Integer.toString(exampleNumber)+".txt", "UTF-8");
@@ -373,6 +378,8 @@ public class ProblemInstance {
             }
             writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
             writer.println("finishedDuringC : "+ finishedDuringCArray.substring(0,finishedDuringCArray.length()-1)+"]");
+            chargingSlotsAvailableString = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]";
+
 
             // Artificial operators
             int numArtificialOperators = 0;
@@ -393,11 +400,13 @@ public class ProblemInstance {
             if(numArtificialOperators > 0){
                 writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
                 writer.println("travelTimeToParkingA : " + travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]");
+                tavelTimeToParkingAString = travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]";
                 writer.println("chargingNodeAOperator : " + chargingNodeAOperator.substring(0,chargingNodeAOperator.length()-1)+"]");
                 writer.println("parkingNodeAOperator : " + parkingNodeAOperator.substring(0,parkingNodeAOperator.length()-1)+"]");
             } else {
                 writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
                 writer.println("travelTimeToParkingA : " + travelTimeToParkingA+"]");
+                tavelTimeToParkingAString = travelTimeToParkingA+"]";
                 writer.println("chargingNodeAOperator : " + chargingNodeAOperator+"]");
                 writer.println("parkingNodeAOperator : " + parkingNodeAOperator+"]");
             }
@@ -410,6 +419,7 @@ public class ProblemInstance {
                 startNodeROperator += operator.getNextOrCurrentNode().getNodeId()+ " ";
             }
             writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
+            travelTimeToOriginRString = travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]";
             writer.println("startNodeROperator : "+startNodeROperator.substring(0,startNodeROperator.length()-1)+ "]");
 
             // initialInNeedP, idealStateP, initialRegularInP and demandP
@@ -424,9 +434,13 @@ public class ProblemInstance {
                 demandP += pNode.getPredictedNumberOfCarsDemandedThisPeriod() + " ";
             }
             writer.println("initialInNeedP : "+ initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]");
+            initialInNeedPString = initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]";
             writer.println("idealStateP : "+ idealStateP.substring(0,idealStateP.length()-1)+ "]");
+            idealStatePString = idealStateP.substring(0,idealStateP.length()-1)+ "]";
             writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
+            initialRegularInPString = initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]";
             writer.println("demandP : "+ demandP.substring(0,demandP.length()-1)+ "]");
+            demandPString = demandP.substring(0,demandP.length()-1)+ "]";
 
 
             //initial handling
@@ -445,7 +459,7 @@ public class ProblemInstance {
         } catch (UnsupportedEncodingException e){
             System.out.println(e.getMessage());
         }
-        System.out.println("Written to file.");
+        //System.out.println("Written to file.");
 
     }
 
@@ -461,12 +475,17 @@ public class ProblemInstance {
 
     @Override
     public String toString() {
-        return "\nProblemInstance " + exampleNumber +":"+
-                "\n\t  parkingNodes=" + parkingNodes +
-                "\n\t  chargingNodes=" + chargingNodes +
-                "\n\t  cars=" + cars +
-                "\n\t  operators=" + operators +
-                "\n\t  travelTimesBike=" + travelTimesBike +
-                "\n\t  travelTimesCar=" + travelTimesCar + "\n";
+        return  "\n\t  ProblemInstance " + exampleNumber +":"+
+                "\n\t  parkingNodes              =" + parkingNodes +
+                "\n\t  chargingNodes             =" + chargingNodes +
+                "\n\t  cars                      =" + cars +
+                "\n\t  operators                 =" + operators +
+                "\n\t  chargingSlotsAvailable    =" + chargingSlotsAvailableString +
+                "\n\t  travelTimeToOriginRString =" + travelTimeToOriginRString+
+                "\n\t  tavelTimeToParkingAString =" + tavelTimeToParkingAString+
+                "\n\t  initialRegularInPString   =" + initialRegularInPString +
+                "\n\t  initialInNeedPString      =" + initialInNeedPString +
+                "\n\t  idealStatePString         =" + idealStatePString +
+                "\n\t  demandPString             =" +demandPString ;
     }
 }

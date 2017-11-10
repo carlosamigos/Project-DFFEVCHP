@@ -31,22 +31,21 @@ public class DynamicProblem {
 
     public void solve() {
 
-        System.out.println();
-        int subproblemNo = 0;
+
+        int subproblemNo = 1;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         for (int time = Constants.START_TIME; time < Constants.END_TIME; time += Constants.TIME_INCREMENTS) {
-            System.out.println();
+            System.out.println("\n\n");
+            System.out.println("Sub problem "+subproblemNo+" starting at time: "+time);
             updateOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
+            System.out.println("State before solving mosel: "+problemInstance + "\n");
             StaticProblem staticProblem = new StaticProblem();
             staticProblem.compile();
             staticProblem.solve();
             //System.out.println("Objective value: "+staticProblem.getModel().getObjectiveValue());
-
-            System.out.println("time: "+time);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels);
-
             subproblemNo++;
         }
     }
@@ -59,18 +58,9 @@ public class DynamicProblem {
         double previousTime;
         while (time < endTime){
             previousTime = time;
-            System.out.println();
-            System.out.println(time);
-            System.out.println("operatorTravels:"+operatorTravels);
-
             DemandRequest nextDemandRequest = findNextDemandRequest(time);
             OperatorDeparture nextOperatorDepartureOrArrival = findNextOperatorDepartureOrArrival(time,operatorDepartures);
             CustomerTravel nextCustomerArrival = findNextCustomerArrival(time,customerTravels);
-
-            System.out.println("NextDemand req: "+nextDemandRequest);
-            System.out.println("Earliest operator departure/arrival: "+ nextOperatorDepartureOrArrival);
-            System.out.println("Next customer arrival: "+ nextCustomerArrival);
-
             if(nextDemandRequest == null && nextOperatorDepartureOrArrival == null && nextCustomerArrival == null){
                 break;
             }
@@ -82,7 +72,7 @@ public class DynamicProblem {
 
             if(nextDemandReqTime == earliestTime){
                 // customer would like to pick up car
-                System.out.println("demand reg earliest");
+                //System.out.println("demand reg earliest");
                 simulationModel.getDemandRequests().get(nextDemandRequest.getNode()).remove(nextDemandRequest);
                 ParkingNode pNode = nextDemandRequest.getNode();
                 if(isThereACarAvailableToBePickedUpAtNodeByCustomer(pNode,operatorTravels,operatorDepartures,time)){
@@ -101,12 +91,12 @@ public class DynamicProblem {
                         customerTravels.add(newCustomerTravel);
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
-                        System.out.println("Customer Travel Added from node " + pNode + " at time: "+ nextDemandReqTime);
+                        //System.out.println("Customer Travel Added from node " + pNode + " at time: "+ nextDemandReqTime);
                     }
                 }
             }
             else if(nextOperatorHappeningTime == earliestTime){
-                System.out.println("next operator happening earliest");
+                //System.out.println("next operator happening earliest");
                 Operator operator = nextOperatorDepartureOrArrival.getOperator();
                 if(nextOperatorHappeningTime == nextOperatorDepartureOrArrival.getDepartureTime()){
                     //operator departures
@@ -133,9 +123,9 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
-                                        System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
+                                        // System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
                                     } else {
-                                        System.out.println("Car missed by operator... operator will wait.");
+                                        // System.out.println("Car missed by operator... operator will wait.");
                                     }
                                 }
                                 else {
@@ -150,7 +140,7 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
-                                        System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
+                                        // System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
                                     }
                                 }
                             }
@@ -163,7 +153,7 @@ public class DynamicProblem {
                             operator.setNextOrCurrentNode(travel.getArrivalNode());
                             operator.setPreviousNode(travel.getPickupNode());
                             operator.setHandling(false);
-                            System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
+                            //System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
                         }
                     } else{
                         // last node in operator's path
@@ -202,7 +192,7 @@ public class DynamicProblem {
             }
             else if(nextCustomerArrivalTime == earliestTime){
                 // Customer arrives with car
-                System.out.println("nextCustomerArrivalTime earliest");
+                //  System.out.println("nextCustomerArrivalTime earliest");
                 customerTravels.remove(nextCustomerArrival);
                 Node arrivalNode = nextCustomerArrival.getArrivalNode();
                 Car car = nextCustomerArrival.getCar();
@@ -365,10 +355,14 @@ public class DynamicProblem {
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
-
             while (line != null) {
-
                 line.trim();
+                int lenOfLine = line.length();
+                if(line.substring(lenOfLine-3,lenOfLine).contains("->")){
+                    arrivals = new HashMap<>();
+                    System.out.println("No Integer Solution found");
+                    break;
+                }
                 String[] stringList = line.split(":");
                 int operatorId = Integer.parseInt(stringList[0].trim()) - (1-Constants.START_INDEX);
                 Operator operator = problemInstance.getOperatorMap().get(operatorId);
@@ -382,7 +376,14 @@ public class DynamicProblem {
                     if(node == null){
                         continue;
                     }
-                    boolean isHandling = Integer.parseInt(tupleList[2])==1;
+                    boolean isHandling;
+                    try{
+                        isHandling = Integer.parseInt(tupleList[2])==1;
+                    } catch (NumberFormatException e){
+                        arrivals = new HashMap<>();
+                        System.out.println("No Integer Solution found");
+                        break;
+                    }
                     double arrivalTime = Double.parseDouble(tupleList[3]) + startTime;
                     OperatorArrival operatorArrival = new OperatorArrival(arrivalTime,isHandling,node,operator);
 
@@ -478,17 +479,24 @@ public class DynamicProblem {
 
     private void predictNumberOfCarsPickedUpNextPeriod(double time){
         double nextPeriodDemand;
-        for (ParkingNode pNode: problemInstance.getParkingNodes()) {
-            if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
-            } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
-            } else {
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
+        if(time + Constants.TIME_LIMIT_STATIC_PROBLEM <= Constants.END_TIME){
+            for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+                if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
+                    nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
+                } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
+                    nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
+                } else {
+                    nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
+                }
+                int demandInt = (int) Math.round(nextPeriodDemand);
+                pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
             }
-            int demandInt = (int) Math.round(nextPeriodDemand);
-            pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
+        } else {
+            for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+                pNode.setPredictedNumberOfCarsDemandedThisPeriod(1);
+            }
         }
+
     }
 
 }
