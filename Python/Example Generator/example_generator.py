@@ -26,6 +26,7 @@ class World:
         self.HANDLINGTIMEC = 0
         self.TIMELIMIT = 0
         self.TIMELIMITLAST = 0
+        self.MAXHTOC = 0
 
         # WORLD CONSTANTS #
         self.YCORD = 0
@@ -129,11 +130,12 @@ class World:
         self.COSTOFEXTRAT = costOfExtraT
         self.COSTOFTRAVEL = costOfTravel
 
-    def setTimeConstants(self, handlingTimeP, handlingTimeC, timeLimit, timeLimitLast):
+    def setTimeConstants(self, handlingTimeP, handlingTimeC, timeLimit, timeLimitLast, maxHToC):
         self.HANDLINGTIMEP = handlingTimeP
         self.HANDLINGTIMEC = handlingTimeC
         self.TIMELIMIT = timeLimit
         self.TIMELIMITLAST = timeLimitLast
+        self.MAXHTOC = maxHToC
 
     def setCordConstants(self, upperRight, lowerLeft):
         self.UPPERRIGHT = upperRight
@@ -252,6 +254,7 @@ class World:
         string += "] \n"
         string += "timeLimit: " + str(self.TIMELIMIT) + "\n"
         string += "timeLimitLastVisit: " + str(self.TIMELIMITLAST) + "\n"
+        string += "maxTravelHToC: " + str(self.MAXHTOC) + "\n"
         string += "\n"
         string += "initialHandling: ["
         for i in range(len(self.operators)):
@@ -412,10 +415,10 @@ def main():
     world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.setConstants(5, 1, 10)
     world.setCostConstants(20, 20, 1, 1)
-    world.setTimeConstants(4, 5, 60, 10)
+    world.setTimeConstants(4, 5, 60, 10, 30)
     world.calculateDistances()
     world.calculateRealDistances()
-    world.writeToFile(1)
+    world.writeToFile(2)
 
 main()
 
