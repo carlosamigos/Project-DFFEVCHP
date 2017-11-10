@@ -7,17 +7,16 @@ uses "mmxprs";
 
 parameters
 	DataFile = '../Mosel/states/exampleState2.txt';
+	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
+	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
+	printParams = true;
+	printResults = true;
+	writeToFile = true;
+	MaxSolveTimeSeconds = 400;
 end-parameters
 
-declarations
-	printParams  : boolean;
-	printResults : boolean;
-	writeToFile  : boolean;
-end-declarations
 
-printParams  := true;
-printResults := true;
-writeToFile  := true;
+
 
 (! ### Start of initialization of set sizes ### !)
 
@@ -749,9 +748,10 @@ end-do
 
 
 
-setparam("XPRS_MAXTIME", -400);
+setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
 writeln('Objective function value: ', getobjval);
+
 
 
 ! ### Variables used for printing ### !
@@ -946,7 +946,7 @@ end-do
 !)
 
 if writeToFile then
-	fopen("../Mosel/output/outputServiceOperatorsPath.txt", F_OUTPUT);
+	fopen(OutputPathRegular, F_OUTPUT);
 	forall(pp in rOperators) do
 		currNode := originNodeROperator(pp);
 		currVisit := 1;
@@ -1015,7 +1015,7 @@ if writeToFile then
 	
 	
 	!todo fake service operators
-	fopen("../Mosel/output/outputArtificialServiceOperators.txt", F_OUTPUT);
+	fopen(OutputPathArtificial, F_OUTPUT);
 	
 	forall(pp in aOperators) do
 		write(pp, ': ');

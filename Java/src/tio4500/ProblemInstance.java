@@ -78,6 +78,7 @@ public class ProblemInstance {
         stateSpecificKeys.add("timeLimitLastVisit");
         stateSpecificKeys.add("timeLimit");
         stateSpecificKeys.add("initialHandling");
+        stateSpecificKeys.add("mode");
     }
 
     private void readProblemFromFile() throws IOException{
@@ -157,7 +158,6 @@ public class ProblemInstance {
         int i;
         ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
         if(inputFileMap.get("totalNumberOfChargingSlots").length() >2){
-            System.out.println(inputFileMap.get("totalNumberOfChargingSlots"));
             String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").replace("[","").replace("]","").split(" ");
             for (i = 0; i < totalChargingSlots.length; i++) {
                 totalChargingSlotsArray.add(Integer.parseInt(totalChargingSlots[i]));
@@ -348,7 +348,13 @@ public class ProblemInstance {
             PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + "exampleState"+Integer.toString(exampleNumber)+".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {
                 if(!stateSpecificKeys.contains(key)){
-                    writer.println(key + " : " + inputFileMap.get(key));
+                    if(key.equals("travelTimeVehicle")){
+                        writer.println(key  + " : " + inputFileMap.get(key).replace(","," "));
+                    }else if (key.equals("travelTimeBike")){
+                        writer.println(key + " : " + inputFileMap.get(key).replace(","," "));
+                    }else{
+                        writer.println(key + " : " + inputFileMap.get(key));
+                    }
                 }
             }
             writer.println();
@@ -430,6 +436,9 @@ public class ProblemInstance {
             }
             writer.println("initialHandling :" + initialHandling.substring(0, initialHandling.length()-1) + "]");
 
+            // Set mode
+            writer.println("mode : "+Constants.OBJECTIVE_MODE);
+
             writer.close();
         } catch (FileNotFoundException e){
             System.out.println(e.getMessage());
@@ -452,7 +461,7 @@ public class ProblemInstance {
 
     @Override
     public String toString() {
-        return "\nProblemInstance" + exampleNumber +":"+
+        return "\nProblemInstance " + exampleNumber +":"+
                 "\n\t  parkingNodes=" + parkingNodes +
                 "\n\t  chargingNodes=" + chargingNodes +
                 "\n\t  cars=" + cars +

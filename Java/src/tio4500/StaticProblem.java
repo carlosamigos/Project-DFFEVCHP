@@ -43,11 +43,25 @@ public class StaticProblem {
         System.out.println("Starting to solve   " +Constants.MOSEL_BIM_FILE);
         try{
             this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER +Constants.MOSEL_BIM_FILE);
+            fixParameters();
             model.run();
             System.out.println("Done solving        " + Constants.MOSEL_BIM_FILE);
         }
         catch (IOException e){
             System.out.println("Could not load mosel bim file"); }
+    }
+
+    public void fixParameters(){
+        String divisionChar = ",";
+        String setParametersString = "";
+        setParametersString += "DataFile=" + Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER + ".txt" + divisionChar;
+        setParametersString += "printParams=" + Constants.PRINT_MOSEL_RESULTS + divisionChar;
+        setParametersString += "printResults=" + Constants.PRINT_MOSEL_RESULTS + divisionChar;
+        setParametersString += "MaxSolveTimeSeconds="+ Constants.MAX_SOLVE_TIME_MOSEL_SECONDS + divisionChar;
+        setParametersString += "OutputPathArtificial="+Constants.MOSEL_OUTPUT + Constants.OUTPUT_ARTIFICIAL_SERVICE_PATHS + Constants.EXAMPLE_NUMBER + ".txt" +divisionChar;
+        setParametersString += "OutputPathRegular="+Constants.MOSEL_OUTPUT + Constants.OUTPUT_REAL_SERVICE_PATHS + Constants.EXAMPLE_NUMBER + ".txt";
+        model.execParams = setParametersString;
+
     }
 
     public XPRM getMosel(){ return this.mosel; }

@@ -8,11 +8,9 @@ public class Constants {
     public final static boolean CREATE_NEW_SIMULATION_MODEL = true;
 
     // Folders
-    public final static String MOSEL_FOLDER= "../Mosel/";
     public final static String PROBLEM_FOLDER = "../Mosel/";
     public final static String MOSEL_OUTPUT= "../Mosel/output/";
     public final static String STATE_FOLDER = "../Mosel/states/";
-    public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample"; //without numbering
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
 
     // Indexing
@@ -21,24 +19,26 @@ public class Constants {
     // Files
     public final static String MOSEL_FILE = "main.mos";
     public final static String MOSEL_BIM_FILE = "main.bim";
-    public final static String GENERAL_INFO_FILE = "general_info.txt";
-    public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath.txt";
-    public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators.txt";
+    public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath";
+    public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators";
     public final static String DEMAND_REQUESTS = "demand_request";
+    public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample";
+    public final static String STATE_FOLDER_FILE = "../Mosel/states/exampleState";
 
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*8;
+    public final static int END_TIME = 60*10;
     public final static int TIME_INCREMENTS = 15;
 
-    // Variables for Mosel
-    public final static int MAX_DURATION = 200; // In seconds, not used at the moment
-    public final static int OBJECTIVE_MODE = 2;
+    // Parameters for Mosel
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 225; // In seconds
+    public final static int OBJECTIVE_MODE = 1;
+    public final static boolean PRINT_MOSEL_RESULTS = true;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
-    public final static int TIME_LIMIT_STATIC_PROBLEM = TIME_INCREMENTS;
+    public final static int TIME_LIMIT_STATIC_PROBLEM = 60;
 
     // Variables for simulation environment
-    public final static double HIGH_ARRIVAL_RATE = 10.0; // Average waiting time before next arrival
+    public final static double HIGH_ARRIVAL_RATE = 15.0; // Average waiting time before next arrival
     public final static double HIGH_RATE_LAMBDA = 1.0/HIGH_ARRIVAL_RATE; // How many Arrivals per time unit
     public final static double MEDIUM_ARRIVAL_RATE = 50.0;
     public final static double MEDIUM_RATE_LAMBDA = 1.0/MEDIUM_ARRIVAL_RATE;

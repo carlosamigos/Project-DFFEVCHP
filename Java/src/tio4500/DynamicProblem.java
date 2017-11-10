@@ -1,8 +1,6 @@
 package tio4500;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tio4500.simulations.DemandRequest;
 import tio4500.simulations.Entities.Car;
 import tio4500.simulations.Entities.Operator;
@@ -37,8 +35,8 @@ public class DynamicProblem {
         int subproblemNo = 0;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         for (int time = Constants.START_TIME; time < Constants.END_TIME; time += Constants.TIME_INCREMENTS) {
-            System.out.println(problemInstance);
-            findOptimalNumberOfCarsInParking(time);
+            System.out.println();
+            updateOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
             StaticProblem staticProblem = new StaticProblem();
@@ -46,9 +44,6 @@ public class DynamicProblem {
             staticProblem.solve();
             //System.out.println("Objective value: "+staticProblem.getModel().getObjectiveValue());
 
-
-            //TODO: update all states until next iteration
-            System.out.println();
             System.out.println("time: "+time);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels);
 
@@ -61,12 +56,12 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures = readOperatorArrivalsAndDepartures(startTime);
         HashMap<Operator,OperatorTravel> operatorTravels = new HashMap<>();
 
-        double previousTime = time;
+        double previousTime;
         while (time < endTime){
             previousTime = time;
             System.out.println();
             System.out.println(time);
-            System.out.println(operatorTravels);
+            System.out.println("operatorTravels:"+operatorTravels);
 
             DemandRequest nextDemandRequest = findNextDemandRequest(time);
             OperatorDeparture nextOperatorDepartureOrArrival = findNextOperatorDepartureOrArrival(time,operatorDepartures);
@@ -223,6 +218,7 @@ public class DynamicProblem {
 
             updateBatteryLevels(time,previousTime);
         }
+        updateBatteryLevels(endTime,time);
         updateRemainingTravelTimesForOperators(startTime,operatorTravels);
     }
 
@@ -233,12 +229,10 @@ public class DynamicProblem {
             OperatorTravel travel = operatorTravels.get(operator);
             if(travel != null){
                 double remainingTime = travel.getArrivalTime()> endTime ? travel.getArrivalTime()-endTime : 0;
-                System.out.println("operator="+operator + ", endTime="+endTime + ", arrivalTime="+travel.getArrivalTime() + ", remTime=" + remainingTime);
                 operator.setTimeRemainingToCurrentNextNode(remainingTime);
             } else{
                 operator.setTimeRemainingToCurrentNextNode(0);
             }
-
         }
     }
 
@@ -246,9 +240,10 @@ public class DynamicProblem {
     public void updateBatteryLevels(double time, double previousTime){
         for (Car car : problemInstance.getCars()) {
             if(!car.getPreviousNode().equals(car.getCurrentNextNode())){
-                // is on the run
+                // car is on the run
                 car.setBatteryLevel(car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT);
-            } else if(car.getCurrentNextNode() instanceof ChargingNode){
+            } else if(car.getCurrentNextNode() instanceof ChargingNode && car.getPreviousNode() instanceof ChargingNode){
+                // car is charging
                 car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime)*Constants.BATTERY_CHARGED_PER_TIME_UNIT);
                 car.setRemainingChargingTime((1.0-car.getBatteryLevel())*Constants.CHARGING_TIME_FULL);
                 if(car.getBatteryLevel() >=1.0){
@@ -366,7 +361,7 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorArrival>> arrivals = new HashMap<>();
 
         try {
-            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT + Constants.OUTPUT_REAL_SERVICE_PATHS);
+            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT + Constants.OUTPUT_REAL_SERVICE_PATHS + Integer.toString(Constants.EXAMPLE_NUMBER) + ".txt");
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -440,17 +435,18 @@ public class DynamicProblem {
         arrivals.get(operatorArrival.getOperator()).add(operatorArrival);
     }
 
-    private void findOptimalNumberOfCarsInParking(double time){
+    private void updateOptimalNumberOfCarsInParking(double time){
+        predictNumberOfCarsPickedUpNextPeriod(time);
         double totalCarsPredicted = 0;
         double nextPeriodDemand;
         HashMap<ParkingNode,Double> map = new HashMap<>();
         for (ParkingNode pNode: problemInstance.getParkingNodes()) {
             if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             } else {
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_INCREMENTS, time + Constants.TIME_INCREMENTS*2);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             }
             totalCarsPredicted+= nextPeriodDemand;
             map.put(pNode,nextPeriodDemand);
@@ -463,15 +459,17 @@ public class DynamicProblem {
         }
         for (ChargingNode cNode: problemInstance.getChargingNodes()) {
             for (Car car: cNode.getCarsCurrentlyCharging()) {
-                if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+                if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                     numberOfCarsAvailableNextPeriod+=1;
                 }
             }
         }
-
+        for (ParkingNode pNode : problemInstance.getParkingNodes()) {
+            numberOfCarsAvailableNextPeriod -= pNode.getPredictedNumberOfCarsDemandedThisPeriod();
+        }
         for (ParkingNode pNode : map.keySet()) {
             int demandInteger = (int) Math.floor(map.get(pNode) / totalCarsPredicted * numberOfCarsAvailableNextPeriod);
-            if(time + Constants.TIME_INCREMENTS*2 > Constants.END_TIME){
+            if(time + Constants.TIME_LIMIT_STATIC_PROBLEM*2 > Constants.END_TIME){
                 demandInteger = (int) Math.floor(numberOfCarsAvailableNextPeriod / problemInstance.getParkingNodes().size());
             }
             pNode.setIdealNumberOfAvailableCarsThisPeriod(demandInteger);
@@ -480,18 +478,16 @@ public class DynamicProblem {
 
     private void predictNumberOfCarsPickedUpNextPeriod(double time){
         double nextPeriodDemand;
-        ArrayList<Integer> optimalCarsInParking = new ArrayList<>();
         for (ParkingNode pNode: problemInstance.getParkingNodes()) {
             if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_INCREMENTS);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
             } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_INCREMENTS);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
             } else {
-                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_INCREMENTS);
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
             }
             int demandInt = (int) Math.round(nextPeriodDemand);
             pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
-
         }
     }
 
