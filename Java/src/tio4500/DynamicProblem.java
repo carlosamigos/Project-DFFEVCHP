@@ -79,7 +79,7 @@ public class DynamicProblem {
         double previousTime;
         while (time < endTime){
             previousTime = time;
-            System.out.print(timeToHHMM(time) + " : ");
+
             DemandRequest nextDemandRequest = findNextDemandRequest(time, endTime);
             OperatorDeparture nextOperatorDepartureOrArrival = findNextOperatorDepartureOrArrival(time,endTime,operatorDepartures);
             CustomerTravel nextCustomerArrival = findNextCustomerArrival(time,endTime,customerTravels);
@@ -96,7 +96,7 @@ public class DynamicProblem {
 
             double earliestTime = Double.min(Double.min(nextDemandReqTime, nextOperatorHappeningTime),nextCustomerArrivalTime);
             time = earliestTime;
-
+            System.out.print(timeToHHMM(time) + " : ");
             if(nextOperatorTravelArrivalTime <=earliestTime ){
                 // operator arrival
                 Operator operator = nextOperatorTravelArrival.getOperator();
@@ -138,6 +138,7 @@ public class DynamicProblem {
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
                     ParkingNode arrivalNode = problemInstance.getParkingNodes().get(rndIndex);
                     double travelTime = problemInstance.getTravelTimesCar().get(pNode.getNodeId() - Constants.START_INDEX).get(arrivalNode.getNodeId()-Constants.START_INDEX);
+                    travelTime = travelTime * (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
                     double arrivalTime = nextDemandReqTime + travelTime;
                     CustomerTravel newCustomerTravel = new CustomerTravel(nextDemandReqTime,pNode,arrivalTime,arrivalNode);
                     Car travelCar = findAvailableCarForCustomerInNode(pNode);
@@ -148,6 +149,7 @@ public class DynamicProblem {
                         customerTravels.add(newCustomerTravel);
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
+                        pNode.getCarsInNeed().remove(travelCar);
                         System.out.println("Customer Travel Added from node " + pNode + " at time: "+ nextDemandReqTime + " with car " + travelCar);
                     }
                 }

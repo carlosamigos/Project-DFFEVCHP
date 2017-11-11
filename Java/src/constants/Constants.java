@@ -47,6 +47,7 @@ public class Constants {
     public final static double LOW_RATE_LAMBDA = 1.0/LOW_ARRIVAL_RATE;
     public final static double PERCENTAGE_AFFECTED_BY_RUSH_HOUR = 2.0/3.0;
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
+    public final static double CUSTOMER_TIME_MULTIPLICATOR = 3; // 1-3
 
 
     public final static double CHARGING_TIME_FULL = 3.5*60; //3.5 hours, in minutes
