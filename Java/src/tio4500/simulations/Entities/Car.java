@@ -2,7 +2,7 @@ package tio4500.simulations.Entities;
 
 import tio4500.simulations.Nodes.Node;
 
-public class Car {
+public class Car implements Comparable {
 
     private final int carId;
     private double batteryLevel;
@@ -73,5 +73,16 @@ public class Car {
                 ", node=" + currentNextNode.getNodeId()+
                 ", rem.C.time="+remainingChargingTime +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(this.batteryLevel - ((Car)o).getBatteryLevel() > 0 ){
+            return 1;
+        } else if (this.batteryLevel - ((Car)o).getBatteryLevel() ==0 ){
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }

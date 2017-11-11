@@ -22,17 +22,17 @@ originNodeROperator : [12 13 14]
 
 timeLimitLastVisit : 10
 timeLimit : 60
-chargingSlotsAvailable : [5 5]
+chargingSlotsAvailable : [3 5]
 finishedDuringC : [0 0]
 numAOperators : 0
 travelTimeToParkingA : []
 chargingNodeAOperator : []
 parkingNodeAOperator : []
 travelTimeToOriginR : [0.0 0.0 0.0]
-startNodeROperator : [9 2 2]
-initialInNeedP : [1 1 0 0 0 0 1 0 1]
-idealStateP : [2 2 2 3 3 3 1 1 1]
-initialRegularInP : [4 4 7 5 6 3 2 0 3]
-demandP : [4 4 4 3 3 3 1 1 1]
+startNodeROperator : [10 8 1]
+initialInNeedP : [1 0 0 0 0 0 1 0 0]
+idealStateP : [3 3 3 1 1 1 1 1 1]
+initialRegularInP : [9 4 4 6 3 3 2 2 3]
+demandP : [5 5 5 1 1 1 2 2 2]
 initialHandling :[0 0 0]
 mode : 2

@@ -10,9 +10,7 @@ import tio4500.simulations.Travels.CustomerTravel;
 import tio4500.simulations.Travels.OperatorTravel;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class ProblemInstance {
 
@@ -43,6 +41,8 @@ public class ProblemInstance {
     private String initialInNeedPString = "";
     private String idealStatePString = "";
     private String demandPString  = "";
+    private String initialHandlingString = "";
+    private int numberOfCarsTakenByCustomers = 0;
 
     public ProblemInstance(int exampleNumber) {
         this.exampleNumber = exampleNumber;
@@ -471,21 +471,74 @@ public class ProblemInstance {
         return chargingToParkingNode;
     }
 
+    public int getNumberOfCarsTakenByCustomers() {
+        return numberOfCarsTakenByCustomers;
+    }
+
+    public void setNumberOfCarsTakenByCustomers(int numberOfCarsTakenByCustomers) {
+        this.numberOfCarsTakenByCustomers = numberOfCarsTakenByCustomers;
+    }
+
 
 
     @Override
     public String toString() {
+        Collections.sort(cars);
+        String carsCharging = "[";
+        int numberOfCarsCharging = 0;
+        for (ChargingNode node: this.chargingNodes) {
+            carsCharging += node.getCarsCurrentlyCharging().size() + " ";
+            numberOfCarsCharging += node.getCarsCurrentlyCharging().size();
+        }
+        carsCharging = carsCharging.substring(0,carsCharging.length() -1) + "]";
+
+        String[] initialRegularInPStringArray = initialRegularInPString.substring(1,initialRegularInPString.length()-1).split(" ");
+        int numberOfInitialRegular = 0;
+        for (String s: initialRegularInPStringArray) {
+            numberOfInitialRegular += Integer.parseInt(s);
+        }
+
+        String[] initialInNeedPStringArray = initialInNeedPString.substring(1,initialInNeedPString.length()-1).split(" ");
+        int numberOfInitialInNeedP = 0;
+        for (String s: initialInNeedPStringArray) {
+            numberOfInitialInNeedP += Integer.parseInt(s);
+        }
+
+        int numberInitialhandling = 0;
+        initialHandlingString = "[";
+        for (Operator operator : operators) {
+            numberInitialhandling += (operator.isHandling() ? 1:0);
+            initialHandlingString += (operator.isHandling() ? 1:0) + " ";
+        }
+        initialHandlingString = initialHandlingString.substring(0, initialHandlingString.length() -1 ) + "]";
+
+
+        int totalCarsInSystem = numberOfCarsCharging + numberOfInitialInNeedP + numberOfInitialRegular + numberOfCarsTakenByCustomers + numberInitialhandling;
+
+        // chargingSlotsAvailable and finished during period
+        String chargingSlotsAvailableArray = "[";
+        for (ChargingNode cNode : chargingNodes) {
+            int carsFinishedChargingDuringPeriod = cNode.findNumberOfCarsFinishingChargingDuringNextPeriod();
+            int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
+            chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
+        }
+        chargingSlotsAvailableArray = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1) + "]";
+
         return  "\n\t  ProblemInstance " + exampleNumber +":"+
-                "\n\t  parkingNodes              =" + parkingNodes +
-                "\n\t  chargingNodes             =" + chargingNodes +
-                "\n\t  cars                      =" + cars +
-                "\n\t  operators                 =" + operators +
-                "\n\t  chargingSlotsAvailable    =" + chargingSlotsAvailableString +
-                "\n\t  travelTimeToOriginRString =" + travelTimeToOriginRString+
-                "\n\t  tavelTimeToParkingAString =" + tavelTimeToParkingAString+
-                "\n\t  initialRegularInPString   =" + initialRegularInPString +
-                "\n\t  initialInNeedPString      =" + initialInNeedPString +
-                "\n\t  idealStatePString         =" + idealStatePString +
-                "\n\t  demandPString             =" +demandPString ;
+                "\n\t  parkingNodes              = " + parkingNodes +
+                "\n\t  chargingNodes             = " + chargingNodes +
+                "\n\t  cars                      = " + cars +
+                "\n\t  operators                 = " + operators +
+                "\n\t  chargingSlotsAvailable    = " + chargingSlotsAvailableArray +
+                "\n\t  carsCharging              = " + carsCharging +
+                "\n\t  travelTimeToOriginRString = " + travelTimeToOriginRString +
+                "\n\t  initialHandling           = " + initialHandlingString +
+                "\n\t  tavelTimeToParkingAString = " + tavelTimeToParkingAString+
+                "\n\t  initialRegularInPString   = " + initialRegularInPString +"(total = " + numberOfInitialRegular+")"+
+                "\n\t  initialInNeedPString      = " + initialInNeedPString +"(total = " + numberOfInitialInNeedP+")"+
+                "\n\t  idealStatePString         = " + idealStatePString +
+                "\n\t  demandPString             = " + demandPString  +
+                "\n\t  carsTakenByCustomers      = " + numberOfCarsTakenByCustomers +
+                "\n\t  totalCarsInSystem         = " + totalCarsInSystem;
     }
 }

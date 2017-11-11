@@ -27,11 +27,11 @@ public class Constants {
 
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*10;
+    public final static int END_TIME = 60*18;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 5; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 50; // In seconds
     public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = true;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
@@ -41,7 +41,7 @@ public class Constants {
     // Variables for simulation environment
     public final static double HIGH_ARRIVAL_RATE = 10.0; // Average waiting time before next arrival
     public final static double HIGH_RATE_LAMBDA = 1.0/HIGH_ARRIVAL_RATE; // How many Arrivals per time unit
-    public final static double MEDIUM_ARRIVAL_RATE = 50.0;
+    public final static double MEDIUM_ARRIVAL_RATE = 30.0;
     public final static double MEDIUM_RATE_LAMBDA = 1.0/MEDIUM_ARRIVAL_RATE;
     public final static double LOW_ARRIVAL_RATE = 120.0;
     public final static double LOW_RATE_LAMBDA = 1.0/LOW_ARRIVAL_RATE;
@@ -49,11 +49,11 @@ public class Constants {
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
 
 
-    public final static double CHARGING_TIME_FULL = 3*60; //3 hours, in minutes
+    public final static double CHARGING_TIME_FULL = 3.5*60; //3.5 hours, in minutes
     public final static double BATTERY_CHARGED_PER_TIME_UNIT = 1.0/CHARGING_TIME_FULL;
-    public final static double HARD_CHARGING_THRESHOLD = 0.20;
+    public final static double HARD_CHARGING_THRESHOLD = 0.30;
     public final static double SOFT_CHARGING_THRESHOLD = 0.40;
-    public final static double BATTERY_RANGE = 3*60; //3 hours, in minutes
+    public final static double BATTERY_RANGE = 2*60; //2 hours, in minutes
     public final static double BATTERY_USED_PER_TIME_UNIT = 1.0/BATTERY_RANGE;
 
 

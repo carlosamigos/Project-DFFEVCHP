@@ -76,8 +76,8 @@ public class Travel {
     public String toString() {
         return "Travel{" +
                 "car=" + car +
-                ", depTime=" + departureTime +
-                ", arrTIme=" + arrivalTime +
+                ", from=" + pickupNode +
+                ", to=" + arrivalNode +
                 '}';
     }
 }
