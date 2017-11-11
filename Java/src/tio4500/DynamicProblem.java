@@ -136,6 +136,9 @@ public class DynamicProblem {
                 if(isThereACarAvailableToBePickedUpAtNodeByCustomer(pNode,operatorTravels,operatorDepartures,time)){
                     // Do customer travel:
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
+                    while(rndIndex == problemInstance.getParkingNodes().indexOf(pNode)){
+                        rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
+                    }
                     ParkingNode arrivalNode = problemInstance.getParkingNodes().get(rndIndex);
                     double travelTime = problemInstance.getTravelTimesCar().get(pNode.getNodeId() - Constants.START_INDEX).get(arrivalNode.getNodeId()-Constants.START_INDEX);
                     travelTime = travelTime * (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
