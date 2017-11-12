@@ -1,6 +1,5 @@
 package tio4500;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
 import tio4500.simulations.DemandRequest;
 import tio4500.simulations.Entities.Car;
@@ -24,14 +23,15 @@ public class DynamicProblem {
 
     private ProblemInstance problemInstance;
     private SimulationModel simulationModel;
+    private KPITracker kpiTracker;
 
     public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
+        this.kpiTracker = new KPITracker(this);
     }
 
     public void solve() {
-
 
         int subproblemNo = 1;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
@@ -44,13 +44,14 @@ public class DynamicProblem {
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
             System.out.println("State before solving mosel: "+problemInstance + "\n");
-            StaticProblem staticProblem = new StaticProblem();
+            /*StaticProblem staticProblem = new StaticProblem();
             staticProblem.compile();
-            staticProblem.solve();
-            doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels);
+            staticProblem.solve();*/
+            doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
-
         }
+        kpiTracker.updateIdleTimeForOperators();
+        System.out.println(kpiTracker);
     }
 
     public String timeToHHMM(double time){
@@ -73,7 +74,7 @@ public class DynamicProblem {
         return HH + ":" + MM;
     }
 
-    public void doPeriodActions(int startTime, int endTime, ArrayList<CustomerTravel> customerTravels, HashMap<Operator,OperatorTravel> operatorTravels ){
+    public void doPeriodActions(int startTime, int endTime, ArrayList<CustomerTravel> customerTravels, HashMap<Operator,OperatorTravel> operatorTravels, int subProblemNumber ){
         double time = startTime;
         HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures = readOperatorArrivalsAndDepartures(startTime);
         double previousTime;
@@ -110,6 +111,7 @@ public class DynamicProblem {
                 Car car = nextOperatorTravelArrival.getCar();
                 System.out.println("Operator " + operator + " arrives with car " +car);
                 if(car != null){
+                    operator.setWasHandlingToNextCurrentNode(true);
                     updateBatteryLevelOnCar(time,previousTime,car);
                     car.setPreviousNode(arrivalNode);
                     car.setCurrentNextNode(arrivalNode);
@@ -122,7 +124,10 @@ public class DynamicProblem {
 
                     } else {
                         ((ChargingNode) arrivalNode).getCarsCurrentlyCharging().add(car);
+                        this.kpiTracker.increaseNumberOfCarsSetToCharging(subProblemNumber);
                     }
+                }else {
+                    operator.setWasHandlingToNextCurrentNode(false);
                 }
                 time = nextOperatorTravelArrivalTime;
             }
@@ -134,7 +139,7 @@ public class DynamicProblem {
                 simulationModel.getDemandRequests().get(nextDemandRequest.getNode()).remove(nextDemandRequest);
                 ParkingNode pNode = nextDemandRequest.getNode();
                 if(isThereACarAvailableToBePickedUpAtNodeByCustomer(pNode,operatorTravels,operatorDepartures,time)){
-                    // Do customer travel:
+                    // Do customer travel, but not to the same node
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
                     while(rndIndex == problemInstance.getParkingNodes().indexOf(pNode)){
                         rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
@@ -145,7 +150,7 @@ public class DynamicProblem {
                     double arrivalTime = nextDemandReqTime + travelTime;
                     CustomerTravel newCustomerTravel = new CustomerTravel(nextDemandReqTime,pNode,arrivalTime,arrivalNode);
                     Car travelCar = findAvailableCarForCustomerInNode(pNode);
-                    if(travelCar != null){
+                    if(travelCar != null) {
                         newCustomerTravel.setCar(travelCar);
                         travelCar.setPreviousNode(pNode);
                         travelCar.setCurrentNextNode(arrivalNode);
@@ -153,8 +158,14 @@ public class DynamicProblem {
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
                         pNode.getCarsInNeed().remove(travelCar);
-                        System.out.println("Customer Travel Added from node " + pNode + " at time: "+ nextDemandReqTime + " with car " + travelCar);
+                        System.out.println("Customer Travel Added from node " + pNode + " at time: " + nextDemandReqTime + " with car " + travelCar);
+                    } else {
+                        System.out.println("No car available for customer.");
+                        this.kpiTracker.increaseDemandNotServedForPeriod(subProblemNumber);
                     }
+                }else {
+                    System.out.println("No car available for customer.");
+                    this.kpiTracker.increaseDemandNotServedForPeriod(subProblemNumber);
                 }
             }
             else if(nextOperatorHappeningTime == earliestTime){
@@ -169,7 +180,7 @@ public class DynamicProblem {
                         Node departureNode = nextOperatorDepartureOrArrival.getNode();
                         Node arrivalNode = arrival.getNode();
                         OperatorTravel travel = new OperatorTravel(operator,nextOperatorHappeningTime,departureNode, arrivalNode,arrival.getArrivalTime());
-                        if(arrival.isHandling()){
+                        if(arrival.isHandling() && departureNode.equals(operator.getNextOrCurrentNode())){
                             if(((ParkingNode) departureNode).getCarsRegular().size()==0){
                                 // car taken by customer, make operator inactive
                                 operatorDepartures.put(operator,new ArrayList<>());
@@ -183,14 +194,17 @@ public class DynamicProblem {
                                         travel.setCar(car);
                                         travel.setPreviousTimeStep(nextOperatorHappeningTime);
                                         operatorTravels.put(operator,travel);
+                                        operator.setArrivalTimeToNextOrCurrentNode(nextOperatorDepartureOrArrival.getOperatorArrival().getArrivalTime());
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
                                         System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
+                                        kpiTracker.increaseCarTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
                                     } else {
                                         operator.setPreviousNode(departureNode);
                                         operator.setNextOrCurrentNode(departureNode);
                                         System.out.println("Car missed by operator... operator will wait.");
+                                        this.kpiTracker.increaseNumberOfOperatorsAbandoned(subProblemNumber);
                                     }
                                 }
                                 else {
@@ -203,14 +217,19 @@ public class DynamicProblem {
                                         travel.setCar(car);
                                         travel.setPreviousTimeStep(nextOperatorHappeningTime);
                                         operatorTravels.put(operator,travel);
+                                        operator.setArrivalTimeToNextOrCurrentNode(nextOperatorDepartureOrArrival.getOperatorArrival().getArrivalTime());
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
                                         System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
+                                        kpiTracker.increaseCarTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
+                                        kpiTracker.addInNeedWaitingTime(car.getTimeInInNeedState());
+
                                     } else {
                                         operator.setPreviousNode(departureNode);
                                         operator.setNextOrCurrentNode(departureNode);
                                         System.out.println("Car missed by operator... operator will wait.");
+                                        this.kpiTracker.increaseNumberOfOperatorsAbandoned(subProblemNumber);
                                         operatorDepartures.put(operator,new ArrayList<>());
                                     }
                                 }
@@ -219,12 +238,17 @@ public class DynamicProblem {
 
                         } else {
                             //no car used in travel
-                            travel.setPreviousTimeStep(nextOperatorHappeningTime);
-                            operatorTravels.put(operator,travel);
-                            operator.setNextOrCurrentNode(travel.getArrivalNode());
-                            operator.setPreviousNode(travel.getPickupNode());
-                            operator.setHandling(false);
-                            System.out.println("Operator travel made on bike: "+ travel + ", toNode="+travel.getArrivalNode());
+                            if(departureNode.equals(operator.getNextOrCurrentNode())){
+                                travel.setPreviousTimeStep(nextOperatorHappeningTime);
+                                operatorTravels.put(operator,travel);
+                                operator.setArrivalTimeToNextOrCurrentNode(nextOperatorDepartureOrArrival.getOperatorArrival().getArrivalTime());
+                                operator.setNextOrCurrentNode(travel.getArrivalNode());
+                                operator.setPreviousNode(travel.getPickupNode());
+                                operator.setHandling(false);
+                                System.out.println("Operator travel made on bike: "+ travel + ", toNode="+travel.getArrivalNode());
+                                kpiTracker.increaseBikeTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
+                            }
+
                         }
                     } else{
                         // last node in operator's path
@@ -232,7 +256,7 @@ public class DynamicProblem {
                     }
 
                 } else{
-                    //operator arrives
+                    //operator arrives but the travel was not registered
                     OperatorTravel travel = operatorTravels.get(operator);
                     operatorTravels.remove(operator);
                     operatorDepartures.get(nextOperatorDepartureOrArrival.getOperator()).remove(nextOperatorDepartureOrArrival);
@@ -242,9 +266,12 @@ public class DynamicProblem {
                     operator.setTimeRemainingToCurrentNextNode(0);
                     operator.setHandling(false);
                     if(travel != null){
+                        updateIdleTimesOperator(operator,time,previousTime);
+                        operator.setArrivalTimeToNextOrCurrentNode(travel.getArrivalTime());
                         Car car = travel.getCar();
                         System.out.println("Operator " + operator + " arrives with car " +car);
                         if(car != null){
+                            operator.setWasHandlingToNextCurrentNode(true);
                             updateBatteryLevelOnCar(time,previousTime,car);
                             car.setPreviousNode(arrivalNode);
                             car.setCurrentNextNode(arrivalNode);
@@ -257,6 +284,7 @@ public class DynamicProblem {
 
                             } else {
                                 ((ChargingNode) arrivalNode).getCarsCurrentlyCharging().add(car);
+                                this.kpiTracker.increaseNumberOfCarsSetToCharging(subProblemNumber);
                             }
                         }
                     }
@@ -283,11 +311,58 @@ public class DynamicProblem {
 
             }
             updateBatteryLevels(time,previousTime);
+            updateTimeInNeedState(time,previousTime);
+            updateIdleTimesOperators(time,previousTime);
+
 
         }
         updateBatteryLevels(endTime,time);
-        updateRemainingTravelTimesForOperators(startTime,operatorTravels);
+        updateRemainingTravelTimesForOperators(endTime,operatorTravels);
         updateNumberOfCarsTakenByCustomers(customerTravels);
+        updateTimeInNeedState(endTime,time);
+        updateIdleTimesOperators(endTime,time);
+    }
+
+    private void updateTimeInNeedState(double time, double previousTime){
+        for (ParkingNode pNode : problemInstance.getParkingNodes()) {
+            for (Car car: pNode.getCarsInNeed()) {
+                car.setTimeInInNeedState(car.getTimeInInNeedState() + (time - previousTime));
+            }
+        }
+    }
+
+    private void updateIdleTimesOperator(Operator operator,double time, double previousTime){
+        if(operator.getNextOrCurrentNode().equals(operator.getPreviousNode())){
+            // stands still
+            double idleTimeStart = operator.getArrivalTimeToNextOrCurrentNode();
+            if(operator.getNextOrCurrentNode() instanceof ParkingNode){
+                idleTimeStart = operator.wasHandlingToNextCurrentNode() ? idleTimeStart + problemInstance.getHandlingTimeP() : idleTimeStart;
+                if(idleTimeStart > time){
+                    return;
+                }
+                double newPreviousTime = previousTime > idleTimeStart ? previousTime : idleTimeStart;
+                double timeDiff = time - newPreviousTime;
+                if(time > idleTimeStart){
+                    operator.setTotalIdleTime(operator.getTotalIdleTime() + timeDiff);
+                }
+            } else {
+                idleTimeStart = operator.wasHandlingToNextCurrentNode() ? idleTimeStart + problemInstance.getHandlingTimeC() : idleTimeStart;
+                if(idleTimeStart > time){
+                    return;
+                }
+                double newPreviousTime = previousTime > idleTimeStart ? previousTime : idleTimeStart;
+                double timeDiff = time - newPreviousTime;
+                if(time > idleTimeStart){
+                    operator.setTotalIdleTime(operator.getTotalIdleTime() + timeDiff);
+                }
+            }
+        }
+    }
+
+    private void updateIdleTimesOperators(double time, double previousTime){
+        for ( Operator operator : problemInstance.getOperators()) {
+            updateIdleTimesOperator(operator, time, previousTime);
+        }
     }
 
 
@@ -307,13 +382,13 @@ public class DynamicProblem {
         problemInstance.setNumberOfCarsTakenByCustomers(customerTravels.size());
     }
 
-    public void updateRemainingTravelTimesForOperators(double startTime, HashMap<Operator,OperatorTravel> operatorTravels){
-        double endTime = startTime + Constants.TIME_INCREMENTS;
+    public void updateRemainingTravelTimesForOperators(double endTime,HashMap<Operator,OperatorTravel> operatorTravels){
         for (Operator operator : problemInstance.getOperators()) {
             OperatorTravel travel = operatorTravels.get(operator);
             if(travel != null){
                 double remainingTime = travel.getArrivalTime()> endTime ? travel.getArrivalTime()-endTime : 0;
                 operator.setTimeRemainingToCurrentNextNode(remainingTime);
+
             } else{
                 operator.setTimeRemainingToCurrentNextNode(0);
             }
@@ -398,7 +473,16 @@ public class DynamicProblem {
                 }
             }
         }
-        return node.getCarsRegular().size() - carsNeededByOperatorsTheNextMinutes > 0;
+        //find number of cars in need that are available for customers:
+        int inNeedAvailable = 0;
+        for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+            for (Car car: pNode.getCarsInNeed()) {
+                if(car.getBatteryLevel() > Constants.HARD_CHARGING_THRESHOLD){
+                    inNeedAvailable++;
+                }
+            }
+        }
+        return node.getCarsRegular().size() + inNeedAvailable - carsNeededByOperatorsTheNextMinutes > 0;
     }
 
     private void removeOperatorDepartureArrival(OperatorTravel operatorTravel,  HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures){
@@ -645,6 +729,10 @@ public class DynamicProblem {
                 pNode.setPredictedNumberOfCarsDemandedThisPeriod(1);
             }
         }
+    }
+
+    public ProblemInstance getProblemInstance(){
+        return this.problemInstance;
     }
 
     private ArrayList<Car> findCarsMissing(HashMap<Operator,OperatorTravel> operatorTravels, ArrayList<CustomerTravel> customerTravels ){

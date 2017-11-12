@@ -10,6 +10,7 @@ public class Car implements Comparable {
     private Node currentNextNode = null;
     private Node previousNode = null;
     private double remainingChargingTime = 0;
+    private double timeInInNeedState = 0.0;
 
 
 
@@ -18,8 +19,6 @@ public class Car implements Comparable {
         this.batteryLevel = batteryLevel;
         this.previousBatteryLevel = batteryLevel;
     }
-
-
 
     public int getCarId() {
         return carId;
@@ -63,6 +62,14 @@ public class Car implements Comparable {
 
     public void setPreviousNode(Node previousNode) {
         this.previousNode = previousNode;
+    }
+
+    public double getTimeInInNeedState() {
+        return timeInInNeedState;
+    }
+
+    public void setTimeInInNeedState(double timeInInNeedState) {
+        this.timeInInNeedState = timeInInNeedState;
     }
 
     @Override

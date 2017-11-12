@@ -30,6 +30,9 @@ public class ProblemInstance {
     private int numPNodes = 0;
     private int numCNodes = 0;
     private int numROperators = 0;
+    private double handlingTimeP = 0;
+    private double handlingTimeC = 0;
+
 
     private HashMap<String, String> inputFileMap = new HashMap<>();
     private HashMap<String, String> inputFileMapRaw = new HashMap<>();
@@ -141,6 +144,8 @@ public class ProblemInstance {
         numPNodes = Integer.parseInt(inputFileMap.get("numPNodes"));
         numCNodes = Integer.parseInt(inputFileMap.get("numCNodes"));
         numROperators = Integer.parseInt(inputFileMap.get("numROperators"));
+        handlingTimeC = Integer.parseInt(inputFileMap.get("handlingTimeC"));
+        handlingTimeP = Integer.parseInt(inputFileMap.get("handlingTimeP"));
         setUpNodesAndCars();
         setUpOperators();
         addInitialDemandRatesToNodes();
@@ -479,7 +484,13 @@ public class ProblemInstance {
         this.numberOfCarsTakenByCustomers = numberOfCarsTakenByCustomers;
     }
 
+    public double getHandlingTimeP() {
+        return handlingTimeP;
+    }
 
+    public double getHandlingTimeC() {
+        return handlingTimeC;
+    }
 
     @Override
     public String toString() {
