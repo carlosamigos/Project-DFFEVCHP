@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/states/initialExample6.txt';
-	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
-	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
+	DataFile = '../Mosel/states/initialExample_Moan.txt';
+	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath_Moan.txt";
+	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators_Moan.txt";
 	printParams = false;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 400;
+	MaxSolveTimeSeconds = 100;
 end-parameters
 
 
@@ -239,6 +239,7 @@ declarations
 	t      : dynamic array(Nodes, visits)                             of mpvar;
 	tPlus  : dynamic array(rNodes, visits)                            of mpvar;
 	tMinus : dynamic array(rNodes, visits)                            of mpvar;
+	tCharg : dynamic array(cNodes, visits)							  of mpvar;
 	r      : dynamic array(rNodes, visits)                            of mpvar;
 	s      : dynamic array(rNodes, visits)                            of mpvar;
 	sC     : dynamic array(pNodes, visits)                            of mpvar;
@@ -427,6 +428,15 @@ end-if
 
 if(mode = 3) then
 	Objective := sum (ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
+end-if
+
+if(mode = 4) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
+			  costOfTravel  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
+			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
+			  sum(ii in cNodes, mm in visits) t(ii, mm) - sum(pp in aOperators) travelTimeToParkingA(pp);
 end-if
 
 ! ### End of declaration of objective ### !			 
@@ -651,7 +661,6 @@ declarations
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
 end-declarations 
-
 
 
 forall(pp in rOperators, ii in cNodes, mm in visits, jj in rNodes, nn in visits) do
@@ -899,7 +908,7 @@ if printResults then
 	end-do
 	!)
 end-if
-(!
+
 
 forall(ii in pNodes) do
 	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
@@ -939,12 +948,12 @@ forall(pp in rOperators, ii in Nodes, mm in visits)do
 	end-do
 	
 end-do
-
+(!
 forall(pp in rOperators) do
 	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
 end-do
-
 !)
+
 
 if writeToFile then
 	fopen(OutputPathRegular, F_OUTPUT);
