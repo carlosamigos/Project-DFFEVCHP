@@ -2,6 +2,7 @@ import math
 import random
 import sys
 import time
+import copy
 
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
@@ -75,6 +76,9 @@ class World:
                 distance = math.pow(self.nodes[x].xCord - self.nodes[y].xCord, 2) + math.pow(self.nodes[x].yCord - self.nodes[y].yCord, 2)
                 distanceSq = float(format(math.sqrt(distance)*scale, '.1f'))
                 distanceB = float(format(distanceSq * 2, '.1f'))
+                if (distance == 0 and x != y):
+                    distanceSq = 1.0
+                    distanceB = 1.0
 
                 self.distancesC.append(distanceSq)
                 self.distancesB.append(distanceB)
@@ -101,13 +105,24 @@ class World:
 
         for i in range(len(travelMatrixBicycle)):
             for j in range(len(self.cNodes)):
-                travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.cNodes[j].pNode-1])
-                travelMatrixTransit[i].append(travelMatrixTransit[i][self.cNodes[j].pNode-1])
-                travelMatrixCar[i].append(travelMatrixCar[i][self.cNodes[j].pNode-1])
+                if(self.cNodes[j].pNode-1 == i):
+                    travelMatrixBicycle[i].append(60)
+                    travelMatrixTransit[i].append(60)
+                    travelMatrixCar[i].append(60)
+                else:
+                    travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.cNodes[j].pNode - 1])
+                    travelMatrixTransit[i].append(travelMatrixTransit[i][self.cNodes[j].pNode - 1])
+                    travelMatrixCar[i].append(travelMatrixCar[i][self.cNodes[j].pNode - 1])
         for i in range(len(self.cNodes)):
-            travelMatrixBicycle.append(travelMatrixBicycle[self.cNodes[i].pNode-1])
-            travelMatrixTransit.append(travelMatrixTransit[self.cNodes[i].pNode-1])
-            travelMatrixCar.append(travelMatrixCar[self.cNodes[i].pNode-1])
+            travelMatrixBicycle.append(copy.deepcopy(travelMatrixBicycle[self.cNodes[i].pNode-1]))
+            travelMatrixTransit.append(copy.deepcopy(travelMatrixTransit[self.cNodes[i].pNode-1]))
+            travelMatrixCar.append(copy.deepcopy(travelMatrixCar[self.cNodes[i].pNode-1]))
+            travelMatrixBicycle[len(travelMatrixBicycle) -1][self.cNodes[i].pNode-1] = 60
+            travelMatrixTransit[len(travelMatrixTransit) - 1][self.cNodes[i].pNode - 1] = 60
+            travelMatrixCar[len(travelMatrixCar) - 1][self.cNodes[i].pNode - 1] = 60
+            travelMatrixBicycle[len(travelMatrixBicycle) - 1][len(self.pNodes) + i] = 0
+            travelMatrixTransit[len(travelMatrixTransit) - 1][len(self.pNodes) + i] = 0
+            travelMatrixCar[len(travelMatrixCar) - 1][len(self.pNodes) + i] = 0
 
         travelMatrixNotHandling = []
         travelMatrixHandling = []
@@ -118,14 +133,32 @@ class World:
         self.distancesC = travelMatrixHandling
         self.distancesB = travelMatrixNotHandling
 
+    def calculateInitialAdd(self):
+        initialAdd = [0 for i in range(len(self.nodes))]
+        initialVisitArtificial = [0 for i in range(len(self.nodes))]
+        initialService = [0 for i in range(len(self.nodes))]
+        for j in range(len(self.fCCars)):
+            initialAdd[self.fCCars[j].parkingNode - 1] += 1
+            initialVisitArtificial[self.fCCars[j].parkingNode - 1] += 1
+        for j in range(len(self.operators)):
+            initialAdd[self.operators[j].startNode - 1] += 1
+            if(self.operators[j].handling):
+                initialService[self.operators[j].startNode - 1] += 1
+        return initialAdd, initialVisitArtificial, initialService
+
     def calculateVisitList(self):
         numCharging = 0
+        initialAdd, initialVisitArtificial, initialService = self.calculateInitialAdd()
         for i in range(len(self.pNodes)):
-            visit = max(self.pNodes[i].iState - self.pNodes[i].pState, max(self.pNodes[i].pState - self.pNodes[i].iState,self.pNodes[i].cState))
+            visitIn = max(self.pNodes[i].pState - (self.pNodes[i].iState + self.pNodes[i].demand) + self.pNodes[i].cState, self.pNodes[i].cState)
+            visit = max((self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initialAdd[i]), visitIn)
+            visit += initialVisitArtificial[i]
             self.visitList.append(max(visit, 2))
             numCharging += self.pNodes[i].cState
         for i in range(len(self.cNodes)):
-            visit = min(numCharging + self.cNodes[i].finishes, self.cNodes[i].capacity + self.cNodes[i].finishes)
+            visit = min(numCharging, self.cNodes[i].capacity - initialService[len(self.pNodes) + i])
+            visit += self.cNodes[i].finishes
+            visit += initialAdd[len(self.pNodes) + i]
             self.visitList.append(max(visit,2))
         for i in range(len(self.operators)):
             self.visitList.append(1)
@@ -153,6 +186,21 @@ class World:
         self.UPPERRIGHT = upperRight
         self.LOWERLEFT = lowerLeft
 
+    def createRealIdeal(self):
+        initialAdd = [0 for i in range(len(self.nodes))]
+        for j in range(len(self.fCCars)):
+            initialAdd[self.fCCars[j].parkingNode-1] += 1
+        for j in range(len(self.operators)):
+            if (self.operators[j].handling):
+                initialAdd[self.operators[j].startNode-1] += 1
+        sumIState = 0
+        sumPState = 0
+        for i in range(len(self.pNodes)):
+            sumIState += self.pNodes[i].iState
+            sumPState += self.pNodes[i].pState - self.pNodes[i].demand + initialAdd[i]
+
+        for j in range(len(self.pNodes)):
+            self.pNodes[j].iState = int(round(sumPState * (self.pNodes[j].iState / sumIState)))
 
     def writeToFile(self, example):
         fileName = "../../Mosel/states/initialExample" + str(example) + ".txt"
@@ -262,7 +310,7 @@ class World:
             string += str(self.fCCars[i].remainingTime)
             if (i < len(self.fCCars) - 1):
                 string += " "
-            
+
         string += "] \n"
         string += "timeLimit: " + str(self.TIMELIMIT) + "\n"
         string += "timeLimitLastVisit: " + str(self.TIMELIMITLAST) + "\n"
@@ -424,6 +472,9 @@ def createOperators(world):
             op = operator(startNode, time, False)
             world.addOperator(op)
 
+
+
+
 def main():
     print("\n WELCOME TO THE EXAMPLE CREATOR \n")
     world = World()
@@ -434,6 +485,7 @@ def main():
     world.setConstants(5, 1, 10)
     world.setCostConstants(20, 20, 1, 1)
     world.setTimeConstants(4, 5, 60, 10, 30)
+    world.createRealIdeal()
     world.calculateVisitList()
     world.calculateDistances()
     #world.calculateRealDistances()
