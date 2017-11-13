@@ -32,3 +32,5 @@ with open(input_file, 'r') as f:
 general_info["numNodes"] = general_info["numPNodes"] + general_info["numCNodes"]
 general_info["numOperators"] = general_info["numROperators"]
 general_info["idealState"] = general_info["idealStateP"]
+
+general_info["cToP"] = list(map(lambda x: x - 1, general_info["cToP"]))

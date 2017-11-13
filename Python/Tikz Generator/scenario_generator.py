@@ -20,11 +20,12 @@ def draw_operators(operator_info):
         handling = current_operator_info["handling"]
         operator_id = current_operator_info["id"]
 
-
         if from_node >= n_nodes + c_nodes:
             origin_list.append(current_operator_info)
         else:
             if to_node != from_node:
+                if from_node >= n_nodes:
+                    from_node = general_info["cToP"][from_node - n_nodes]
                 if handling:
                     obj = "car_black"
                 else:

@@ -56,7 +56,7 @@ def fill_charging(c_node, cars_charging):
     if cars_charging > 0:
         charging_string = str(c_node) + "_charging_"
         p_node = c_to_p[c_node]
-        x = x_left_from_node(p_node, step, columns) + 3*car_dist_x
+        x = x_left_from_node(p_node, step, columns) + step/4.5
         y = y_bottom_from_node(p_node, step, columns, rows) + 4*car_dist_y
         s += draw_object("car_orange", charging_string + "0", [x,y])
         if cars_charging > 1:
@@ -86,10 +86,11 @@ def fill_origin_list(operator_info):
             obj = "bike"
             text_dist = "0.55cm"
         relative_string = "[below = 1.2cm of sidebar_time_to_header.west, anchor=west]"
+        time_string = "{:.2f}".format(time) + "t. to " + str(to_node + 1)
+        time_string = time_string.rjust(12)
         s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ") {\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
-        #s += "    \\node[above left = -0.2cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
         s += "    \\node[right =" + text_dist + " of operator_" + str(operator_id) + "] (operator_string_" + str(operator_id) +\
-                ") {" + "{:.2f}".format(time) + " time units to node " + str(to_node) + "};\n"
+                ") {" + time_string + "};\n"
 
         counter += 1
         prev_operator = operator_id
@@ -107,12 +108,13 @@ def fill_origin_list(operator_info):
                 else:
                     obj = "bike"
 
+                time_string = "{:.2f}".format(time) + "t. to " + str(to_node + 1)
+                time_string = time_string.rjust(15)
                 relative_string = "[below =1.2cm of operator_" + str(prev_operator) + ".west, anchor=west]"
                 s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ")"+\
                         "{\\includegraphics[height=" + car_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
-                #s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
-                s += "    \\node at (operator_string_" + str(prev_operator) + " |- operator_" + str(operator_id) + ")"+\
-                        "{" + "{:.2f}".format(time) + " time units to node " + str(to_node) + "};\n"
+                s += "    \\node[align=right] at (operator_string_" + str(prev_operator) + " |- operator_" + str(operator_id) + ") ("+\
+                        "operator_string_" + str(operator_id) + ") {" + time_string + "};\n"
                 prev_operator = operator_id
         break
     return s
@@ -162,7 +164,6 @@ def draw_moving_object(from_node, to_node, covered, operator, obj):
 
     from_x = x_mid_from_node(from_node, step, columns)
     from_y = y_mid_from_node(from_node, step, columns, rows)
-
 
     height = car_height_string
 

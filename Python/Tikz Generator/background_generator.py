@@ -41,7 +41,7 @@ def draw_parking(ideal_state):
         y5 = "{:.2f}".format(y3 + corner_triangle_dist/2.0)
         s += "    \\draw[thick] (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y4) + ") -- (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y4) + ");\n"
         s += "    \\draw[thick] (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y4) + ") -- (" + "{:.2f}".format(x3) + "," + "{:.2f}".format(y3) + ");\n"
-        s += "    \\node at (" + x4 + "," + y5 + ") {" + str(node) + "};\n"
+        s += "    \\node at (" + x4 + "," + y5 + ") {" + str(node+1) + "};\n"
     return s
 
 
@@ -73,7 +73,7 @@ def draw_legend():
     s = ""
 
     legend_width = 33 + 6*car_height
-    legend_height = 4 + car_height*3
+    legend_height = 3 + car_height*3
 
     left_x = "{:.2f}".format((width - legend_width)/2)
     right_x = "{:.2f}".format(width - (width - legend_width)/2)
