@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import simplejson, urllib.request as urlReq
+import time
 
 API_KEY_1 = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
 API_KEY_2 = "AIzaSyBK2KN_jQS6ygFfU1UaMjG8CA8vhjeV10k"
@@ -27,7 +28,6 @@ def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey,
             destinations = destinationLists[d]
             originString = makeStringListFromCoordinateVector(origins)
             destinationString = makeStringListFromCoordinateVector(destinations)
-
             url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" + originString + "&destinations=" + destinationString + "&key=" + apikey + "&mode=" + transportType
             response = urlReq.urlopen(url)
             data = simplejson.load(response)
@@ -48,6 +48,7 @@ def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey,
     if (writeToFile):
         writeMatrixToFile(secondMatrix, transportType)
     return secondMatrix
+
 
 
 def writeMatrixToFile(matrix, transportType):
@@ -73,18 +74,19 @@ def makeStringListFromCoordinateVector(coordVector):
 
 def test():
     coordVector = [(63.427057, 10.3925251), (63.4222027, 10.3955179), (63.4367, 10.3988199), (63.4188848, 10.4044),
-                   (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944)]
+                   (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4222027, 10.3955179)]
     print("number of coordinates", len(coordVector))
     transportType = "transit"
-    apikey = API_KEY_1
+    apikey = API_KEY_2
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
+    time.sleep(5)
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
+    time.sleep(5)
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
     print(matrix)
 
 def run(coordVector, transportType, writeToFile):
-    apikey = API_KEY_2
+    apikey = API_KEY_4
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
-
 
 

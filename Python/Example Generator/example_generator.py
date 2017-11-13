@@ -44,6 +44,7 @@ class World:
         self.cNodes = []
         self.distancesB = []
         self.distancesC = []
+        self.visitList = []
 
     def addDim(self, xCord, yCord):
         self.XCORD = xCord
@@ -117,7 +118,18 @@ class World:
         self.distancesC = travelMatrixHandling
         self.distancesB = travelMatrixNotHandling
 
-
+    def calculateVisitList(self):
+        numCharging = 0
+        for i in range(len(self.pNodes)):
+            visit = max(self.pNodes[i].iState - self.pNodes[i].pState, max(self.pNodes[i].pState - self.pNodes[i].iState,self.pNodes[i].cState))
+            self.visitList.append(max(visit, 2))
+            numCharging += self.pNodes[i].cState
+        for i in range(len(self.cNodes)):
+            visit = min(numCharging + self.cNodes[i].finishes, self.cNodes[i].capacity + self.cNodes[i].finishes)
+            self.visitList.append(max(visit,2))
+        for i in range(len(self.operators)):
+            self.visitList.append(1)
+            self.visitList.append(1)
 
     def setConstants(self, visits, mode, sBigM):
         self.VISITS = visits
@@ -302,6 +314,12 @@ class World:
         string += "\n"
         string += "mode: " + str(self.MODE) + "\n"
         string += "sequenceBigM: " + str(self.SBIGM) + "\n"
+        string += "visitList: ["
+        for i in range(len(self.visitList)):
+            string += str(self.visitList[i])
+            if (i < len(self.visitList) - 1):
+                string += " "
+        string += "] \n"
         f.write(string)
         print(string)
 
@@ -416,9 +434,10 @@ def main():
     world.setConstants(5, 1, 10)
     world.setCostConstants(20, 20, 1, 1)
     world.setTimeConstants(4, 5, 60, 10, 30)
+    world.calculateVisitList()
     world.calculateDistances()
-    world.calculateRealDistances()
-    world.writeToFile(2)
+    #world.calculateRealDistances()
+    world.writeToFile(18)
 
 main()
 
