@@ -10,22 +10,15 @@ import tio4500.simulations.Travels.CustomerTravel;
 import tio4500.simulations.Travels.OperatorTravel;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class ProblemInstance {
-
-    //TODO: Specificly save problem paramters that are constant throughout the rolling horizon
-
 
     private int exampleNumber;
     private ArrayList<ParkingNode> parkingNodes;
     private ArrayList<ChargingNode> chargingNodes;
     private ArrayList<Car> cars;
     private ArrayList<Operator> operators;
-    private ArrayList<OperatorTravel> operatorTravels;
-    private ArrayList<CustomerTravel> customerTravels;
     private ArrayList<ArrayList<Double>> travelTimesBike;
     private ArrayList<ArrayList<Double>> travelTimesCar;
 
@@ -37,9 +30,22 @@ public class ProblemInstance {
     private int numPNodes = 0;
     private int numCNodes = 0;
     private int numROperators = 0;
+    private double handlingTimeP = 0;
+    private double handlingTimeC = 0;
+
 
     private HashMap<String, String> inputFileMap = new HashMap<>();
     private HashMap<String, String> inputFileMapRaw = new HashMap<>();
+
+    private String chargingSlotsAvailableString = "";
+    private String travelTimeToOriginRString = "";
+    private String tavelTimeToParkingAString = "";
+    private String initialRegularInPString = "";
+    private String initialInNeedPString = "";
+    private String idealStatePString = "";
+    private String demandPString  = "";
+    private String initialHandlingString = "";
+    private int numberOfCarsTakenByCustomers = 0;
 
     public ProblemInstance(int exampleNumber) {
         this.exampleNumber = exampleNumber;
@@ -47,8 +53,6 @@ public class ProblemInstance {
         this.chargingNodes = new ArrayList<>();
         this.cars = new ArrayList<>();
         this.operators = new ArrayList<>();
-        this.operatorTravels = new ArrayList<>();
-        this.customerTravels = new ArrayList<>();
         this.travelTimesBike = new ArrayList<>();
         this.travelTimesCar = new ArrayList<>();
         nodeMap = new HashMap<>();
@@ -77,9 +81,16 @@ public class ProblemInstance {
         stateSpecificKeys.add("chargingNodeAOperator");
         stateSpecificKeys.add("parkingNodeAOperator");
         stateSpecificKeys.add("numAOperators");
+        stateSpecificKeys.add("finishedDuringC");
+        stateSpecificKeys.add("demandP");
+        stateSpecificKeys.add("timeLimitLastVisit");
+        stateSpecificKeys.add("timeLimit");
+        stateSpecificKeys.add("initialHandling");
+        stateSpecificKeys.add("mode");
     }
 
     private void readProblemFromFile() throws IOException{
+        //System.out.println("reading file: "+ Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt");
         BufferedReader br = new BufferedReader(new FileReader(Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
@@ -133,6 +144,8 @@ public class ProblemInstance {
         numPNodes = Integer.parseInt(inputFileMap.get("numPNodes"));
         numCNodes = Integer.parseInt(inputFileMap.get("numCNodes"));
         numROperators = Integer.parseInt(inputFileMap.get("numROperators"));
+        handlingTimeC = Integer.parseInt(inputFileMap.get("handlingTimeC"));
+        handlingTimeP = Integer.parseInt(inputFileMap.get("handlingTimeP"));
         setUpNodesAndCars();
         setUpOperators();
         addInitialDemandRatesToNodes();
@@ -154,7 +167,7 @@ public class ProblemInstance {
     private void setUpNodesAndCars() {
         int i;
         ArrayList<Integer> totalChargingSlotsArray = new ArrayList<>();
-        if(inputFileMap.get("chargingSlotsAvailable").length() >2){
+        if(inputFileMap.get("totalNumberOfChargingSlots").length() >2){
             String[] totalChargingSlots = inputFileMap.get("totalNumberOfChargingSlots").replace("[","").replace("]","").split(" ");
             for (i = 0; i < totalChargingSlots.length; i++) {
                 totalChargingSlotsArray.add(Integer.parseInt(totalChargingSlots[i]));
@@ -215,7 +228,7 @@ public class ProblemInstance {
                 cars.add(newRegularCar);
             }
             for (int j = 0; j < initialInNeedPArray.get(i-Constants.START_INDEX); j++) {
-                Car newCarInNeed = new Car(carId,Constants.CHARGING_THRESHOLD*0.999);
+                Car newCarInNeed = new Car(carId,Constants.SOFT_CHARGING_THRESHOLD*0.999);
                 newCarInNeed.setCurrentNextNode(newParkingNode);
                 newCarInNeed.setPreviousNode(newParkingNode);
                 carId++;
@@ -225,7 +238,6 @@ public class ProblemInstance {
         }
         for (i = numPNodes+Constants.START_INDEX; i < numCNodes + numPNodes+Constants.START_INDEX; i++) {
             ChargingNode newChargingNodes = new ChargingNode(i);
-            newChargingNodes.setNumberOfCarsCharging(0);
             newChargingNodes.setNumberOfTotalChargingSpots(totalChargingSlotsArray.get(i - numPNodes-Constants.START_INDEX));
             chargingNodes.add(newChargingNodes);
             addNodeToNodeMap(newChargingNodes);
@@ -252,12 +264,6 @@ public class ProblemInstance {
             }
             travelTimesBike.add(newTimeRow);
         }
-
-
-
-
-
-
     }
 
     private void addNodeToNodeMap(Node node){
@@ -304,14 +310,6 @@ public class ProblemInstance {
         return operators;
     }
 
-    public ArrayList<OperatorTravel> getOperatorTravels() {
-        return operatorTravels;
-    }
-
-    public ArrayList<CustomerTravel> getCustomerTravels() {
-        return customerTravels;
-    }
-
     public ArrayList<ArrayList<Double>> getTravelTimesBike() {
         return travelTimesBike;
     }
@@ -341,7 +339,7 @@ public class ProblemInstance {
         for (int i = 0; i < cToParray.length; i++) {
             int parkingId = Integer.parseInt(cToParray[i]);
             int chargingId = i + Constants.START_INDEX + parkingNodes.size();
-            if(nodeMap.get(chargingId).getClass() != ChargingNode.class || nodeMap.get(parkingId).getClass() != ParkingNode.class){
+            if( !(nodeMap.get(chargingId) instanceof ChargingNode) || !(nodeMap.get(parkingId) instanceof ParkingNode)){
                 System.out.println("index error when accessing charging node in node map in makeChargingToparkingNodeMap in ProblemInstance");
                 System.exit(1);
             } else {
@@ -354,23 +352,39 @@ public class ProblemInstance {
 
 
     public void writeProblemInstanceToFile(){
-        System.out.println("Writing state to file...");
+        //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
             PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + "exampleState"+Integer.toString(exampleNumber)+".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {
                 if(!stateSpecificKeys.contains(key)){
-                    writer.println(key + " : " + inputFileMap.get(key));
+                    if(key.equals("travelTimeVehicle")){
+                        writer.println(key  + " : " + inputFileMap.get(key).replace(","," "));
+                    }else if (key.equals("travelTimeBike")){
+                        writer.println(key + " : " + inputFileMap.get(key).replace(","," "));
+                    }else{
+                        writer.println(key + " : " + inputFileMap.get(key));
+                    }
                 }
             }
             writer.println();
+            //Time limits
+            writer.println("timeLimitLastVisit : "+ Constants.TIME_LIMIT_LAST_VISIT);
+            writer.println("timeLimit : "+ Constants.TIME_LIMIT_STATIC_PROBLEM);
 
-            // chargingSlotsAvailable
+            // chargingSlotsAvailable and finished during period
             String chargingSlotsAvailableArray = "[";
+            String finishedDuringCArray = "[";
             for (ChargingNode cNode : chargingNodes) {
-                chargingSlotsAvailableArray += cNode.findNumberOfChargingSpotsAvailableDuringNextPeriod() + " ";
+                int carsFinishedChargingDuringPeriod = cNode.findNumberOfCarsFinishingChargingDuringNextPeriod();
+                int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
+                chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
+                finishedDuringCArray += carsFinishedChargingDuringPeriod + " ";
             }
             writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
+            writer.println("finishedDuringC : "+ finishedDuringCArray.substring(0,finishedDuringCArray.length()-1)+"]");
+            chargingSlotsAvailableString = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]";
+
 
             // Artificial operators
             int numArtificialOperators = 0;
@@ -380,23 +394,24 @@ public class ProblemInstance {
 
             for (ChargingNode cNode : chargingNodes) {
                 for(Car car : cNode.getCarsCurrentlyCharging()){
-                    if(car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
-                        assert(car.getPreviousNode().getClass() == ChargingNode.class);
+                    if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                         numArtificialOperators ++;
                         travelTimeToParkingA += car.getRemainingChargingTime()+ " ";
-                        chargingNodeAOperator += car.getPreviousNode().getNodeId() + " ";
-                        parkingNodeAOperator += chargingToParkingNode.get(car.getPreviousNode()).getNodeId() + " ";
+                        chargingNodeAOperator += cNode.getNodeId() + " ";
+                        parkingNodeAOperator += chargingToParkingNode.get(cNode).getNodeId() + " ";
                     }
                 }
             }
-            if(travelTimeToParkingA.length() > 1){
+            if(numArtificialOperators > 0){
                 writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
                 writer.println("travelTimeToParkingA : " + travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]");
+                tavelTimeToParkingAString = travelTimeToParkingA.substring(0,travelTimeToParkingA.length()-1)+"]";
                 writer.println("chargingNodeAOperator : " + chargingNodeAOperator.substring(0,chargingNodeAOperator.length()-1)+"]");
                 writer.println("parkingNodeAOperator : " + parkingNodeAOperator.substring(0,parkingNodeAOperator.length()-1)+"]");
             } else {
                 writer.println("numAOperators : " + Integer.toString(numArtificialOperators));
                 writer.println("travelTimeToParkingA : " + travelTimeToParkingA+"]");
+                tavelTimeToParkingAString = travelTimeToParkingA+"]";
                 writer.println("chargingNodeAOperator : " + chargingNodeAOperator+"]");
                 writer.println("parkingNodeAOperator : " + parkingNodeAOperator+"]");
             }
@@ -406,27 +421,42 @@ public class ProblemInstance {
             String startNodeROperator = "[";
             for (Operator operator : operators) {
                 travelTimeToOriginR += operator.getTimeRemainingToCurrentNextNode() + " ";
-                startNodeROperator += operator.getPreviousNode().getNodeId()+ " ";
+                startNodeROperator += operator.getNextOrCurrentNode().getNodeId()+ " ";
             }
             writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
+            travelTimeToOriginRString = travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]";
             writer.println("startNodeROperator : "+startNodeROperator.substring(0,startNodeROperator.length()-1)+ "]");
 
-            // initialInNeedP
+            // initialInNeedP, idealStateP, initialRegularInP and demandP
             String initialInNeedP = "[";
             String idealStateP = "[";
             String initialRegularInP = "[";
+            String demandP = "[";
             for (ParkingNode pNode : parkingNodes) {
                 initialInNeedP += pNode.getCarsInNeed().size() + " ";
                 idealStateP += pNode.getIdealNumberOfAvailableCars() + " ";
                 initialRegularInP += pNode.getCarsRegular().size() + " ";
+                demandP += pNode.getPredictedNumberOfCarsDemandedThisPeriod() + " ";
             }
             writer.println("initialInNeedP : "+ initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]");
+            initialInNeedPString = initialInNeedP.substring(0,initialInNeedP.length()-1)+ "]";
             writer.println("idealStateP : "+ idealStateP.substring(0,idealStateP.length()-1)+ "]");
+            idealStatePString = idealStateP.substring(0,idealStateP.length()-1)+ "]";
             writer.println("initialRegularInP : "+ initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]");
+            initialRegularInPString = initialRegularInP.substring(0,initialRegularInP.length()-1)+ "]";
+            writer.println("demandP : "+ demandP.substring(0,demandP.length()-1)+ "]");
+            demandPString = demandP.substring(0,demandP.length()-1)+ "]";
 
 
+            //initial handling
+            String initialHandling = "[";
+            for (Operator operator : operators) {
+                initialHandling += (operator.isHandling() ? 1:0) + " ";
+            }
+            writer.println("initialHandling :" + initialHandling.substring(0, initialHandling.length()-1) + "]");
 
-
+            // Set mode
+            writer.println("mode : "+Constants.OBJECTIVE_MODE);
 
             writer.close();
         } catch (FileNotFoundException e){
@@ -434,20 +464,92 @@ public class ProblemInstance {
         } catch (UnsupportedEncodingException e){
             System.out.println(e.getMessage());
         }
-        System.out.println("Written to file.");
+        //System.out.println("Written to file.");
 
+    }
+
+    public ArrayList<Car> getCars() {
+        return cars;
+    }
+
+    public HashMap<ChargingNode, ParkingNode> getChargingToParkingNode() {
+        return chargingToParkingNode;
+    }
+
+    public int getNumberOfCarsTakenByCustomers() {
+        return numberOfCarsTakenByCustomers;
+    }
+
+    public void setNumberOfCarsTakenByCustomers(int numberOfCarsTakenByCustomers) {
+        this.numberOfCarsTakenByCustomers = numberOfCarsTakenByCustomers;
+    }
+
+    public double getHandlingTimeP() {
+        return handlingTimeP;
+    }
+
+    public double getHandlingTimeC() {
+        return handlingTimeC;
     }
 
     @Override
     public String toString() {
-        return "\nProblemInstance" + exampleNumber +":"+
-                "\n\t  parkingNodes=" + parkingNodes +
-                "\n\t  chargingNodes=" + chargingNodes +
-                "\n\t  cars=" + cars +
-                "\n\t  operators=" + operators +
-                "\n\t  operatorTravels=" + operatorTravels +
-                "\n\t  customerTravels=" + customerTravels +
-                "\n\t  travelTimesBike=" + travelTimesBike +
-                "\n\t  travelTimesCar=" + travelTimesCar + "\n";
+        Collections.sort(cars);
+        String carsCharging = "[";
+        int numberOfCarsCharging = 0;
+        for (ChargingNode node: this.chargingNodes) {
+            carsCharging += node.getCarsCurrentlyCharging().size() + " ";
+            numberOfCarsCharging += node.getCarsCurrentlyCharging().size();
+        }
+        carsCharging = carsCharging.substring(0,carsCharging.length() -1) + "]";
+
+        String[] initialRegularInPStringArray = initialRegularInPString.substring(1,initialRegularInPString.length()-1).split(" ");
+        int numberOfInitialRegular = 0;
+        for (String s: initialRegularInPStringArray) {
+            numberOfInitialRegular += Integer.parseInt(s);
+        }
+
+        String[] initialInNeedPStringArray = initialInNeedPString.substring(1,initialInNeedPString.length()-1).split(" ");
+        int numberOfInitialInNeedP = 0;
+        for (String s: initialInNeedPStringArray) {
+            numberOfInitialInNeedP += Integer.parseInt(s);
+        }
+
+        int numberInitialhandling = 0;
+        initialHandlingString = "[";
+        for (Operator operator : operators) {
+            numberInitialhandling += (operator.isHandling() ? 1:0);
+            initialHandlingString += (operator.isHandling() ? 1:0) + " ";
+        }
+        initialHandlingString = initialHandlingString.substring(0, initialHandlingString.length() -1 ) + "]";
+
+
+        int totalCarsInSystem = numberOfCarsCharging + numberOfInitialInNeedP + numberOfInitialRegular + numberOfCarsTakenByCustomers + numberInitialhandling;
+
+        // chargingSlotsAvailable and finished during period
+        String chargingSlotsAvailableArray = "[";
+        for (ChargingNode cNode : chargingNodes) {
+            int carsFinishedChargingDuringPeriod = cNode.findNumberOfCarsFinishingChargingDuringNextPeriod();
+            int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
+            chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
+        }
+        chargingSlotsAvailableArray = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1) + "]";
+
+        return  "\n\t  ProblemInstance " + exampleNumber +":"+
+                "\n\t  parkingNodes              = " + parkingNodes +
+                "\n\t  chargingNodes             = " + chargingNodes +
+                "\n\t  cars                      = " + cars +
+                "\n\t  operators                 = " + operators +
+                "\n\t  chargingSlotsAvailable    = " + chargingSlotsAvailableArray +
+                "\n\t  carsCharging              = " + carsCharging +
+                "\n\t  travelTimeToOriginRString = " + travelTimeToOriginRString +
+                "\n\t  initialHandling           = " + initialHandlingString +
+                "\n\t  tavelTimeToParkingAString = " + tavelTimeToParkingAString+
+                "\n\t  initialRegularInPString   = " + initialRegularInPString +"(total = " + numberOfInitialRegular+")"+
+                "\n\t  initialInNeedPString      = " + initialInNeedPString +"(total = " + numberOfInitialInNeedP+")"+
+                "\n\t  idealStatePString         = " + idealStatePString +
+                "\n\t  demandPString             = " + demandPString  +
+                "\n\t  carsTakenByCustomers      = " + numberOfCarsTakenByCustomers +
+                "\n\t  totalCarsInSystem         = " + totalCarsInSystem;
     }
 }

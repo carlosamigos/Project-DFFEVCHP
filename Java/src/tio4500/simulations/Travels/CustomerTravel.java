@@ -6,8 +6,9 @@ import tio4500.simulations.Nodes.ParkingNode;
 public class CustomerTravel extends Travel{
 
 
-    public CustomerTravel(Car car, double pickupTime, ParkingNode pickupNode, double arrivalTime, ParkingNode arrivalNode, double pickupBatteryLevel, double arrivalBatteryLevel) {
-        super(car, pickupTime, pickupNode, arrivalTime, arrivalNode, pickupBatteryLevel, arrivalBatteryLevel);
+    public CustomerTravel(double pickupTime, ParkingNode pickupNode, double arrivalTime, ParkingNode arrivalNode) {
+        super(pickupTime, pickupNode, arrivalTime, arrivalNode);
     }
+
 
 }

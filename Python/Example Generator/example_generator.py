@@ -1,9 +1,7 @@
 import math
 import random
 import sys
-
-cord1 = "59956751 10.861843"
-cord2 = "59908674 10.670612"
+import time
 
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
@@ -28,6 +26,7 @@ class World:
         self.HANDLINGTIMEC = 0
         self.TIMELIMIT = 0
         self.TIMELIMITLAST = 0
+        self.MAXHTOC = 0
 
         # WORLD CONSTANTS #
         self.YCORD = 0
@@ -92,25 +91,32 @@ class World:
                 cord = (cordY, cordX)
                 cords.append(cord)
 
-        for i in range(len(self.cNodes)):
-            cords.append(cords[self.cNodes[i].pNode - 1])
-        rememberCar = "[[0, 1056, 1060, 1515], [1008, 0, 1230, 766], [1133, 1254, 0, 1713], [1498, 786, 1720, 0]]"
-        rememberBicycle = "[[0, 3663, 2264, 4926], [2974, 0, 4333, 1325], [2037, 4783, 0, 5931], [4073, 1353, 5433, 0]]"
-        rememberTransit = "[[0, 1885, 669, 2067, 669], [1568, 0, 1510, 797, 1510], [930, 2292, 0, 1891, 0], [1997, 1130, 1501, 0, 1501], [930, 2292, 0, 1891, 0]]"
 
         travelMatrixCar = gI.run(cords, "driving", False)
+        time.sleep(2)
         travelMatrixBicycle = gI.run(cords, "bicycling", False)
+        time.sleep(2)
         travelMatrixTransit = gI.run(cords, "transit", False)
 
-        print(travelMatrixTransit)
-        print(travelMatrixBicycle)
-        print(travelMatrixCar)
+        for i in range(len(travelMatrixBicycle)):
+            for j in range(len(self.cNodes)):
+                travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.cNodes[j].pNode-1])
+                travelMatrixTransit[i].append(travelMatrixTransit[i][self.cNodes[j].pNode-1])
+                travelMatrixCar[i].append(travelMatrixCar[i][self.cNodes[j].pNode-1])
+        for i in range(len(self.cNodes)):
+            travelMatrixBicycle.append(travelMatrixBicycle[self.cNodes[i].pNode-1])
+            travelMatrixTransit.append(travelMatrixTransit[self.cNodes[i].pNode-1])
+            travelMatrixCar.append(travelMatrixCar[self.cNodes[i].pNode-1])
 
         travelMatrixNotHandling = []
+        travelMatrixHandling = []
         for i in range(len(travelMatrixBicycle)):
             for j in range(len(travelMatrixBicycle[i])):
-                travelMatrixNotHandling.append(int(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j]), '.1f')))
-        travelMatrixHandling = []
+                travelMatrixNotHandling.append(float(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j])/60, '.1f')))
+                travelMatrixHandling.append(float(format(travelMatrixCar[i][j]/60, '.1f')))
+        self.distancesC = travelMatrixHandling
+        self.distancesB = travelMatrixNotHandling
+
 
 
     def setConstants(self, visits, mode, sBigM):
@@ -124,11 +130,12 @@ class World:
         self.COSTOFEXTRAT = costOfExtraT
         self.COSTOFTRAVEL = costOfTravel
 
-    def setTimeConstants(self, handlingTimeP, handlingTimeC, timeLimit, timeLimitLast):
+    def setTimeConstants(self, handlingTimeP, handlingTimeC, timeLimit, timeLimitLast, maxHToC):
         self.HANDLINGTIMEP = handlingTimeP
         self.HANDLINGTIMEC = handlingTimeC
         self.TIMELIMIT = timeLimit
         self.TIMELIMITLAST = timeLimitLast
+        self.MAXHTOC = maxHToC
 
     def setCordConstants(self, upperRight, lowerLeft):
         self.UPPERRIGHT = upperRight
@@ -247,6 +254,7 @@ class World:
         string += "] \n"
         string += "timeLimit: " + str(self.TIMELIMIT) + "\n"
         string += "timeLimitLastVisit: " + str(self.TIMELIMITLAST) + "\n"
+        string += "maxTravelHToC: " + str(self.MAXHTOC) + "\n"
         string += "\n"
         string += "initialHandling: ["
         for i in range(len(self.operators)):
@@ -407,10 +415,10 @@ def main():
     world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.setConstants(5, 1, 10)
     world.setCostConstants(20, 20, 1, 1)
-    world.setTimeConstants(4, 5, 60, 10)
+    world.setTimeConstants(4, 5, 60, 10, 30)
     world.calculateDistances()
-    #world.calculateRealDistances()
-    world.writeToFile(1)
+    world.calculateRealDistances()
+    world.writeToFile(2)
 
 main()
 

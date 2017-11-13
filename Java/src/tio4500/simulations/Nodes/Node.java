@@ -1,6 +1,6 @@
 package tio4500.simulations.Nodes;
 
-public class Node {
+public abstract class Node {
 
     private final int nodeId;
 

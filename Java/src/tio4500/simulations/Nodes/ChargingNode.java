@@ -7,7 +7,6 @@ import java.util.HashSet;
 
 public class ChargingNode extends Node{
 
-    private int numberOfCarsCharging = 0;
     private int numberOfTotalChargingSlots = 0;
     private HashSet<Car> carsCurrentlyCharging;
 
@@ -20,23 +19,14 @@ public class ChargingNode extends Node{
         return carsCurrentlyCharging;
     }
 
-    public int findNumberOfChargingSpotsAvailableDuringNextPeriod(){
+    public int findNumberOfCarsFinishingChargingDuringNextPeriod(){
         int numberOfCarsFinishingCharging = 0;
-        for (Car car : getCarsCurrentlyCharging()) {
-            if (car.getRemainingChargingTime() < Constants.TIME_INCREMENTS){
+        for (Car car : carsCurrentlyCharging) {
+            if (car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                 numberOfCarsFinishingCharging +=1;
             }
         }
-        int numberOfAvailableChargingSpotsDuringNextPeriod = getNumberOfTotalChargingSlots() - getNumberOfCarsCharging() + numberOfCarsFinishingCharging;
-        return numberOfAvailableChargingSpotsDuringNextPeriod;
-    }
-
-    public int getNumberOfCarsCharging() {
-        return numberOfCarsCharging;
-    }
-
-    public void setNumberOfCarsCharging(int numberOfCarsCharging) {
-        this.numberOfCarsCharging = numberOfCarsCharging;
+        return numberOfCarsFinishingCharging;
     }
 
     public int getNumberOfTotalChargingSlots() {

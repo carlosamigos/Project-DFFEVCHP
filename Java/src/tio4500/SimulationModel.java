@@ -50,7 +50,7 @@ public class SimulationModel {
             writer.println(problemInstanceString+" : "+Integer.toString(problemInstance.getExampleNumber()));
             for (ParkingNode pNode : demandRequests.keySet()) {
                 for (DemandRequest req : demandRequests.get(pNode)) {
-                    writer.println(Integer.toString(req.getNode().getNodeId())+","+formatter.format(req.getTime()));
+                    writer.println(Integer.toString(req.getNode().getNodeId())+":"+formatter.format(req.getTime()));
                 }
             }
             writer.close();
@@ -88,8 +88,9 @@ public class SimulationModel {
                 }
                 else {
                     line.trim(); line = line.replace("\n","");
-                    String[] parts = line.split(",");
-                    int parkingNodeId = Integer.parseInt(parts[0].trim()) - Constants.START_INDEX; double number = Double.parseDouble(parts[1].trim());
+                    String[] parts = line.split(":");
+                    int parkingNodeId = Integer.parseInt(parts[0].trim());
+                    double number = Double.parseDouble(parts[1].trim());
                     try{
                         ParkingNode pNode = (ParkingNode) problemInstance.getNodeMap().get(parkingNodeId);
                         DemandRequest demandRequest = new DemandRequest(pNode, number);
@@ -120,9 +121,9 @@ public class SimulationModel {
 
     private double getDemandRateForNodeAtTime(ParkingNode parkingNode, double time){
         if(parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MIDDAY_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.sin((time-Constants.START_TIME)*Math.asin(1)/Constants.TOTAL_TIME_DURING_DAY)+Constants.LOW_RATE_LAMBDA;
+            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.sin((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
         } else if (parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MORNING_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.cos((time-Constants.START_TIME)*Math.asin(1)/Constants.TOTAL_TIME_DURING_DAY)+Constants.LOW_RATE_LAMBDA;
+            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.cos((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
         } else {
             return Constants.MEDIUM_RATE_LAMBDA;
         }
@@ -135,8 +136,8 @@ public class SimulationModel {
     private void createAllDemandRequestsForNode(ParkingNode parkingNode){
         double startTime = Constants.START_TIME;
         double time = startTime+0;
-        while (time < Constants.TOTAL_TIME_DURING_DAY){
-            time += drawFromExponentialDistribution(1.0/getDemandRateForNodeAtTime(parkingNode,time));
+        while (time < Constants.END_TIME){
+            time += drawFromExponentialDistribution(getDemandRateForNodeAtTime(parkingNode,time));
             DemandRequest newDemandRequest = new DemandRequest(parkingNode,time);
             addDemandRequestToMap(newDemandRequest);
         }
@@ -153,4 +154,46 @@ public class SimulationModel {
     public HashMap<ParkingNode, ArrayList<DemandRequest>> getDemandRequests() {
         return demandRequests;
     }
+
+    public double findExpectedNumberOfArrivalsMorningRushBetween(double start, double end){
+        if(end > Constants.END_TIME){
+           return  (lambdaMorningRushIntegral(Constants.START_TIME)- lambdaMorningRushIntegral(Constants.START_TIME + Constants.TIME_INCREMENTS));
+        }
+        double result = (lambdaMorningRushIntegral(end)- lambdaMorningRushIntegral(start));
+        return result;
+    }
+
+    public double findExpectedNumberOfArrivalsMiddayRushBetween(double start, double end){
+        if(end > Constants.END_TIME){
+            return  (lambdaMiddayRushIntegral(Constants.START_TIME)- lambdaMiddayRushIntegral(Constants.START_TIME + Constants.TIME_INCREMENTS));
+        }
+        double result = (lambdaMiddayRushIntegral(end)- lambdaMiddayRushIntegral(start));
+        return result;
+    }
+
+    public double findExpectedNumberOfArrivalsNormalBetween(double start, double end){
+        return (end-start)*Constants.MEDIUM_RATE_LAMBDA;
+    }
+
+    private double lambdaMorningRushIntegral(double time){
+        double low = Constants.LOW_RATE_LAMBDA;
+        double high = Constants.HIGH_RATE_LAMBDA;
+        double gradient = -(high-low)/(Constants.END_TIME-Constants.START_TIME);
+        double intersection = high - gradient*Constants.START_TIME;
+        return 0.5*gradient*time*time + intersection*time;
+    }
+
+    private double lambdaMiddayRushIntegral(double time){
+        double low = Constants.LOW_RATE_LAMBDA;
+        double high = Constants.HIGH_RATE_LAMBDA;
+        double gradient = (high-low)/(Constants.END_TIME-Constants.START_TIME);
+        double intersection = low - gradient*Constants.START_TIME;
+        return 0.5*gradient*time*time + intersection*time;
+    }
+
+
+
+
+
+
 }
