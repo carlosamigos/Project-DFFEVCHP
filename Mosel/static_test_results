@@ -1,0 +1,18 @@
+Mosel File: mos1
+    Test    |  Time  |  Value   |  Gap   
+    foo     |  0s.   |  40.86   |  2.49%   
+    baz     |  0s.   |  40.86   |  2.49%   
+    bar     |  0s.   |  40.86   |  2.49%   
+
+Mosel File: mos2
+    Test    |  Time  |  Value   |  Gap   
+    foo     |  0s.   |  40.86   |  2.49%   
+    baz     |  0s.   |  40.86   |  2.49%   
+    bar     |  0s.   |  40.86   |  2.49%   
+
+Mosel File: mos3
+    Test    |  Time  |  Value   |  Gap   
+    foo     |  0s.   |  40.86   |  2.49%   
+    baz     |  0s.   |  40.86   |  2.49%   
+    bar     |  0s.   |  40.86   |  2.49%   
+
