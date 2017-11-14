@@ -20,4 +20,8 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+    public static String removeFileEnding(String s) {
+        return s.substring(0, s.length() - 4);
+    }
 }

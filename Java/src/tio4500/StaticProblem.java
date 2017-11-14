@@ -4,6 +4,7 @@ public class StaticProblem {
 
     private final String filePath;
 
+
     public StaticProblem(String filePath) {
         this.filePath = filePath;
     }

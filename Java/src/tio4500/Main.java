@@ -7,7 +7,6 @@ import tests.StaticTestSuite;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello, rolling horizon!");
         /*ProblemInstance instance = new ProblemInstance(Constants.EXAMPLE_NUMBER);
         SimulationModel simulationModel = new SimulationModel(Constants.DAY_NUMBER,instance);
 
@@ -20,9 +19,9 @@ public class Main {
         instance.writeProblemInstanceToFile();
 
 
-        DynamicProblem dynProb = new DynamicProblem(instance, simulationModel);
-        dynProb.solve();*/
-        
+        DynamicProblem dynProb = new DynamicProblem(instance, simulationModel, Constants.SolverType.MOSEL);
+        dynProb.solve();
+        */
         StaticTestSuite testSuite = new StaticTestSuite(Constants.SolverType.MOSEL);
         testSuite.runTestSuite();
 

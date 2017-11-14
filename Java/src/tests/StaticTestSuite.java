@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import constants.Constants;
 import constants.Constants.SolverType;
+import tio4500.KPITrackerStatic;
 import tio4500.StaticProblem;
 import tio4500.solvers.MoselSolver;
 import tio4500.solvers.Solver;
@@ -29,7 +30,9 @@ public class StaticTestSuite {
 		instantiateSolvers(solverType);
 		
 		File[] testFiles = (new File(Constants.TEST_FOLDER)).listFiles();
-		this.testFilesNames = (ArrayList<String>) Arrays.stream(testFiles).map(file -> file.getName()).collect(Collectors.toList());
+		this.testFilesNames = (ArrayList<String>) Arrays.stream(testFiles).map(
+				file -> StringUtils.removeFileEnding(file.getName()))
+				.collect(Collectors.toList());
 	}
 	
 	public void runTestSuite() {
@@ -43,11 +46,11 @@ public class StaticTestSuite {
 			writeTestHeader(solver.getInfo());
 			System.out.println("Running tests with " + solver.getInfo());
 			for(String testName : testFilesNames) {
+				KPITrackerStatic tracker = new KPITrackerStatic();
 				StaticProblem staticProblem = new StaticProblem(Constants.TEST_FOLDER + testName);
-				long startTime = System.nanoTime();
 				solver.solve(staticProblem);
-				double timeUsed = (double)(System.nanoTime() - startTime)/(1000000*1000);
-				writeTestResult(solver.getResults(), timeUsed);
+				tracker.setResults(staticProblem.getFilePath());
+				writeTestResult(tracker);
 			}
 			writeResultsFile("\n\n");
 		}
@@ -59,6 +62,7 @@ public class StaticTestSuite {
 		switch(type) {
 		case MOSEL:
 			instantiateMoselSolvers();
+			break;
 		default:
 			instantiateMoselSolvers();
 		}
@@ -66,14 +70,16 @@ public class StaticTestSuite {
 	
 	private void instantiateMoselSolvers() {
 		this.solvers = new ArrayList<Solver>();
-		File[] moselFiles = (new File(Constants.MOSEL_TEST_FILES_FOLDER)).listFiles();
+		File[] moselFiles = (new File(Constants.PROBLEM_FOLDER + Constants.MOSEL_TEST_FILES_FOLDER)).listFiles();
+		ArrayList<String> moselFileNames =  new ArrayList<String>();
 		for(File file : moselFiles) {
-			System.out.println(file.getAbsolutePath());
+			if(!file.getName().contains(".bim")) {
+				moselFileNames.add(file.getName());
+			}
 		}
-		ArrayList<String> moselFileNames = (ArrayList<String>) Arrays.stream(moselFiles).map(file -> file.getName()).collect(Collectors.toList());
-		
+
 		for(String moselFileName : moselFileNames) {
-			solvers.add(new MoselSolver(moselFileName));
+			solvers.add(new MoselSolver(Constants.MOSEL_TEST_FILES_FOLDER + moselFileName));
 		}
 	}
 	
@@ -133,17 +139,18 @@ public class StaticTestSuite {
 		}
 	}
 	
-	private void writeTestResult(HashMap<String, String> results, double timeUsed) {
-		String time = (new DecimalFormat("#.##")).format(timeUsed);
-		String[] namePath = results.get("Name").split("/");
+	private void writeTestResult(KPITrackerStatic tracker) {
+		String[] namePath = tracker.getName().split("/");
 		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
 		data += "|";
-		data += StringUtils.center(time + "s.", 8);
+		data += StringUtils.center(tracker.getTimeUsed() + "s.", 8);
 		data += "|";
-		data += StringUtils.center(results.get("BestSolution"),10);
+		data += StringUtils.center(tracker.getBestSolution(),10);
 		data += "|";
-		data += StringUtils.center(results.get("Gap") + "%", 10);
+		data += StringUtils.center(tracker.getGap() + "%", 10);
 		
 		writeResultsFile(data);
 	}
+
+
 }	
