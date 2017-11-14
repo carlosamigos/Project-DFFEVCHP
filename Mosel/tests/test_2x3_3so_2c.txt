@@ -59,4 +59,5 @@ demandP: [0 -1 0 -1 -1 0]
 
 mode: 1
 sequenceBigM: 10
-visitList: [4 4 3 3 4 2 5 2 1 1 1 1 1 1] 
+visitList: [4 4 3 3 4 2 5 2 1 1 1 1 1 1]
+

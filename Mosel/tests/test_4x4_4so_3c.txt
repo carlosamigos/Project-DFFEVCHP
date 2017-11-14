@@ -1,4 +1,4 @@
-numVisits: 5
+numVisits: 6
 numPNodes: 16
 numCNodes: 3
 numROperators: 4
