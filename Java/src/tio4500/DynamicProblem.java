@@ -60,6 +60,8 @@ public class DynamicProblem {
             System.out.println("State before solving mosel: "+problemInstance + "\n");
             StaticProblem problem = new StaticProblem(Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER);
             this.solver.solve(problem);
+            //kpiTracker.addSolvedToOptimality(staticProblem.getModel().getProblemStatus() == staticProblem.getModel().PB_OPTIMAL);
+
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
         }
@@ -307,7 +309,6 @@ public class DynamicProblem {
             else if(nextCustomerArrivalTime == earliestTime){
                 time = nextCustomerArrivalTime;
                 // Customer arrives with car
-                //  System.out.println("nextCustomerArrivalTime earliest");
                 customerTravels.remove(nextCustomerArrival);
                 Node arrivalNode = nextCustomerArrival.getArrivalNode();
                 Car car = nextCustomerArrival.getCar();
@@ -317,7 +318,27 @@ public class DynamicProblem {
                 System.out.println("Customer arrives with car "+ car + " in node " + arrivalNode);
                 if(car.getBatteryLevel() < Constants.SOFT_CHARGING_THRESHOLD){
                     // assuming that if close to charging station, customer sets to charging
-                    ((ParkingNode)arrivalNode).getCarsInNeed().add(car);
+                    if(problemInstance.getParkingNodeToChargingNode().get(arrivalNode)!=null){
+                        //charging node nearby
+                        double random = Math.random();
+                        if(random < Constants.PROBABILITY_CUSTOMERS_CHARGE){
+                            //set car to charging
+                            ChargingNode cNode = problemInstance.getParkingNodeToChargingNode().get(arrivalNode);
+                            if(checkIfCarIsAllowedToSetToChargingForCustomerInNode(cNode, operatorTravels)){
+                                car.setCurrentNextNode(cNode);
+                                car.setPreviousNode(cNode);
+                                cNode.getCarsCurrentlyCharging().add(car);
+                                this.kpiTracker.increaseNumberOfCarsSetToCharging(subProblemNumber);
+                                System.out.println("Customer set a car to charging");
+                            }else {
+                                ((ParkingNode)arrivalNode).getCarsInNeed().add(car);
+                            }
+                        }else {
+                            ((ParkingNode)arrivalNode).getCarsInNeed().add(car);
+                        }
+                    }else{
+                        ((ParkingNode)arrivalNode).getCarsInNeed().add(car);
+                    }
                 } else {
                     ((ParkingNode)arrivalNode).getCarsRegular().add(car);
                 }
@@ -334,6 +355,19 @@ public class DynamicProblem {
         updateNumberOfCarsTakenByCustomers(customerTravels);
         updateTimeInNeedState(endTime,time);
         updateIdleTimesOperators(endTime,time);
+    }
+
+    private boolean checkIfCarIsAllowedToSetToChargingForCustomerInNode(ChargingNode node, HashMap<Operator,OperatorTravel> operatorTravels){
+        int numberOfOperatorsPlanningToChargeNodes = 0;
+        for (Operator operator: operatorTravels.keySet()) {
+            OperatorTravel travel = operatorTravels.get(operator);
+            if(travel.getArrivalNode().equals(node) && travel.getCar() != null){
+                //operator is planning to charge
+                numberOfOperatorsPlanningToChargeNodes ++;
+            }
+        }
+        int availableSpacesRightNow = node.getNumberOfTotalChargingSlots() - node.getCarsCurrentlyCharging().size();
+        return availableSpacesRightNow - numberOfOperatorsPlanningToChargeNodes > 0;
     }
 
     private void updateTimeInNeedState(double time, double previousTime){
@@ -589,7 +623,8 @@ public class DynamicProblem {
                 }
                 line.trim();
                 int lenOfLine = line.length();
-                if(line.substring(lenOfLine-3,lenOfLine).contains("->")){
+                if(line.substring(lenOfLine-1,lenOfLine).contains(",")){
+                    noIntegerSolutionFound= true;
                     arrivals = new HashMap<>();
                     System.out.println("No Integer Solution found");
                     break;

@@ -3,7 +3,7 @@ package constants;
 public class Constants {
 
     // Example specification
-    public final static int EXAMPLE_NUMBER = 2;
+    public final static int EXAMPLE_NUMBER = 3;
     public final static int DAY_NUMBER = 1;
     public final static boolean CREATE_NEW_SIMULATION_MODEL = true;
 
@@ -34,23 +34,24 @@ public class Constants {
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 50; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 1200; // In seconds
     public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = true;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
-    public final static int TIME_LIMIT_STATIC_PROBLEM = 60;
+    public final static int TIME_LIMIT_STATIC_PROBLEM = 30;
 
     // Variables for simulation environment
     public final static double HIGH_ARRIVAL_RATE = 10.0; // Average waiting time before next arrival
     public final static double HIGH_RATE_LAMBDA = 1.0/HIGH_ARRIVAL_RATE; // How many Arrivals per time unit
-    public final static double MEDIUM_ARRIVAL_RATE = 30.0;
+    public final static double MEDIUM_ARRIVAL_RATE = 50.0;
     public final static double MEDIUM_RATE_LAMBDA = 1.0/MEDIUM_ARRIVAL_RATE;
     public final static double LOW_ARRIVAL_RATE = 120.0;
     public final static double LOW_RATE_LAMBDA = 1.0/LOW_ARRIVAL_RATE;
     public final static double PERCENTAGE_AFFECTED_BY_RUSH_HOUR = 2.0/3.0;
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
-    public final static double CUSTOMER_TIME_MULTIPLICATOR = 3; // 1-3
+    public final static double CUSTOMER_TIME_MULTIPLICATOR = 1; // 1-1
+    public final static double PROBABILITY_CUSTOMERS_CHARGE = 0.7;
 
 
     public final static double CHARGING_TIME_FULL = 3.5*60; //3.5 hours, in minutes

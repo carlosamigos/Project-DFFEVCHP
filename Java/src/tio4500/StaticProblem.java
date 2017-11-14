@@ -7,8 +7,10 @@ public class StaticProblem {
     public StaticProblem(String filePath) {
         this.filePath = filePath;
     }
+
     
     public String getFilePath() {
     	return this.filePath;
     }
+
 }

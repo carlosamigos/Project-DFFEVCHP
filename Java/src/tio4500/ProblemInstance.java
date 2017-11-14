@@ -26,6 +26,7 @@ public class ProblemInstance {
     private HashMap<Integer,Operator> operatorMap;
     private HashSet<String> stateSpecificKeys = new HashSet<>();
     private HashMap<ChargingNode,ParkingNode> chargingToParkingNode;
+    private HashMap<ParkingNode,ChargingNode> parkingNodeToChargingNode;
 
     private int numPNodes = 0;
     private int numCNodes = 0;
@@ -58,6 +59,7 @@ public class ProblemInstance {
         nodeMap = new HashMap<>();
         operatorMap = new HashMap<>();
         chargingToParkingNode = new HashMap<>();
+        parkingNodeToChargingNode = new HashMap<>();
         try {
             readProblemFromFile();
         } catch (IOException e){
@@ -347,6 +349,7 @@ public class ProblemInstance {
                 ChargingNode cNode = (ChargingNode) nodeMap.get(chargingId);
                 ParkingNode pNode = (ParkingNode) nodeMap.get(parkingId);
                 chargingToParkingNode.put(cNode,pNode);
+                parkingNodeToChargingNode.put(pNode,cNode);
             }
         }
     }
@@ -500,6 +503,10 @@ public class ProblemInstance {
 
     public HashMap<ChargingNode, ParkingNode> getChargingToParkingNode() {
         return chargingToParkingNode;
+    }
+
+    public HashMap<ParkingNode, ChargingNode> getParkingNodeToChargingNode() {
+        return parkingNodeToChargingNode;
     }
 
     public int getNumberOfCarsTakenByCustomers() {
