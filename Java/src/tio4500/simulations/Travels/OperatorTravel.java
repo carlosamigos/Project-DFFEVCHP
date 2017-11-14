@@ -1,10 +1,7 @@
 package tio4500.simulations.Travels;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import tio4500.simulations.Entities.Car;
 import tio4500.simulations.Entities.Operator;
 import tio4500.simulations.Nodes.Node;
-import tio4500.simulations.Nodes.ParkingNode;
 
 public class OperatorTravel extends Travel{
 

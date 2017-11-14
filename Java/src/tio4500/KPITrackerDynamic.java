@@ -1,6 +1,5 @@
 package tio4500;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
 import tio4500.simulations.Entities.Operator;
 
