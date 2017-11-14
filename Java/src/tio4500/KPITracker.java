@@ -21,6 +21,7 @@ public class KPITracker {
     private ArrayList<Double> waitingTimeBeforeCarInNeedAreCharged;
     private ArrayList<Double> idleTimeForServiceOperators;
     private ArrayList<Boolean> staticProblemSolvedToOptimality;
+    private ArrayList<Double> staticProblemGap;
 
     public KPITracker(DynamicProblem dynamicProblem) {
         int numberOfSubProblems = (Constants.END_TIME - Constants.START_TIME)/Constants.TIME_INCREMENTS - (int)(Constants.TIME_LIMIT_STATIC_PROBLEM/Constants.TIME_INCREMENTS) +1;
@@ -35,6 +36,7 @@ public class KPITracker {
         waitingTimeBeforeCarInNeedAreCharged = new ArrayList<>();
         idleTimeForServiceOperators = new ArrayList<>();
         staticProblemSolvedToOptimality = new ArrayList<>();
+        staticProblemGap = new ArrayList<>();
     }
 
     void increaseDemandNotServedForPeriod(int period){
@@ -75,9 +77,17 @@ public class KPITracker {
         }
     }
 
+    void addGapForPeriod(double gap){
+        this.staticProblemGap.add(gap);
+    }
+
+    void addSolvedToOptimality(boolean solvedToOptimality){
+        this.staticProblemSolvedToOptimality.add(solvedToOptimality);
+    }
+
     @Override
     public String toString() {
-        return "\nResults{" +
+        return  "\n Results{" +
                 "\n demandsNotServed=" + demandsNotServed +
                 "\n numberOfOperatorsAbandoned=" + numberOfOperatorsAbandoned +
                 "\n numberOfCarsSetToCharging=" + numberOfCarsSetToCharging +

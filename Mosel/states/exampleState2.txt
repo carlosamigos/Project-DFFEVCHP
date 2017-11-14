@@ -12,7 +12,7 @@ costOfTravel : 0.5
 maxTravelHToC : 30
 nodeSubsetIndexes : [1 2 3 4 5 6 7 8 9]
 travelTimeBike : [0.0 17.8 41.1 6.6 16.4 33.7 11.7 20.8 38.9 17.8 20.8 20.8 0.0 27.1 21.4 9.0 21.2 21.6 14.9 26.5 0.0 14.9 34.5 20.4 0.0 29.8 13.8 10.7 30.2 20.2 14.1 20.4 20.2 15.1 19.6 41.3 0.0 16.3 34.0 7.2 17.7 35.5 19.6 17.7 21.3 11.7 29.2 15.7 0.0 28.6 16.1 7.7 25.1 11.7 7.7 40.0 21.7 19.9 36.1 22.9 0.0 32.1 21.2 7.8 21.7 21.2 23.5 26.2 45.9 12.1 20.9 36.3 0.0 15.9 36.6 26.2 15.9 23.0 23.5 27.1 23.0 11.8 28.5 17.5 0.0 23.2 23.5 0.0 34.3 27.4 25.7 32.4 20.6 9.8 29.9 16.3 0.0 27.4 16.3 20.8 0.0 27.1 21.4 9.0 21.2 21.6 14.9 26.5 0.0 14.9 23.0 23.5 27.1 23.0 11.8 28.5 17.5 0.0 23.2 23.5 0.0 ]
-costOfPostponedCharging : 25
+costOfPostponedCharging : 200
 sequenceBigM : 10
 wNodes : 3
 numVisits : 5
@@ -21,7 +21,7 @@ destinationNodeROperator : [15 16 17]
 originNodeROperator : [12 13 14]
 
 timeLimitLastVisit : 10
-timeLimit : 60
+timeLimit : 30
 chargingSlotsAvailable : [5 5]
 finishedDuringC : [0 0]
 numAOperators : 0
@@ -29,10 +29,10 @@ travelTimeToParkingA : []
 chargingNodeAOperator : []
 parkingNodeAOperator : []
 travelTimeToOriginR : [0.0 0.0 0.0]
-startNodeROperator : [10 2 10]
-initialInNeedP : [4 5 5 4 8 4 2 2 7]
-idealStateP : [1 1 1 1 1 1 1 1 1]
-initialRegularInP : [0 0 0 0 0 1 0 0 0]
-demandP : [1 1 1 6 6 6 2 2 2]
+startNodeROperator : [9 2 2]
+initialInNeedP : [1 1 0 0 0 0 1 0 1]
+idealStateP : [4 4 4 1 1 1 1 1 1]
+initialRegularInP : [6 6 6 3 3 1 1 1 1]
+demandP : [3 3 3 0 0 0 1 1 1]
 initialHandling :[0 0 0]
 mode : 2
