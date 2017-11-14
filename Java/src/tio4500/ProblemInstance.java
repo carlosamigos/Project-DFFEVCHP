@@ -26,6 +26,7 @@ public class ProblemInstance {
     private HashMap<Integer,Operator> operatorMap;
     private HashSet<String> stateSpecificKeys = new HashSet<>();
     private HashMap<ChargingNode,ParkingNode> chargingToParkingNode;
+    private HashMap<ParkingNode,ChargingNode> parkingNodeToChargingNode;
 
     private int numPNodes = 0;
     private int numCNodes = 0;
@@ -58,6 +59,7 @@ public class ProblemInstance {
         nodeMap = new HashMap<>();
         operatorMap = new HashMap<>();
         chargingToParkingNode = new HashMap<>();
+        parkingNodeToChargingNode = new HashMap<>();
         try {
             readProblemFromFile();
         } catch (IOException e){
@@ -87,6 +89,7 @@ public class ProblemInstance {
         stateSpecificKeys.add("timeLimit");
         stateSpecificKeys.add("initialHandling");
         stateSpecificKeys.add("mode");
+        stateSpecificKeys.add("numVisits");
     }
 
     private void readProblemFromFile() throws IOException{
@@ -346,6 +349,7 @@ public class ProblemInstance {
                 ChargingNode cNode = (ChargingNode) nodeMap.get(chargingId);
                 ParkingNode pNode = (ParkingNode) nodeMap.get(parkingId);
                 chargingToParkingNode.put(cNode,pNode);
+                parkingNodeToChargingNode.put(pNode,cNode);
             }
         }
     }
@@ -375,23 +379,26 @@ public class ProblemInstance {
             // chargingSlotsAvailable and finished during period
             String chargingSlotsAvailableArray = "[";
             String finishedDuringCArray = "[";
+            HashMap<ChargingNode,Integer> chargingSlotsAvailableMap = new HashMap<>();
+            HashMap<ChargingNode,Integer> carsFinishedChargingMap = new HashMap<>();
             for (ChargingNode cNode : chargingNodes) {
                 int carsFinishedChargingDuringPeriod = cNode.findNumberOfCarsFinishingChargingDuringNextPeriod();
                 int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
                 chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
                 finishedDuringCArray += carsFinishedChargingDuringPeriod + " ";
+                chargingSlotsAvailableMap.put(cNode,chargingSpotsAvailableNow);
+                carsFinishedChargingMap.put(cNode,carsFinishedChargingDuringPeriod);
             }
             writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
             writer.println("finishedDuringC : "+ finishedDuringCArray.substring(0,finishedDuringCArray.length()-1)+"]");
             chargingSlotsAvailableString = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]";
-
 
             // Artificial operators
             int numArtificialOperators = 0;
             String travelTimeToParkingA = "[";
             String chargingNodeAOperator = "[";
             String parkingNodeAOperator = "[";
-
+            HashMap<ParkingNode,Integer> numberOfCarsArtificiallyArrivingToParkingNode = new HashMap<>();
             for (ChargingNode cNode : chargingNodes) {
                 for(Car car : cNode.getCarsCurrentlyCharging()){
                     if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
@@ -399,6 +406,10 @@ public class ProblemInstance {
                         travelTimeToParkingA += car.getRemainingChargingTime()+ " ";
                         chargingNodeAOperator += cNode.getNodeId() + " ";
                         parkingNodeAOperator += chargingToParkingNode.get(cNode).getNodeId() + " ";
+                        if(numberOfCarsArtificiallyArrivingToParkingNode.get(chargingToParkingNode.get(cNode)) == null){
+                            numberOfCarsArtificiallyArrivingToParkingNode.put(chargingToParkingNode.get(cNode), 0);
+                        }
+                        numberOfCarsArtificiallyArrivingToParkingNode.put(chargingToParkingNode.get(cNode), numberOfCarsArtificiallyArrivingToParkingNode.get(chargingToParkingNode.get(cNode)) +1);
                     }
                 }
             }
@@ -416,12 +427,20 @@ public class ProblemInstance {
                 writer.println("parkingNodeAOperator : " + parkingNodeAOperator+"]");
             }
 
+
+
             // Real operators
             String travelTimeToOriginR = "[";
             String startNodeROperator = "[";
+            HashMap<Node,Integer> numberOfOperatorsStartingInNode = new HashMap<>();
             for (Operator operator : operators) {
                 travelTimeToOriginR += operator.getTimeRemainingToCurrentNextNode() + " ";
                 startNodeROperator += operator.getNextOrCurrentNode().getNodeId()+ " ";
+                Node startNode = operator.getNextOrCurrentNode();
+                if(numberOfOperatorsStartingInNode.get(startNode) == null){
+                    numberOfOperatorsStartingInNode.put(startNode,0);
+                }
+                numberOfOperatorsStartingInNode.put(startNode, numberOfOperatorsStartingInNode.get(startNode) + 1);
             }
             writer.println("travelTimeToOriginR : "+travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]");
             travelTimeToOriginRString = travelTimeToOriginR.substring(0,travelTimeToOriginR.length()-1)+ "]";
@@ -432,8 +451,10 @@ public class ProblemInstance {
             String idealStateP = "[";
             String initialRegularInP = "[";
             String demandP = "[";
+            int totalNumberOfCarsInNeed = 0;
             for (ParkingNode pNode : parkingNodes) {
                 initialInNeedP += pNode.getCarsInNeed().size() + " ";
+                totalNumberOfCarsInNeed += pNode.getCarsInNeed().size();
                 idealStateP += pNode.getIdealNumberOfAvailableCars() + " ";
                 initialRegularInP += pNode.getCarsRegular().size() + " ";
                 demandP += pNode.getPredictedNumberOfCarsDemandedThisPeriod() + " ";
@@ -450,8 +471,16 @@ public class ProblemInstance {
 
             //initial handling
             String initialHandling = "[";
+            HashMap<Node,Integer> numberOfInitialHandlersToInNode = new HashMap<>();
             for (Operator operator : operators) {
                 initialHandling += (operator.isHandling() ? 1:0) + " ";
+                if(operator.isHandling()){
+                    Node node = operator.getNextOrCurrentNode();
+                    if(numberOfInitialHandlersToInNode.get(node) == null){
+                        numberOfInitialHandlersToInNode.put(node, 0 );
+                    }
+                    numberOfInitialHandlersToInNode.put(node, numberOfInitialHandlersToInNode.get(node) + 1);
+                }
             }
             writer.println("initialHandling :" + initialHandling.substring(0, initialHandling.length()-1) + "]");
 
@@ -474,6 +503,10 @@ public class ProblemInstance {
 
     public HashMap<ChargingNode, ParkingNode> getChargingToParkingNode() {
         return chargingToParkingNode;
+    }
+
+    public HashMap<ParkingNode, ChargingNode> getParkingNodeToChargingNode() {
+        return parkingNodeToChargingNode;
     }
 
     public int getNumberOfCarsTakenByCustomers() {

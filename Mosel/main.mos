@@ -6,13 +6,17 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
+<<<<<<< HEAD
 	DataFile = '../Mosel/states/initialExample_Moan.txt';
+=======
+	DataFile = '../Mosel/states/exampleState3.txt';
+>>>>>>> 6e6af392e59e24921388fd6607ed43fbef9bc072
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
-	printParams = false;
+	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 400;
+	MaxSolveTimeSeconds = 100;
 end-parameters
 
 
@@ -899,8 +903,8 @@ if printResults then
 	end-do
 	!)
 end-if
-(!
 
+(!
 forall(ii in pNodes) do
 	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
 end-do

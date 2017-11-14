@@ -56,12 +56,12 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [0 0 0] 
-initialRegularInP: [8 8 8 4 4 2 2 2 2] 
+initialRegularInP: [6 6 6 3 3 1 1 1 1] 
 initialInNeedP: [1 1 0 0 0 0 1 0 1] 
 finishedDuringC: [0 0] 
 idealStateP: [5 5 5 1 1 1 1 1 1] 
 
 demandP: [5 5 5 1 1 1 1 1 1] 
 
-mode: 4
+mode: 1
 sequenceBigM: 10

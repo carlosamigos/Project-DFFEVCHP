@@ -76,7 +76,9 @@ class World:
                 distance = math.pow(self.nodes[x].xCord - self.nodes[y].xCord, 2) + math.pow(self.nodes[x].yCord - self.nodes[y].yCord, 2)
                 distanceSq = float(format(math.sqrt(distance)*scale, '.1f'))
                 distanceB = float(format(distanceSq * 2, '.1f'))
-                if (distance == 0 and x != y):
+
+                # Creating some distance between charging and parking nodes
+                if (int(distance) == 0 and x != y):
                     distanceSq = 1.0
                     distanceB = 1.0
 
@@ -133,32 +135,50 @@ class World:
         self.distancesC = travelMatrixHandling
         self.distancesB = travelMatrixNotHandling
 
+    # Calculates the needed variables for visit determination
+
     def calculateInitialAdd(self):
-        initialAdd = [0 for i in range(len(self.nodes))]
-        initialVisitArtificial = [0 for i in range(len(self.nodes))]
-        initialService = [0 for i in range(len(self.nodes))]
+        initial_theta = [0 for i in range(len(self.nodes))]
+        initial_handling = [0 for i in range(len(self.nodes))]
+        initial_lambda = [0 for i in range(len(self.nodes))]
+        initial_service = [0 for i in range(len(self.nodes))]
         for j in range(len(self.fCCars)):
-            initialAdd[self.fCCars[j].parkingNode - 1] += 1
-            initialVisitArtificial[self.fCCars[j].parkingNode - 1] += 1
+            initial_theta[self.fCCars[j].parkingNode - 1] += 1
+            initial_service[self.fCCars[j].parkingNode - 1] += 1
+            initial_lambda[self.fCCars[j].parkingNode - 1] += 1
         for j in range(len(self.operators)):
-            initialAdd[self.operators[j].startNode - 1] += 1
+            initial_theta[self.operators[j].startNode - 1] += 1
             if(self.operators[j].handling):
-                initialService[self.operators[j].startNode - 1] += 1
-        return initialAdd, initialVisitArtificial, initialService
+                initial_lambda[self.operators[j].startNode - 1] += 1
+                initial_handling[self.operators[j].startNode - 1] += 1
+        return initial_theta, initial_handling, initial_lambda, initial_service
+
+    def calculateSpecificVisitParking(self, initial_theta, initial_lambda, initial_service, i):
+        initial_omega = initial_lambda[i]
+        if(self.pNodes[i].pState - (self.pNodes[i].iState + self.pNodes[i].demand) < initial_theta[i] - initial_lambda[i]):
+            initial_omega = initial_theta[i]
+
+        first_term = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i]) + initial_theta[i]
+        second_term = (self.pNodes[i].pState + initial_service[i]) - (self.pNodes[i].iState + self.pNodes[i].demand) + initial_omega
+        last_term = initial_theta[i]
+
+        visit = max(first_term, max(second_term, last_term))
+        visit += self.pNodes[i].cState
+
+        return visit
+
 
     def calculateVisitList(self):
         numCharging = 0
-        initialAdd, initialVisitArtificial, initialService = self.calculateInitialAdd()
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
         for i in range(len(self.pNodes)):
-            visitIn = max(self.pNodes[i].pState - (self.pNodes[i].iState + self.pNodes[i].demand) + self.pNodes[i].cState, self.pNodes[i].cState)
-            visit = max((self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initialAdd[i]), visitIn)
-            visit += initialVisitArtificial[i]
+            visit = self.calculateSpecificVisitParking(initial_theta, initial_lambda, initial_service, i)
             self.visitList.append(max(visit, 2))
             numCharging += self.pNodes[i].cState
         for i in range(len(self.cNodes)):
-            visit = min(numCharging, self.cNodes[i].capacity - initialService[len(self.pNodes) + i])
+            visit = min(numCharging, self.cNodes[i].totalCapacity + self.cNodes[i].finishes - initial_handling[len(self.pNodes) + i])
             visit += self.cNodes[i].finishes
-            visit += initialAdd[len(self.pNodes) + i]
+            visit += initial_theta[len(self.pNodes) + i]
             self.visitList.append(max(visit,2))
         for i in range(len(self.operators)):
             self.visitList.append(1)
@@ -200,7 +220,7 @@ class World:
             sumPState += self.pNodes[i].pState - self.pNodes[i].demand + initialAdd[i]
 
         for j in range(len(self.pNodes)):
-            self.pNodes[j].iState = int(round(sumPState * (self.pNodes[j].iState / sumIState)))
+            self.pNodes[j].iState = int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
 
     def writeToFile(self, example):
         fileName = "../../Mosel/states/initialExample" + str(example) + ".txt"
@@ -447,7 +467,7 @@ def createCNodes(world):
         pNode = world.pNodes[pNodeNum-1]
         capacity = int(input("How many available charging slots right now: "))
         totalCapacity = int(input("What is the total capacity: "))
-        fCCars = int(input("How many cars are charging there now, that will finish during the planning period: "))
+        fCCars = totalCapacity - capacity
         for j in range(fCCars):
             time = random.randint(0, 59)
             createFCCars(world, time, i + len(world.pNodes) + 1, pNodeNum)
@@ -486,10 +506,12 @@ def main():
     world.setCostConstants(20, 20, 1, 1)
     world.setTimeConstants(4, 5, 60, 10, 30)
     world.createRealIdeal()
+    if(len(world.pNodes) > 9):
+        world.calculateDistances()
+    else:
+        world.calculateRealDistances()
     world.calculateVisitList()
-    world.calculateDistances()
-    #world.calculateRealDistances()
-    world.writeToFile(18)
+    world.writeToFile(21)
 
 main()
 
