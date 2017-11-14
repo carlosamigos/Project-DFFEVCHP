@@ -20,11 +20,12 @@ def draw_operators(operator_info):
         handling = current_operator_info["handling"]
         operator_id = current_operator_info["id"]
 
-
         if from_node >= n_nodes + c_nodes:
             origin_list.append(current_operator_info)
         else:
             if to_node != from_node:
+                if from_node >= n_nodes:
+                    from_node = general_info["cToP"][from_node - n_nodes]
                 if handling:
                     obj = "car_black"
                 else:
@@ -61,7 +62,7 @@ def draw_snapshot(snapshot, i, time_step):
 
 def draw_all_snapshots(snapshots):
     result = []
-    time_step = max_time / (len(snapshots)+1)
+    time_step = max_time / len(snapshots)
     for snapshot_no in range(len(snapshots)):
         result.append(draw_snapshot(snapshots[snapshot_no], snapshot_no, time_step))
 

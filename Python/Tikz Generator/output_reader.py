@@ -1,10 +1,10 @@
+from setup import input_file
 general_info = {}
 
-with open("../../Mosel/states/initialExample1.txt", 'r') as f: 
+with open(input_file, 'r') as f: 
     for line in f:
         if len(line.strip()) == 0 or ":" not in line:
             continue
-        print(line)
         info = line.split(":")
         key = info[0].strip()
         data = info[1].strip()
@@ -32,3 +32,5 @@ with open("../../Mosel/states/initialExample1.txt", 'r') as f:
 general_info["numNodes"] = general_info["numPNodes"] + general_info["numCNodes"]
 general_info["numOperators"] = general_info["numROperators"]
 general_info["idealState"] = general_info["idealStateP"]
+
+general_info["cToP"] = list(map(lambda x: x - 1, general_info["cToP"]))

@@ -39,10 +39,10 @@ then
 	fi
 fi
 
-if [ "$1" == "video"] || [ "$2" == "video" ]
+if [ "$1" == "video" ] || [ "$2" == "video" ]
 then
 	rm -f *.mp4
-	ffmpeg -framerate 5 -i tex/snapshot_%3d.png -vb 20M -pix_fmt yuv420p video.mp4
+	ffmpeg -framerate 20 -i tex/snapshot_%4d.png -vb 20M -pix_fmt yuv420p video.mp4
 
 fi
 

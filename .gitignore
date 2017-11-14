@@ -13,9 +13,8 @@
 *.classpath
 *.project
 Java/.gitignore
-!Python/Tikz\ Generator/tex/img/*.png
-!Python/Tikz\ Generator/tex/report\ files/*.tex
-Python/Tikz\ Generator/tex/*.pdf
-Python/Tikz\ Generator/tex/*.tex
+*.tex
 *bin/*
 Java/.idea*
+*.pdf
+*.tikz

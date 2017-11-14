@@ -1,4 +1,5 @@
 #snapshot creator from mosel outputs
+from setup import output_file_path, output_file_arti
 from output_reader import general_info
 import copy
 
@@ -119,8 +120,8 @@ def readExampleFile(filename):
 def makeLineListStringToArray(string):
     string = string.strip("travelTimeVehicle : [")
     string = string.strip("travelTimeBike    : [")
+    string = string.replace("]", "")
     string = string.strip()
-    string = string.strip("]")
     array = string.split(" ")
     return list(map(float, array))
 
@@ -315,8 +316,8 @@ def findTravelTimeBetweenNodeAandB(From,To,operator,handling,inputProblem):
     return travelTime
 
 def generate_snapshots(steps,exampleFileName):
-    pathFileName = "../../Mosel/output/outputServiceOperatorsPath.txt"
-    artificialFilename = "../../Mosel/output/outputArtificialServiceOperators.txt"
+    pathFileName = output_file_path
+    artificialFilename = output_file_arti
     inputProblem = addNodesZeroIndexed(readExampleFile(exampleFileName))
     realOperatorsPaths = readPaths(pathFileName)
     artificialPaths = readPaths(artificialFilename)
@@ -326,6 +327,8 @@ def generate_snapshots(steps,exampleFileName):
     for step in range(0,steps+1):
         t = step*stepLength
         snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths,exampleFileName)
+        print(snapshot)
         snapshots.append(snapshot)
     return snapshots
 
+generate_snapshots(1001, "../../Mosel/states/initialExample1.txt")

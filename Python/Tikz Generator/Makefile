@@ -19,6 +19,21 @@ latex:
 	@rm -f tex/*aux
 	@rm -f tex/*log
 
+report:
+	@for file in $$(ls -d tex/report/snapshot_*.tex); \
+	do \
+		python3 tikz_stripper.py $$file; \
+	done; \
+	true
+	@rm -f ../../../Report/Figures/ProblemDescription/*.tikz
+	@for file in $$(ls -d tex/report/snapshot_*.tikz); \
+	do \
+		cp $$file ../../../Report/Figures/ProblemDescription; \
+	done; \
+	true
+	@echo "Done copying"
+	cd ../../../Report/Figures/ProblemDescription && git add * && git commit -m "Updated tikz files" && git pull && git push
+
 clean:
 	@rm -f tex/*aux
 	@rm -f tex/*log
