@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/states/Old Examples/example1.txt';
+	DataFile = '../Mosel/test_cases/static problem/test_2x3_3so_2c.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
