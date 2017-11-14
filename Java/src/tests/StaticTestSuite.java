@@ -82,7 +82,7 @@ public class StaticTestSuite {
 		String data = "Solver: " + fileName + "\n";
 		writeResultsFile(data);
 		
-		String name = StringUtils.center("Test", 12);
+		String name = StringUtils.center("Test", 30);
 		String time = StringUtils.center("Time", 8);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 8);
@@ -136,7 +136,7 @@ public class StaticTestSuite {
 	private void writeTestResult(HashMap<String, String> results, double timeUsed) {
 		String time = (new DecimalFormat("#.##")).format(timeUsed);
 		String[] namePath = results.get("Name").split("/");
-		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 12);
+		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
 		data += "|";
 		data += StringUtils.center(time + "s.", 8);
 		data += "|";
