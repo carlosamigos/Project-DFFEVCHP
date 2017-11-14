@@ -12,7 +12,9 @@ public class Constants {
     public final static String MOSEL_OUTPUT= "../Mosel/output/";
     public final static String STATE_FOLDER = "../Mosel/states/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-
+    public final static String TEST_FOLDER = "../Mosel/tests/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/test models/";
+    
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
 
@@ -24,7 +26,8 @@ public class Constants {
     public final static String DEMAND_REQUESTS = "demand_request";
     public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample";
     public final static String STATE_FOLDER_FILE = "../Mosel/states/exampleState";
-
+    public final static String STATIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "static_test_results";
+    
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
     public final static int END_TIME = 60*18;
@@ -65,6 +68,10 @@ public class Constants {
         MORNING_RUSH,
         NEUTRAL,
         MIDDAY_RUSH;
+    }
+    
+    public enum SolverType {
+    	MOSEL;
     }
 
 

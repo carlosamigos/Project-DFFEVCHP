@@ -1,6 +1,7 @@
 package tio4500;
 
 import constants.Constants;
+import constants.Constants.SolverType;
 import tio4500.simulations.DemandRequest;
 import tio4500.simulations.Entities.Car;
 import tio4500.simulations.Entities.Operator;
@@ -11,6 +12,8 @@ import tio4500.simulations.Travels.CustomerTravel;
 import tio4500.simulations.Travels.OperatorArrival;
 import tio4500.simulations.Travels.OperatorDeparture;
 import tio4500.simulations.Travels.OperatorTravel;
+import tio4500.solvers.MoselSolver;
+import tio4500.solvers.Solver;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -24,11 +27,22 @@ public class DynamicProblem {
     private ProblemInstance problemInstance;
     private SimulationModel simulationModel;
     private KPITracker kpiTracker;
+    private Solver solver;
 
-    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel) {
+    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, SolverType type) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
         this.kpiTracker = new KPITracker(this);
+        instantiateSolver(type);
+    }
+    
+    private void instantiateSolver(SolverType type) {
+    	switch(type) {
+    		case MOSEL:
+    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
+    		default:
+    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
+    	}
     }
 
     public void solve() {
@@ -44,9 +58,8 @@ public class DynamicProblem {
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
             System.out.println("State before solving mosel: "+problemInstance + "\n");
-            /*StaticProblem staticProblem = new StaticProblem();
-            staticProblem.compile();
-            staticProblem.solve();*/
+            StaticProblem problem = new StaticProblem(Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER);
+            this.solver.solve(problem);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
         }

@@ -1,18 +1,18 @@
-Mosel File: mos1
+Solver: 1.mos
     Test    |  Time  |  Value   |  Gap   
-    foo     |  0s.   |  40.86   |  2.49%   
-    baz     |  0s.   |  40.86   |  2.49%   
-    bar     |  0s.   |  40.86   |  2.49%   
+    foo     |  0s.   |          |    %     
+    baz     |  0s.   |          |    %     
+    bar     |  0s.   |          |    %     
 
-Mosel File: mos2
+Solver: 3.mos
     Test    |  Time  |  Value   |  Gap   
-    foo     |  0s.   |  40.86   |  2.49%   
-    baz     |  0s.   |  40.86   |  2.49%   
-    bar     |  0s.   |  40.86   |  2.49%   
+    foo     |  0s.   |          |    %     
+    baz     |  0s.   |          |    %     
+    bar     |  0s.   |          |    %     
 
-Mosel File: mos3
+Solver: 2.mos
     Test    |  Time  |  Value   |  Gap   
-    foo     |  0s.   |  40.86   |  2.49%   
-    baz     |  0s.   |  40.86   |  2.49%   
-    bar     |  0s.   |  40.86   |  2.49%   
+    foo     |  0s.   |          |    %     
+    baz     |  0s.   |          |    %     
+    bar     |  0s.   |          |    %     
 
