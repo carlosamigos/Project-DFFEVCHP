@@ -57,10 +57,13 @@ public class DynamicProblem {
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
             System.out.println("State before solving mosel: "+problemInstance + "\n");
+            KPITrackerStatic tracker = new KPITrackerStatic();
             StaticProblem problem = new StaticProblem(Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER);
             this.solver.solve(problem);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
+            tracker.setResults(problem.getFilePath());
+            kpiTrackerDyanmic.addStaticKPItracker(tracker);
         }
         kpiTrackerDyanmic.updateIdleTimeForOperators();
         System.out.println(kpiTrackerDyanmic);
@@ -503,16 +506,18 @@ public class DynamicProblem {
         int carsNeededByOperatorsTheNextMinutes = 0;
         for (Operator operator : operatorTravels.keySet()) {
             OperatorTravel operatorTravel = operatorTravels.get(operator);
-            for (OperatorDeparture departure: operatorDepartures.get(operator)) {
-                Node arrivalNode = operatorTravel.getArrivalNode();
-                if(arrivalNode.equals(departure.getNode())){
-                    if(departure.getDepartureTime() > time && departure.getDepartureTime() < time + Constants.LOCK_TIME_CAR_FOR_OPERATOR && departure.getNode().equals(node)){
-                        //if handles to parking:
-                        if(departure.getOperatorArrival() != null && departure.getOperatorArrival().getNode() instanceof ParkingNode && departure.isHandling()){
-                            carsNeededByOperatorsTheNextMinutes +=1;
-                            break;
-                        }
+            if(operatorDepartures != null){
+                for (OperatorDeparture departure: operatorDepartures.get(operator)) {
+                    Node arrivalNode = operatorTravel.getArrivalNode();
+                    if(arrivalNode.equals(departure.getNode())){
+                        if(departure.getDepartureTime() > time && departure.getDepartureTime() < time + Constants.LOCK_TIME_CAR_FOR_OPERATOR && departure.getNode().equals(node)){
+                            //if handles to parking:
+                            if(departure.getOperatorArrival() != null && departure.getOperatorArrival().getNode() instanceof ParkingNode && departure.isHandling()){
+                                carsNeededByOperatorsTheNextMinutes +=1;
+                                break;
+                            }
 
+                        }
                     }
                 }
             }

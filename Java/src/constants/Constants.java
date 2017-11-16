@@ -31,13 +31,13 @@ public class Constants {
     
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*8;
+    public final static int END_TIME = 60*18;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 10; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 900; // In seconds
     public final static int OBJECTIVE_MODE = 2;
-    public final static boolean PRINT_MOSEL_RESULTS = true;
+    public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
     public final static int TIME_LIMIT_STATIC_PROBLEM = 30;

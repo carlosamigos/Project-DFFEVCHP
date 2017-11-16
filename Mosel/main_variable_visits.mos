@@ -63,13 +63,6 @@ declarations
 	visits            : set of integer; ! Set of all possible visits
 end-declarations
 
-initializations from DataFile
-	numVisits;
-	numPNodes;
-	numCNodes;
-	numROperators;
-	numAOperators;
-end-initializations
 
 visits := 1..numVisits;
 
@@ -225,7 +218,7 @@ if printParams then
 	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
 	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
 	writeln('Demand in the different nodes:                                           ',demandP);
-	writeln('Visitlist: ', visitList);
+	writeln('Visitlist: '															   , visitList);
 end-if
 
 
@@ -378,14 +371,6 @@ forall(ii in cNodes) do
 	sEndAc(ii) is_semint 0;
 end-do
 
-! Create u - sequence variabel 
-forall(pp in rOperators) do
-	forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
-		create(u(ii, mm, pp));
-		u(ii, mm, pp) is_semint 0; 
-	end-do
-end-do
-
 ! ### End of creation of Variables ### !
 
 
@@ -396,7 +381,7 @@ end-declarations
 
 ! MODE 0
 ! Do the least moves, and meet optimal state
-Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+Objective :=  costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
@@ -517,8 +502,8 @@ forall(jj in pNodes, nn in visits, pp in rOperators | nn <= visitList(jj)) do
 end-do
 
 
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(jj) and nn <= visitList(ii)) do
-	lowEffort(ii, mm, jj, nn, pp) := h(ii, nn, jj, mm, pp)+ sum(kk in rNodes, ll in visits) h(jj, mm, kk, ll, pp) >= x(ii, nn, jj, mm, pp);
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(jj)) do
+	lowEffort(ii, mm, jj, nn, pp) := h(ii, mm, jj, nn, pp)+ sum(kk in rNodes, ll in visits) h(jj, nn, kk, ll, pp) >= x(ii, mm, jj, nn, pp);
 end-do
 
 ! Initial handling by real
@@ -730,18 +715,6 @@ end-do
 
 ! ### End of declaration of time constraints ### !
 
-! ### Start of declaration of valid inequalities ### !
-
-declarations
-	sequenceControl        : dynamic array(rNodes, visits, Nodes, visits, rOperators) of linctr;
-end-declarations
-
-
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(nn)) do
-	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
-end-do
-
-! ### End of declaration of valid inequalities ### !
 
 ! ### Start of declaration of mode constraints ### !
 
