@@ -68,7 +68,7 @@ public class MoselSolver extends Solver {
 	}
 	
 	private void setResults(String dataFilePath) {
-		ArrayList<String> currResults = new ArrayList<String>();
+		/*ArrayList<String> currResults = new ArrayList<String>();
 		try (Stream<String> stream = Files.lines(Paths.get(Constants.STATIC_RUN_STATS))) {
 			stream.forEach(result -> currResults.add(result));
 		} catch (IOException e) {
@@ -82,9 +82,11 @@ public class MoselSolver extends Solver {
 			gapString = "N/A";
 			bestSolution = "N/A";
 		} else {
-			double gap = (Double.parseDouble(currResults.get(0))/
-					Double.parseDouble(currResults.get(1))) - 1;
+			double gap = (Double.parseDouble(currResults.get(0)) - Double.parseDouble(currResults.get(1)))/
+					Double.parseDouble(currResults.get(0)) *100;
+			System.out.println(gap);
 			gapString = df.format(gap);
+			System.out.println(gapString);
 			bestSolution = currResults.get(0);
 		}
 
@@ -95,7 +97,7 @@ public class MoselSolver extends Solver {
 		this.results.put("BestSolution", bestSolution);
 		this.results.put("BestBound", currResults.get(1));
 		this.results.put("TimeUsed", timeString);
-		this.results.put("Gap", gapString);
+		this.results.put("Gap", gapString);*/
 		
 	}
 

@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../tests/test_2x3_3so_2c_6mov_0MODE.txt';
+	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -477,7 +477,7 @@ forall(ii in rNodes, mm in visits) do
 end-do
 
 ! Routing constraints - Symmetry breaking !
-(!
+
 forall(ii in pNodes, mm in visits - {numVisits}) do 
 	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm, pp))) +
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >=  
@@ -492,7 +492,7 @@ forall(ii in cNodes, mm in visits - {numVisits}) do
 	sum(pp in aOperators, nn in visits | chargingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), mm+1, parkingNodeAOperator(pp), nn, pp) 
 end-do
 
-!)
+
 ! ### End of declaration of routing constraints ### !
 
 ! ### Start of declaration of HANDLING CONSTRAINTS (5.3) ### !
@@ -655,7 +655,6 @@ declarations
 	maxCHandling			: dynamic array(cNodes, visits)								of linctr;
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
-	travelFlowBasic			: dynamic array(rNodes, visits)						        of linctr;
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
@@ -692,15 +691,11 @@ forall(ii in rNodes, mm in visits) do
 	sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) +
 	sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp), 1, pp) = r(ii, mm);
 end-do
-(!
+
 forall(ii in rNodes, mm in visits - {numVisits}) do
 	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
 		((1 - r(ii, mm+1)) *
 		(timeLimit + timeLimitLastVisit));
-end-do
-!)
-forall(ii in rNodes, mm in visits - {numVisits}) do
-	travelFlowBasic(ii, mm) := t(ii,mm) <= t(ii,mm+1)
 end-do
 
 
@@ -934,11 +929,9 @@ if printResults then
 		end-if
 	end-do
 	!)
-
-	
 	
 	forall(ii in pNodes) do
-		writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
+	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
 	end-do
 	
 	forall(ii in pNodes) do
@@ -976,6 +969,9 @@ if printResults then
 		
 	end-do
 end-if
+
+
+
 (!
 forall(pp in rOperators) do
 	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))

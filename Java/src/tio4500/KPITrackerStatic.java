@@ -34,10 +34,10 @@ public class KPITrackerStatic {
             gapString = "N/A";
             bestSolution = "N/A";
         } else {
-            double gap = (Double.parseDouble(currResults.get(0))/
-                    Double.parseDouble(currResults.get(1))) - 1;
+            double gap = (Double.parseDouble(currResults.get(0)) - Double.parseDouble(currResults.get(1)))/
+                    Double.parseDouble(currResults.get(0)) *100;
             gapString = df.format(gap);
-            bestSolution = currResults.get(0);
+            bestSolution = df.format(Double.parseDouble(currResults.get(0)));
         }
 
         String timeString = df.format(Double.parseDouble(currResults.get(2)));
