@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
+	DataFile = '../test_2x3_3so_2c_6mov_1MODE.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -655,6 +655,7 @@ declarations
 	maxCHandling			: dynamic array(cNodes, visits)								of linctr;
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits - {numVisits})               of linctr;
+	travelFlowBasic			: dynamic array(rNodes, visits)						        of linctr;
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
@@ -691,11 +692,15 @@ forall(ii in rNodes, mm in visits) do
 	sum(pp in rOperators, jj in rNodes, nn in visits) x(ii, mm, jj, nn, pp) +
 	sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp), 1, pp) = r(ii, mm);
 end-do
-
+(!
 forall(ii in rNodes, mm in visits - {numVisits}) do
 	travelFlow(ii, mm) := t(ii,mm) <= t(ii,mm+1) + 
 		((1 - r(ii, mm+1)) *
 		(timeLimit + timeLimitLastVisit));
+end-do
+!)
+forall(ii in rNodes, mm in visits - {numVisits}) do
+	travelFlowBasic(ii, mm) := t(ii,mm) <= t(ii,mm+1)
 end-do
 
 
