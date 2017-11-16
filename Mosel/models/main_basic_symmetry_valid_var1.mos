@@ -779,7 +779,7 @@ startTimeMosel := timestamp;
 
 setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
-writeln('Objective function value: ', getobjval);
+!writeln('Objective function value: ', getobjval);
 
 ! TIL SIMEN
 endTimeMosel := timestamp;
@@ -931,47 +931,49 @@ if printResults then
 		end-if
 	end-do
 	!)
+	
+	forall(ii in pNodes) do
+		writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
+	end-do
+	
+	forall(ii in pNodes) do
+		writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
+	end-do
+	
+	forall(ii in cNodes) do
+		writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
+	end-do
+	
+	forall(ii in pNodes) do
+		writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
+	end-do
+	
+	forall(ii in Nodes - aNodes) do
+		writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
+	end-do
+	
+	forall(ii in Nodes - aNodes) do
+		writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
+	end-do
+	
+	forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
+		if(getsol(x(ii,mm,jj,nn,pp)) >= 0.5) then
+			writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp, " X is: ", getsol(x(ii, mm, jj, nn, pp)))
+		end-if
+	end-do
+	writeln("HANDLING")
+	forall(pp in rOperators, ii in Nodes, mm in visits)do
+		forall(jj in Nodes, nn in visits) do 
+			if(getsol(h(ii,mm,jj,nn,pp)) >= 0.5) then
+				writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
+			end-if
+		end-do
+		
+	end-do
 end-if
 
 
-forall(ii in pNodes) do
-	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
-end-do
 
-forall(ii in pNodes) do
-	writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
-end-do
-
-forall(ii in cNodes) do
-	writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
-end-do
-
-forall(ii in pNodes) do
-	writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
-end-do
-
-forall(ii in Nodes - aNodes) do
-	writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
-end-do
-
-forall(ii in Nodes - aNodes) do
-	writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
-end-do
-
-forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
-	if(getsol(x(ii,mm,jj,nn,pp)) >= 0.5) then
-		writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp, " X is: ", getsol(x(ii, mm, jj, nn, pp)))
-	end-if
-end-do
-writeln("HANDLING")
-forall(pp in rOperators, ii in Nodes, mm in visits)do
-	forall(jj in Nodes, nn in visits) do 
-		if(getsol(h(ii,mm,jj,nn,pp)) >= 0.5) then
-			writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
-		end-if
-	end-do
-	
-end-do
 (!
 forall(pp in rOperators) do
 	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
