@@ -7,6 +7,14 @@ import copy
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
 
+
+
+# CONSTANTS
+DISTANCESCALE = 3
+MOVES = 3
+MOVESLOW = 3
+MODES = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+
 class World:
 
     def __init__(self):
@@ -21,6 +29,7 @@ class World:
         self.COSTOFPOS = 0
         self.COSTOFEXTRAT = 0
         self.COSTOFTRAVEL = 0
+        self.COSTOFTRAVELH = 0
 
         # TIME CONSTANTS #
         self.HANDLINGTIMEP = 0
@@ -66,17 +75,21 @@ class World:
     def addfCCars(self, fCCar):
         self.fCCars.append(fCCar)
 
+    ## CALCULATE DISTANCE ##
+
     def calculateDistances(self):
         self.distancesC = []
         self.distancesB = []
         maxDistance = math.sqrt(math.pow(self.pNodes[0].xCord - self.pNodes[len(self.pNodes) - 1].xCord, 2) + math.pow(self.pNodes[0].yCord - self.pNodes[len(self.pNodes) - 1].yCord, 2))
-        scale = float(format((self.TIMELIMIT + self.TIMELIMITLAST - 1)/(maxDistance*3), '.1f'))
+        scale = float(format((self.TIMELIMIT + self.TIMELIMITLAST - 1)/(maxDistance*DISTANCESCALE), '.1f'))
         for x in range(len(self.nodes)):
             for y in range(len(self.nodes)):
                 distance = math.pow(self.nodes[x].xCord - self.nodes[y].xCord, 2) + math.pow(self.nodes[x].yCord - self.nodes[y].yCord, 2)
                 distanceSq = float(format(math.sqrt(distance)*scale, '.1f'))
                 distanceB = float(format(distanceSq * 2, '.1f'))
-                if (distance == 0 and x != y):
+
+                # Creating some distance between charging and parking nodes
+                if (int(distance) == 0 and x != y):
                     distanceSq = 1.0
                     distanceB = 1.0
 
@@ -133,47 +146,149 @@ class World:
         self.distancesC = travelMatrixHandling
         self.distancesB = travelMatrixNotHandling
 
+    ## CALCULATE VISITS ##
+
     def calculateInitialAdd(self):
-        initialAdd = [0 for i in range(len(self.nodes))]
-        initialVisitArtificial = [0 for i in range(len(self.nodes))]
-        initialService = [0 for i in range(len(self.nodes))]
+        initial_theta = [0 for i in range(len(self.nodes))]
+        initial_handling = [0 for i in range(len(self.nodes))]
+        initial_lambda = [0 for i in range(len(self.nodes))]
+        initial_service = [0 for i in range(len(self.nodes))]
         for j in range(len(self.fCCars)):
-            initialAdd[self.fCCars[j].parkingNode - 1] += 1
-            initialVisitArtificial[self.fCCars[j].parkingNode - 1] += 1
+            initial_theta[self.fCCars[j].parkingNode - 1] += 1
+            initial_service[self.fCCars[j].parkingNode - 1] += 1
+            initial_lambda[self.fCCars[j].parkingNode - 1] += 1
         for j in range(len(self.operators)):
-            initialAdd[self.operators[j].startNode - 1] += 1
+            initial_theta[self.operators[j].startNode - 1] += 1
             if(self.operators[j].handling):
-                initialService[self.operators[j].startNode - 1] += 1
-        return initialAdd, initialVisitArtificial, initialService
+                initial_lambda[self.operators[j].startNode - 1] += 1
+                initial_handling[self.operators[j].startNode - 1] += 1
+        return initial_theta, initial_handling, initial_lambda, initial_service
+
+    def calculateSpecificVisitParking(self, initial_theta, initial_lambda, initial_service, i):
+        initial_omega = initial_lambda[i]
+        if(self.pNodes[i].pState - (self.pNodes[i].iState + self.pNodes[i].demand) < initial_theta[i] - initial_lambda[i]):
+            initial_omega = initial_theta[i]
+
+        first_term = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i]) + initial_theta[i]
+        second_term = (self.pNodes[i].pState + initial_service[i]) - (self.pNodes[i].iState + self.pNodes[i].demand) + initial_omega
+        last_term = initial_theta[i]
+
+        visit = max(first_term, max(second_term, last_term))
+        visit += self.pNodes[i].cState
+
+        return visit
 
     def calculateVisitList(self):
         numCharging = 0
-        initialAdd, initialVisitArtificial, initialService = self.calculateInitialAdd()
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
         for i in range(len(self.pNodes)):
-            visitIn = max(self.pNodes[i].pState - (self.pNodes[i].iState + self.pNodes[i].demand) + self.pNodes[i].cState, self.pNodes[i].cState)
-            visit = max((self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initialAdd[i]), visitIn)
-            visit += initialVisitArtificial[i]
+            visit = self.calculateSpecificVisitParking(initial_theta, initial_lambda, initial_service, i)
             self.visitList.append(max(visit, 2))
             numCharging += self.pNodes[i].cState
         for i in range(len(self.cNodes)):
-            visit = min(numCharging, self.cNodes[i].capacity - initialService[len(self.pNodes) + i])
+            visit = min(numCharging, self.cNodes[i].totalCapacity + self.cNodes[i].finishes - initial_handling[len(self.pNodes) + i])
             visit += self.cNodes[i].finishes
-            visit += initialAdd[len(self.pNodes) + i]
+            visit += initial_theta[len(self.pNodes) + i]
             self.visitList.append(max(visit,2))
         for i in range(len(self.operators)):
             self.visitList.append(1)
             self.visitList.append(1)
+
+    ## SCALE IDEAL STATE ##
+
+    def createRealIdeal(self):
+        initialAdd = [0 for i in range(len(self.nodes))]
+        for j in range(len(self.fCCars)):
+            initialAdd[self.fCCars[j].parkingNode - 1] += 1
+        for j in range(len(self.operators)):
+            if (self.operators[j].handling):
+                initialAdd[self.operators[j].startNode - 1] += 1
+        sumIState = 0
+        sumPState = 0
+        for i in range(len(self.pNodes)):
+            sumIState += self.pNodes[i].iState
+            sumPState += self.pNodes[i].pState - self.pNodes[i].demand + initialAdd[i]
+
+        for j in range(len(self.pNodes)):
+            self.pNodes[j].iState = int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
+
+    def calculateMovesToIDeal(self):
+        moves = 0
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        for i in range(len(self.pNodes)):
+            deficit = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i])
+            moves += max(deficit,0)
+            moves += self.pNodes[i].cState
+
+        return moves
+
+    def checkSurplusNode(self, i):
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        if ((self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i]) > 0):
+            return False
+        return True
+
+    def checkdeficitNode(self, i):
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        if((self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i]) < 0):
+            return False
+        return True
+
+
+    def shuffleIdealState(self):
+        moves = self.calculateMovesToIDeal()
+        while(moves > len(self.operators)*MOVES or moves < len(self.operators)*MOVESLOW):
+            iStateList = []
+            cStateList = []
+            numCMoves = 0
+            for i in range(len(self.pNodes)):
+                iStateList.append(self.pNodes[i].iState)
+                cStateList.append(self.pNodes[i].cState)
+                numCMoves += self.pNodes[i].cState
+            while(float(numCMoves) > len(self.operators)*MOVES*0.5):
+                r = random.randint(0, len(self.pNodes) -1)
+                if(cStateList[r] > 0):
+                    cStateList[r] -= 1
+                    numCMoves -= 1
+            moves = self.calculateMovesToIDeal()
+            if(moves > len(self.operators)*MOVES):
+                r1 = random.randint(0, len(self.pNodes) - 1)
+                r2 = random.randint(0, len(self.pNodes) - 1)
+                while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r1) or self.checkdeficitNode(r2)):
+                    r1 = random.randint(0, len(self.pNodes) - 1)
+                    r2 = random.randint(0, len(self.pNodes) - 1)
+                iStateList[r1] -= 1
+                iStateList[r2] += 1
+            elif(moves < len(self.operators)*MOVESLOW):
+                r1 = random.randint(0, len(self.pNodes) - 1)
+                r2 = random.randint(0, len(self.pNodes) - 1)
+                while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r2) or self.checkdeficitNode(r1)):
+                    r1 = random.randint(0, len(self.pNodes) - 1)
+                    r2 = random.randint(0, len(self.pNodes) - 1)
+                iStateList[r1] -= 1
+                iStateList[r2] += 1
+            for i in range(len(self.pNodes)):
+                self.pNodes[i].iState = iStateList[i]
+                self.pNodes[i].cState = cStateList[i]
+            moves = self.calculateMovesToIDeal()
+
+
+
+
+
+    ### SET CONSTANTS ###
 
     def setConstants(self, visits, mode, sBigM):
         self.VISITS = visits
         self.MODE = mode
         self.SBIGM = sBigM
 
-    def setCostConstants(self, costOfDev, costOfPos, costOfExtraT, costOfTravel):
+    def setCostConstants(self, costOfDev, costOfPos, costOfExtraT, costOfTravel, costOfTravelH):
         self.COSTOFDEV = costOfDev
         self.COSTOFPOS = costOfPos
         self.COSTOFEXTRAT = costOfExtraT
         self.COSTOFTRAVEL = costOfTravel
+        self.COSTOFTRAVELH = costOfTravelH
 
     def setTimeConstants(self, handlingTimeP, handlingTimeC, timeLimit, timeLimitLast, maxHToC):
         self.HANDLINGTIMEP = handlingTimeP
@@ -186,24 +301,11 @@ class World:
         self.UPPERRIGHT = upperRight
         self.LOWERLEFT = lowerLeft
 
-    def createRealIdeal(self):
-        initialAdd = [0 for i in range(len(self.nodes))]
-        for j in range(len(self.fCCars)):
-            initialAdd[self.fCCars[j].parkingNode-1] += 1
-        for j in range(len(self.operators)):
-            if (self.operators[j].handling):
-                initialAdd[self.operators[j].startNode-1] += 1
-        sumIState = 0
-        sumPState = 0
-        for i in range(len(self.pNodes)):
-            sumIState += self.pNodes[i].iState
-            sumPState += self.pNodes[i].pState - self.pNodes[i].demand + initialAdd[i]
 
-        for j in range(len(self.pNodes)):
-            self.pNodes[j].iState = int(round(sumPState * (self.pNodes[j].iState / sumIState)))
+    ## FILE HANDLER ##
 
     def writeToFile(self, example):
-        fileName = "../../Mosel/states/initialExample" + str(example) + ".txt"
+        fileName = "../../Mosel/tests/" + str(example) + ".txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
@@ -277,6 +379,7 @@ class World:
         string += "costOfPostponedCharging : " + str(self.COSTOFPOS) + "\n"
         string += "costOfExtraTime : " + str(self.COSTOFEXTRAT) + "\n"
         string += "costOfTravel: " + str(self.COSTOFTRAVEL) + "\n"
+        string += "costOfTravelH: " + str(self.COSTOFTRAVELH) + "\n"
         string += "\n"
         string += "travelTimeVehicle: ["
         for i in range(len(self.nodes)):
@@ -447,9 +550,9 @@ def createCNodes(world):
         pNode = world.pNodes[pNodeNum-1]
         capacity = int(input("How many available charging slots right now: "))
         totalCapacity = int(input("What is the total capacity: "))
-        fCCars = int(input("How many cars are charging there now, that will finish during the planning period: "))
+        fCCars = totalCapacity - capacity
         for j in range(fCCars):
-            time = random.randint(0, 59)
+            time = random.randint(0, 20)
             createFCCars(world, time, i + len(world.pNodes) + 1, pNodeNum)
         cN = cNode(pNode.xCord, pNode.yCord, capacity, fCCars, totalCapacity, pNodeNum)
         world.addcNodes(cN)
@@ -482,14 +585,21 @@ def main():
     createCNodes(world)
     createOperators(world)
     world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
-    world.setConstants(5, 1, 10)
-    world.setCostConstants(20, 20, 1, 1)
-    world.setTimeConstants(4, 5, 60, 10, 30)
     world.createRealIdeal()
+    world.shuffleIdealState()
+    world.setTimeConstants(4, 5, 60, 10, 30)
+    if(len(world.pNodes) > 9):
+        world.calculateDistances()
+    else:
+        world.calculateRealDistances()
     world.calculateVisitList()
-    world.calculateDistances()
-    #world.calculateRealDistances()
-    world.writeToFile(18)
+    maxVisit = max(world.visitList)
+    for i in range(len(MODES)):
+        world.setConstants(maxVisit, MODES[i][0], 10)
+        world.setCostConstants(MODES[i][1], MODES[i][2], 0.5, MODES[i][3], MODES[i][4])
+        moves =  world.calculateMovesToIDeal()
+        filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
+        world.writeToFile(filepath)
 
 main()
 
