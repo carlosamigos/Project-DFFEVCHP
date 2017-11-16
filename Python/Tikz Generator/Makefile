@@ -35,7 +35,7 @@ report:
 	cd ../../../Report/Figures/ProblemDescription && git add * && git commit -m "Updated tikz files" && git pull && git push
 
 clean:
-	@rm -f tex/*aux
-	@rm -f tex/*log
-	@rm -f tex/*tex
-	@rm -f tex/*pdf
+	@rm -f tex/*.aux
+	@rm -f tex/*.log
+	@rm -f tex/*.tex
+	@rm -f tex/*.pdf

@@ -1,13 +1,12 @@
 package tio4500;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
 import tio4500.simulations.Entities.Operator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class KPITracker {
+public class KPITrackerDynamic {
 
 
     // ArrayLists are numbers for each period
@@ -20,10 +19,10 @@ public class KPITracker {
     private double electricityUsedWhenRelocatingCars;
     private ArrayList<Double> waitingTimeBeforeCarInNeedAreCharged;
     private ArrayList<Double> idleTimeForServiceOperators;
-    private ArrayList<Boolean> staticProblemSolvedToOptimality;
-    private ArrayList<Double> staticProblemGap;
+    private ArrayList<KPITrackerStatic> staticKPITrackers;
 
-    public KPITracker(DynamicProblem dynamicProblem) {
+
+    public KPITrackerDynamic(DynamicProblem dynamicProblem) {
         int numberOfSubProblems = (Constants.END_TIME - Constants.START_TIME)/Constants.TIME_INCREMENTS - (int)(Constants.TIME_LIMIT_STATIC_PROBLEM/Constants.TIME_INCREMENTS) +1;
         this.dynamicProblem = dynamicProblem;
         demandsNotServed = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
@@ -35,8 +34,11 @@ public class KPITracker {
         electricityUsedWhenRelocatingCars = 0.0;
         waitingTimeBeforeCarInNeedAreCharged = new ArrayList<>();
         idleTimeForServiceOperators = new ArrayList<>();
-        staticProblemSolvedToOptimality = new ArrayList<>();
-        staticProblemGap = new ArrayList<>();
+        staticKPITrackers = new ArrayList<>();
+    }
+
+    void addStaticKPItracker(KPITrackerStatic tracker){
+        staticKPITrackers.add(tracker);
     }
 
     void increaseDemandNotServedForPeriod(int period){
@@ -77,13 +79,7 @@ public class KPITracker {
         }
     }
 
-    void addGapForPeriod(double gap){
-        this.staticProblemGap.add(gap);
-    }
 
-    void addSolvedToOptimality(boolean solvedToOptimality){
-        this.staticProblemSolvedToOptimality.add(solvedToOptimality);
-    }
 
     @Override
     public String toString() {

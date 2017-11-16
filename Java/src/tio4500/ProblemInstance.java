@@ -89,7 +89,7 @@ public class ProblemInstance {
         stateSpecificKeys.add("timeLimit");
         stateSpecificKeys.add("initialHandling");
         stateSpecificKeys.add("mode");
-        stateSpecificKeys.add("numVisits");
+        //stateSpecificKeys.add("numVisits");
     }
 
     private void readProblemFromFile() throws IOException{

@@ -327,8 +327,5 @@ def generate_snapshots(steps,exampleFileName):
     for step in range(0,steps+1):
         t = step*stepLength
         snapshot = createSnapshotFromTime(t,inputProblem,realOperatorsPaths,artificialPaths,exampleFileName)
-        print(snapshot)
         snapshots.append(snapshot)
     return snapshots
-
-generate_snapshots(1001, "../../Mosel/states/initialExample1.txt")
