@@ -89,9 +89,9 @@ public class StaticTestSuite {
 		writeResultsFile(data);
 		
 		String name = StringUtils.center("Test", 30);
-		String time = StringUtils.center("Time", 8);
+		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
-		String gap = StringUtils.center("Gap", 8);
+		String gap = StringUtils.center("Gap", 10);
 		String headerLine = name + "|" + time + "|" + value + "|" + gap;
 		writeResultsFile(headerLine);
 	}
@@ -143,7 +143,7 @@ public class StaticTestSuite {
 		String[] namePath = tracker.getName().split("/");
 		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
 		data += "|";
-		data += StringUtils.center(tracker.getTimeUsed() + "s.", 8);
+		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
 		data += "|";
 		data += StringUtils.center(tracker.getBestSolution(),10);
 		data += "|";
