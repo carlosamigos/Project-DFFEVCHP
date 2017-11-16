@@ -477,6 +477,7 @@ forall(ii in rNodes, mm in visits) do
 end-do
 
 ! Routing constraints - Symmetry breaking !
+
 forall(ii in pNodes, mm in visits - {numVisits}) do 
 	vSymmetryP(ii, mm) := (sum(pp in rOperators) (sum( jj in rNodes + {originNodeROperator(pp)}, nn in visits) x(jj, nn, ii, mm, pp))) +
 	sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, parkingNodeAOperator(pp), mm, pp) >=  
@@ -525,10 +526,6 @@ forall(jj in pNodes, nn in visits, pp in rOperators) do
 	dropOnlyIfHandle(jj, nn, pp) := sum(ii in Nodes +{originNodeROperator(pp)}, mm in visits) h(ii, mm, jj, nn, pp) = q(jj, nn, pp);
 end-do
 
-
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
-	lowEffort(ii, mm, jj, nn, pp) := h(ii, mm, jj, nn, pp)+ sum(kk in rNodes, ll in visits) h(jj, nn, kk, ll, pp) >= x(ii, mm, jj, nn, pp);
-end-do
 
 ! Initial handling by real
 declarations
@@ -702,10 +699,6 @@ forall(ii in rNodes, mm in visits - {numVisits}) do
 end-do
 
 
-forall(ii in rNodes, mm in visits) do
-	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
-end-do
-
 
 forall(ii in rNodes, mm in visits) do
 	endTimeFree(ii, mm) := t(ii, mm) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp),1,pp));
@@ -748,7 +741,7 @@ end-declarations
 
 
 ! ### Start of declaration of valid inequalities ### !
-
+(!
 forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
 	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
 end-do
@@ -757,6 +750,15 @@ forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
 end-do
 
+forall(ii in rNodes, mm in visits) do
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
+end-do
+
+
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) do
+	lowEffort(ii, mm, jj, nn, pp) := h(ii, mm, jj, nn, pp)+ sum(kk in rNodes, ll in visits) h(jj, nn, kk, ll, pp) >= x(ii, mm, jj, nn, pp);
+end-do
+!)
 
 ! ### End of declaration of valid inequalities ### !
 
