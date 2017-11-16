@@ -1,0 +1,21 @@
+Solver: 1.mos
+             Test             |  Time  |  Value   |  Gap   
+     test_2x3_3so_2c.txt      |  0s.   |          |    %     
+     test_3x3_3so_2c.txt      |  0s.   |          |    %     
+     test_2x4_3so_2c.txt      |  0s.   |          |    %     
+     test_4x4_3so_3c.txt      |  0s.   |          |    %     
+
+Solver: 3.mos
+             Test             |  Time  |  Value   |  Gap   
+     test_2x3_3so_2c.txt      |  0s.   |          |    %     
+     test_3x3_3so_2c.txt      |  0s.   |          |    %     
+     test_2x4_3so_2c.txt      |  0s.   |          |    %     
+     test_4x4_3so_3c.txt      |  0s.   |          |    %     
+
+Solver: 2.mos
+             Test             |  Time  |  Value   |  Gap   
+     test_2x3_3so_2c.txt      |  0s.   |          |    %     
+     test_3x3_3so_2c.txt      |  0s.   |          |    %     
+     test_2x4_3so_2c.txt      |  0s.   |          |    %     
+     test_4x4_3so_3c.txt      |  0s.   |          |    %     
+

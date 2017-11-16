@@ -12,7 +12,9 @@ public class Constants {
     public final static String MOSEL_OUTPUT= "../Mosel/output/";
     public final static String STATE_FOLDER = "../Mosel/states/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-
+    public final static String TEST_FOLDER = "../Mosel/tests/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "models/";
+    
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
 
@@ -24,16 +26,18 @@ public class Constants {
     public final static String DEMAND_REQUESTS = "demand_request";
     public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample";
     public final static String STATE_FOLDER_FILE = "../Mosel/states/exampleState";
-
+    public final static String STATIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "static_test_results";
+    public final static String STATIC_RUN_STATS = "../Mosel/runStats";
+    
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
     public final static int END_TIME = 60*18;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 1200; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 900; // In seconds
     public final static int OBJECTIVE_MODE = 2;
-    public final static boolean PRINT_MOSEL_RESULTS = true;
+    public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
     public final static int TIME_LIMIT_STATIC_PROBLEM = 30;
@@ -66,6 +70,10 @@ public class Constants {
         MORNING_RUSH,
         NEUTRAL,
         MIDDAY_RUSH;
+    }
+    
+    public enum SolverType {
+    	MOSEL;
     }
 
 
