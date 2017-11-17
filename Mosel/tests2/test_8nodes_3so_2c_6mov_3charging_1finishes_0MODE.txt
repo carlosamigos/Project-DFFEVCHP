@@ -21,7 +21,7 @@ totalNumberOfChargingSlots: [3 2]
 costOfDeviation : 10
 costOfPostponedCharging : 30
 costOfExtraTime : 0.5
-costOfTravel: 0.05
+costOfTravel: 0.1
 costOfTravelH: 0.4
 
 travelTimeVehicle: [0.0 13.0 10.6 10.3 9.3 12.1 12.9 16.0 13.0 12.9 

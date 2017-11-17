@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../tests/test_3x3_3so_2c_6mov_6MODE.txt';
+	DataFile = '../tests2/test_8nodes_3so_2c_6mov_3charging_1finishes_ 4MODE.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 300;
+	MaxSolveTimeSeconds = 700;
 end-parameters
 
 
@@ -155,6 +155,9 @@ declarations
 	finishedDuringC      : array(cNodes)     of integer;
 	idealStateP          : array(pNodes)     of integer;
 	demandP              : array(pNodes)     of integer;
+	deficitList          : array(Nodes)     of integer;
+	surplusList             : array(Nodes)     of integer;
+	allList              : array(Nodes)     of integer;
 	
 	!Objective function
 	mode : integer;
@@ -196,6 +199,9 @@ initializations from DataFile
 	maxTravelHToC;
 	visitList;
 	costOfTravelH;
+	deficitList;
+	surplusList;           
+	allList;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -758,6 +764,7 @@ end-do
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
 end-do
+
 
 
 ! ### End of declaration of valid inequalities ### !
