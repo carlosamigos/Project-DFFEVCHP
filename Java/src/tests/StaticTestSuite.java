@@ -1,13 +1,8 @@
 package tests;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import constants.Constants;
@@ -16,15 +11,14 @@ import tio4500.KPITrackerStatic;
 import tio4500.StaticProblem;
 import tio4500.solvers.MoselSolver;
 import tio4500.solvers.Solver;
+import utils.FileHandler;
 import utils.StringUtils;
 
-public class StaticTestSuite {
+public class StaticTestSuite extends TestSuite {
 
 	private final ArrayList<String> testFilesNames;
-	private BufferedWriter bw;
-	private FileWriter fw;
-	private File resultsFile;
 	private ArrayList<Solver> solvers;
+	private FileHandler fh;
 	
 	public StaticTestSuite(SolverType solverType) {
 		instantiateSolvers(solverType);
@@ -33,14 +27,14 @@ public class StaticTestSuite {
 		this.testFilesNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
+		
+		this.fh = new FileHandler(Constants.STATIC_TEST_SUITE_RESULTS_FILE, true, true);
 	}
 	
 	public void runTestSuite() {
 		System.out.println("Starting static suite...");
 		System.out.println("Number of test files: " + testFilesNames.size());
-		System.out.println("##########################################\n");
-		
-		openResultsFile();		
+		System.out.println("##########################################\n");	
 		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
@@ -53,9 +47,8 @@ public class StaticTestSuite {
 				writeTestResult(tracker);
 			}
 			System.out.println("\n");
-			writeResultsFile("\n\n");
+			fh.writeFile("\n\n");
 		}
-		closeResultsFile();
 		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE + " for results.");
 	}
 	
@@ -84,60 +77,15 @@ public class StaticTestSuite {
 		}
 	}
 	
-	
 	private void writeTestHeader(String fileName) {
 		String data = "Solver: " + fileName + "\n";
-		writeResultsFile(data);
 		
 		String name = StringUtils.center("Test", 30);
 		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 10);
 		String headerLine = name + "|" + time + "|" + value + "|" + gap;
-		writeResultsFile(headerLine);
-	}
-	
-	private void openResultsFile() {
-		this.bw = null;
-		this.fw = null;
-		
-		try {
-			resultsFile = new File(Constants.STATIC_TEST_SUITE_RESULTS_FILE);
-
-			// if file doesnt exists, then create it
-			if (!resultsFile.exists()) {
-				resultsFile.createNewFile();
-			} 
-
-			// true = append file
-			fw = new FileWriter(resultsFile.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-	}
-	
-	
-	private void closeResultsFile() {
-		try {
-			if (bw != null)
-				bw.close();
-
-			if (fw != null)
-				fw.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	private void writeResultsFile(String data) {
-		try {
-			this.bw.write(data);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		fh.writeFile(data + headerLine);
 	}
 	
 	private void writeTestResult(KPITrackerStatic tracker) {
@@ -150,7 +98,7 @@ public class StaticTestSuite {
 		data += "|";
 		data += StringUtils.center(tracker.getGap() + "%", 10);
 		
-		writeResultsFile(data);
+		fh.writeFile(data);
 	}
 
 
