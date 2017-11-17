@@ -24,7 +24,7 @@ public class MoselSolver extends Solver {
 		compile();
 		fixParameters();
 		fixDataFile(problem.getFilePath());
-		System.out.println("Solving " + problem.getFilePath());
+		//System.out.println("Solving " + problem.getFilePath());
 		//this.model.run();
 		//this.model.reset();
 	}
