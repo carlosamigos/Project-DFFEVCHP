@@ -11,8 +11,10 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 # CONSTANTS
 DISTANCESCALE = 3
-MOVES = 3
-MOVESLOW = 3
+CARSCHARGING = 4
+MOVES = 9
+MAXNODES = 10
+
 MODES = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
 
 class World:
@@ -95,6 +97,19 @@ class World:
 
                 self.distancesC.append(distanceSq)
                 self.distancesB.append(distanceB)
+
+    def giveRealCoordinates(self):
+        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1]) / self.XCORD
+        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0]) / self.YCORD
+        startX = self.LOWERLEFT[1] + 0.5 * stepX
+        startY = self.UPPERRIGHT[0] - 0.5 * stepY
+        cords = []
+        for i in range(self.YCORD):
+            for j in range(self.XCORD):
+                cordX = startX + j * stepX
+                cordY = startY - i * stepY
+                cord = (cordY, cordX)
+                cords.append(cord)
 
     def calculateRealDistances(self):
         stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
@@ -218,7 +233,7 @@ class World:
         for i in range(len(self.pNodes)):
             deficit = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i])
             moves += max(deficit,0)
-            moves += self.pNodes[i].cState
+            #moves += self.pNodes[i].cState
 
         return moves
 
@@ -237,21 +252,30 @@ class World:
 
     def shuffleIdealState(self):
         moves = self.calculateMovesToIDeal()
-        while(moves > len(self.operators)*MOVES or moves < len(self.operators)*MOVESLOW):
-            iStateList = []
-            cStateList = []
-            numCMoves = 0
-            for i in range(len(self.pNodes)):
-                iStateList.append(self.pNodes[i].iState)
-                cStateList.append(self.pNodes[i].cState)
-                numCMoves += self.pNodes[i].cState
-            while(float(numCMoves) > len(self.operators)*MOVES*0.5):
-                r = random.randint(0, len(self.pNodes) -1)
-                if(cStateList[r] > 0):
+        iStateList = []
+        cStateList = []
+        numCMoves = 0
+        for i in range(len(self.pNodes)):
+            iStateList.append(self.pNodes[i].iState)
+            cStateList.append(self.pNodes[i].cState)
+            numCMoves += self.pNodes[i].cState
+
+
+        while (float(numCMoves) > CARSCHARGING or float(numCMoves) < CARSCHARGING):
+            r = random.randint(0, len(self.pNodes) - 1)
+            if(float(numCMoves) > CARSCHARGING):
+                if (cStateList[r] > 0):
                     cStateList[r] -= 1
                     numCMoves -= 1
+            else:
+                cStateList[r] += 1
+                numCMoves += 1
+        for i in range(len(self.pNodes)):
+            self.pNodes[i].cState = cStateList[i]
+
+        while(moves > MOVES or moves < MOVES):
             moves = self.calculateMovesToIDeal()
-            if(moves > len(self.operators)*MOVES):
+            if(moves > MOVES):
                 r1 = random.randint(0, len(self.pNodes) - 1)
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r1) or self.checkdeficitNode(r2)):
@@ -259,7 +283,8 @@ class World:
                     r2 = random.randint(0, len(self.pNodes) - 1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
-            elif(moves < len(self.operators)*MOVESLOW):
+
+            elif(moves < MOVES):
                 r1 = random.randint(0, len(self.pNodes) - 1)
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r2) or self.checkdeficitNode(r1)):
@@ -267,9 +292,10 @@ class World:
                     r2 = random.randint(0, len(self.pNodes) - 1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
+
             for i in range(len(self.pNodes)):
                 self.pNodes[i].iState = iStateList[i]
-                self.pNodes[i].cState = cStateList[i]
+
             moves = self.calculateMovesToIDeal()
 
 
@@ -604,5 +630,6 @@ def main():
 main()
 
 
-
+# TODO: Create a new location template, so that zobnes scale equally
+# TODO: More crontol paramters for generating boards with an equal amount of: Cars to be handled, cars to be charged, cars that finish charging
 
