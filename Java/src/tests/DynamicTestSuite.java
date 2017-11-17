@@ -1,5 +1,6 @@
 package tests;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class DynamicTestSuite extends TestSuite{
 					KPITrackerDynamic tracker = problem.getKpiTrackerDyanmic();
 					addKPITracker(solver.getInfo(), tracker);
 				}
-				System.out.println("\n");
+				System.out.println("");
 			}
 			writeKPIs();
 		}
@@ -76,7 +77,7 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	private void writeKPIs() {
-		String solv = StringUtils.center("Model", 20);
+		String solv = StringUtils.center("Model", 40);
 		String dns = StringUtils.center("DNS (customers)", 15);
 		String abandoned = StringUtils.center("Abondoned (op)", 15);
 		String charged = StringUtils.center("Charged (cars)", 15);
@@ -89,40 +90,41 @@ public class DynamicTestSuite extends TestSuite{
 		              "|" + carDist + "|" + bikeDist + "|" + elDist + "|" + chargeWait +
 		              "|" + idleTime + "\n";
 		
+		DecimalFormat df = 	new DecimalFormat("#.##");
 		for(String solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
-			String solverName = StringUtils.center(solver, 20);
-			String dnsVal = StringUtils.center("" + trackers.stream().map(t -> 
+			String solverName = StringUtils.center(solver, 40);
+			String dnsVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getDemandsNotServed().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days, 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
 			
-			String abandonedVal = StringUtils.center("" + trackers.stream().map(t -> 
+			String abandonedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfOperatorsAbandoned().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days, 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
 			
-			String chargedVal = StringUtils.center("" + trackers.stream().map(t -> 
+			String chargedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfCarsSetToCharging().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days, 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
 			
-			String carDistVal = StringUtils.center("" + trackers.stream().map(t -> 
-				t.getTotalCarTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days
+			String carDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
+				t.getTotalCarTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
 				, 15);
 			
-			String bikeDistVal = StringUtils.center("" + trackers.stream().map(t -> 
-				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days
+			String bikeDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
+				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
 				, 15);
 			
-			String elDistVal = StringUtils.center("" + trackers.stream().map(t -> 
-				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days
+			String elDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
+				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
 				, 15);
 			
-			String chargeWaitVal = StringUtils.center("" + trackers.stream().map(t -> 
+			String chargeWaitVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getWaitingTimeBeforeCarInNeedAreCharged().stream().collect(Collectors.summingDouble(Double::doubleValue)))
-				.collect(Collectors.summingDouble(Double::doubleValue))/this.days, 15);
+				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 15);
 			
-			String idleTimeVal = StringUtils.center("" + trackers.stream().map(t -> 
+			String idleTimeVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getIdleTimeForServiceOperators().stream().collect(Collectors.summingDouble(Double::doubleValue)))
-				.collect(Collectors.summingDouble(Double::doubleValue))/this.days, 15);
+				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 15);
 			
 			data += solverName + "|" + dnsVal + "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
