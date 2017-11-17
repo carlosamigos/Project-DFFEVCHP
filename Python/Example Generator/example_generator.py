@@ -12,8 +12,8 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 # CONSTANTS
 DISTANCESCALE = 3
 CARSCHARGING = 3
-MOVES = 5
-MAXNODES = 9
+MOVES = 6
+MAXNODES = 8
 SPREAD = True
 CLUSTER = True
 
@@ -60,6 +60,9 @@ class World:
         self.distancesB = []
         self.distancesC = []
         self.visitList = []
+        self.surp = []
+        self.deficit = []
+        self.charg = []
 
     def addDim(self, xCord, yCord):
         self.XCORD = xCord
@@ -251,6 +254,26 @@ class World:
             #moves += self.pNodes[i].cState
 
         return moves
+
+    def calculateMovesListToIdeal(self):
+        movesDef = []
+        movesSurp = []
+        movesCharg = []
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        for i in range(len(self.pNodes)):
+            deficit = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i])
+            surplus = (self.pNodes[i].pState + initial_lambda[i]) - (self.pNodes[i].iState + self.pNodes[i].demand)
+            movesDef.append(max(deficit, 0))
+            movesSurp.append(max(surplus, 0))
+            movesCharg.append(self.pNodes[i].cState)
+        for i in range(len(self.cNodes) + 2* len(self.operators)):
+            movesDef.append(1)
+            movesSurp.append(1)
+            movesCharg.append(1)
+
+        self.deficit = movesDef
+        self.surp = movesSurp
+        self.charg = movesCharg
 
     def checkSurplusNode(self, i):
         initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
@@ -512,6 +535,24 @@ class World:
             if (i < len(self.visitList) - 1):
                 string += " "
         string += "] \n"
+        string += "surplusList: ["
+        for i in range(len(self.surp)):
+            string += str(self.surp[i])
+            if (i < len(self.surp) - 1):
+                string += " "
+        string += "] \n"
+        string += "deficitList: ["
+        for i in range(len(self.deficit)):
+            string += str(self.deficit[i])
+            if (i < len(self.deficit) - 1):
+                string += " "
+        string += "] \n"
+        string += "allList: ["
+        for i in range(len(self.deficit)):
+            string += str(self.deficit[i] + self.surp[i] + self.charg[i])
+            if (i < len(self.deficit) - 1):
+                string += " "
+        string += "] \n"
         f.write(string)
         print(string)
 
@@ -638,6 +679,7 @@ def main():
     else:
         world.calculateRealDistances(cords)
     world.calculateVisitList()
+    world.calculateMovesListToIdeal()
     maxVisit = max(world.visitList)
     for i in range(len(MODES_RUN2)):
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
