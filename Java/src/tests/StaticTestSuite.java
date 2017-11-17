@@ -52,6 +52,7 @@ public class StaticTestSuite {
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);
 			}
+			System.out.println("\n");
 			writeResultsFile("\n\n");
 		}
 		closeResultsFile();
