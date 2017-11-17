@@ -27,6 +27,7 @@ public class Constants {
     public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample";
     public final static String STATE_FOLDER_FILE = "../Mosel/states/exampleState";
     public final static String STATIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "static_test_results";
+    public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Time specific parameters : Minutes

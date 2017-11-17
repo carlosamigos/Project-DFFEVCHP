@@ -23,17 +23,11 @@ public class Main {
 
         DynamicProblem dynProb = new DynamicProblem(instance, simulationModel, Constants.SolverType.MOSEL);
         dynProb.solve();
-		*/
+		
         
         StaticTestSuite testSuite = new StaticTestSuite(Constants.SolverType.MOSEL);
         testSuite.runTestSuite();
-        
-    	/*
-    	FileHandler fh = new FileHandler("../foo", true, true);
-    	fh.writeFile("FOO\n");
-    	fh.writeFile("BAR\n");
-    	fh.writeFile("BAZ");
-		*/
+        */
     }
 
 }
