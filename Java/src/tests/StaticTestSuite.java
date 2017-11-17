@@ -1,17 +1,10 @@
 package tests;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import constants.Constants;
 import constants.Constants.SolverType;
 import tio4500.KPITrackerStatic;
 import tio4500.StaticProblem;
-import tio4500.solvers.MoselSolver;
 import tio4500.solvers.Solver;
-import utils.FileHandler;
 import utils.StringUtils;
 
 public class StaticTestSuite extends TestSuite {
@@ -21,13 +14,16 @@ public class StaticTestSuite extends TestSuite {
 	}
 	
 	public void runTestSuite() {
-		System.out.println("Starting static suite...");
+		System.out.println("\nStarting static test suite...");
 		System.out.println("Number of test files: " + testFileNames.size());
-		System.out.println("##########################################\n");	
+		System.out.println("Estimated running time (hours): " + 
+							(Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*
+							this.solvers.size()/3600) + "\n");
 		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
 			System.out.println("Running tests with " + solver.getInfo());
+			
 			for(String testName : testFileNames) {
 				KPITrackerStatic tracker = new KPITrackerStatic();
 				StaticProblem staticProblem = new StaticProblem(Constants.TEST_FOLDER + testName);
@@ -35,9 +31,11 @@ public class StaticTestSuite extends TestSuite {
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);
 			}
+			
 			System.out.println("\n");
 			fh.writeFile("\n\n");
 		}
+		
 		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE + " for results.");
 	}
 	
