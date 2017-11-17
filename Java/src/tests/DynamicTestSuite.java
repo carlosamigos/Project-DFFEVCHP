@@ -38,7 +38,7 @@ public class DynamicTestSuite extends TestSuite{
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
 					solverSimulationModel.readSimulationModelFromFile();
 					writeTestHeader(solver.getInfo());
-					System.out.println("Running tests with " + solver.getInfo());
+					System.out.println("Running tests with " + solver.getInfo() + " on day " + day + " on test set " + test);
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver);
 					problem.solve();
 					// Results:

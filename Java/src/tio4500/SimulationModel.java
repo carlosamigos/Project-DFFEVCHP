@@ -32,16 +32,13 @@ public class SimulationModel {
     }
 
     public void createNewDaySimulationModel(){
-        System.out.println("Creating new simulation model...");
         //simulate pickups
         for (ParkingNode pNode : problemInstance.getParkingNodes()) {
             createAllDemandRequestsForNode(pNode);
         }
-        System.out.println("Finished creating new simulation model.");
     }
 
     public void saveDaySimulationModel(){
-        System.out.println("Saving simulation model.");
         try{
             NumberFormat formatter = new DecimalFormat("#0.000");
             PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_probleminstance_"+problemInstance.getFileName() + ".txt");
@@ -61,7 +58,6 @@ public class SimulationModel {
     }
 
     public void readSimulationModelFromFile(){
-        System.out.println("Reading simulation model from file...");
         demandRequests = new HashMap<>();
         try{
             String readString = Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt";
@@ -111,7 +107,6 @@ public class SimulationModel {
             System.out.println("Start index in written file do not match Constants.START_INDEX");
             return;
         }
-        System.out.println("Simulation file read.");
     }
 
     private double getDemandRateForNodeAtTime(ParkingNode parkingNode, double time){
