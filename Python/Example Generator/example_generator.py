@@ -11,11 +11,14 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 # CONSTANTS
 DISTANCESCALE = 3
-CARSCHARGING = 4
-MOVES = 9
-MAXNODES = 10
+CARSCHARGING = 3
+MOVES = 5
+MAXNODES = 9
+SPREAD = True
+CLUSTER = True
 
-MODES = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+MODES_RUN1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
 
 class World:
 
@@ -98,7 +101,7 @@ class World:
                 self.distancesC.append(distanceSq)
                 self.distancesB.append(distanceB)
 
-    def giveRealCoordinates(self):
+    def giveRealCoordinatesSpread(self):
         stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1]) / self.XCORD
         stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0]) / self.YCORD
         startX = self.LOWERLEFT[1] + 0.5 * stepX
@@ -111,18 +114,30 @@ class World:
                 cord = (cordY, cordX)
                 cords.append(cord)
 
-    def calculateRealDistances(self):
-        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
-        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0])/self.YCORD
-        startX = self.LOWERLEFT[1] + 0.5*stepX
-        startY = self.UPPERRIGHT[0] - 0.5*stepY
-        cords = []
-        for i in range(self.YCORD):
-            for j in range(self.XCORD):
-                cordX = startX + j*stepX
-                cordY = startY - i*stepY
-                cord = (cordY, cordX)
-                cords.append(cord)
+        for i in range(len(cords) - MAXNODES):
+            r = random.randint(0, len(cords) - 1)
+            cords.pop(r)
+            self.pNodes.pop((r))
+            self.nodes.pop((r))
+        return cords
+
+
+    def giveRealCoordinatesCluster(self):
+        pass
+
+    def calculateRealDistances(self, cords):
+        if(len(cords) == 0):
+            stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
+            stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0])/self.YCORD
+            startX = self.LOWERLEFT[1] + 0.5*stepX
+            startY = self.UPPERRIGHT[0] - 0.5*stepY
+            cords = []
+            for i in range(self.YCORD):
+                for j in range(self.XCORD):
+                    cordX = startX + j*stepX
+                    cordY = startY - i*stepY
+                    cord = (cordY, cordX)
+                    cords.append(cord)
 
 
         travelMatrixCar = gI.run(cords, "driving", False)
@@ -607,24 +622,29 @@ def createOperators(world):
 def main():
     print("\n WELCOME TO THE EXAMPLE CREATOR \n")
     world = World()
+    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     createNodes(world)
+    cords = []
+    if(SPREAD):
+        cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
-    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.createRealIdeal()
     world.shuffleIdealState()
+    print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)
-    if(len(world.pNodes) > 9):
+    if(len(world.pNodes) > 10):
         world.calculateDistances()
     else:
-        world.calculateRealDistances()
+        world.calculateRealDistances(cords)
     world.calculateVisitList()
     maxVisit = max(world.visitList)
-    for i in range(len(MODES)):
-        world.setConstants(maxVisit, MODES[i][0], 10)
-        world.setCostConstants(MODES[i][1], MODES[i][2], 0.5, MODES[i][3], MODES[i][4])
-        moves =  world.calculateMovesToIDeal()
-        filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
+    for i in range(len(MODES_RUN2)):
+        world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
+        world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
+        moves = world.calculateMovesToIDeal()
+        #filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
+        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_ " + str(i) + "MODE"
         world.writeToFile(filepath)
 
 main()
