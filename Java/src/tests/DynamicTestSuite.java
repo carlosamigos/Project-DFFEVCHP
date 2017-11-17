@@ -7,6 +7,7 @@ import tio4500.KPITrackerDynamic;
 import tio4500.KPITrackerStatic;
 import tio4500.ProblemInstance;
 import tio4500.SimulationModel;
+import tio4500.solvers.Solver;
 import utils.StringUtils;
 
 public class DynamicTestSuite extends TestSuite{
@@ -20,22 +21,29 @@ public class DynamicTestSuite extends TestSuite{
 	
 	public void runTestSuite() {
 		System.out.println("Starting static suite...");
-		System.out.println("Number of test files: " + testFilesNames.size());
-		System.out.println("##########################################\n");	
-		
-		for(int day : days) {
-			SimulationModel simModel = new SimulationModel(day, problemInstance)
-		
-		
-			for(Solver solver : this.solvers) {
-				
-				writeTestHeader(solver.getInfo());
-				System.out.println("Running tests with " + solver.getInfo());
-				for(String test : testFileNames) {
-					SimulationModel model = new SimulationModel(dayNumber, problemInstance)
-					ProblemInstance problemInstance = new ProblemInstance(1);
-					DynamicProblem problem = new DynamicProblem(problemInstance, simulationModel, type)
-					KPITrackerDynamic tracker = new KPITrackerDynamic();
+		System.out.println("Number of test files: " + testFileNames.size());
+		System.out.println("##########################################\n");
+
+		for(String test : testFileNames) {
+			ProblemInstance cleanProblemInstance = new ProblemInstance(test);
+			for (int day = 0; day < days; day++) {
+				// Simulate demand requests during day
+				SimulationModel simModel = new SimulationModel(day, cleanProblemInstance);
+				simModel.createNewDaySimulationModel();
+				simModel.saveDaySimulationModel();
+				//Solve for each solver
+				for(Solver solver : this.solvers) {
+					// Read clean demand requests
+					ProblemInstance problemInstance = new ProblemInstance(test);
+					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
+					solverSimulationModel.readSimulationModelFromFile();
+					writeTestHeader(solver.getInfo());
+					System.out.println("Running tests with " + solver.getInfo());
+					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver);
+					problem.solve();
+					// Results:
+					KPITrackerDynamic tracker = problem.getKpiTrackerDyanmic();
+
 				}
 			}
 		}
@@ -53,6 +61,8 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	private void writeTestResult(KPITrackerDynamic tracker) {
+		System.out.println(tracker);
+		/*
 		String[] namePath = tracker.getName().split("/");
 		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
 		data += "|";
@@ -63,5 +73,6 @@ public class DynamicTestSuite extends TestSuite{
 		data += StringUtils.center(tracker.getGap() + "%", 10);
 		
 		fh.writeFile(data);
+		*/
 	}
 }

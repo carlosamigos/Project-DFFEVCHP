@@ -23,7 +23,7 @@ public class SimulationModel {
 
     private String dayNumberString = "DAY_NUMBER";
     private String startIndexString  = "START_INDEX";
-    private String problemInstanceString  = "PROBLEM_INSTANCE_NUMBER";
+    private String problemInstanceFileName = "PROBLEM_INSTANCE_NUMBER";
 
     public SimulationModel(int dayNumber, ProblemInstance problemInstance) {
         this.dayNumber = dayNumber;
@@ -44,10 +44,10 @@ public class SimulationModel {
         System.out.println("Saving simulation model.");
         try{
             NumberFormat formatter = new DecimalFormat("#0.000");
-            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_probleminstance_"+Integer.toString(problemInstance.getExampleNumber())+".txt", "UTF-8");
+            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_probleminstance_"+problemInstance.getFileName() + ".txt");
             writer.println(dayNumberString+" : "+Integer.toString(dayNumber));
             writer.println(startIndexString+" : "+Integer.toString(Constants.START_INDEX));
-            writer.println(problemInstanceString+" : "+Integer.toString(problemInstance.getExampleNumber()));
+            writer.println(problemInstanceFileName +" : "+problemInstance.getFileName());
             for (ParkingNode pNode : demandRequests.keySet()) {
                 for (DemandRequest req : demandRequests.get(pNode)) {
                     writer.println(Integer.toString(req.getNode().getNodeId())+":"+formatter.format(req.getTime()));
@@ -64,24 +64,32 @@ public class SimulationModel {
         System.out.println("Reading simulation model from file...");
         demandRequests = new HashMap<>();
         try{
-            String readString = Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+Integer.toString(problemInstance.getExampleNumber())+".txt";
+            String readString = Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt";
             FileReader fileReader = new FileReader(readString);
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             while (line != null) {
-                if((line.contains(dayNumberString) || line.contains(problemInstanceString) || line.contains(startIndexString))){
+                System.out.println(line);
+                if((line.contains(dayNumberString) || line.contains(problemInstanceFileName) || line.contains(startIndexString))){
                     line.trim(); line = line.replace("\n","");
                     String[] parts = line.split(":");
-                    String type = parts[0].trim(); int number = Integer.parseInt(parts[1].trim());
+                    String type = parts[0].trim();
                     if(type.contains(dayNumberString)){
+                        int number = Integer.parseInt(parts[1].trim());
                         this.dayNumber = number;
                     } else if(type.contains(startIndexString)){
+                        int number = Integer.parseInt(parts[1].trim());
                         if(number != Constants.START_INDEX){
                             throw new IllegalArgumentException();
                         }
-                    } else if(type.contains(problemInstanceString)){
-                        if(number != problemInstance.getExampleNumber()){
+                    } else if(type.contains(problemInstanceFileName)){
+                        String fileName = parts[1].trim();
+
+                        String foo =  problemInstance.getFileName().trim();
+                        System.out.println(fileName + "\n" + foo);
+                        if(foo.equals(fileName)){
+                            System.out.println("failed");
                             throw new IllegalStateException();
                         }
                     }

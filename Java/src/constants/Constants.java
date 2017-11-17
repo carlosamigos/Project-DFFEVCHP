@@ -24,7 +24,7 @@ public class Constants {
     public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath";
     public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators";
     public final static String DEMAND_REQUESTS = "demand_request";
-    public final static String INITIAL_STATE_FOLDER_FILE = "../Mosel/states/initialExample";
+    public final static String INITIAL_STATE_FOLDER = "../Mosel/states/";
     public final static String STATE_FOLDER_FILE = "../Mosel/states/exampleState";
     public final static String STATIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "static_test_results";
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
@@ -32,7 +32,7 @@ public class Constants {
     
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*18;
+    public final static int END_TIME = 60*8;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel

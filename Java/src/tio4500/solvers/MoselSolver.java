@@ -8,6 +8,7 @@ public class MoselSolver extends Solver {
 
 	private final String moselFileName;
 	private final String bimFileName;
+	private final Constants.SolverType solverType = Constants.SolverType.MOSEL;
 
 	//private XPRM mosel;
 	//private XPRMModel model;
@@ -55,6 +56,10 @@ public class MoselSolver extends Solver {
 			System.out.println("Could not compile mosel file");
 		}
 
+	}
+
+	public Constants.SolverType getSolverType(){
+		return this.solverType;
 	}
 
 	@Override

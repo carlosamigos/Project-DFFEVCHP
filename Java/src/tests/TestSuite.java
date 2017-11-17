@@ -17,8 +17,11 @@ public abstract class TestSuite {
 	protected final ArrayList<String> testFileNames;
 	protected ArrayList<Solver> solvers;
 	protected FileHandler fh;
+	protected final SolverType solverType;
 	
 	protected TestSuite(SolverType solverType, String testFolder, String resultFile) {
+		this.solverType = solverType;
+		instantiateSolvers();
 		File[] testFiles = (new File(testFolder)).listFiles();
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
@@ -27,8 +30,8 @@ public abstract class TestSuite {
 		this.fh = new FileHandler(resultFile, true, true);
 	}
 	
-	protected void instantiateSolvers(SolverType type) {
-		switch(type) {
+	protected void instantiateSolvers() {
+		switch(this.solverType) {
 		case MOSEL:
 			instantiateMoselSolvers();
 			break;

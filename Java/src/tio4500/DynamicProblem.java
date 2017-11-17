@@ -29,21 +29,13 @@ public class DynamicProblem {
     private KPITrackerDynamic kpiTrackerDyanmic;
     private Solver solver;
 
-    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, SolverType type) {
+    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, Solver solver) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
         this.kpiTrackerDyanmic = new KPITrackerDynamic(this);
-        instantiateSolver(type);
+        this.solver = solver;
     }
-    
-    private void instantiateSolver(SolverType type) {
-    	switch(type) {
-    		case MOSEL:
-    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
-    		default:
-    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
-    	}
-    }
+
 
     public void solve() {
 
@@ -783,6 +775,10 @@ public class DynamicProblem {
 
     public ProblemInstance getProblemInstance(){
         return this.problemInstance;
+    }
+
+    public KPITrackerDynamic getKpiTrackerDyanmic() {
+        return kpiTrackerDyanmic;
     }
 
     private ArrayList<Car> findCarsMissing(HashMap<Operator,OperatorTravel> operatorTravels, ArrayList<CustomerTravel> customerTravels ){

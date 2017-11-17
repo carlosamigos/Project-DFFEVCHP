@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ProblemInstance {
 
-    private int exampleNumber;
+    private String fileName;
     private ArrayList<ParkingNode> parkingNodes;
     private ArrayList<ChargingNode> chargingNodes;
     private ArrayList<Car> cars;
@@ -48,8 +48,8 @@ public class ProblemInstance {
     private String initialHandlingString = "";
     private int numberOfCarsTakenByCustomers = 0;
 
-    public ProblemInstance(int exampleNumber) {
-        this.exampleNumber = exampleNumber;
+    public ProblemInstance(String fileName) {
+        this.fileName = fileName;
         this.parkingNodes = new ArrayList<>();
         this.chargingNodes = new ArrayList<>();
         this.cars = new ArrayList<>();
@@ -62,12 +62,14 @@ public class ProblemInstance {
         parkingNodeToChargingNode = new HashMap<>();
         try {
             readProblemFromFile();
+            handleInputFileMap();
+            addStateSpecificStrings();
+            makeChargingToparkingNodeMap();
         } catch (IOException e){
-            System.out.println("File could not be read for example "+exampleNumber);
+            System.out.println("File could not be read for "+fileName + " in problemInstance");
+            System.exit(1);
         }
-        handleInputFileMap();
-        addStateSpecificStrings();
-        makeChargingToparkingNodeMap();
+
 
     }
 
@@ -93,8 +95,7 @@ public class ProblemInstance {
     }
 
     private void readProblemFromFile() throws IOException{
-        //System.out.println("reading file: "+ Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt");
-        BufferedReader br = new BufferedReader(new FileReader(Constants.INITIAL_STATE_FOLDER_FILE +Integer.toString(exampleNumber) + ".txt"));
+        BufferedReader br = new BufferedReader(new FileReader(Constants.TEST_FOLDER +fileName + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -297,8 +298,8 @@ public class ProblemInstance {
         }
     }
 
-    public int getExampleNumber() {
-        return exampleNumber;
+    public String getFileName() {
+        return fileName;
     }
 
     public ArrayList<ParkingNode> getParkingNodes() {
@@ -359,7 +360,7 @@ public class ProblemInstance {
         //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
-            PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + "exampleState"+Integer.toString(exampleNumber)+".txt", "UTF-8");
+            PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + fileName, "UTF-8");
             for (String key :inputFileMap.keySet()) {
                 if(!stateSpecificKeys.contains(key)){
                     if(key.equals("travelTimeVehicle")){
@@ -568,7 +569,7 @@ public class ProblemInstance {
         }
         chargingSlotsAvailableArray = chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1) + "]";
 
-        return  "\n\t  ProblemInstance " + exampleNumber +":"+
+        return  "\n\t  ProblemInstance " + fileName +":"+
                 "\n\t  parkingNodes              = " + parkingNodes +
                 "\n\t  chargingNodes             = " + chargingNodes +
                 "\n\t  cars                      = " + cars +
