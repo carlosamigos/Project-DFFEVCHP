@@ -11,9 +11,14 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 # CONSTANTS
 DISTANCESCALE = 3
-MOVES = 3
-MOVESLOW = 3
-MODES = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+CARSCHARGING = 3
+MOVES = 6
+MAXNODES = 8
+SPREAD = True
+CLUSTER = True
+
+MODES_RUN1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
 
 class World:
 
@@ -55,6 +60,9 @@ class World:
         self.distancesB = []
         self.distancesC = []
         self.visitList = []
+        self.surp = []
+        self.deficit = []
+        self.charg = []
 
     def addDim(self, xCord, yCord):
         self.XCORD = xCord
@@ -96,18 +104,43 @@ class World:
                 self.distancesC.append(distanceSq)
                 self.distancesB.append(distanceB)
 
-    def calculateRealDistances(self):
-        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
-        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0])/self.YCORD
-        startX = self.LOWERLEFT[1] + 0.5*stepX
-        startY = self.UPPERRIGHT[0] - 0.5*stepY
+    def giveRealCoordinatesSpread(self):
+        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1]) / self.XCORD
+        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0]) / self.YCORD
+        startX = self.LOWERLEFT[1] + 0.5 * stepX
+        startY = self.UPPERRIGHT[0] - 0.5 * stepY
         cords = []
         for i in range(self.YCORD):
             for j in range(self.XCORD):
-                cordX = startX + j*stepX
-                cordY = startY - i*stepY
+                cordX = startX + j * stepX
+                cordY = startY - i * stepY
                 cord = (cordY, cordX)
                 cords.append(cord)
+
+        for i in range(len(cords) - MAXNODES):
+            r = random.randint(0, len(cords) - 1)
+            cords.pop(r)
+            self.pNodes.pop((r))
+            self.nodes.pop((r))
+        return cords
+
+
+    def giveRealCoordinatesCluster(self):
+        pass
+
+    def calculateRealDistances(self, cords):
+        if(len(cords) == 0):
+            stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1])/self.XCORD
+            stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0])/self.YCORD
+            startX = self.LOWERLEFT[1] + 0.5*stepX
+            startY = self.UPPERRIGHT[0] - 0.5*stepY
+            cords = []
+            for i in range(self.YCORD):
+                for j in range(self.XCORD):
+                    cordX = startX + j*stepX
+                    cordY = startY - i*stepY
+                    cord = (cordY, cordX)
+                    cords.append(cord)
 
 
         travelMatrixCar = gI.run(cords, "driving", False)
@@ -218,9 +251,29 @@ class World:
         for i in range(len(self.pNodes)):
             deficit = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i])
             moves += max(deficit,0)
-            moves += self.pNodes[i].cState
+            #moves += self.pNodes[i].cState
 
         return moves
+
+    def calculateMovesListToIdeal(self):
+        movesDef = []
+        movesSurp = []
+        movesCharg = []
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        for i in range(len(self.pNodes)):
+            deficit = (self.pNodes[i].iState + self.pNodes[i].demand) - (self.pNodes[i].pState + initial_lambda[i])
+            surplus = (self.pNodes[i].pState + initial_lambda[i]) - (self.pNodes[i].iState + self.pNodes[i].demand)
+            movesDef.append(max(deficit, 0))
+            movesSurp.append(max(surplus, 0))
+            movesCharg.append(self.pNodes[i].cState)
+        for i in range(len(self.cNodes) + 2* len(self.operators)):
+            movesDef.append(1)
+            movesSurp.append(1)
+            movesCharg.append(1)
+
+        self.deficit = movesDef
+        self.surp = movesSurp
+        self.charg = movesCharg
 
     def checkSurplusNode(self, i):
         initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
@@ -237,21 +290,30 @@ class World:
 
     def shuffleIdealState(self):
         moves = self.calculateMovesToIDeal()
-        while(moves > len(self.operators)*MOVES or moves < len(self.operators)*MOVESLOW):
-            iStateList = []
-            cStateList = []
-            numCMoves = 0
-            for i in range(len(self.pNodes)):
-                iStateList.append(self.pNodes[i].iState)
-                cStateList.append(self.pNodes[i].cState)
-                numCMoves += self.pNodes[i].cState
-            while(float(numCMoves) > len(self.operators)*MOVES*0.5):
-                r = random.randint(0, len(self.pNodes) -1)
-                if(cStateList[r] > 0):
+        iStateList = []
+        cStateList = []
+        numCMoves = 0
+        for i in range(len(self.pNodes)):
+            iStateList.append(self.pNodes[i].iState)
+            cStateList.append(self.pNodes[i].cState)
+            numCMoves += self.pNodes[i].cState
+
+
+        while (float(numCMoves) > CARSCHARGING or float(numCMoves) < CARSCHARGING):
+            r = random.randint(0, len(self.pNodes) - 1)
+            if(float(numCMoves) > CARSCHARGING):
+                if (cStateList[r] > 0):
                     cStateList[r] -= 1
                     numCMoves -= 1
+            else:
+                cStateList[r] += 1
+                numCMoves += 1
+        for i in range(len(self.pNodes)):
+            self.pNodes[i].cState = cStateList[i]
+
+        while(moves > MOVES or moves < MOVES):
             moves = self.calculateMovesToIDeal()
-            if(moves > len(self.operators)*MOVES):
+            if(moves > MOVES):
                 r1 = random.randint(0, len(self.pNodes) - 1)
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r1) or self.checkdeficitNode(r2)):
@@ -259,7 +321,8 @@ class World:
                     r2 = random.randint(0, len(self.pNodes) - 1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
-            elif(moves < len(self.operators)*MOVESLOW):
+
+            elif(moves < MOVES):
                 r1 = random.randint(0, len(self.pNodes) - 1)
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r2) or self.checkdeficitNode(r1)):
@@ -267,9 +330,10 @@ class World:
                     r2 = random.randint(0, len(self.pNodes) - 1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
+
             for i in range(len(self.pNodes)):
                 self.pNodes[i].iState = iStateList[i]
-                self.pNodes[i].cState = cStateList[i]
+
             moves = self.calculateMovesToIDeal()
 
 
@@ -471,6 +535,24 @@ class World:
             if (i < len(self.visitList) - 1):
                 string += " "
         string += "] \n"
+        string += "surplusList: ["
+        for i in range(len(self.surp)):
+            string += str(self.surp[i])
+            if (i < len(self.surp) - 1):
+                string += " "
+        string += "] \n"
+        string += "deficitList: ["
+        for i in range(len(self.deficit)):
+            string += str(self.deficit[i])
+            if (i < len(self.deficit) - 1):
+                string += " "
+        string += "] \n"
+        string += "allList: ["
+        for i in range(len(self.deficit)):
+            string += str(self.deficit[i] + self.surp[i] + self.charg[i])
+            if (i < len(self.deficit) - 1):
+                string += " "
+        string += "] \n"
         f.write(string)
         print(string)
 
@@ -581,28 +663,35 @@ def createOperators(world):
 def main():
     print("\n WELCOME TO THE EXAMPLE CREATOR \n")
     world = World()
+    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     createNodes(world)
+    cords = []
+    if(SPREAD):
+        cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
-    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.createRealIdeal()
     world.shuffleIdealState()
+    print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)
-    if(len(world.pNodes) > 9):
+    if(len(world.pNodes) > 10):
         world.calculateDistances()
     else:
-        world.calculateRealDistances()
+        world.calculateRealDistances(cords)
     world.calculateVisitList()
+    world.calculateMovesListToIdeal()
     maxVisit = max(world.visitList)
-    for i in range(len(MODES)):
-        world.setConstants(maxVisit, MODES[i][0], 10)
-        world.setCostConstants(MODES[i][1], MODES[i][2], 0.5, MODES[i][3], MODES[i][4])
-        moves =  world.calculateMovesToIDeal()
-        filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
+    for i in range(len(MODES_RUN2)):
+        world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
+        world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
+        moves = world.calculateMovesToIDeal()
+        #filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
+        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_ " + str(i) + "MODE"
         world.writeToFile(filepath)
 
 main()
 
 
-
+# TODO: Create a new location template, so that zobnes scale equally
+# TODO: More crontol paramters for generating boards with an equal amount of: Cars to be handled, cars to be charged, cars that finish charging
 
