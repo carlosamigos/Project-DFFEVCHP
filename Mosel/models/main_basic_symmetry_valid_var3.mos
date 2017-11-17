@@ -155,6 +155,9 @@ declarations
 	finishedDuringC      : array(cNodes)     of integer;
 	idealStateP          : array(pNodes)     of integer;
 	demandP              : array(pNodes)     of integer;
+	allList				 : array(pNodes)     of integer;
+	deficitList          : array(pNodes)     of integer;
+	surplusList          : array(pNodes)     of integer;
 	
 	!Objective function
 	mode : integer;
@@ -285,14 +288,14 @@ end-do
 
 !Create h
 forall(pp in rOperators) do
-	forall (ii in Nodes - aNodes + {originNodeROperator(pp)} - cNodes) do
+	forall (ii in Nodes - aNodes + {originNodeROperator(pp)} - cNodes | surplusList[ii] >= 0) do
 		if ii = originNodeROperator(pp) then
 			forall(nn in visits| nn <= visitList(startNodeROperator(pp))) do
 				create(h(ii, 1, startNodeROperator(pp), nn, pp));
 				h(ii, 1, startNodeROperator(pp), nn, pp) is_binary;
 			end-do
 		else	
-			forall(jj in Nodes - aNodes | jj <> ii) do
+			forall(jj in Nodes - aNodes | jj <> ii and deficitList[jj] >= 0) do
 				forall(mm in visits, nn in visits| mm <= visitList(ii) and nn <= visitList(jj)) do
 					create(h(ii, mm, jj, nn, pp));
 					h(ii, mm, jj, nn, pp) is_binary;
@@ -1079,6 +1082,7 @@ if writeToFile then
 end-if
 
 end-model
+
 
 
 
