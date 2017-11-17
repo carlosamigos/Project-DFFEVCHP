@@ -106,6 +106,7 @@ public class StaticTestSuite {
 
 			// if file doesnt exists, then create it
 			if (!resultsFile.exists()) {
+				System.out.println("Creating new file");
 				resultsFile.createNewFile();
 			} 
 
