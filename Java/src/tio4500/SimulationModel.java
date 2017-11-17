@@ -70,7 +70,6 @@ public class SimulationModel {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             while (line != null) {
-                System.out.println(line);
                 if((line.contains(dayNumberString) || line.contains(problemInstanceFileName) || line.contains(startIndexString))){
                     line.trim(); line = line.replace("\n","");
                     String[] parts = line.split(":");
@@ -82,15 +81,6 @@ public class SimulationModel {
                         int number = Integer.parseInt(parts[1].trim());
                         if(number != Constants.START_INDEX){
                             throw new IllegalArgumentException();
-                        }
-                    } else if(type.contains(problemInstanceFileName)){
-                        String fileName = parts[1].trim();
-
-                        String foo =  problemInstance.getFileName().trim();
-                        System.out.println(fileName + "\n" + foo);
-                        if(foo.equals(fileName)){
-                            System.out.println("failed");
-                            throw new IllegalStateException();
                         }
                     }
                 }
@@ -119,9 +109,6 @@ public class SimulationModel {
             return;
         } catch (IllegalArgumentException e){
             System.out.println("Start index in written file do not match Constants.START_INDEX");
-            return;
-        } catch (IllegalStateException e){
-            System.out.println("Wrong problem instance "+ e.getMessage());
             return;
         }
         System.out.println("Simulation file read.");
@@ -200,8 +187,11 @@ public class SimulationModel {
     }
 
 
-
-
-
-
+    @Override
+    public String toString() {
+        return "SimulationModel{" +
+                "dayNumber=" + dayNumber +
+                ", demandRequests=" + demandRequests +
+                '}';
+    }
 }

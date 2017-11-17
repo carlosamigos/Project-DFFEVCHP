@@ -32,6 +32,7 @@ public class DynamicProblem {
     public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, Solver solver) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
+        System.out.println(simulationModel);
         this.kpiTrackerDyanmic = new KPITrackerDynamic(this);
         this.solver = solver;
     }
