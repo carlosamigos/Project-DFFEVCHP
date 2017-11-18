@@ -3,6 +3,7 @@ import random
 import sys
 import time
 import copy
+import os.path
 
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
@@ -12,14 +13,14 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 # CONSTANTS
 DISTANCESCALE = 3
 CARSCHARGING = 3
-MOVES = 6
-MAXNODES = 8
+MOVES = 5
+MAXNODES = 6
 SPREAD = True
 CLUSTER = True
 
-MODES_RUN1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
-MODES_RUN2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
-MODES_RUN3 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4], [4, 10, 30, 0.05, 0.4]]
+MODES_RUN_1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
+MODES_RUN_2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4] , [4, 10, 30, 0.05, 0.4]]
 
 class World:
 
@@ -370,7 +371,11 @@ class World:
     ## FILE HANDLER ##
 
     def writeToFile(self, example):
-        fileName = "../../Mosel/tests/" + str(example) + ".txt"
+        fileName = "../../Mosel/tests/" + str(example) + "_a.txt"
+        if (os.path.exists(fileName)):
+            fileName = "../../Mosel/tests/" + str(example) + "_b.txt"
+            if (os.path.exists(fileName)):
+                fileName = "../../Mosel/tests/" + str(example) + "_c.txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
@@ -536,24 +541,6 @@ class World:
             if (i < len(self.visitList) - 1):
                 string += " "
         string += "] \n"
-        string += "surplusList: ["
-        for i in range(len(self.surp)):
-            string += str(self.surp[i])
-            if (i < len(self.surp) - 1):
-                string += " "
-        string += "] \n"
-        string += "deficitList: ["
-        for i in range(len(self.deficit)):
-            string += str(self.deficit[i])
-            if (i < len(self.deficit) - 1):
-                string += " "
-        string += "] \n"
-        string += "allList: ["
-        for i in range(len(self.deficit)):
-            string += str(self.deficit[i] + self.surp[i] + self.charg[i])
-            if (i < len(self.deficit) - 1):
-                string += " "
-        string += "] \n"
         f.write(string)
         print(string)
 
@@ -664,7 +651,8 @@ def createOperators(world):
 def main():
     print("\n WELCOME TO THE EXAMPLE CREATOR \n")
     world = World()
-    world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
+    #world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
+    world.setCordConstants((59.952483, 10.795069), (59.904574, 10.681527))
     createNodes(world)
     cords = []
     if(SPREAD):
@@ -692,7 +680,26 @@ def main():
 
 main()
 
-
+"""
+string += "surplusList: ["
+for i in range(len(self.surp)):
+    string += str(self.surp[i])
+    if (i < len(self.surp) - 1):
+        string += " "
+string += "] \n"
+string += "deficitList: ["
+for i in range(len(self.deficit)):
+    string += str(self.deficit[i])
+    if (i < len(self.deficit) - 1):
+        string += " "
+string += "] \n"
+string += "allList: ["
+for i in range(len(self.deficit)):
+    string += str(self.deficit[i] + self.surp[i] + self.charg[i])
+    if (i < len(self.deficit) - 1):
+        string += " "
+string += "] \n"
+"""
 # TODO: Create a new location template, so that zobnes scale equally
 # TODO: More crontol paramters for generating boards with an equal amount of: Cars to be handled, cars to be charged, cars that finish charging
 
