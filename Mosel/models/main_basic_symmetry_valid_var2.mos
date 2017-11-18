@@ -448,6 +448,15 @@ if(mode = 4) then
 			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm); !+ 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
 end-if
 
+if(mode = 5) then
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
+			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
+			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
+			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm) + 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
+end-if
+
 ! ### End of declaration of objective ### !		
 
 ! ### Start of declaration of ROUTING CONSTRAINTS (5.2) ### !		
