@@ -19,20 +19,30 @@ public class DynamicTestSuite extends TestSuite{
 	private HashMap<String, ArrayList<KPITrackerDynamic>> kpiTrackers;
 	
 	public DynamicTestSuite(SolverType solverType, int days) {
-		super(solverType, Constants.TEST_FOLDER, Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE);
 		this.days = days;
 		
+	}
+
+	private void printEstimatedTimeLeft(Double totalTimePerRun, int runsLeft){
+		String hoursAndMinutes = "";
+		double timeLeft = totalTimePerRun * runsLeft;
+		int totalMinutes = (int)Math.round(timeLeft/60);
+		int totalHours = (int)Math.round(totalMinutes/60);
+		int minutes = totalMinutes - totalHours*60;
+		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
+		System.out.println("Worst case time left: " + hoursAndMinutes);
 	}
 	
 	public void runTestSuite() {
 		System.out.println("Starting dynamic test suite...");
-		System.out.println("Number of test files: " + testFileNames.size() + "\n");
-		double estimatedTime = (Constants.END_TIME - Constants.START_TIME)/60 - 1;
-		estimatedTime *= (60/Constants.TIME_INCREMENTS);
-		estimatedTime *= (Constants.MAX_SOLVE_TIME_MOSEL_SECONDS/3600);
-		estimatedTime *= this.testFileNames.size()*this.solvers.size();
-		System.out.println("Estimated running time (hours): " + estimatedTime);
-		
+		System.out.println("Number of test files, days, and models: " + testFileNames.size() + ", " + this.days + ", " + this.solvers.size() + "\n");
+		int totalRuns = testFileNames.size() * days * this.solvers.size();
+		double estimatedTimePerRun = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)- Constants.START_TIME)/60;
+		estimatedTimePerRun *= Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
+
+		printEstimatedTimeLeft(estimatedTimePerRun,totalRuns);
+		int runNumber = 0;
 		for(String test : testFileNames) {
 			
 			System.out.println("Solving " + test);
@@ -54,15 +64,18 @@ public class DynamicTestSuite extends TestSuite{
 					ProblemInstance problemInstance = new ProblemInstance(test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
 					solverSimulationModel.readSimulationModelFromFile(); // Burde vært i konstruktøren til SimulationModel?
-					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver);
+					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);
 					problem.solve();
 					
 					// Results:
 					KPITrackerDynamic tracker = problem.getKpiTrackerDyanmic();
 					addKPITracker(solver.getInfo(), tracker);
+					runNumber++;
 				}
-				System.out.println("");
+				printEstimatedTimeLeft(estimatedTimePerRun,totalRuns-runNumber);
+
 			}
+			System.out.println("");
 			writeKPIs();
 		}
 		
@@ -77,15 +90,15 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	private void writeKPIs() {
-		String solv = StringUtils.center("Model", 40);
-		String dns = StringUtils.center("DNS (customers)", 15);
-		String abandoned = StringUtils.center("Abondoned (op)", 15);
-		String charged = StringUtils.center("Charged (cars)", 15);
-		String carDist = StringUtils.center("CarDist (min)", 15);
-		String bikeDist = StringUtils.center("BikeDist (min)", 15);
-		String elDist = StringUtils.center("EL-Used (%)", 10);
-		String chargeWait = StringUtils.center("ChargeWait (min)", 15);
-		String idleTime = StringUtils.center("IdleTime (min)", 15);
+		String solv = StringUtils.center("Model", 60);
+		String dns = StringUtils.center("DNS (customers)", 19);
+		String abandoned = StringUtils.center("Abondoned (op)", 18);
+		String charged = StringUtils.center("Charged (cars)", 18);
+		String carDist = StringUtils.center("CarDist (min)", 17);
+		String bikeDist = StringUtils.center("BikeDist (min)", 18);
+		String elDist = StringUtils.center("EL-Used (%)", 15);
+		String chargeWait = StringUtils.center("ChargeWait (min)", 19);
+		String idleTime = StringUtils.center("IdleTime (min)", 17);
 		String data = solv + "|" + dns + "|" + abandoned + "|" + charged +
 		              "|" + carDist + "|" + bikeDist + "|" + elDist + "|" + chargeWait +
 		              "|" + idleTime + "\n";
@@ -93,26 +106,26 @@ public class DynamicTestSuite extends TestSuite{
 		DecimalFormat df = 	new DecimalFormat("#.##");
 		for(String solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
-			String solverName = StringUtils.center(solver, 40);
+			String solverName = StringUtils.center(solver, 60);
 			String dnsVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getDemandsNotServed().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 19);
 			
 			String abandonedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfOperatorsAbandoned().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 18);
 			
 			String chargedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfCarsSetToCharging().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days), 15);
+				.collect(Collectors.summingInt(Integer::intValue))/this.days), 18);
 			
 			String carDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getTotalCarTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
-				, 15);
+				, 17);
 			
-			String bikeDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
+			String bikeDistVal = StringUtils.center("" + df.format(trackers.stream().map(t ->
 				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
-				, 15);
+				, 18);
 			
 			String elDistVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getTotalBikeTravelDoneByServiceOperators()).collect(Collectors.summingDouble(Double::doubleValue))/this.days)
@@ -120,11 +133,11 @@ public class DynamicTestSuite extends TestSuite{
 			
 			String chargeWaitVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getWaitingTimeBeforeCarInNeedAreCharged().stream().collect(Collectors.summingDouble(Double::doubleValue)))
-				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 15);
+				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 19);
 			
 			String idleTimeVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getIdleTimeForServiceOperators().stream().collect(Collectors.summingDouble(Double::doubleValue)))
-				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 15);
+				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 17);
 			
 			data += solverName + "|" + dnsVal + "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
@@ -140,7 +153,7 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	private void writeTestHeader(String testName) {
-		String data = "Test " + testName + "\n";
+		String data = "\nTest " + testName + "\n";
 		fh.writeFile(data);
 	}
 	

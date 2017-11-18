@@ -10,7 +10,7 @@ import utils.StringUtils;
 public class StaticTestSuite extends TestSuite {
 	
 	public StaticTestSuite(SolverType solverType) {
-		super(solverType, Constants.TEST_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
 	}
 	
 	public void runTestSuite() {
@@ -26,7 +26,7 @@ public class StaticTestSuite extends TestSuite {
 			
 			for(String testName : testFileNames) {
 				KPITrackerStatic tracker = new KPITrackerStatic();
-				StaticProblem staticProblem = new StaticProblem(Constants.TEST_FOLDER + testName);
+				StaticProblem staticProblem = new StaticProblem(Constants.TEST_STATIC_FOLDER + testName);
 				solver.solve(staticProblem);
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);

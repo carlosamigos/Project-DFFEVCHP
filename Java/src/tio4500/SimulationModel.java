@@ -53,6 +53,7 @@ public class SimulationModel {
             writer.close();
         }
         catch (IOException e){
+            e.printStackTrace();
             System.out.println("Simulation day could not be saved.");
         }
     }
@@ -84,6 +85,7 @@ public class SimulationModel {
                     line.trim(); line = line.replace("\n","");
                     String[] parts = line.split(":");
                     int parkingNodeId = Integer.parseInt(parts[0].trim());
+                    parts[1] = parts[1].replace(",",".");
                     double number = Double.parseDouble(parts[1].trim());
                     try{
                         ParkingNode pNode = (ParkingNode) problemInstance.getNodeMap().get(parkingNodeId);
@@ -102,9 +104,10 @@ public class SimulationModel {
 
         } catch (IOException e){
             System.out.println("Simulation file not found: " + e.getMessage());
+            e.printStackTrace();
             return;
         } catch (IllegalArgumentException e){
-            System.out.println("Start index in written file do not match Constants.START_INDEX");
+            e.printStackTrace();
             return;
         }
     }

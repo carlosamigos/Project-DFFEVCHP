@@ -45,7 +45,7 @@ public abstract class TestSuite {
 		File[] moselFiles = (new File(Constants.PROBLEM_FOLDER + Constants.MOSEL_TEST_FILES_FOLDER)).listFiles();
 		ArrayList<String> moselFileNames =  new ArrayList<String>();
 		for(File file : moselFiles) {
-			if(!file.getName().contains(".bim")) {
+			if(file.getName().contains(".mos")) {
 				moselFileNames.add(file.getName());
 			}
 		}
