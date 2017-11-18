@@ -31,7 +31,7 @@ public class Constants {
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 100; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 120; // In seconds
     public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
@@ -39,6 +39,7 @@ public class Constants {
     public final static int TIME_LIMIT_STATIC_PROBLEM = 60;
 
     // Variables for simulation environment
+    public final static double CUSTOMER_CONSTANT_TIME_USED = 10;
     public final static double HIGH_ARRIVAL_RATE = 10.0; // Average waiting time before next arrival
     public final static double HIGH_RATE_LAMBDA = 1.0/HIGH_ARRIVAL_RATE; // How many Arrivals per time unit
     public final static double MEDIUM_ARRIVAL_RATE = 50.0;
@@ -47,7 +48,7 @@ public class Constants {
     public final static double LOW_RATE_LAMBDA = 1.0/LOW_ARRIVAL_RATE;
     public final static double PERCENTAGE_AFFECTED_BY_RUSH_HOUR = 2.0/3.0;
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
-    public final static double CUSTOMER_TIME_MULTIPLICATOR = 2; // 1-1
+    public final static double CUSTOMER_TIME_MULTIPLICATOR = 1.5; // 1-1.5
     public final static double PROBABILITY_CUSTOMERS_CHARGE = 0.7;
     public final static boolean PRINT_OUT_ACTIONS = false;
 
