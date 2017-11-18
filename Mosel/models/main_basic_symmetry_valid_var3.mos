@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_2x3_3so_2c_6mov_0MODE _base.txt';
+	DataFile = '../Generated examples/test_8nodes_3so_2c_6mov_3charging_1finishes_ 4MODE.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -439,7 +439,7 @@ if(mode = 4) then
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm);
+			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm) + 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
 end-if
 
 ! ### End of declaration of objective ### !		
