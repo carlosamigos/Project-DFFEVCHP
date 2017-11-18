@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
+	DataFile = '../test_2x3_3so_2c_6mov_0MODE _base.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -750,11 +750,7 @@ end-declarations
 
 
 ! ### Start of declaration of valid inequalities ### !
-(!
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(jj)) do
-	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
-end-do
-!)
+
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
 end-do

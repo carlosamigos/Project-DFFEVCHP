@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_2x3_3so_2c_6mov_0MODE.txt';
+	DataFile = '../test_2x3_3so_2c_6mov_0MODE _base.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 200;
+	MaxSolveTimeSeconds = 300;
 end-parameters
 
 
@@ -155,9 +155,6 @@ declarations
 	finishedDuringC      : array(cNodes)     of integer;
 	idealStateP          : array(pNodes)     of integer;
 	demandP              : array(pNodes)     of integer;
-	deficitList          : array(Nodes)     of integer;
-	surplusList             : array(Nodes)     of integer;
-	allList              : array(Nodes)     of integer;
 	
 	!Objective function
 	mode : integer;
@@ -199,9 +196,6 @@ initializations from DataFile
 	maxTravelHToC;
 	visitList;
 	costOfTravelH;
-	!deficitList;
-	!surplusList;           
-	!allList;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -445,7 +439,7 @@ if(mode = 4) then
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm); !+ 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
+			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm);
 end-if
 
 ! ### End of declaration of objective ### !		
@@ -570,7 +564,7 @@ end-declarations
 
 forall(ii in pNodes, mm in visits| mm <= visitList(ii)) do 
 	if mm = 1 then
-		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1) <= initialRegularInP(ii);
+		stateBalanceParkingNotInNeed(ii,mm) := s(ii, 1) = initialRegularInP(ii);
 	elif mm = 2 then
 		stateBalanceParkingNotInNeed(ii,mm) := s(ii,mm) + sum(jj in pNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp)-
 											   sum(pp in aOperators, nn in visits | parkingNodeAOperator(pp) = ii) hA(chargingNodeAOperator(pp), nn, ii, mm-1, pp) -
@@ -602,7 +596,7 @@ end-declarations
 
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do 
 	if mm = 1 then
-		stateBalanceParkingInNeed(ii,mm) := sC(ii, 1) <= initialInNeedP(ii);
+		stateBalanceParkingInNeed(ii,mm) := sC(ii, 1) = initialInNeedP(ii);
 	elif mm = 2 then
 		stateBalanceParkingInNeed(ii,mm) := sC(ii,mm) + sum(jj in cNodes, nn in visits, pp in rOperators) h(ii,mm-1,jj,nn,pp) = initialInNeedP(ii);
 	else 
@@ -624,7 +618,7 @@ end-declarations
 
 forall(ii in cNodes, mm in visits | mm <= visitList(ii)) do 
 	if mm = 1 then
-		stateBalanceCharging(ii,mm) := s(ii, 1) <= finishedDuringC(ii);
+		stateBalanceCharging(ii,mm) := s(ii, 1) = finishedDuringC(ii);
 		
 	elif mm = 2 then
 		stateBalanceCharging(ii,mm) := s(ii,mm) + 
@@ -757,14 +751,9 @@ end-declarations
 
 ! ### Start of declaration of valid inequalities ### !
 
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(jj)) do
-	sequenceControl(ii, mm, jj, nn, pp) := u(ii, mm, pp) - u(jj, nn, pp) + (sequenceBigM-1)*x(ii, mm, jj, nn, pp) + (sequenceBigM-3)*x(jj, nn, ii, mm, pp) <= sequenceBigM-2;
-end-do
-
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
 end-do
-
 
 
 ! ### End of declaration of valid inequalities ### !
@@ -938,7 +927,7 @@ if printResults then
 		end-if
 	end-do
 	!)
-		
+	
 	forall(ii in pNodes) do
 		writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
 	end-do
@@ -977,7 +966,6 @@ if printResults then
 		end-do
 		
 	end-do
-	
 end-if
 
 
