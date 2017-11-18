@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_2x3_3so_2c_6mov_0MODE.txt';
+	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 200;
+	MaxSolveTimeSeconds = 300;
 end-parameters
 
 
@@ -63,13 +63,6 @@ declarations
 	visits            : set of integer; ! Set of all possible visits
 end-declarations
 
-initializations from DataFile
-	numVisits;
-	numPNodes;
-	numCNodes;
-	numROperators;
-	numAOperators;
-end-initializations
 
 visits := 1..numVisits;
 
@@ -155,9 +148,6 @@ declarations
 	finishedDuringC      : array(cNodes)     of integer;
 	idealStateP          : array(pNodes)     of integer;
 	demandP              : array(pNodes)     of integer;
-	deficitList          : array(Nodes)     of integer;
-	surplusList             : array(Nodes)     of integer;
-	allList              : array(Nodes)     of integer;
 	
 	!Objective function
 	mode : integer;
@@ -199,9 +189,6 @@ initializations from DataFile
 	maxTravelHToC;
 	visitList;
 	costOfTravelH;
-	!deficitList;
-	!surplusList;           
-	!allList;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -233,7 +220,7 @@ if printParams then
 	writeln('Number of cars that will finish charging in a charging node:             ',finishedDuringC);
 	writeln('Ideal number of parked cars in each node at the end for planning period: ',idealStateP);
 	writeln('Demand in the different nodes:                                           ',demandP);
-	writeln('Visitlist: ', visitList);
+	writeln('Visitlist: '															   , visitList);
 end-if
 
 
@@ -386,14 +373,6 @@ forall(ii in cNodes) do
 	sEndAc(ii) is_semint 0;
 end-do
 
-! Create u - sequence variabel 
-forall(pp in rOperators) do
-	forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
-		create(u(ii, mm, pp));
-		u(ii, mm, pp) is_semint 0; 
-	end-do
-end-do
-
 ! ### End of creation of Variables ### !
 
 
@@ -404,7 +383,7 @@ end-declarations
 
 ! MODE 0
 ! Do the least moves, and meet optimal state
-Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+Objective :=  costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravel  * sum(ii in Nodes, mm in visits, jj in Nodes, nn in visits, pp in rOperators) x(ii,mm,jj,nn,pp);
@@ -445,16 +424,7 @@ if(mode = 4) then
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm); !+ 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
-end-if
-
-if(mode = 5) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
-			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
-			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
-			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
-			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm) + 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
+			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm);
 end-if
 
 ! ### End of declaration of objective ### !		
@@ -756,7 +726,6 @@ end-do
 
 ! ### End of declaration of time constraints ### !
 
-! ### Start of declaration of valid inequalities ### !
 
 declarations
 	sequenceControl        : dynamic array(rNodes, visits, Nodes, visits, rOperators) of linctr;
@@ -773,7 +742,6 @@ end-do
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
 end-do
-
 
 
 ! ### End of declaration of valid inequalities ### !
@@ -795,7 +763,7 @@ startTimeMosel := timestamp;
 
 setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
-!writeln('Objective function value: ', getobjval);
+writeln('Objective function value: ', getobjval);
 
 ! TIL SIMEN
 endTimeMosel := timestamp;
@@ -947,50 +915,47 @@ if printResults then
 		end-if
 	end-do
 	!)
-		
-	forall(ii in pNodes) do
-		writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
-	end-do
-	
-	forall(ii in pNodes) do
-		writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
-	end-do
-	
-	forall(ii in cNodes) do
-		writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
-	end-do
-	
-	forall(ii in pNodes) do
-		writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
-	end-do
-	
-	forall(ii in Nodes - aNodes) do
-		writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
-	end-do
-	
-	forall(ii in Nodes - aNodes) do
-		writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
-	end-do
-	
-	forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
-		if(getsol(x(ii,mm,jj,nn,pp)) >= 0.5) then
-			writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp, " X is: ", getsol(x(ii, mm, jj, nn, pp)))
-		end-if
-	end-do
-	writeln("HANDLING")
-	forall(pp in rOperators, ii in Nodes, mm in visits)do
-		forall(jj in Nodes, nn in visits) do 
-			if(getsol(h(ii,mm,jj,nn,pp)) >= 0.5) then
-				writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
-			end-if
-		end-do
-		
-	end-do
-	
 end-if
 
 
+forall(ii in pNodes) do
+	writeln('Missing cars in node: ', ii, ' End of planning period: ', getsol(sPlus(ii))) 
+end-do
 
+forall(ii in pNodes) do
+	writeln('Surplus cars in node: ', ii, ' End of planning period ', getsol(sMinus(ii))) 
+end-do
+
+forall(ii in cNodes) do
+	writeln('Charging cars in charging station: ', ii, ' End of planning period ', getsol(sEndAc(ii)))
+end-do
+
+forall(ii in pNodes) do
+	writeln('Remaining cars that need charging in node: ', ii, ' End of planning period: ', getsol(sEndC(ii))) 
+end-do
+
+forall(ii in Nodes - aNodes) do
+	writeln('Overtime used in node: ', ii, ' Is: ', sum(mm in visits) getsol(tMinus(ii,mm)))
+end-do
+
+forall(ii in Nodes - aNodes) do
+	writeln('Undertime used in node: ', ii, ' Is: ', sum(mm in visits)  getsol(tPlus(ii, mm)))
+end-do
+
+forall(pp in rOperators, ii in Nodes, mm in visits, jj in Nodes, nn in visits)do
+	if(getsol(x(ii,mm,jj,nn,pp)) >= 0.5) then
+		writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp, " X is: ", getsol(x(ii, mm, jj, nn, pp)))
+	end-if
+end-do
+writeln("HANDLING")
+forall(pp in rOperators, ii in Nodes, mm in visits)do
+	forall(jj in Nodes, nn in visits) do 
+		if(getsol(h(ii,mm,jj,nn,pp)) >= 0.5) then
+			writeln('From: ', ii, ' Visit: ', mm, ' To: ', jj, ' Visit: ', nn,  ' By: ', pp)
+		end-if
+	end-do
+	
+end-do
 (!
 forall(pp in rOperators) do
 	writeln("Sum into destination: ", x(jj, nn, destinationNodeROperator(pp), mm, pp))
@@ -1095,7 +1060,6 @@ if writeToFile then
 end-if
 
 end-model
-
 
 
 

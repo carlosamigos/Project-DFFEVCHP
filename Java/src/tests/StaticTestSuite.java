@@ -48,6 +48,7 @@ public class StaticTestSuite extends TestSuite {
 		String gap = StringUtils.center("Gap", 10);
 		String headerLine = name + "|" + time + "|" + value + "|" + gap;
 		fh.writeFile(data + headerLine);
+
 	}
 	
 	private void writeTestResult(KPITrackerStatic tracker) {

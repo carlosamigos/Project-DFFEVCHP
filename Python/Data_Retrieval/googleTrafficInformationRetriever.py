@@ -74,10 +74,10 @@ def makeStringListFromCoordinateVector(coordVector):
 
 def test():
     coordVector = [(63.427057, 10.3925251), (63.4222027, 10.3955179), (63.4367, 10.3988199), (63.4188848, 10.4044),
-                   (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4222027, 10.3955179)]
+                   (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944)]
     print("number of coordinates", len(coordVector))
     transportType = "transit"
-    apikey = API_KEY_2
+    apikey = API_KEY_4
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
     time.sleep(5)
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
@@ -87,6 +87,7 @@ def test():
 
 def run(coordVector, transportType, writeToFile):
     apikey = API_KEY_3
+    print("number of coordinates", len(coordVector))
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
 
 
