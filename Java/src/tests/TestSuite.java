@@ -14,6 +14,7 @@ import utils.StringUtils;
 
 public abstract class TestSuite {
 	public abstract void runTestSuite();
+	protected abstract double calcTimePerRun();
 	protected final ArrayList<String> testFileNames;
 	protected ArrayList<Solver> solvers;
 	protected FileHandler fh;
@@ -53,5 +54,15 @@ public abstract class TestSuite {
 		for(String moselFileName : moselFileNames) {
 			solvers.add(new MoselSolver(Constants.MOSEL_TEST_FILES_FOLDER + moselFileName));
 		}
+	}
+	
+	protected void printEstimatedTimeLeft(Double timePerRun, int runsLeft){
+		String hoursAndMinutes = "";
+		double timeLeft = timePerRun * runsLeft;
+		int totalMinutes = (int)Math.round(timeLeft/60);
+		int totalHours = (int)Math.round(totalMinutes/60);
+		int minutes = totalMinutes - totalHours*60;
+		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
+		System.out.println("Worst case time left: " + hoursAndMinutes);
 	}
 }

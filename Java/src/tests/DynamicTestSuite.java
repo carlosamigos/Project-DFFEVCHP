@@ -24,25 +24,16 @@ public class DynamicTestSuite extends TestSuite{
 		
 	}
 
-	private void printEstimatedTimeLeft(Double totalTimePerRun, int runsLeft){
-		String hoursAndMinutes = "";
-		double timeLeft = totalTimePerRun * runsLeft;
-		int totalMinutes = (int)Math.round(timeLeft/60);
-		int totalHours = (int)Math.round(totalMinutes/60);
-		int minutes = totalMinutes - totalHours*60;
-		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
-		System.out.println("Worst case time left: " + hoursAndMinutes);
-	}
+	
 	
 	public void runTestSuite() {
 		System.out.println("Starting dynamic test suite...");
 		System.out.println("Number of test files, days, and models: " + testFileNames.size() + ", " + this.days + ", " + this.solvers.size() + "\n");
-		int totalRuns = testFileNames.size() * days * this.solvers.size();
-		double estimatedTimePerRun = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)- Constants.START_TIME)/60;
-		estimatedTimePerRun *= Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
+		int runsLeft = testFileNames.size() * days * this.solvers.size();
+		double timePerRun = calcTimePerRun();
 
-		printEstimatedTimeLeft(estimatedTimePerRun,totalRuns);
-		int runNumber = 0;
+		printEstimatedTimeLeft(timePerRun, runsLeft);
+
 		for(String test : testFileNames) {
 			
 			System.out.println("Solving " + test);
@@ -70,9 +61,9 @@ public class DynamicTestSuite extends TestSuite{
 					// Results:
 					KPITrackerDynamic tracker = problem.getKpiTrackerDyanmic();
 					addKPITracker(solver.getInfo(), tracker);
-					runNumber++;
+					runsLeft--;
 				}
-				printEstimatedTimeLeft(estimatedTimePerRun,totalRuns-runNumber);
+				printEstimatedTimeLeft(timePerRun, runsLeft);
 
 			}
 			System.out.println("");
@@ -147,29 +138,20 @@ public class DynamicTestSuite extends TestSuite{
 
 	
 	
-	private void writeDayHeader(int day) {
-		String header = "Day " + day + "\n";
-		fh.writeFile(header);
-	}
-	
 	private void writeTestHeader(String testName) {
 		String data = "\nTest " + testName + "\n";
 		fh.writeFile(data);
 	}
 	
-	private void writeTestResult(KPITrackerDynamic tracker) {
-		System.out.println(tracker);
-		/*
-		String[] namePath = tracker.getName().split("/");
-		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
-		data += "|";
-		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
-		data += "|";
-		data += StringUtils.center(tracker.getBestSolution(),10);
-		data += "|";
-		data += StringUtils.center(tracker.getGap() + "%", 10);
+	@Override
+	protected double calcTimePerRun() {
+		double timePerRun = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)
+				- Constants.START_TIME)/60;
+		timePerRun *= Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
 		
-		fh.writeFile(data);
-		*/
+		return timePerRun;
 	}
+	
+	
+
 }

@@ -16,15 +16,17 @@ public class StaticTestSuite extends TestSuite {
 	public void runTestSuite() {
 		System.out.println("\nStarting static test suite...");
 		System.out.println("Number of test files: " + testFileNames.size());
-		System.out.println("Estimated running time (hours): " + 
-							(Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*
-							this.solvers.size()/3600) + "\n");
+		int runsLeft = this.solvers.size() * this.testFileNames.size();
+		double timePerRun = calcTimePerRun();
+		
+		
 		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
 			System.out.println("Running tests with " + solver.getInfo());
 			
 			for(String testName : testFileNames) {
+				printEstimatedTimeLeft(timePerRun, runsLeft);
 				KPITrackerStatic tracker = new KPITrackerStatic();
 				StaticProblem staticProblem = new StaticProblem(Constants.TEST_STATIC_FOLDER + testName);
 				solver.solve(staticProblem);
@@ -63,6 +65,11 @@ public class StaticTestSuite extends TestSuite {
 		
 		fh.writeFile(data);
 	}
-
-
+	
+	@Override
+	protected double calcTimePerRun() {
+		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*this.solvers.size();
+		return timePerRun;
+		
+	}
 }	
