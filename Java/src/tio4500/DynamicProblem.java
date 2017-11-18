@@ -1,5 +1,6 @@
 package tio4500;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
 import constants.Constants.SolverType;
 import tio4500.simulations.DemandRequest;
@@ -28,12 +29,14 @@ public class DynamicProblem {
     private SimulationModel simulationModel;
     private KPITrackerDynamic kpiTrackerDyanmic;
     private Solver solver;
+    private String fileName;
 
-    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, Solver solver) {
+    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, Solver solver, String fileName) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
         this.kpiTrackerDyanmic = new KPITrackerDynamic(this);
         this.solver = solver;
+        this.fileName = fileName;
     }
 
 
@@ -42,7 +45,7 @@ public class DynamicProblem {
         int subproblemNo = 1;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         HashMap<Operator,OperatorTravel> operatorTravels = new HashMap<>();
-        for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM; time += Constants.TIME_INCREMENTS) {
+        for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM*2; time += Constants.TIME_INCREMENTS) {
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("\n\n");
                 System.out.println("Sub problem "+subproblemNo+" starting at time: "+timeToHHMM(time));
@@ -55,7 +58,7 @@ public class DynamicProblem {
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
             KPITrackerStatic tracker = new KPITrackerStatic();
-            StaticProblem problem = new StaticProblem(Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER);
+            StaticProblem problem = new StaticProblem(Constants.TEST_DYNAMIC_FOLDER + fileName);
             this.solver.solve(problem);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
@@ -531,7 +534,7 @@ public class DynamicProblem {
         int carsNeededByOperatorsTheNextMinutes = 0;
         for (Operator operator : operatorTravels.keySet()) {
             OperatorTravel operatorTravel = operatorTravels.get(operator);
-            if(operatorDepartures != null){
+            if(operatorDepartures != null && operatorDepartures.get(operator) != null ){
                 for (OperatorDeparture departure: operatorDepartures.get(operator)) {
                     Node arrivalNode = operatorTravel.getArrivalNode();
                     if(arrivalNode.equals(departure.getNode())){
@@ -641,7 +644,7 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorArrival>> arrivals = new HashMap<>();
 
         try {
-            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT + Constants.OUTPUT_REAL_SERVICE_PATHS + Integer.toString(Constants.EXAMPLE_NUMBER) + ".txt");
+            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT_REAL + fileName + ".txt");
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -656,7 +659,9 @@ public class DynamicProblem {
                 if(line.substring(lenOfLine-1,lenOfLine).contains(",")){
                     noIntegerSolutionFound= true;
                     arrivals = new HashMap<>();
-                    System.out.println("No Integer Solution found");
+                    if(Constants.PRINT_OUT_ACTIONS){
+                        System.out.println("No Integer Solution found");
+                    }
                     break;
                 }
                 String[] stringList = line.split(":");
@@ -677,7 +682,9 @@ public class DynamicProblem {
                         isHandling = Integer.parseInt(tupleList[2])==1;
                     } catch (NumberFormatException e){
                         arrivals = new HashMap<>();
-                        System.out.println("No Integer Solution found");
+                        if(Constants.PRINT_OUT_ACTIONS){
+                            System.out.println("No Integer Solution found");
+                        }
                         noIntegerSolutionFound = true;
                         break;
                     }
@@ -760,8 +767,8 @@ public class DynamicProblem {
             } else {
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             }
-            totalCarsPredicted+= nextPeriodDemand;
-            map.put(pNode,nextPeriodDemand);
+            totalCarsPredicted+= nextPeriodDemand/2;
+            map.put(pNode,nextPeriodDemand/2);
         }
         int numberOfCarsAvailableNextPeriod = 0;
         for (Car car : problemInstance.getCars()) {
@@ -799,7 +806,7 @@ public class DynamicProblem {
                 } else {
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
                 }
-                int demandInt = (int) Math.round(nextPeriodDemand);
+                int demandInt = (int) Math.floor(nextPeriodDemand/2);
                 pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
             }
         } else {

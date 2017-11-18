@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
+	DataFile = '\\file.stud.iot.ntnu.no\Home\carlaj\Documents\Prosjektoppgave\Project-DFFEVCHP\Mosel\tests\dynamic\test_2x3_3so_2c_6mov_0MODE.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;

@@ -91,11 +91,12 @@ public class ProblemInstance {
         stateSpecificKeys.add("timeLimit");
         stateSpecificKeys.add("initialHandling");
         stateSpecificKeys.add("mode");
-        //stateSpecificKeys.add("numVisits");
+        stateSpecificKeys.add("visitList");
+        stateSpecificKeys.add("numVisits");
     }
 
     private void readProblemFromFile() throws IOException{
-        BufferedReader br = new BufferedReader(new FileReader(Constants.TEST_FOLDER +fileName + ".txt"));
+        BufferedReader br = new BufferedReader(new FileReader(Constants.TEST_DYNAMIC_INITIAL_FOLDER +fileName + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -360,7 +361,7 @@ public class ProblemInstance {
         //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
-            PrintWriter writer = new PrintWriter(Constants.STATE_FOLDER + fileName, "UTF-8");
+            PrintWriter writer = new PrintWriter(Constants.TEST_DYNAMIC_FOLDER + fileName +".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {
                 if(!stateSpecificKeys.contains(key)){
                     if(key.equals("travelTimeVehicle")){
@@ -387,7 +388,7 @@ public class ProblemInstance {
                 int chargingSpotsAvailableNow = cNode.getNumberOfTotalChargingSlots() - cNode.getCarsCurrentlyCharging().size();
                 chargingSlotsAvailableArray += (carsFinishedChargingDuringPeriod + chargingSpotsAvailableNow) +" ";
                 finishedDuringCArray += carsFinishedChargingDuringPeriod + " ";
-                chargingSlotsAvailableMap.put(cNode,chargingSpotsAvailableNow);
+                chargingSlotsAvailableMap.put(cNode,chargingSpotsAvailableNow + carsFinishedChargingDuringPeriod);
                 carsFinishedChargingMap.put(cNode,carsFinishedChargingDuringPeriod);
             }
             writer.println("chargingSlotsAvailable : "+ chargingSlotsAvailableArray.substring(0,chargingSlotsAvailableArray.length()-1)+"]");
@@ -488,6 +489,78 @@ public class ProblemInstance {
             // Set mode
             writer.println("mode : "+Constants.OBJECTIVE_MODE);
 
+            //Calculate number of visits
+            HashMap<Node,Integer> lambdaMap = new HashMap<>();
+            HashMap<Node,Integer> thetaMap = new HashMap<>();
+            HashMap<Node,Integer> tauMap = new HashMap<>();
+            HashMap<Node,Integer> phiMap = new HashMap<>();
+
+            for (ParkingNode node : parkingNodes) {
+                // lambda
+                addToHashNodeIntMap(lambdaMap, node, numberOfCarsArtificiallyArrivingToParkingNode.get(node));
+                addToHashNodeIntMap(lambdaMap, node, numberOfInitialHandlersToInNode.get(node));
+                // theta
+                addToHashNodeIntMap(thetaMap, node, numberOfCarsArtificiallyArrivingToParkingNode.get(node));
+                addToHashNodeIntMap(thetaMap, node, numberOfOperatorsStartingInNode.get(node));
+                // tau
+                addToHashNodeIntMap(tauMap, node, numberOfCarsArtificiallyArrivingToParkingNode.get(node));
+                // phi
+                addToHashNodeIntMap(phiMap, node, numberOfInitialHandlersToInNode.get(node));
+            }
+
+            for (ChargingNode node : chargingNodes) {
+                // lambda
+                addToHashNodeIntMap(lambdaMap, node, numberOfInitialHandlersToInNode.get(node));
+                // theta
+                addToHashNodeIntMap(thetaMap, node, numberOfOperatorsStartingInNode.get(node));
+                // tau
+                addToHashNodeIntMap(tauMap, node, 0);
+                // phi
+                addToHashNodeIntMap(phiMap, node, numberOfInitialHandlersToInNode.get(node));
+            }
+            String visitList = "[";
+            int maxVisit = 0;
+            for (ParkingNode node : parkingNodes) {
+                int initRegular = node.getCarsRegular().size();
+                int ideal = node.getIdealNumberOfAvailableCars();
+                int demand = node.getPredictedNumberOfCarsDemandedThisPeriod();
+                int inNeed = node.getCarsInNeed().size();
+                int left = initRegular - (ideal + demand);
+                int right = thetaMap.get(node) - lambdaMap.get(node);
+                int omega = (left <= right ? lambdaMap.get(node) : thetaMap.get(node));
+                boolean isDeficit = initRegular + lambdaMap.get(node) - (ideal + demand) < 0;
+                boolean isSurplus = initRegular + lambdaMap.get(node) - (ideal + demand) > 0;
+                boolean isNeither = initRegular + lambdaMap.get(node) - (ideal + demand) == 0;
+                int visits;
+                if(isDeficit){
+                    visits = (ideal + demand) - (initRegular  + lambdaMap.get(node)) + inNeed + thetaMap.get(node);
+                }else if (isSurplus){
+                    visits = (initRegular + tauMap.get(node)) - (ideal + demand) + inNeed + omega;
+                } else {
+                    visits = (inNeed) + thetaMap.get(node);
+                }
+                maxVisit = Math.max(visits, maxVisit);
+                visitList += Math.max(visits,2) + " ";
+            }
+            for (ChargingNode node : chargingNodes) {
+                int inNeedThatMayReachNode = 0;
+                for (ParkingNode pNode : parkingNodes) {
+                    if(travelTimesCar.get(pNode.getNodeId() - Constants.START_INDEX).get(node.getNodeId()- Constants.START_INDEX) <= Constants.TIME_LIMIT_STATIC_PROBLEM  ){
+                        inNeedThatMayReachNode += pNode.getCarsInNeed().size();
+                    }
+                }
+                int second = chargingSlotsAvailableMap.get(node) - phiMap.get(node);
+                int min = Math.min(inNeedThatMayReachNode, second) + carsFinishedChargingMap.get(node) + thetaMap.get(node);
+                min =  Math.max(2,min);
+                visitList += min + " ";
+                maxVisit = Math.max(min, maxVisit);
+            }
+            for (Operator operator : operators) {
+                visitList += "1 1 ";
+            }
+            visitList = visitList.substring(0, visitList.length() -1) + "]";
+            writer.println("visitList : " + visitList);
+            writer.println("numVisits : " + maxVisit);
             writer.close();
         } catch (FileNotFoundException e){
             System.out.println(e.getMessage());
@@ -496,6 +569,14 @@ public class ProblemInstance {
         }
         //System.out.println("Written to file.");
 
+    }
+
+    private void addToHashNodeIntMap(HashMap<Node,Integer> map, Node node, Integer elem ){
+        if(map.get(node) == null){
+            map.put(node, (elem==null ? 0 : elem));
+        } else{
+            map.put(node, map.get(node) + (elem==null ? 0 : elem));
+        }
     }
 
     public ArrayList<Car> getCars() {

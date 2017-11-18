@@ -16,7 +16,7 @@ parkingNodeAOperator: [1]
 chargingNodeAOperator: [7] 
 
 chargingSlotsAvailable: [2 2] 
-totalNumberOfChargingSlots: [3 2] 
+totalNumberOfChargingSlots: [5 4] 
 
 costOfDeviation : 10
 costOfPostponedCharging : 30
@@ -51,7 +51,7 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [1 0 0] 
-initialRegularInP: [1 1 0 3 0 0] 
+initialRegularInP: [5 3 2 3 1 2] 
 initialInNeedP: [1 0 1 0 0 1] 
 finishedDuringC: [1 0] 
 idealStateP: [3 2 1 2 0 1] 
