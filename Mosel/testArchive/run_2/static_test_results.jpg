@@ -1,0 +1,90 @@
+Solver: models/main_basic.mos
+             Test             |   Time   |  Value   |   Gap    
+test_6nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.43s. |  49.42   |  6.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.12s. |  74.37   |  11.16%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.12s. |  90.94   |  9.48%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.33s. |  55.16   |  13.02%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.11s. |  78.94   |  13.8%   
+test_6nodes_3so_2c_6mov_3charging_1finishes_0MODE| 480.11s. |  54.47   |  27.09%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_1MODE| 480.15s. |  87.54   |  54.64%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_2MODE| 480.11s. |  113.45  |  44.82%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_3MODE| 480.33s. |  67.11   |  34.38%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_4MODE| 480.11s. |  101.87  |  57.27%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.52s. |  48.09   |  6.83%   
+test_9nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.15s. |  87.86   |   49%    
+test_9nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.21s. |  105.15  |  30.73%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.18s. |  59.01   |  20.66%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.27s. |  93.87   |  50.31%  
+
+Solver: models/main_basic_symmetry.mos
+             Test             |   Time   |  Value   |   Gap    
+test_6nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.19s. |  49.42   |  6.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.35s. |  74.53   |  11.35%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.1s.  |  86.79   |  4.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.19s. |  54.66   |  11.84%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.18s. |  94.99   |  27.91%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_0MODE| 480.12s. |  74.33   |  46.58%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_1MODE| 480.1s.  |   96.5   |  58.85%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_2MODE| 480.24s. |  142.93  |  56.15%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_3MODE| 480.14s. |  93.07   |  53.36%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_4MODE| 480.21s. |   127    |  66.29%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.13s. |  82.17   |  43.14%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.15s. |  90.78   |  48.53%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.14s. |  119.6   |  35.79%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.13s. |  91.36   |  44.13%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.47s. |  117.14  |  56.42%  
+
+Solver: models/main_basic_symmetry_valid.mos
+             Test             |   Time   |  Value   |   Gap    
+test_6nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.13s. |  49.42   |  6.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.2s.  |  72.52   |  8.89%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.1s.  |  86.79   |  4.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.14s. |  55.77   |  13.08%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.26s. |  87.88   |  22.97%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_0MODE| 480.11s. |  47.54   |  15.64%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_1MODE| 480.12s. |  119.86  |  66.73%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_2MODE| 480.12s. |  113.45  |  44.82%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_3MODE| 480.15s. |  61.87   |  28.66%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_4MODE| 480.1s.  |  110.56  |  60.31%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.17s. |  48.45   |  3.41%   
+test_9nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.4s.  |  92.33   |  49.36%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.25s. |  136.14  |  43.59%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.16s. |  58.91   |  13.29%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.33s. |  90.64   |  43.54%  
+
+Solver: models/main_basic_symmetry_valid_var1.mos
+             Test             |   Time   |  Value   |   Gap    
+test_6nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.08s. |  49.42   |  6.66%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.1s.  |  71.37   |  7.42%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.1s.  |  86.79   |  4.64%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.17s. |  53.47   |  5.33%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.09s. |  78.56   |  12.9%   
+test_6nodes_3so_2c_6mov_3charging_1finishes_0MODE| 480.1s.  |  53.92   |  25.67%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_1MODE| 480.11s. |  95.66   |  58.27%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_2MODE| 480.09s. |  130.65  |  51.74%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_3MODE| 480.18s. |  85.89   |  47.79%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_4MODE| 480.11s. |  126.69  |  65.1%   
+test_9nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.12s. |  47.86   |  5.99%   
+test_9nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.1s.  |  88.61   |  49.44%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.19s. |  96.26   |  24.25%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.1s.  |  58.83   |  15.84%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.15s. |  92.27   |  46.72%  
+
+Solver: models/main_basic_symmetry_valid_var2.mos
+             Test             |   Time   |  Value   |   Gap    
+test_6nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.22s. |  49.42   |  6.78%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.13s. |  71.37   |  7.43%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.17s. |  90.94   |  9.48%   
+test_6nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.14s. |  55.47   |  10.59%  
+test_6nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.12s. |  91.81   |  24.69%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_0MODE| 480.15s. |  52.78   |  23.11%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_1MODE| 480.2s.  |  95.66   |  57.9%   
+test_6nodes_3so_2c_6mov_3charging_1finishes_2MODE| 480.1s.  |  142.93  |  55.61%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_3MODE| 480.09s. |  96.18   |  52.09%  
+test_6nodes_3so_2c_6mov_3charging_1finishes_4MODE| 480.19s. |  150.7   |  70.56%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_0MODE| 480.14s. |  49.93   |  10.26%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_1MODE| 480.12s. |  75.05   |  40.3%   
+test_9nodes_3so_2c_5mov_3charging_1finishes_2MODE| 480.12s. |  117.56  |  38.04%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_3MODE| 480.08s. |  58.59   |  15.28%  
+test_9nodes_3so_2c_5mov_3charging_1finishes_4MODE| 480.2s.  |   106    |  53.42%  
+
