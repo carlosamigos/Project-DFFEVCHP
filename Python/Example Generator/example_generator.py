@@ -218,7 +218,7 @@ class World:
         initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
         for i in range(len(self.pNodes)):
             visit = self.calculateSpecificVisitParking(initial_theta, initial_lambda, initial_service, i)
-            self.visitList.append(max(visit, 2))
+            self.visitList.append(max(visit, 1))
             numCharging += self.pNodes[i].cState
         for i in range(len(self.cNodes)):
             visit = min(numCharging, self.cNodes[i].totalCapacity + self.cNodes[i].finishes - initial_handling[len(self.pNodes) + i])
@@ -622,7 +622,7 @@ def createCNodes(world):
         totalCapacity = int(input("What is the total capacity: "))
         fCCars = totalCapacity - capacity
         for j in range(fCCars):
-            time = random.randint(0, 20)
+            time = random.randint(0, 10)
             createFCCars(world, time, i + len(world.pNodes) + 1, pNodeNum)
         cN = cNode(pNode.xCord, pNode.yCord, capacity, fCCars, totalCapacity, pNodeNum)
         world.addcNodes(cN)
@@ -675,7 +675,7 @@ def main():
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
         moves = world.calculateMovesToIDeal()
         #filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
-        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_ " + str(i) + "MODE"
+        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(i) + "MODE"
         world.writeToFile(filepath)
 
 main()
