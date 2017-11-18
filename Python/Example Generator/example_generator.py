@@ -13,7 +13,7 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 # CONSTANTS
 DISTANCESCALE = 3
 CARSCHARGING = 3
-MOVES = 4
+MOVES = 6
 MAXNODES = 9
 SPREAD = True
 CLUSTER = True
@@ -244,8 +244,20 @@ class World:
             sumIState += self.pNodes[i].iState
             sumPState += self.pNodes[i].pState - self.pNodes[i].demand + initialAdd[i]
 
+        sumIStateAfter = 0
         for j in range(len(self.pNodes)):
             self.pNodes[j].iState = int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
+            sumIStateAfter += int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
+        while(sumIStateAfter != sumPState):
+            if(sumIStateAfter < sumPState):
+                r = random.randint(0, len(self.pNodes) -1)
+                self.pNodes[r].iState += 1
+                sumIStateAfter += 1
+            else:
+                r = random.randint(0, len(self.pNodes) - 1)
+                self.pNodes[r].iState -= 1
+                sumIStateAfter -= 1
+
 
     def calculateMovesToIDeal(self):
         moves = 0
@@ -659,7 +671,7 @@ def main():
         cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
-    world.createRealIdeal()
+    #world.createRealIdeal()
     world.shuffleIdealState()
     print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)
