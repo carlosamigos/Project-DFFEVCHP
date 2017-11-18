@@ -12,7 +12,7 @@ parameters
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 700;
+	MaxSolveTimeSeconds = 200;
 end-parameters
 
 
@@ -445,7 +445,7 @@ if(mode = 4) then
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm);
+			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm); !+ 0.01 * sum(ii in pNodes, mm in visits) t(ii, mm);
 end-if
 
 ! ### End of declaration of objective ### !		
