@@ -77,7 +77,7 @@ def test():
                    (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944), (63.4225, 10.431944)]
     print("number of coordinates", len(coordVector))
     transportType = "transit"
-    apikey = API_KEY_2
+    apikey = API_KEY_4
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
     time.sleep(5)
     matrix = calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, True)
@@ -86,7 +86,8 @@ def test():
     print(matrix)
 
 def run(coordVector, transportType, writeToFile):
-    apikey = API_KEY_2
+    apikey = API_KEY_3
+    print("number of coordinates", len(coordVector))
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
 
 
