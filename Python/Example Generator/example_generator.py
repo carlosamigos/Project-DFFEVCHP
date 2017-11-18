@@ -13,8 +13,8 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 # CONSTANTS
 DISTANCESCALE = 3
 CARSCHARGING = 3
-MOVES = 5
-MAXNODES = 6
+MOVES = 4
+MAXNODES = 9
 SPREAD = True
 CLUSTER = True
 
@@ -218,7 +218,7 @@ class World:
         initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
         for i in range(len(self.pNodes)):
             visit = self.calculateSpecificVisitParking(initial_theta, initial_lambda, initial_service, i)
-            self.visitList.append(max(visit, 1))
+            self.visitList.append(max(visit, 2))
             numCharging += self.pNodes[i].cState
         for i in range(len(self.cNodes)):
             visit = min(numCharging, self.cNodes[i].totalCapacity + self.cNodes[i].finishes - initial_handling[len(self.pNodes) + i])

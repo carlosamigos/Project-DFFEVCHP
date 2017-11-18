@@ -86,7 +86,7 @@ def test():
     print(matrix)
 
 def run(coordVector, transportType, writeToFile):
-    apikey = API_KEY_1
+    apikey = API_KEY_2
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
 
 
