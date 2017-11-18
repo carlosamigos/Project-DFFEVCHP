@@ -13,7 +13,7 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 # CONSTANTS
 DISTANCESCALE = 3
 CARSCHARGING = 3
-MOVES = 6
+MOVES = 7
 MAXNODES = 9
 SPREAD = True
 CLUSTER = True
