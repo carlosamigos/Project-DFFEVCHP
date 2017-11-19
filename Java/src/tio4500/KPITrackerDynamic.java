@@ -11,7 +11,7 @@ public class KPITrackerDynamic {
 
     // ArrayLists are numbers for each period
     private DynamicProblem dynamicProblem;
-    private ArrayList<Integer> demandsNotServed;
+	private ArrayList<Integer> demandsNotServed;
     private ArrayList<Integer> numberOfOperatorsAbandoned;
     private ArrayList<Integer> numberOfCarsSetToCharging;
     private double totalCarTravelDoneByServiceOperators;
@@ -79,6 +79,42 @@ public class KPITrackerDynamic {
         }
     }
 
+    
+    public ArrayList<Integer> getDemandsNotServed() {
+		return demandsNotServed;
+	}
+
+	public ArrayList<Integer> getNumberOfOperatorsAbandoned() {
+		return numberOfOperatorsAbandoned;
+	}
+
+	public ArrayList<Integer> getNumberOfCarsSetToCharging() {
+		return numberOfCarsSetToCharging;
+	}
+
+	public double getTotalCarTravelDoneByServiceOperators() {
+		return totalCarTravelDoneByServiceOperators;
+	}
+
+	public double getTotalBikeTravelDoneByServiceOperators() {
+		return totalBikeTravelDoneByServiceOperators;
+	}
+
+	public double getElectricityUsedWhenRelocatingCars() {
+		return electricityUsedWhenRelocatingCars;
+	}
+
+	public ArrayList<Double> getWaitingTimeBeforeCarInNeedAreCharged() {
+		return waitingTimeBeforeCarInNeedAreCharged;
+	}
+
+	public ArrayList<Double> getIdleTimeForServiceOperators() {
+		return idleTimeForServiceOperators;
+	}
+
+	public ArrayList<KPITrackerStatic> getStaticKPITrackers() {
+		return staticKPITrackers;
+	}
 
 
     @Override

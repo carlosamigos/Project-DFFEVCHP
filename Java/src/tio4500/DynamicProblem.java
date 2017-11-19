@@ -1,5 +1,6 @@
 package tio4500;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
 import constants.Constants.SolverType;
 import tio4500.simulations.DemandRequest;
@@ -28,37 +29,36 @@ public class DynamicProblem {
     private SimulationModel simulationModel;
     private KPITrackerDynamic kpiTrackerDyanmic;
     private Solver solver;
+    private String fileName;
 
-    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, SolverType type) {
+    public DynamicProblem(ProblemInstance problemInstance, SimulationModel simulationModel, Solver solver, String fileName) {
         this.problemInstance = problemInstance;
         this.simulationModel = simulationModel;
         this.kpiTrackerDyanmic = new KPITrackerDynamic(this);
-        instantiateSolver(type);
+        this.solver = solver;
+        this.fileName = fileName;
     }
-    
-    private void instantiateSolver(SolverType type) {
-    	switch(type) {
-    		case MOSEL:
-    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
-    		default:
-    			this.solver = new MoselSolver(Constants.MOSEL_FILE);
-    	}
-    }
+
 
     public void solve() {
 
         int subproblemNo = 1;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         HashMap<Operator,OperatorTravel> operatorTravels = new HashMap<>();
-        for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM; time += Constants.TIME_INCREMENTS) {
-            System.out.println("\n\n");
-            System.out.println("Sub problem "+subproblemNo+" starting at time: "+timeToHHMM(time));
+        for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM*2; time += Constants.TIME_INCREMENTS) {
+            if(Constants.PRINT_OUT_ACTIONS){
+                System.out.println("\n\n");
+                System.out.println("Sub problem "+subproblemNo+" starting at time: "+timeToHHMM(time));
+            }
+
             updateOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.writeProblemInstanceToFile();
-            System.out.println("State before solving mosel: "+problemInstance + "\n");
+            if(Constants.PRINT_OUT_ACTIONS){
+                System.out.println("State before solving mosel: "+problemInstance + "\n");
+            }
             KPITrackerStatic tracker = new KPITrackerStatic();
-            StaticProblem problem = new StaticProblem(Constants.STATE_FOLDER_FILE + Constants.EXAMPLE_NUMBER);
+            StaticProblem problem = new StaticProblem(Constants.TEST_DYNAMIC_FOLDER + fileName);
             this.solver.solve(problem);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
@@ -66,7 +66,9 @@ public class DynamicProblem {
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
         }
         kpiTrackerDyanmic.updateIdleTimeForOperators();
-        System.out.println(kpiTrackerDyanmic);
+        if(Constants.PRINT_OUT_ACTIONS){
+            System.out.println(kpiTrackerDyanmic);
+        }
     }
 
     public String timeToHHMM(double time){
@@ -112,7 +114,9 @@ public class DynamicProblem {
 
             double earliestTime = Double.min(Double.min(nextDemandReqTime, nextOperatorHappeningTime),nextCustomerArrivalTime);
             time = earliestTime;
-            System.out.print(timeToHHMM(time) + " : ");
+            if(Constants.PRINT_OUT_ACTIONS){
+                System.out.print(timeToHHMM(time) + " : ");
+            }
             if(nextOperatorTravelArrivalTime <=earliestTime ){
                 // operator arrival
                 Operator operator = nextOperatorTravelArrival.getOperator();
@@ -124,7 +128,9 @@ public class DynamicProblem {
                 operator.setTimeRemainingToCurrentNextNode(0);
                 operator.setHandling(false);
                 Car car = nextOperatorTravelArrival.getCar();
-                System.out.println("Operator " + operator + " arrives with car " +car);
+                if(Constants.PRINT_OUT_ACTIONS) {
+                    System.out.println("Operator " + operator + " arrives with car " + car);
+                }
                 if(car != null){
                     operator.setWasHandlingToNextCurrentNode(true);
                     updateBatteryLevelOnCar(time,previousTime,car);
@@ -156,12 +162,10 @@ public class DynamicProblem {
                 if(isThereACarAvailableToBePickedUpAtNodeByCustomer(pNode,operatorTravels,operatorDepartures,time)){
                     // Do customer travel, but not to the same node
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
-                    while(rndIndex == problemInstance.getParkingNodes().indexOf(pNode)){
-                        rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
-                    }
                     ParkingNode arrivalNode = problemInstance.getParkingNodes().get(rndIndex);
                     double travelTime = problemInstance.getTravelTimesCar().get(pNode.getNodeId() - Constants.START_INDEX).get(arrivalNode.getNodeId()-Constants.START_INDEX);
-                    travelTime = travelTime * (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
+                    travelTime *=  (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
+                    travelTime += Constants.CUSTOMER_CONSTANT_TIME_USED;
                     double arrivalTime = nextDemandReqTime + travelTime;
                     CustomerTravel newCustomerTravel = new CustomerTravel(nextDemandReqTime,pNode,arrivalTime,arrivalNode);
                     Car travelCar = findAvailableCarForCustomerInNode(pNode);
@@ -173,13 +177,19 @@ public class DynamicProblem {
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
                         pNode.getCarsInNeed().remove(travelCar);
-                        System.out.println("Customer Travel Added from node " + pNode + " at time: " + nextDemandReqTime + " with car " + travelCar);
+                        if(Constants.PRINT_OUT_ACTIONS){
+                            System.out.println("Customer Travel Added from node " + pNode + " at time: " + nextDemandReqTime + " with car " + travelCar);
+                        }
                     } else {
-                        System.out.println("No car available for customer.");
+                        if(Constants.PRINT_OUT_ACTIONS){
+                            System.out.println("No car available for customer.");
+                        }
                         this.kpiTrackerDyanmic.increaseDemandNotServedForPeriod(subProblemNumber);
                     }
                 }else {
-                    System.out.println("No car available for customer.");
+                    if(Constants.PRINT_OUT_ACTIONS){
+                        System.out.println("No car available for customer.");
+                    }
                     this.kpiTrackerDyanmic.increaseDemandNotServedForPeriod(subProblemNumber);
                 }
             }
@@ -213,12 +223,16 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
-                                        System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
+                                        if(Constants.PRINT_OUT_ACTIONS){
+                                            System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
+                                        }
                                         kpiTrackerDyanmic.increaseCarTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
                                     } else {
                                         operator.setPreviousNode(departureNode);
                                         operator.setNextOrCurrentNode(departureNode);
-                                        System.out.println("Car missed by operator... operator will wait.");
+                                        if(Constants.PRINT_OUT_ACTIONS){
+                                            System.out.println("Car missed by operator... operator will wait.");
+                                        }
                                         this.kpiTrackerDyanmic.increaseNumberOfOperatorsAbandoned(subProblemNumber);
                                     }
                                 }
@@ -236,14 +250,18 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
-                                        System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
+                                        if(Constants.PRINT_OUT_ACTIONS){
+                                            System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
+                                        }
                                         kpiTrackerDyanmic.increaseCarTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
                                         kpiTrackerDyanmic.addInNeedWaitingTime(car.getTimeInInNeedState());
 
                                     } else {
                                         operator.setPreviousNode(departureNode);
                                         operator.setNextOrCurrentNode(departureNode);
-                                        System.out.println("Car missed by operator... operator will wait.");
+                                        if(Constants.PRINT_OUT_ACTIONS){
+                                            System.out.println("Car missed by operator... operator will wait.");
+                                        }
                                         this.kpiTrackerDyanmic.increaseNumberOfOperatorsAbandoned(subProblemNumber);
                                         operatorDepartures.put(operator,new ArrayList<>());
                                     }
@@ -260,7 +278,9 @@ public class DynamicProblem {
                                 operator.setNextOrCurrentNode(travel.getArrivalNode());
                                 operator.setPreviousNode(travel.getPickupNode());
                                 operator.setHandling(false);
-                                System.out.println("Operator travel made on bike: "+ travel + ", toNode="+travel.getArrivalNode());
+                                if(Constants.PRINT_OUT_ACTIONS){
+                                    System.out.println("Operator travel made on bike: "+ travel + ", toNode="+travel.getArrivalNode());
+                                }
                                 kpiTrackerDyanmic.increaseBikeTotalTravelTimeDoneByOperator(travel.getArrivalTime() - travel.getDepartureTime());
                             }
 
@@ -284,7 +304,9 @@ public class DynamicProblem {
                         updateIdleTimesOperator(operator,time,previousTime);
                         operator.setArrivalTimeToNextOrCurrentNode(travel.getArrivalTime());
                         Car car = travel.getCar();
-                        System.out.println("Operator " + operator + " arrives with car " +car);
+                        if(Constants.PRINT_OUT_ACTIONS){
+                            System.out.println("Operator " + operator + " arrives with car " +car);
+                        }
                         if(car != null){
                             operator.setWasHandlingToNextCurrentNode(true);
                             updateBatteryLevelOnCar(time,previousTime,car);
@@ -315,7 +337,9 @@ public class DynamicProblem {
                 updateBatteryLevelOnCar(time,previousTime,car);
                 car.setCurrentNextNode(arrivalNode);
                 car.setPreviousNode(arrivalNode);
-                System.out.println("Customer arrives with car "+ car + " in node " + arrivalNode);
+                if(Constants.PRINT_OUT_ACTIONS){
+                    System.out.println("Customer arrives with car "+ car + " in node " + arrivalNode);
+                }
                 if(car.getBatteryLevel() < Constants.SOFT_CHARGING_THRESHOLD){
                     // assuming that if close to charging station, customer sets to charging
                     if(problemInstance.getParkingNodeToChargingNode().get(arrivalNode)!=null){
@@ -329,7 +353,9 @@ public class DynamicProblem {
                                 car.setPreviousNode(cNode);
                                 cNode.getCarsCurrentlyCharging().add(car);
                                 this.kpiTrackerDyanmic.increaseNumberOfCarsSetToCharging(subProblemNumber);
-                                System.out.println("Customer set a car to charging");
+                                if(Constants.PRINT_OUT_ACTIONS){
+                                    System.out.println("Customer set a car to charging");
+                                }
                             }else {
                                 ((ParkingNode)arrivalNode).getCarsInNeed().add(car);
                             }
@@ -506,7 +532,7 @@ public class DynamicProblem {
         int carsNeededByOperatorsTheNextMinutes = 0;
         for (Operator operator : operatorTravels.keySet()) {
             OperatorTravel operatorTravel = operatorTravels.get(operator);
-            if(operatorDepartures != null){
+            if(operatorDepartures != null && operatorDepartures.get(operator) != null ){
                 for (OperatorDeparture departure: operatorDepartures.get(operator)) {
                     Node arrivalNode = operatorTravel.getArrivalNode();
                     if(arrivalNode.equals(departure.getNode())){
@@ -596,15 +622,18 @@ public class DynamicProblem {
         //after time
         DemandRequest nextDemandRequest = null;
         for (ParkingNode pNode : problemInstance.getParkingNodes()) {
-            for (DemandRequest req: simulationModel.getDemandRequests().get(pNode)) {
-                if(nextDemandRequest == null && req.getTime() >= time && req.getTime() <endTime ){
-                    nextDemandRequest = req;
-                } else {
-                    if(nextDemandRequest != null && req.getTime() >= time && req.getTime() < nextDemandRequest.getTime() && req.getTime() <endTime ){
+            if(simulationModel.getDemandRequests().get(pNode) != null){
+                for (DemandRequest req: simulationModel.getDemandRequests().get(pNode)) {
+                    if(nextDemandRequest == null && req.getTime() >= time && req.getTime() <endTime ){
                         nextDemandRequest = req;
+                    } else {
+                        if(nextDemandRequest != null && req.getTime() >= time && req.getTime() < nextDemandRequest.getTime() && req.getTime() <endTime ){
+                            nextDemandRequest = req;
+                        }
                     }
                 }
             }
+
         }
         return nextDemandRequest;
     }
@@ -613,7 +642,7 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorArrival>> arrivals = new HashMap<>();
 
         try {
-            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT + Constants.OUTPUT_REAL_SERVICE_PATHS + Integer.toString(Constants.EXAMPLE_NUMBER) + ".txt");
+            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT_REAL + fileName + ".txt");
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -628,7 +657,9 @@ public class DynamicProblem {
                 if(line.substring(lenOfLine-1,lenOfLine).contains(",")){
                     noIntegerSolutionFound= true;
                     arrivals = new HashMap<>();
-                    System.out.println("No Integer Solution found");
+                    if(Constants.PRINT_OUT_ACTIONS){
+                        System.out.println("No Integer Solution found");
+                    }
                     break;
                 }
                 String[] stringList = line.split(":");
@@ -649,7 +680,9 @@ public class DynamicProblem {
                         isHandling = Integer.parseInt(tupleList[2])==1;
                     } catch (NumberFormatException e){
                         arrivals = new HashMap<>();
-                        System.out.println("No Integer Solution found");
+                        if(Constants.PRINT_OUT_ACTIONS){
+                            System.out.println("No Integer Solution found");
+                        }
                         noIntegerSolutionFound = true;
                         break;
                     }
@@ -732,8 +765,8 @@ public class DynamicProblem {
             } else {
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             }
-            totalCarsPredicted+= nextPeriodDemand;
-            map.put(pNode,nextPeriodDemand);
+            totalCarsPredicted+= nextPeriodDemand/2;
+            map.put(pNode,nextPeriodDemand/2);
         }
         int numberOfCarsAvailableNextPeriod = 0;
         for (Car car : problemInstance.getCars()) {
@@ -771,7 +804,7 @@ public class DynamicProblem {
                 } else {
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
                 }
-                int demandInt = (int) Math.round(nextPeriodDemand);
+                int demandInt = (int) Math.floor(nextPeriodDemand/2);
                 pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
             }
         } else {
@@ -785,45 +818,8 @@ public class DynamicProblem {
         return this.problemInstance;
     }
 
-    private ArrayList<Car> findCarsMissing(HashMap<Operator,OperatorTravel> operatorTravels, ArrayList<CustomerTravel> customerTravels ){
-        ArrayList<Car> carsMissing = new ArrayList<>();
-        for (Car car : problemInstance.getCars()) {
-            boolean carFound = false;
-            for (ParkingNode pNode : problemInstance.getParkingNodes()) {
-                for (Car aCar: pNode.getCarsInNeed()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-                for (Car aCar : pNode.getCarsRegular()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-            }
-            for (ChargingNode cNode : problemInstance.getChargingNodes()) {
-                for (Car aCar : cNode.getCarsCurrentlyCharging()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-            }
-            for (Operator operator: operatorTravels.keySet()) {
-                OperatorTravel travel = operatorTravels.get(operator);
-                if(travel.getCar() != null && travel.getCar().equals(car)){
-                    carFound = true;
-                }
-            }
-            for (CustomerTravel travel : customerTravels) {
-                if(travel.getCar() != null && travel.getCar().equals(car)){
-                    carFound = true;
-                }
-            }
-            if(!carFound){
-                carsMissing.add(car);
-            }
-        }
-        return carsMissing;
+    public KPITrackerDynamic getKpiTrackerDyanmic() {
+        return kpiTrackerDyanmic;
     }
 
 }

@@ -1,144 +1,56 @@
 package tests;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
 import constants.Constants;
 import constants.Constants.SolverType;
 import tio4500.KPITrackerStatic;
 import tio4500.StaticProblem;
-import tio4500.solvers.MoselSolver;
 import tio4500.solvers.Solver;
 import utils.StringUtils;
 
-public class StaticTestSuite {
-
-	private final ArrayList<String> testFilesNames;
-	private BufferedWriter bw;
-	private FileWriter fw;
-	private File resultsFile;
-	private ArrayList<Solver> solvers;
+public class StaticTestSuite extends TestSuite {
 	
 	public StaticTestSuite(SolverType solverType) {
-		instantiateSolvers(solverType);
-		
-		File[] testFiles = (new File(Constants.TEST_FOLDER)).listFiles();
-		this.testFilesNames = (ArrayList<String>) Arrays.stream(testFiles).map(
-				file -> StringUtils.removeFileEnding(file.getName()))
-				.collect(Collectors.toList());
+		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
 	}
 	
 	public void runTestSuite() {
-		System.out.println("Starting static suite...");
-		System.out.println("Number of test files: " + testFilesNames.size());
-		System.out.println("##########################################\n");
+		System.out.println("\nStarting static test suite...");
+		System.out.println("Number of test files: " + testFileNames.size());
+		int runsLeft = this.solvers.size() * this.testFileNames.size();
+		double timePerRun = calcTimePerRun();
 		
-		openResultsFile();		
+		
 		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
 			System.out.println("Running tests with " + solver.getInfo());
-			for(String testName : testFilesNames) {
+			
+			for(String testName : testFileNames) {
+				printEstimatedTimeLeft(timePerRun, runsLeft);
 				KPITrackerStatic tracker = new KPITrackerStatic();
-				StaticProblem staticProblem = new StaticProblem(Constants.TEST_FOLDER + testName);
+				StaticProblem staticProblem = new StaticProblem(Constants.TEST_STATIC_FOLDER + testName);
 				solver.solve(staticProblem);
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);
 			}
+			
 			System.out.println("\n");
-			writeResultsFile("\n\n");
+			fh.writeFile("\n\n");
 		}
-		closeResultsFile();
+		
 		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE + " for results.");
 	}
 	
-	private void instantiateSolvers(SolverType type) {
-		switch(type) {
-		case MOSEL:
-			instantiateMoselSolvers();
-			break;
-		default:
-			instantiateMoselSolvers();
-		}
-	}
-	
-	private void instantiateMoselSolvers() {
-		this.solvers = new ArrayList<Solver>();
-		File[] moselFiles = (new File(Constants.PROBLEM_FOLDER + Constants.MOSEL_TEST_FILES_FOLDER)).listFiles();
-		ArrayList<String> moselFileNames =  new ArrayList<String>();
-		for(File file : moselFiles) {
-			if(!file.getName().contains(".bim")) {
-				moselFileNames.add(file.getName());
-			}
-		}
-
-		for(String moselFileName : moselFileNames) {
-			solvers.add(new MoselSolver(Constants.MOSEL_TEST_FILES_FOLDER + moselFileName));
-		}
-	}
-	
-	
 	private void writeTestHeader(String fileName) {
 		String data = "Solver: " + fileName + "\n";
-		writeResultsFile(data);
 		
 		String name = StringUtils.center("Test", 30);
 		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 10);
 		String headerLine = name + "|" + time + "|" + value + "|" + gap;
-		writeResultsFile(headerLine);
-	}
-	
-	private void openResultsFile() {
-		this.bw = null;
-		this.fw = null;
-		
-		try {
-			resultsFile = new File(Constants.STATIC_TEST_SUITE_RESULTS_FILE);
+		fh.writeFile(data + headerLine);
 
-			// if file doesnt exists, then create it
-			if (!resultsFile.exists()) {
-				System.out.println("Creating new file");
-				resultsFile.createNewFile();
-			} 
-
-			// true = append file
-			fw = new FileWriter(resultsFile.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-	}
-	
-	
-	private void closeResultsFile() {
-		try {
-			if (bw != null)
-				bw.close();
-
-			if (fw != null)
-				fw.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	private void writeResultsFile(String data) {
-		try {
-			this.bw.write(data);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void writeTestResult(KPITrackerStatic tracker) {
@@ -151,8 +63,13 @@ public class StaticTestSuite {
 		data += "|";
 		data += StringUtils.center(tracker.getGap() + "%", 10);
 		
-		writeResultsFile(data);
+		fh.writeFile(data);
 	}
-
-
+	
+	@Override
+	protected double calcTimePerRun() {
+		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*this.solvers.size();
+		return timePerRun;
+		
+	}
 }	
