@@ -14,6 +14,11 @@ public class StaticTestSuite extends TestSuite {
 	}
 	
 	public void runTestSuite() {
+		
+		for(String test : testFileNames) {
+			System.out.println(test);
+		}
+		
 		System.out.println("\nStarting static test suite...");
 		System.out.println("Number of test files: " + testFileNames.size());
 		int runsLeft = this.solvers.size() * this.testFileNames.size();
