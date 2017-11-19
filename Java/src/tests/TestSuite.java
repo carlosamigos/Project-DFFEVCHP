@@ -1,6 +1,7 @@
 package tests;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -23,7 +24,13 @@ public abstract class TestSuite {
 	protected TestSuite(SolverType solverType, String testFolder, String resultFile) {
 		this.solverType = solverType;
 		instantiateSolvers();
-		File[] testFiles = (new File(testFolder)).listFiles();
+		File[] testFiles = (new File(testFolder)).listFiles(new FileFilter() {
+				    @Override
+				    public boolean accept(File pathname) {
+				        String name = pathname.getName().toLowerCase();
+				        return name.endsWith(".txt") && pathname.isFile();
+				    }
+		});
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
