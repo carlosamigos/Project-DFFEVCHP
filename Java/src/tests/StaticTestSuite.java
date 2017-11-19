@@ -24,8 +24,6 @@ public class StaticTestSuite extends TestSuite {
 		int runsLeft = this.solvers.size() * this.testFileNames.size();
 		double timePerRun = calcTimePerRun();
 		
-		
-		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
 			System.out.println("Running tests with " + solver.getInfo());
@@ -37,6 +35,7 @@ public class StaticTestSuite extends TestSuite {
 				solver.solve(staticProblem);
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);
+				runsLeft--;
 			}
 			
 			System.out.println("\n");
@@ -49,7 +48,7 @@ public class StaticTestSuite extends TestSuite {
 	private void writeTestHeader(String fileName) {
 		String data = "Solver: " + fileName + "\n";
 		
-		String name = StringUtils.center("Test", 30);
+		String name = StringUtils.center("Test", 60);
 		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 10);
@@ -60,7 +59,7 @@ public class StaticTestSuite extends TestSuite {
 	
 	private void writeTestResult(KPITrackerStatic tracker) {
 		String[] namePath = tracker.getName().split("/");
-		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
+		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 60);
 		data += "|";
 		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
 		data += "|";
