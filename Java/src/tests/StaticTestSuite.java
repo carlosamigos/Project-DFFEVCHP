@@ -72,7 +72,7 @@ public class StaticTestSuite extends TestSuite {
 	
 	@Override
 	protected double calcTimePerRun() {
-		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*this.solvers.size();
+		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
 		return timePerRun;
 		
 	}
