@@ -247,7 +247,7 @@ class World:
         sumIStateAfter = 0
         for j in range(len(self.pNodes)):
             self.pNodes[j].iState = int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
-            sumIStateAfter += int(round(float(sumPState) * (float(self.pNodes[j].iState) / sumIState)))
+            sumIStateAfter += self.pNodes[j].iState
         while(sumIStateAfter != sumPState):
             if(sumIStateAfter < sumPState):
                 r = random.randint(0, len(self.pNodes) -1)
@@ -671,7 +671,7 @@ def main():
         cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
-    #world.createRealIdeal()
+    world.createRealIdeal()
     world.shuffleIdealState()
     print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)

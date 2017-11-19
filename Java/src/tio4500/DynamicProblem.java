@@ -162,12 +162,10 @@ public class DynamicProblem {
                 if(isThereACarAvailableToBePickedUpAtNodeByCustomer(pNode,operatorTravels,operatorDepartures,time)){
                     // Do customer travel, but not to the same node
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
-                    while(rndIndex == problemInstance.getParkingNodes().indexOf(pNode)){
-                        rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
-                    }
                     ParkingNode arrivalNode = problemInstance.getParkingNodes().get(rndIndex);
                     double travelTime = problemInstance.getTravelTimesCar().get(pNode.getNodeId() - Constants.START_INDEX).get(arrivalNode.getNodeId()-Constants.START_INDEX);
-                    travelTime = travelTime * (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
+                    travelTime *=  (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
+                    travelTime += Constants.CUSTOMER_CONSTANT_TIME_USED;
                     double arrivalTime = nextDemandReqTime + travelTime;
                     CustomerTravel newCustomerTravel = new CustomerTravel(nextDemandReqTime,pNode,arrivalTime,arrivalNode);
                     Car travelCar = findAvailableCarForCustomerInNode(pNode);
@@ -822,47 +820,6 @@ public class DynamicProblem {
 
     public KPITrackerDynamic getKpiTrackerDyanmic() {
         return kpiTrackerDyanmic;
-    }
-
-    private ArrayList<Car> findCarsMissing(HashMap<Operator,OperatorTravel> operatorTravels, ArrayList<CustomerTravel> customerTravels ){
-        ArrayList<Car> carsMissing = new ArrayList<>();
-        for (Car car : problemInstance.getCars()) {
-            boolean carFound = false;
-            for (ParkingNode pNode : problemInstance.getParkingNodes()) {
-                for (Car aCar: pNode.getCarsInNeed()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-                for (Car aCar : pNode.getCarsRegular()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-            }
-            for (ChargingNode cNode : problemInstance.getChargingNodes()) {
-                for (Car aCar : cNode.getCarsCurrentlyCharging()) {
-                    if(aCar.equals(car)){
-                        carFound = true;
-                    }
-                }
-            }
-            for (Operator operator: operatorTravels.keySet()) {
-                OperatorTravel travel = operatorTravels.get(operator);
-                if(travel.getCar() != null && travel.getCar().equals(car)){
-                    carFound = true;
-                }
-            }
-            for (CustomerTravel travel : customerTravels) {
-                if(travel.getCar() != null && travel.getCar().equals(car)){
-                    carFound = true;
-                }
-            }
-            if(!carFound){
-                carsMissing.add(car);
-            }
-        }
-        return carsMissing;
     }
 
 }
