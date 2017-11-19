@@ -70,6 +70,6 @@ public abstract class TestSuite {
 		int totalHours = (int)Math.round(totalMinutes/60);
 		int minutes = totalMinutes - totalHours*60;
 		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
-		System.out.println(" (Time left: " + hoursAndMinutes + ")");
+		System.out.println("(Time left: " + hoursAndMinutes + ")");
 	}
 }
