@@ -10,7 +10,7 @@ import utils.StringUtils;
 public class StaticTestSuite extends TestSuite {
 	
 	public StaticTestSuite(SolverType solverType) {
-		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, Constants.TEST_STATIC_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
 	}
 	
 	public void runTestSuite() {
