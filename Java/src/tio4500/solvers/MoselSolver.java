@@ -24,7 +24,7 @@ public class MoselSolver extends Solver {
 		compile();
 		fixParameters(problem.getFileName());
 		fixDataFile(problem.getFilePath());
-		System.out.println("Solving " + problem.getFilePath());
+		System.out.print("Solving " + problem.getFilePath());
 		this.model.run();
 		this.model.reset();
 	}
@@ -45,10 +45,8 @@ public class MoselSolver extends Solver {
 
 	private void compile() {
 		try {
-			this.mosel.compile(Constants.PROBLEM_FOLDER +
-			this.moselFileName);
-			this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER +
-			this.bimFileName);
+			this.mosel.compile(Constants.PROBLEM_FOLDER + this.moselFileName);
+			this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER + this.bimFileName);
 		}
 
 		catch (Exception e) {
