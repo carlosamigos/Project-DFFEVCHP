@@ -1,8 +1,6 @@
 package tio4500;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import constants.Constants;
-import constants.Constants.SolverType;
 import tio4500.simulations.DemandRequest;
 import tio4500.simulations.Entities.Car;
 import tio4500.simulations.Entities.Operator;
@@ -13,7 +11,6 @@ import tio4500.simulations.Travels.CustomerTravel;
 import tio4500.simulations.Travels.OperatorArrival;
 import tio4500.simulations.Travels.OperatorDeparture;
 import tio4500.simulations.Travels.OperatorTravel;
-import tio4500.solvers.MoselSolver;
 import tio4500.solvers.Solver;
 
 import java.io.BufferedReader;
