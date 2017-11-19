@@ -1,0 +1,65 @@
+numVisits: 5
+numPNodes: 7
+numCNodes: 2
+numROperators: 3
+numAOperators: 1
+
+hNodes : 8
+wNodes : 8
+nodeSubsetIndexes: [1 2 3 4 5 6 7] 
+
+startNodeROperator: [5 5 6] 
+originNodeROperator: [10 11 12] 
+destinationNodeROperator: [13 14 15] 
+cToP: [2 7] 
+parkingNodeAOperator: [2] 
+chargingNodeAOperator: [8] 
+
+chargingSlotsAvailable: [2 2] 
+totalNumberOfChargingSlots: [3 2] 
+
+costOfDeviation : 10
+costOfPostponedCharging : 30
+costOfExtraTime : 0.5
+costOfTravel: 0.05
+costOfTravelH: 0.4
+
+travelTimeVehicle: [0.0 7.0 10.6 12.1 16.1 18.2 11.3 7.0 11.3 
+		6.3 0.0 5.4 10.1 18.4 16.2 10.0 1.0 10.0 
+		10.0 5.8 0.0 7.0 15.6 14.8 9.7 5.8 9.7 
+		10.8 9.2 7.2 0.0 15.2 12.5 13.6 9.2 13.6 
+		16.0 18.9 16.7 14.2 0.0 5.2 15.7 18.9 15.7 
+		17.9 16.4 14.6 12.2 6.0 0.0 17.7 16.4 17.7 
+		11.8 11.9 9.2 11.0 15.9 16.4 0.0 11.9 1.0 
+		6.3 1.0 5.4 10.1 18.4 16.2 10.0 0.0 10.0 
+		11.8 11.9 9.2 11.0 15.9 16.4 1.0 11.9 0.0 ]
+
+travelTimeBike: [0.0 6.5 9.9 12.9 18.5 15.6 20.6 6.5 20.6 
+		9.3 0.0 4.6 11.4 18.2 15.3 15.7 1.0 15.7 
+		17.8 9.1 0.0 7.4 22.9 16.2 13.1 9.1 13.1 
+		19.6 11.4 5.8 0.0 17.9 11.2 14.7 11.4 14.7 
+		29.6 27.2 23.7 18.8 0.0 8.9 28.4 27.2 28.4 
+		24.4 22.0 17.5 12.6 7.2 0.0 21.8 22.0 21.8 
+		24.6 16.3 10.7 12.9 25.1 18.4 0.0 16.3 1.0 
+		9.3 1.0 4.6 11.4 18.2 15.3 15.7 0.0 15.7 
+		24.6 16.3 10.7 12.9 25.1 18.4 1.0 16.3 0.0 ]
+
+handlingTimeP: 4
+handlingTimeC: 5
+travelTimeToOriginR: [5 0 0] 
+travelTimeToParkingA: [6] 
+timeLimit: 60
+timeLimitLastVisit: 10
+maxTravelHToC: 30
+
+initialHandling: [1 0 0] 
+initialRegularInP: [0 2 2 3 0 2 1] 
+initialInNeedP: [0 0 0 0 1 2 0] 
+finishedDuringC: [1 0] 
+idealStateP: [0 4 3 2 2 3 1] 
+
+demandP: [-1 0 -1 -1 1 0 -1] 
+
+mode: 2
+sequenceBigM: 10
+visitList: [2 2 2 2 5 4 2 4 2 1 1 1 1 1 1] 

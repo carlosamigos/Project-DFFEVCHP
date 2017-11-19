@@ -52,7 +52,7 @@ handlingTimeP: 4
 handlingTimeC: 5
 travelTimeToOriginR: [5 0 0] 
 travelTimeToParkingA: [4] 
-timeLimit: 60
+timeLimit: 40
 timeLimitLastVisit: 10
 maxTravelHToC: 30
 
@@ -64,6 +64,6 @@ idealStateP: [1 2 3 3 2 2 0 2 3]
 
 demandP: [1 0 -1 0 0 0 -1 0 -1] 
 
-mode: 4
+mode: 2
 sequenceBigM: 10
 visitList: [2 3 2 3 2 2 2 2 2 4 2 1 1 1 1 1 1] 

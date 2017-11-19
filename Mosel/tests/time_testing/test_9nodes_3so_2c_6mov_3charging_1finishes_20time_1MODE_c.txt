@@ -52,7 +52,7 @@ handlingTimeP: 4
 handlingTimeC: 5
 travelTimeToOriginR: [5 0 0] 
 travelTimeToParkingA: [8] 
-timeLimit: 60
+timeLimit: 20
 timeLimitLastVisit: 10
 maxTravelHToC: 30
 

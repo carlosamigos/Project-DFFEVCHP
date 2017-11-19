@@ -10,17 +10,36 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 
 
-# CONSTANTS
+### CONSTANTS ####
+
+# EUCLEDEAN DISTANCE #
 DISTANCESCALE = 3
-CARSCHARGING = 3
-MOVES = 7
+
+# PROBLEM PARAMETERS #
+EXAMPLES = 2
+
+XSIZE = 8
+YSIZE = 8
+
+MOVES = 4
 MAXNODES = 9
+CARSCHARGING = 3
+
+NUMCHARGING = 2
+PARKINGC = [2, 7]
+CAPACITY = [2, 2]
+TOTALCAPACITY = [3, 2]
+
+NUMOPERATORS = 3
+STARTETIMEOP = [5, 0, 0]
+HANDLINGOP = [1, 0, 0]
+
+# MAKING NODES #
 SPREAD = True
 CLUSTER = True
 
-MODES_RUN_1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
-MODES_RUN_2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
-MODES_RUN2 = [[2, 10, 30, 0.05, 0.4] , [4, 10, 30, 0.05, 0.4]]
+# OUTPUT #
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4]]
 
 class World:
 
@@ -255,8 +274,9 @@ class World:
                 sumIStateAfter += 1
             else:
                 r = random.randint(0, len(self.pNodes) - 1)
-                self.pNodes[r].iState -= 1
-                sumIStateAfter -= 1
+                if(self.pNodes[r].iState > 0):
+                    self.pNodes[r].iState -= 1
+                    sumIStateAfter -= 1
 
 
     def calculateMovesToIDeal(self):
@@ -341,7 +361,7 @@ class World:
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r2) or self.checkdeficitNode(r1)):
                     r1 = random.randint(0, len(self.pNodes) - 1)
-                    r2 = random.randint(0, len(self.pNodes) - 1)
+                    r2 = random.randint(0, len(self.pNodes) -1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
 
@@ -554,7 +574,7 @@ class World:
                 string += " "
         string += "] \n"
         f.write(string)
-        print(string)
+        #print(string)
 
 
 
@@ -600,11 +620,9 @@ class fCCars:
 
 # PNODES
 def createNodes(world):
-    xRange = int(input("How many nodes on the X-axis: "))
-    yRange = int(input("How many nodes on the Y-axis: "))
-    for i in range(xRange):
+    for i in range(XSIZE):
         xCord = i
-        for j in range(yRange):
+        for j in range(YSIZE):
             pState = random.randint(0, 3)
             cState = random.randint(0, 1)
             iState = random.randint(0, 4)
@@ -613,7 +631,7 @@ def createNodes(world):
             node = pNode(xCord, yCord, pState, cState, iState, demand)
             world.addNodes(node)
             world.addPNodes(node)
-    world.addDim(xRange, yRange)
+    world.addDim(XSIZE, YSIZE)
 
 # ARTIFICIAL OPERATORS
 def createFCCars(world, time, cNode, pNode):
@@ -622,16 +640,13 @@ def createFCCars(world, time, cNode, pNode):
 
 # CNODES
 def createCNodes(world):
-    string = "\n You can create a charging node in parking node 1 to: " + str(len(world.pNodes))
-    print(string)
-    numCNodes = int(input("How many do yoy want to create: "))
+    numCNodes = NUMCHARGING
     for i in range(numCNodes):
-        print("\n")
         print("Creating charging node: ", i+1)
-        pNodeNum = int(input("Which parking node should it be located in: "))
+        pNodeNum = PARKINGC[i]
         pNode = world.pNodes[pNodeNum-1]
-        capacity = int(input("How many available charging slots right now: "))
-        totalCapacity = int(input("What is the total capacity: "))
+        capacity = CAPACITY[i]
+        totalCapacity = TOTALCAPACITY[i]
         fCCars = totalCapacity - capacity
         for j in range(fCCars):
             time = random.randint(0, 10)
@@ -642,13 +657,12 @@ def createCNodes(world):
 
 # OPERATORS
 def createOperators(world):
-    numOperators = int(input("\n What is the number of operators "))
+    numOperators = NUMOPERATORS
     for i in range(numOperators):
-        print("\n")
         print("Creating operator", i+1)
         startNode = random.randint(1, len(world.pNodes))
-        time = int(input("What is the starting time: "))
-        handling = int(input("Are they handling, 1 if yes: "))
+        time = STARTETIMEOP[i]
+        handling = HANDLINGOP[i]
         if(handling == 1):
             op = operator(startNode, time, True)
             world.addOperator(op)
@@ -658,24 +672,19 @@ def createOperators(world):
             world.addOperator(op)
 
 
-
-
-def main():
-    print("\n WELCOME TO THE EXAMPLE CREATOR \n")
+def buildWorld():
     world = World()
-    #world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.setCordConstants((59.952483, 10.795069), (59.904574, 10.681527))
     createNodes(world)
     cords = []
-    if(SPREAD):
+    if (SPREAD):
         cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
     world.createRealIdeal()
     world.shuffleIdealState()
-    print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)
-    if(len(world.pNodes) > 10):
+    if (len(world.pNodes) > 10):
         world.calculateDistances()
     else:
         world.calculateRealDistances(cords)
@@ -686,32 +695,24 @@ def main():
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
         moves = world.calculateMovesToIDeal()
-        #filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
         filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(i) + "MODE"
         world.writeToFile(filepath)
 
+
+
+def main():
+    print("\n WELCOME TO THE EXAMPLE CREATOR \n")
+    for i in range(EXAMPLES):
+        print("Creating instance: ", i)
+        buildWorld()
+
 main()
 
-"""
-string += "surplusList: ["
-for i in range(len(self.surp)):
-    string += str(self.surp[i])
-    if (i < len(self.surp) - 1):
-        string += " "
-string += "] \n"
-string += "deficitList: ["
-for i in range(len(self.deficit)):
-    string += str(self.deficit[i])
-    if (i < len(self.deficit) - 1):
-        string += " "
-string += "] \n"
-string += "allList: ["
-for i in range(len(self.deficit)):
-    string += str(self.deficit[i] + self.surp[i] + self.charg[i])
-    if (i < len(self.deficit) - 1):
-        string += " "
-string += "] \n"
-"""
+list = [1, 2, 3]
+
+
+
+
 # TODO: Create a new location template, so that zobnes scale equally
 # TODO: More crontol paramters for generating boards with an equal amount of: Cars to be handled, cars to be charged, cars that finish charging
 
