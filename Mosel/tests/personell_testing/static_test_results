@@ -1,4 +1,5 @@
-
+Solver: ../Mosel/tests/time_testing/model/main_basic_symmetry_valid_var1.mos
+                             Test                           |   Time   |  Value   |   Gap
     test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_a     | 600.11s. |  39.74   |  25.33%  
     test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_b     | 600.09s. |  70.39   |  27.05%  
     test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_c     | 600.13s. |  79.75   |  52.87%  
