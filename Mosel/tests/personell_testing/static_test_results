@@ -1,14 +1,15 @@
-
-    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_a     | 600.11s. |  39.74   |  25.33%  
-    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_b     | 600.09s. |  70.39   |  27.05%  
-    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_c     | 600.13s. |  79.75   |  52.87%  
-    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_a     |  2.32s.  |   30.7   |    0%    
-    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_b     | 600.23s. |   40.1   |  7.68%   
-    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_c     | 600.12s. |  50.95   |  25.17%  
-    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_a     | 49.23s.  |  36.88   |    0%    
-    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_b     | 46.79s.  |  38.12   |    0%    
-    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_c     | 159.23s. |  21.09   |    0%    
-    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_a     | 116.81s. |  52.26   |    0%    
-    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_b     | 600.14s. |  29.49   |  1.61%   
-    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_c     | 14.34s.  |  40.64   |    0%    
+Solver: ../Mosel/tests/personell_testing/model/main_basic_symmetry_valid_var1.mos
+                            Test                            |   Time   |  Value   |   Gap    
+    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_a     | 60.09s.  |  43.09   |  31.55%  
+    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_b     | 60.13s.  |  84.56   |  39.43%  
+    test_9nodes_2so_2c_6mov_3charging_1finishes_0MODE_c     | 60.11s.  |  107.27  |  65.21%  
+    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_a     |  2.34s.  |   30.7   |    0%    
+    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_b     | 60.12s.  |  54.59   |  32.17%  
+    test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_c     | 60.26s.  |  100.51  |  62.13%  
+    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_a     |  48.6s.  |  36.88   |    0%    
+    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_b     |  47.5s.  |  38.12   |    0%    
+    test_9nodes_4so_2c_6mov_3charging_1finishes_0MODE_c     | 60.15s.  |  21.55   |  2.83%   
+    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_a     | 60.09s.  |  56.02   |  7.56%   
+    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_b     | 60.11s.  |  29.49   |  1.61%   
+    test_9nodes_5so_2c_6mov_3charging_1finishes_0MODE_c     | 14.43s.  |  40.64   |    0%    
 
