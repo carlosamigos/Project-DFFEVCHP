@@ -18,4 +18,3 @@ test_9nodes_3so_2c_6mov_3charging_1finishes_120time_1MODE_c | 36.74s.  |  38.06 
  test_9nodes_3so_2c_6mov_3charging_1finishes_80time_1MODE_a |  3.91s.  |   30.7   |    0%    
  test_9nodes_3so_2c_6mov_3charging_1finishes_80time_1MODE_b |  60.1s.  |  45.15   |   18%    
  test_9nodes_3so_2c_6mov_3charging_1finishes_80time_1MODE_c | 60.16s.  |  46.66   |  18.44%  
-

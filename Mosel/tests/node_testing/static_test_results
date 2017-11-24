@@ -9,4 +9,3 @@ Solver: ../Mosel/tests/node_testing/model/main_basic_symmetry_valid_var1.mos
     test_9nodes_3so_2c_4mov_3charging_1finishes_0MODE_a     |  1.44s.  |   38.4   |    0%    
     test_9nodes_3so_2c_4mov_3charging_1finishes_0MODE_b     |  4.81s.  |  21.76   |    0%    
     test_9nodes_3so_2c_4mov_3charging_1finishes_0MODE_c     | 60.12s.  |   38.7   |  11.01%  
-
