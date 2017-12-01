@@ -144,9 +144,9 @@ public class DynamicTestSuite extends TestSuite{
 		for(Solver solver : kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> dynamicTrackers = kpiTrackers.get(solver);
 			String solverName = solver.getInfo();
-			this.staticKPIfh.writeFile(solverName + "\n");
+			this.staticKPIfh.writeFile("\n" + solverName);
 			for(int day = 0; day < this.days; day++) {
-				this.staticKPIfh.writeFile("Day " + day + "\n");
+				this.staticKPIfh.writeFile("\nDay " + day + "\n");
 				writeTestHeader();
 				for(KPITrackerStatic staticTracker : dynamicTrackers.get(day).getStaticKPITrackers()) {
 					writeTestResult(staticTracker);
