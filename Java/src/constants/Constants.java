@@ -23,6 +23,7 @@ public class Constants {
     public final static String DEMAND_REQUESTS = "demand_request";
     public final static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
+    public final static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_FOLDER + "static_results_";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Time specific parameters : Minutes
