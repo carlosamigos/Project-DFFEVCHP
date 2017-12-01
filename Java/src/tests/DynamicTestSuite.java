@@ -82,8 +82,8 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	private void writeKPIs() {
-		String solv = StringUtils.center("Model", 60);
-		String dns = StringUtils.center("DNS (customers)", 19);
+		String solv = StringUtils.center("Model", 80);
+		String dns = StringUtils.center("DS (%)", 19);
 		String abandoned = StringUtils.center("Abondoned (op)", 18);
 		String charged = StringUtils.center("Charged (cars)", 18);
 		String carDist = StringUtils.center("CarDist (min)", 17);
@@ -98,10 +98,10 @@ public class DynamicTestSuite extends TestSuite{
 		DecimalFormat df = 	new DecimalFormat("#.##");
 		for(Solver solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
-			String solverName = StringUtils.center(solver.getInfo(), 60);
-			String dnsVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
-				t.getDemandsNotServed().stream().collect(Collectors.summingInt(Integer::intValue)))
-				.collect(Collectors.summingInt(Integer::intValue))/this.days), 19);
+			String solverName = StringUtils.center(solver.getInfo(), 80);
+			String dsPercentage = StringUtils.center("" + df.format(trackers.stream().map(t ->
+				t.getDemandServedFraction()*100)
+				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 19);
 			
 			String abandonedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfOperatorsAbandoned().stream().collect(Collectors.summingInt(Integer::intValue)))
@@ -131,7 +131,7 @@ public class DynamicTestSuite extends TestSuite{
 				t.getIdleTimeForServiceOperators().stream().collect(Collectors.summingDouble(Double::doubleValue)))
 				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 17);
 			
-			data += solverName + "|" + dnsVal + "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
+			data += solverName + "|" + dsPercentage + "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
 		}
 		fh.writeFile(data);
@@ -189,10 +189,9 @@ public class DynamicTestSuite extends TestSuite{
 	
 	@Override
 	protected double calcTimePerRun() {
-		double timePerRun = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)
-				- Constants.START_TIME)/60;
-		timePerRun *= Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
-		
+		double numberOfSubProblems = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)
+				- Constants.START_TIME)/Constants.TIME_INCREMENTS;
+		double timePerRun = numberOfSubProblems * Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
 		return timePerRun;
 	}
 	

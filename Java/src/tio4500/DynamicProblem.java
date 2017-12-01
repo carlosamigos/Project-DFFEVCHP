@@ -174,6 +174,7 @@ public class DynamicProblem {
                         time = nextDemandReqTime;
                         pNode.getCarsRegular().remove(travelCar);
                         pNode.getCarsInNeed().remove(travelCar);
+                        this.kpiTrackerDyanmic.increaseDemandServedForPeriod(subProblemNumber);
                         if(Constants.PRINT_OUT_ACTIONS){
                             System.out.println("Customer Travel Added from node " + pNode + " at time: " + nextDemandReqTime + " with car " + travelCar);
                         }

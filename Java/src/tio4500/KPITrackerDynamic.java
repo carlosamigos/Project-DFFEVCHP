@@ -12,6 +12,7 @@ public class KPITrackerDynamic {
     // ArrayLists are numbers for each period
     private DynamicProblem dynamicProblem;
 	private ArrayList<Integer> demandsNotServed;
+    private ArrayList<Integer> demandServed;
     private ArrayList<Integer> numberOfOperatorsAbandoned;
     private ArrayList<Integer> numberOfCarsSetToCharging;
     private double totalCarTravelDoneByServiceOperators;
@@ -26,6 +27,7 @@ public class KPITrackerDynamic {
         int numberOfSubProblems = (Constants.END_TIME - Constants.START_TIME)/Constants.TIME_INCREMENTS - (int)(Constants.TIME_LIMIT_STATIC_PROBLEM/Constants.TIME_INCREMENTS) +1;
         this.dynamicProblem = dynamicProblem;
         demandsNotServed = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
+        demandServed = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
         numberOfCarsSetToCharging = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
         numberOfOperatorsAbandoned = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
         totalCarTravelDoneByServiceOperators = 0.0;
@@ -43,8 +45,15 @@ public class KPITrackerDynamic {
 
     void increaseDemandNotServedForPeriod(int period){
         // given periods start at 1
-        int current = demandsNotServed.get(period-1);
-        demandsNotServed.set(period-1,current +1);
+        int demandNotServed = demandsNotServed.get(period-1) + 1;
+        int currentDemandServed = demandServed.get(period-1);
+        demandsNotServed.set(period-1,demandNotServed);
+    }
+
+    void increaseDemandServedForPeriod(int period){
+        // given periods start at 1
+        int current = demandServed.get(period-1);
+        demandServed.set(period-1,current +1);
     }
 
     void increaseNumberOfOperatorsAbandoned(int period){
@@ -116,6 +125,18 @@ public class KPITrackerDynamic {
 		return staticKPITrackers;
 	}
 
+
+
+    public double getDemandServedFraction(){
+        int totalDemandServed = 0;
+        int totalDemandNotServed = 0;
+        for (int period = 1; period <= demandServed.size(); period++) {
+            totalDemandServed += demandServed.get(period-1);
+            totalDemandNotServed += demandsNotServed.get(period-1);
+        }
+        double fraction = ((double)totalDemandServed) / (totalDemandServed + totalDemandNotServed);
+        return fraction;
+    }
 
     @Override
     public String toString() {

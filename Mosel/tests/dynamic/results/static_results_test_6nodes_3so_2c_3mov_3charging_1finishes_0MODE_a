@@ -1,93 +1,91 @@
 
-../Mosel/tests/progress_testing/model/main_basic_symmetry.mos
-Day 0
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,39s.  |  114,4   |  63,06%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,75s.  |  93,88   |  70,32%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,99s.  |  71,71   |  50,25%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,88s.  |  34,79   |  12,76%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,98s.  |  23,41   |  18,26%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,58s.  |  19,14   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,05s.  |   5,79   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,23s.  |   3,2    |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,55s.  |  31,86   |    0%    
-Day 1
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,59s.  |  114,4   |  63,06%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,77s.  |  32,22   |  31,66%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  35,11   |  9,44%   
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,92s.  |  16,39   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,86s.  |  17,56   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,03s.  |    0     |    �%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,12s.  |   4,79   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,08s.  |    0     |    �%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,19s.  |    0     |    �%    
-../Mosel/tests/progress_testing/model/main_basic_symmetry_valid.mos
-Day 0
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,97s.  |   140    |  69,81%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |   5s.    |  37,22   |  13,33%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,86s.  |  33,98   |  8,59%   
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,52s.  |  28,89   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,27s.  |  37,38   |  8,25%   
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,92s.  |  37,15   |  16,07%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,08s.  |  22,24   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,61s.  |  25,86   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,72s.  |  13,04   |    0%    
-Day 1
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,13s.  |   140    |  69,81%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,92s.  |  34,19   |  22,73%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  42,13   |  5,68%   
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,88s.  |   70,4   |  55,24%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,91s.  |  56,59   |  16,67%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,88s.  |  56,97   |  28,18%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,25s.  |  12,06   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,55s.  |   8,36   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,16s.  |   3,93   |    0%    
-../Mosel/tests/progress_testing/model/main_basic.mos
-Day 0
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,67s.  |  74,34   |  43,15%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,44s.  |  23,07   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,45s.  |  37,31   |  13,96%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,86s.  |  47,81   |  19,01%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  26,72   |  11,98%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,3s.   |   3,97   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,72s.  |  10,39   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,72s.  |   12,8   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,89s.  |  13,68   |    0%    
-Day 1
-                            Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,3s.   |  74,34   |  43,15%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,17s.  |  17,23   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,72s.  |  45,13   |  8,76%   
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |   5s.    |  70,24   |  42,07%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,81s.  |  44,73   |  15,39%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,95s.  |  46,81   |  14,71%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,47s.  |  41,19   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,36s.  |  20,55   |  14,26%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,36s.  |  13,26   |    0%    
+Test test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a
+
 ../Mosel/tests/progress_testing/model/main_basic_symmetry_valid_var1.mos
 Day 0
                             Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,23s.  |  133,88  |  68,43%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,86s.  |   120    |  76,35%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,91s.  |   84,8   |  45,04%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,83s.  |  100,4   |  39,81%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,88s.  |  38,01   |  12,27%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,83s.  |  40,35   |  12,69%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,2s.   |  11,58   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,53s.  |  13,83   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,64s.  |  15,72   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,86s.  |  28,59   |  7,59%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,27s.  |  29,33   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,86s.  |  31,52   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  3,19s.  |  23,96   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,3s.   |  13,76   |    0%    
 Day 1
                             Test                            |   Time   |  Value   |   Gap    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,7s.   |  133,88  |  68,43%  
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,75s.  |  22,54   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,09s.  |  22,16   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,42s.  |  19,69   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,19s.  |   6,99   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,09s.  |    0     |    �%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,08s.  |   1,93   |    0%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,08s.  |    0     |    �%    
-    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,09s.  |   3,2    |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,61s.  |  28,59   |  7,59%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,95s.  |  30,03   |    2%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,11s.  |  17,63   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,44s.  |  12,35   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,31s.  |  14,48   |    0%    
+Day 2
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,52s.  |  28,59   |  7,59%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,03s.  |   21,6   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,78s.  |  31,52   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,08s.  |  10,65   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,08s.  |   7,09   |    0%    
+../Mosel/tests/progress_testing/model/main_basic_symmetry_valid.mos
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,84s.  |  34,19   |  22,73%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,24s.  |  25,08   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,66s.  |  58,97   |  57,96%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,84s.  |  40,84   |   19%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,92s.  |  36,71   |   7,3%   
+Day 1
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,24s.  |   120    |  77,98%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,17s.  |  26,02   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,2s.   |  17,23   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,88s.  |  12,35   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,61s.  |  20,44   |    0%    
+Day 2
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,97s.  |  34,19   |  22,73%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,64s.  |  25,48   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,11s.  |  21,52   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,55s.  |   32,2   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,8s.   |   13,1   |    0%    
+../Mosel/tests/progress_testing/model/main_basic.mos
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,36s.  |  56,51   |  53,25%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,31s.  |  17,74   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,56s.  |  38,97   |  17,47%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,88s.  |   14,6   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,02s.  |  12,32   |    0%    
+Day 1
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  5,05s.  |  56,51   |  53,25%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,26s.  |  17,74   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,53s.  |  30,84   |  19,62%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,75s.  |  12,39   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,05s.  |  35,02   |  19,45%  
+Day 2
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,83s.  |  56,51   |  53,25%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,83s.  |   24,3   |  25,35%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,92s.  |  39,37   |  17,3%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  49,92   |   0,5%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,97s.  |  30,99   |  0,87%   
+../Mosel/tests/progress_testing/model/main_basic_symmetry.mos
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,84s.  |  58,68   |  54,98%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,41s.  |   25,5   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,31s.  |  22,64   |  2,14%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,92s.  |  38,33   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  49,47   |  18,92%  
+Day 1
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,94s.  |  58,68   |  54,98%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  2,42s.  |   25,5   |    0%    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,28s.  |  17,63   |  0,34%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,89s.  |  43,41   |  42,62%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  0,62s.  |  43,93   |    0%    
+Day 2
+                            Test                            |   Time   |  Value   |   Gap    
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,86s.  |  58,68   |  54,98%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,92s.  |  58,16   |  55,47%  
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,84s.  |  28,66   |  1,24%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  4,89s.  |  31,17   |  1,06%   
+    test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a     |  1,77s.  |  23,02   |    0%    
