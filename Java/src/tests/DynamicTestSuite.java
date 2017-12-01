@@ -9,22 +9,23 @@ import constants.Constants;
 import constants.Constants.SolverType;
 import tio4500.DynamicProblem;
 import tio4500.KPITrackerDynamic;
+import tio4500.KPITrackerStatic;
 import tio4500.ProblemInstance;
 import tio4500.SimulationModel;
 import tio4500.solvers.Solver;
+import utils.FileHandler;
 import utils.StringUtils;
 
 public class DynamicTestSuite extends TestSuite{
 	private final int days;
-	private HashMap<String, ArrayList<KPITrackerDynamic>> kpiTrackers;
+	private HashMap<Solver, ArrayList<KPITrackerDynamic>> kpiTrackers;
+	private FileHandler staticKPIfh;
 	
 	public DynamicTestSuite(SolverType solverType, int days) {
 		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE);
 		this.days = days;
-		
 	}
 
-	
 	
 	public void runTestSuite() {
 		System.out.println("Starting dynamic test suite...");
@@ -60,7 +61,7 @@ public class DynamicTestSuite extends TestSuite{
 					
 					// Results:
 					KPITrackerDynamic tracker = problem.getKpiTrackerDyanmic();
-					addKPITracker(solver.getInfo(), tracker);
+					addKPITracker(solver, tracker);
 					runsLeft--;
 				}
 				printEstimatedTimeLeft(timePerRun, runsLeft);
@@ -73,11 +74,11 @@ public class DynamicTestSuite extends TestSuite{
 		System.out.println("\nDone with all tests. See the file " + Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE + " for results.");
 	}
 	
-	private void addKPITracker(String solverName, KPITrackerDynamic tracker) {
-		if(!this.kpiTrackers.containsKey(solverName)) {
-			this.kpiTrackers.put(solverName, new ArrayList<>());	
+	private void addKPITracker(Solver solver, KPITrackerDynamic tracker) {
+		if(!this.kpiTrackers.containsKey(solver)) {
+			this.kpiTrackers.put(solver, new ArrayList<>());	
 		}
-		this.kpiTrackers.get(solverName).add(tracker);
+		this.kpiTrackers.get(solver).add(tracker);
 	}
 	
 	private void writeKPIs() {
@@ -95,9 +96,9 @@ public class DynamicTestSuite extends TestSuite{
 		              "|" + idleTime + "\n";
 		
 		DecimalFormat df = 	new DecimalFormat("#.##");
-		for(String solver : this.kpiTrackers.keySet()) {
+		for(Solver solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
-			String solverName = StringUtils.center(solver, 60);
+			String solverName = StringUtils.center(solver.getInfo(), 60);
 			String dnsVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getDemandsNotServed().stream().collect(Collectors.summingInt(Integer::intValue)))
 				.collect(Collectors.summingInt(Integer::intValue))/this.days), 19);
@@ -134,13 +135,56 @@ public class DynamicTestSuite extends TestSuite{
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
 		}
 		fh.writeFile(data);
+		
+		writeStaticKPIs();
 	}
 
+	
+	private void writeStaticKPIs() {
+		for(Solver solver : kpiTrackers.keySet()) {
+			ArrayList<KPITrackerDynamic> dynamicTrackers = kpiTrackers.get(solver);
+			String solverName = solver.getInfo();
+			this.staticKPIfh.writeFile("\n" + solverName);
+			for(int day = 0; day < this.days; day++) {
+				this.staticKPIfh.writeFile("\nDay " + day + "\n");
+				writeTestHeader();
+				for(KPITrackerStatic staticTracker : dynamicTrackers.get(day).getStaticKPITrackers()) {
+					writeTestResult(staticTracker);
+				}
+			}
+		}
+	}
 	
 	
 	private void writeTestHeader(String testName) {
 		String data = "\nTest " + testName + "\n";
+		this.staticKPIfh = new FileHandler(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName, true, true);
+		
 		fh.writeFile(data);
+		staticKPIfh.writeFile(data);
+	}
+	
+	private void writeTestHeader() {
+		String name = StringUtils.center("Test", 60);
+		String time = StringUtils.center("Time", 10);
+		String value = StringUtils.center("Value", 10);
+		String gap = StringUtils.center("Gap", 10);
+		String headerLine = name + "|" + time + "|" + value + "|" + gap;
+		staticKPIfh.writeFile(headerLine);
+
+	}
+	
+	private void writeTestResult(KPITrackerStatic tracker) {
+		String[] namePath = tracker.getName().split("/");
+		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 60);
+		data += "|";
+		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
+		data += "|";
+		data += StringUtils.center(tracker.getBestSolution(),10);
+		data += "|";
+		data += StringUtils.center(tracker.getGap() + "%", 10);
+		
+		staticKPIfh.writeFile(data);
 	}
 	
 	@Override

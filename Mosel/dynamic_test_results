@@ -1,0 +1,14 @@
+
+Test test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_a
+                           Model                            |  DNS (customers)  |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+../Mosel/tests/progress_testing/model/main_basic_symmetry.mos|        19         |        0         |        3         |      82,4       |        81        |      81       |       84,65       |     218,15      
+../Mosel/tests/progress_testing/model/main_basic_symmetry_valid.mos|        16         |        0         |        2         |      64,95      |      79,85       |     79,85     |       62,8        |     236,38      
+    ../Mosel/tests/progress_testing/model/main_basic.mos    |        19         |        0         |        2         |      66,5       |       64,2       |     64,2      |      135,18       |      246,2      
+../Mosel/tests/progress_testing/model/main_basic_symmetry_valid_var1.mos|        18         |        0         |        3         |      92,55      |      88,65       |     88,65     |      149,86       |     191,22      
+
+Test test_6nodes_3so_2c_3mov_3charging_1finishes_0MODE_b
+                           Model                            |  DNS (customers)  |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+../Mosel/tests/progress_testing/model/main_basic_symmetry.mos|        16         |        0         |        2         |      73,15      |      44,95       |     44,95     |      139,55       |     250,48      
+../Mosel/tests/progress_testing/model/main_basic_symmetry_valid.mos|        21         |        0         |        3         |      72,9       |        48        |      48       |      150,57       |      256,2      
+    ../Mosel/tests/progress_testing/model/main_basic.mos    |        19         |        0         |        3         |      90,8       |       66,8       |     66,8      |      170,76       |     206,06      
+../Mosel/tests/progress_testing/model/main_basic_symmetry_valid_var1.mos|        19         |        0         |        2         |      57,25      |      41,75       |     41,75     |       72,15       |     282,74      
