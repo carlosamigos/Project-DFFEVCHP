@@ -323,6 +323,9 @@ public class DynamicProblem {
                                 ((ChargingNode) arrivalNode).getCarsCurrentlyCharging().add(car);
                                 this.kpiTrackerDyanmic.increaseNumberOfCarsSetToCharging(subProblemNumber);
                             }
+                        } else {
+                            // arrived with bike
+                            operator.setWasHandlingToNextCurrentNode(false);
                         }
                     }
                 }
