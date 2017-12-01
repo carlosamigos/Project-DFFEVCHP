@@ -18,3 +18,4 @@ Java/.gitignore
 Java/.idea*
 *.pdf
 *.tikz
+Mosel/output/*
