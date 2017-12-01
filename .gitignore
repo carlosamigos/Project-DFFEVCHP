@@ -19,4 +19,6 @@ Java/.idea*
 *.pdf
 *.tikz
 Mosel/output/*
+Mosel/output/artificialOperators/*
+Mosel/output/realOperators/*
 Simulations/*
