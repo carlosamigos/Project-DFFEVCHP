@@ -6,6 +6,11 @@ API_KEY_1 = "AIzaSyBMQAmCiWBwO1VznaTzEiNAEyoAUr2xzGM"
 API_KEY_2 = "AIzaSyBK2KN_jQS6ygFfU1UaMjG8CA8vhjeV10k"
 API_KEY_3 = "AIzaSyBLDdoYQf9BzJGHsRyC4W2-O4gMcHR2gIo"
 API_KEY_4 = "AIzaSyCV5xFdq7ryUjSFB_vcXCOGQihe187mf8c"
+API_KEY_5 = "AIzaSyD5odmEyjx4nlp_0K4MvctJ6h2ApMWyhlY"
+API_KEY_6 = "AIzaSyDZtCQvBvwHH3UPunJDeNnC7itYKSmdx-c"
+API_KEY_7 = "AIzaSyCfjoVZRR8I1OBBCC3Kqr_KkKw52C2-jfQ"
+
+
 
 def calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile):
     # max 10 coordinates
@@ -86,7 +91,7 @@ def test():
     print(matrix)
 
 def run(coordVector, transportType, writeToFile):
-    apikey = API_KEY_3
+    apikey = API_KEY_2
     print("number of coordinates", len(coordVector))
     return calculateTravelTimeMatrixFromCoordVector(coordVector, transportType, apikey, writeToFile)
 

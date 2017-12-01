@@ -9,10 +9,10 @@ public class Constants {
     public final static String MOSEL_OUTPUT_REAL= "../Mosel/output/realOperators/";
     public final static String MOSEL_OUTPUT_ARTIFICIAL= "../Mosel/output/artificialOperators/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/static/";
+    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/progress_testing/";
     public final static String TEST_DYNAMIC_FOLDER = "../Mosel/tests/dynamic/";
     public final static String TEST_DYNAMIC_INITIAL_FOLDER = "../Mosel/tests/dynamic/initial/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "models/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/progress_testing/model/";
     
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
@@ -21,7 +21,7 @@ public class Constants {
     public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath";
     public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators";
     public final static String DEMAND_REQUESTS = "demand_request";
-    public final static String STATIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "static_test_results";
+    public final static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
     
@@ -31,7 +31,7 @@ public class Constants {
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 120; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 600; // In seconds
     public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;

@@ -10,16 +10,15 @@ import utils.StringUtils;
 public class StaticTestSuite extends TestSuite {
 	
 	public StaticTestSuite(SolverType solverType) {
-		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, Constants.TEST_STATIC_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
 	}
 	
 	public void runTestSuite() {
+		
 		System.out.println("\nStarting static test suite...");
 		System.out.println("Number of test files: " + testFileNames.size());
 		int runsLeft = this.solvers.size() * this.testFileNames.size();
 		double timePerRun = calcTimePerRun();
-		
-		
 		
 		for(Solver solver : this.solvers) {
 			writeTestHeader(solver.getInfo());
@@ -32,6 +31,7 @@ public class StaticTestSuite extends TestSuite {
 				solver.solve(staticProblem);
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);
+				runsLeft--;
 			}
 			
 			System.out.println("\n");
@@ -44,7 +44,7 @@ public class StaticTestSuite extends TestSuite {
 	private void writeTestHeader(String fileName) {
 		String data = "Solver: " + fileName + "\n";
 		
-		String name = StringUtils.center("Test", 30);
+		String name = StringUtils.center("Test", 60);
 		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 10);
@@ -55,7 +55,7 @@ public class StaticTestSuite extends TestSuite {
 	
 	private void writeTestResult(KPITrackerStatic tracker) {
 		String[] namePath = tracker.getName().split("/");
-		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 30);
+		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 60);
 		data += "|";
 		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
 		data += "|";
@@ -68,7 +68,7 @@ public class StaticTestSuite extends TestSuite {
 	
 	@Override
 	protected double calcTimePerRun() {
-		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS*this.testFileNames.size()*this.solvers.size();
+		double timePerRun = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
 		return timePerRun;
 		
 	}
