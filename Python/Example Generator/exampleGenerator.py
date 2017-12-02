@@ -12,34 +12,45 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 ### CONSTANTS ####
 
-# EUCLEDEAN DISTANCE #
+# EUCLEDEAN DISTANCE - DON'T CHANGE #
 DISTANCESCALE = 3
 
-# PROBLEM PARAMETERS #
+# NUMBER OF EXAMPLES TO CREATE #
 EXAMPLES = 2
 
+#BOARD SIZE - DONT CHANGE
 XSIZE = 8
 YSIZE = 8
 
+#ALLOWED MOVES
 MOVES = 4
-MAXNODES = 9
 CARSCHARGING = 3
 
+#PARKING NODES USED
+MAXNODES = 9
+
+#CHARGING NODES
 NUMCHARGING = 2
 PARKINGC = [2, 7]
 CAPACITY = [2, 2]
 TOTALCAPACITY = [3, 2]
 
+#OPERATORS
 NUMOPERATORS = 3
 STARTETIMEOP = [5, 0, 0]
 HANDLINGOP = [1, 0, 0]
 
-# MAKING NODES #
+# MAKING NODES - DON' CHANGE #
 SPREAD = True
 CLUSTER = True
 
-# OUTPUT #
-MODES_RUN2 = [[2, 10, 30, 0.05, 0.4]]
+# OUTPUT - the lists are run in a foor loop #
+# First parameter: Mode - 2 equals the normal one, and 4 equals the one that tries to reduce time when visiting charging nodes
+# Second paramter: Weight for not meeting ideal state
+# Thirds paramter: Weight for not setting vehicles to charging
+# Fourth paramter: Weight for traveling by service operator
+# Fifth paramter: Weight for handling by service operator
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4], [4, 10, 30, 0.05, 0.4]]
 
 class World:
 
@@ -403,7 +414,7 @@ class World:
     ## FILE HANDLER ##
 
     def writeToFile(self, example):
-        fileName = "../../Mosel/tests/" + str(example) + "_a.txt"
+        fileName = "../../Mosel/test_generated/" + str(example) + "_a.txt"
         if (os.path.exists(fileName)):
             fileName = "../../Mosel/tests/" + str(example) + "_b.txt"
             if (os.path.exists(fileName)):
