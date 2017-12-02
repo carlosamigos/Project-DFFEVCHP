@@ -16,14 +16,14 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 2
+EXAMPLES = 3
 
 #BOARD SIZE - DONT CHANGE
 XSIZE = 8
 YSIZE = 8
 
 #ALLOWED MOVES
-MOVES = 4
+MOVES = 5
 CARSCHARGING = 3
 
 #PARKING NODES USED
@@ -416,9 +416,9 @@ class World:
     def writeToFile(self, example):
         fileName = "../../Mosel/test_generated/" + str(example) + "_a.txt"
         if (os.path.exists(fileName)):
-            fileName = "../../Mosel/tests/" + str(example) + "_b.txt"
+            fileName = "../../Mosel/test_generated/" + str(example) + "_b.txt"
             if (os.path.exists(fileName)):
-                fileName = "../../Mosel/tests/" + str(example) + "_c.txt"
+                fileName = "../../Mosel/test_generated/" + str(example) + "_c.txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
