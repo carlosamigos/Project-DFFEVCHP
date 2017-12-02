@@ -2,7 +2,7 @@ package constants;
 
 public class Constants {
 
-    public final static int NUMBER_OF_DAYS_TO_TEST = 2;
+    public final static int NUMBER_OF_DAYS_TO_TEST = 3;
 
     // Folders
     public final static String PROBLEM_FOLDER = "../Mosel/";
@@ -23,15 +23,16 @@ public class Constants {
     public final static String DEMAND_REQUESTS = "demand_request";
     public final static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
+    public final static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_FOLDER + "results/static_results_";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*10;
+    public final static int END_TIME = 60*9;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 600; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 5; // In seconds
     public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
