@@ -51,7 +51,7 @@ public class Constants {
     public final static double PERCENTAGE_RUSH_HOUR_SPLIT = 0.5;
     public final static double CUSTOMER_TIME_MULTIPLICATOR = 1.5; // 1-1.5
     public final static double PROBABILITY_CUSTOMERS_CHARGE = 0.7;
-    public final static boolean PRINT_OUT_ACTIONS = false;
+    public final static boolean PRINT_OUT_ACTIONS = true;
 
     public final static double CHARGING_TIME_FULL = 3.5*60; //3.5 hours, in minutes
     public final static double BATTERY_CHARGED_PER_TIME_UNIT = 1.0/CHARGING_TIME_FULL;

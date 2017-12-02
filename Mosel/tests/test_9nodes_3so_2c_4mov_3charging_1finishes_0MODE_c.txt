@@ -1,0 +1,69 @@
+numVisits: 4
+numPNodes: 9
+numCNodes: 2
+numROperators: 3
+numAOperators: 1
+
+hNodes : 8
+wNodes : 8
+nodeSubsetIndexes: [1 2 3 4 5 6 7 8 9] 
+
+startNodeROperator: [8 3 4] 
+originNodeROperator: [12 13 14] 
+destinationNodeROperator: [15 16 17] 
+cToP: [2 7] 
+parkingNodeAOperator: [2] 
+chargingNodeAOperator: [10] 
+
+chargingSlotsAvailable: [2 2] 
+totalNumberOfChargingSlots: [3 2] 
+
+costOfDeviation : 10
+costOfPostponedCharging : 30
+costOfExtraTime : 0.5
+costOfTravel: 0.05
+costOfTravelH: 0.4
+
+travelTimeVehicle: [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+		0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 ]
+
+travelTimeBike: [0.0 5.9 5.3 12.5 19.7 27.2 25.6 21.0 30.1 5.9 25.6 
+		5.8 0.0 5.6 11.3 18.0 20.9 24.3 19.8 28.4 1.0 24.3 
+		11.4 11.8 0.0 10.6 21.0 21.9 24.5 20.6 31.4 11.8 24.5 
+		21.9 21.6 14.9 0.0 13.1 25.0 14.8 12.0 22.9 21.6 14.8 
+		28.1 23.7 22.2 12.6 0.0 14.7 12.8 6.3 14.9 23.7 12.8 
+		25.4 21.0 22.9 20.7 12.9 0.0 20.2 13.3 3.5 21.0 20.2 
+		35.0 34.7 29.0 15.1 13.0 22.7 0.0 11.5 22.9 34.7 1.0 
+		30.5 26.1 27.7 13.8 9.7 15.1 14.2 0.0 15.9 26.1 14.2 
+		38.8 33.9 33.0 19.9 12.8 3.5 19.5 11.6 0.0 33.9 19.5 
+		5.8 1.0 5.6 11.3 18.0 20.9 24.3 19.8 28.4 0.0 24.3 
+		35.0 34.7 29.0 15.1 13.0 22.7 1.0 11.5 22.9 34.7 0.0 ]
+
+handlingTimeP: 4
+handlingTimeC: 5
+travelTimeToOriginR: [5 0 0] 
+travelTimeToParkingA: [3] 
+timeLimit: 60
+timeLimitLastVisit: 10
+maxTravelHToC: 30
+
+initialHandling: [1 0 0] 
+initialRegularInP: [2 0 3 2 1 1 0 0 0] 
+initialInNeedP: [0 0 0 0 1 0 0 1 1] 
+finishedDuringC: [1 0] 
+idealStateP: [3 0 2 2 2 1 2 0 0] 
+
+demandP: [0 1 -1 0 -1 -1 0 0 1] 
+
+mode: 2
+sequenceBigM: 10
+visitList: [2 2 2 2 2 2 2 2 2 4 2 1 1 1 1 1 1] 

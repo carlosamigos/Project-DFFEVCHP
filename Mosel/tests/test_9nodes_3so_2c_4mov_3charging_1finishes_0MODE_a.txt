@@ -1,0 +1,69 @@
+numVisits: 4
+numPNodes: 9
+numCNodes: 2
+numROperators: 3
+numAOperators: 1
+
+hNodes : 8
+wNodes : 8
+nodeSubsetIndexes: [1 2 3 4 5 6 7 8 9] 
+
+startNodeROperator: [4 5 8] 
+originNodeROperator: [12 13 14] 
+destinationNodeROperator: [15 16 17] 
+cToP: [2 7] 
+parkingNodeAOperator: [2] 
+chargingNodeAOperator: [10] 
+
+chargingSlotsAvailable: [2 2] 
+totalNumberOfChargingSlots: [3 2] 
+
+costOfDeviation : 10
+costOfPostponedCharging : 30
+costOfExtraTime : 0.5
+costOfTravel: 0.05
+costOfTravelH: 0.4
+
+travelTimeVehicle: [0.0 6.4 8.7 9.8 7.3 10.6 11.6 13.6 43.9 6.4 11.6 
+		6.0 0.0 9.5 7.6 8.1 8.4 12.3 11.4 43.3 1.0 12.3 
+		8.1 9.0 0.0 10.8 4.3 13.2 8.6 16.2 45.6 9.0 8.6 
+		9.2 6.6 9.5 0.0 8.3 9.2 9.5 12.2 46.6 6.6 9.5 
+		8.3 9.4 4.2 8.4 0.0 13.6 6.2 16.6 44.3 9.4 6.2 
+		10.8 8.2 14.3 12.0 12.9 0.0 17.1 7.2 48.1 8.2 17.1 
+		12.8 13.8 8.7 9.8 7.5 19.2 0.0 18.2 42.7 13.8 1.0 
+		14.5 11.9 18.0 14.9 16.6 7.4 17.3 0.0 52.1 11.9 17.3 
+		25.4 25.1 25.9 28.6 24.5 29.3 23.8 32.3 0.0 25.1 23.8 
+		6.0 1.0 9.5 7.6 8.1 8.4 12.3 11.4 43.3 0.0 12.3 
+		12.8 13.8 8.7 9.8 7.5 19.2 1.0 18.2 42.7 13.8 0.0 ]
+
+travelTimeBike: [0.0 9.9 6.3 12.5 9.4 29.5 11.0 27.2 20.4 9.9 11.0 
+		10.6 0.0 6.0 7.2 8.8 24.6 9.6 23.8 18.2 1.0 9.6 
+		11.9 10.7 0.0 12.8 3.0 29.9 4.8 18.1 16.4 10.7 4.8 
+		17.2 9.8 10.0 0.0 9.4 20.7 7.3 19.6 14.5 9.8 7.3 
+		16.6 16.2 5.6 11.6 0.0 28.0 3.6 20.3 15.1 16.2 3.6 
+		33.8 26.5 27.9 15.9 22.7 0.0 20.6 11.2 19.2 26.5 20.6 
+		20.3 18.6 8.9 12.6 7.0 29.0 0.0 24.9 12.4 18.6 1.0 
+		25.4 25.9 17.8 20.4 22.6 14.5 24.6 0.0 15.0 25.9 24.6 
+		29.8 26.6 20.8 18.1 18.3 24.8 12.3 17.5 0.0 26.6 12.3 
+		10.6 1.0 6.0 7.2 8.8 24.6 9.6 23.8 18.2 0.0 9.6 
+		20.3 18.6 8.9 12.6 7.0 29.0 1.0 24.9 12.4 18.6 0.0 ]
+
+handlingTimeP: 4
+handlingTimeC: 5
+travelTimeToOriginR: [5 0 0] 
+travelTimeToParkingA: [0] 
+timeLimit: 60
+timeLimitLastVisit: 10
+maxTravelHToC: 30
+
+initialHandling: [1 0 0] 
+initialRegularInP: [1 3 0 3 3 2 0 2 1] 
+initialInNeedP: [0 1 0 0 0 1 0 1 0] 
+finishedDuringC: [1 0] 
+idealStateP: [1 4 1 1 3 2 3 1 1] 
+
+demandP: [-1 0 -1 0 0 0 1 1 0] 
+
+mode: 2
+sequenceBigM: 10
+visitList: [2 2 2 3 2 2 4 2 2 4 2 1 1 1 1 1 1] 
