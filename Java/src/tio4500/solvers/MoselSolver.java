@@ -14,7 +14,7 @@ public class MoselSolver extends Solver {
 	private XPRMModel model;
 
 	public MoselSolver(String moselFileName) {
-		//this.mosel = new XPRM();
+		this.mosel = new XPRM();
 		this.moselFileName = moselFileName;
 		this.bimFileName = moselFileName.substring(0, moselFileName.length() - 3) + "bim";
 	}
