@@ -2,7 +2,7 @@ package constants;
 
 public class Constants {
 
-    public final static int NUMBER_OF_DAYS_TO_TEST = 5;
+    public final static int NUMBER_OF_DAYS_TO_TEST = 4;
 
     // Folders
     public final static String PROBLEM_FOLDER = "../Mosel/";
@@ -27,8 +27,8 @@ public class Constants {
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Time specific parameters : Minutes
-    public final static int START_TIME = 60*6; // Minutes from midnight
-    public final static int END_TIME = 60*18;
+    public final static int START_TIME = 60*8; // Minutes from midnight
+    public final static int END_TIME = 60*16;
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
