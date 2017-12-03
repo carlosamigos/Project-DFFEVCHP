@@ -596,15 +596,17 @@ public class DynamicProblem {
     private OperatorDeparture findNextOperatorDepartureOrArrival(double time, double endTime, HashMap<Operator,ArrayList<OperatorDeparture>> operatorDepartures){
         OperatorDeparture earliestOperatorHappening = null;
         double earliestHappeningTime = 0;
-        for (Operator operator : operatorDepartures.keySet()) {
-            for (OperatorDeparture departure : operatorDepartures.get(operator)) {
-                double minTimeOverTimeLimit = findEarliestHappeningOverTime(departure,time);
-                if(earliestOperatorHappening == null && minTimeOverTimeLimit >= time && minTimeOverTimeLimit < endTime ){
-                    earliestOperatorHappening = departure;
-                    earliestHappeningTime = minTimeOverTimeLimit;
-                } else if ( earliestOperatorHappening != null && minTimeOverTimeLimit < earliestHappeningTime && minTimeOverTimeLimit >= time && minTimeOverTimeLimit < endTime){
-                    earliestOperatorHappening = departure;
-                    earliestHappeningTime = minTimeOverTimeLimit;
+        if(operatorDepartures != null){
+            for (Operator operator : operatorDepartures.keySet()) {
+                for (OperatorDeparture departure : operatorDepartures.get(operator)) {
+                    double minTimeOverTimeLimit = findEarliestHappeningOverTime(departure,time);
+                    if(earliestOperatorHappening == null && minTimeOverTimeLimit >= time && minTimeOverTimeLimit < endTime ){
+                        earliestOperatorHappening = departure;
+                        earliestHappeningTime = minTimeOverTimeLimit;
+                    } else if ( earliestOperatorHappening != null && minTimeOverTimeLimit < earliestHappeningTime && minTimeOverTimeLimit >= time && minTimeOverTimeLimit < endTime){
+                        earliestOperatorHappening = departure;
+                        earliestHappeningTime = minTimeOverTimeLimit;
+                    }
                 }
             }
         }

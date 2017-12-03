@@ -83,7 +83,8 @@ public class DynamicTestSuite extends TestSuite{
 	
 	private void writeKPIs() {
 		String solv = StringUtils.center("Model", 80);
-		String dns = StringUtils.center("DS (%)", 19);
+		String ds = StringUtils.center("DS (%)", 19);
+		String dsVariance = StringUtils.center("DS var", 19);
 		String abandoned = StringUtils.center("Abondoned (op)", 18);
 		String charged = StringUtils.center("Charged (cars)", 18);
 		String carDist = StringUtils.center("CarDist (min)", 17);
@@ -91,7 +92,7 @@ public class DynamicTestSuite extends TestSuite{
 		String elDist = StringUtils.center("EL-Used (%)", 15);
 		String chargeWait = StringUtils.center("ChargeWait (min)", 19);
 		String idleTime = StringUtils.center("IdleTime (min)", 17);
-		String data = solv + "|" + dns + "|" + abandoned + "|" + charged +
+		String data = solv + "|" + ds + "|" +dsVariance + "|" + abandoned + "|" + charged +
 		              "|" + carDist + "|" + bikeDist + "|" + elDist + "|" + chargeWait +
 		              "|" + idleTime + "\n";
 		
@@ -99,10 +100,19 @@ public class DynamicTestSuite extends TestSuite{
 		for(Solver solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
 			String solverName = StringUtils.center(solver.getInfo(), 80);
-			String dsPercentage = StringUtils.center("" + df.format(trackers.stream().map(t ->
-				t.getDemandServedFraction()*100)
-				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 19);
-			
+			Double expectedValueCalculated = trackers.stream().map(t ->
+					t.calculateDemandServedFraction()*100)
+					.collect(Collectors.summingDouble(Double::doubleValue))/this.days;
+			String dsPercentage = StringUtils.center("" + df.format(expectedValueCalculated), 19);
+
+			Double squaredSum = 0.0;
+			for (KPITrackerDynamic tracker: trackers) {
+				double demandServedFraction = tracker.calculateDemandServedFraction();
+				squaredSum += Math.pow(demandServedFraction - expectedValueCalculated/100,2);
+			}
+			Double variance = squaredSum /(trackers.size() -1);
+			String dsVarianceVal = StringUtils.center("" + df.format(variance).toString(), 19);
+
 			String abandonedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfOperatorsAbandoned().stream().collect(Collectors.summingInt(Integer::intValue)))
 				.collect(Collectors.summingInt(Integer::intValue))/this.days), 18);
@@ -131,7 +141,7 @@ public class DynamicTestSuite extends TestSuite{
 				t.getIdleTimeForServiceOperators().stream().collect(Collectors.summingDouble(Double::doubleValue)))
 				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 17);
 			
-			data += solverName + "|" + dsPercentage + "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
+			data += solverName + "|" + dsPercentage + "|" + dsVarianceVal +  "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
 		}
 		fh.writeFile(data);

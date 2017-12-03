@@ -127,7 +127,7 @@ public class KPITrackerDynamic {
 
 
 
-    public double getDemandServedFraction(){
+    public double calculateDemandServedFraction(){
         int totalDemandServed = 0;
         int totalDemandNotServed = 0;
         for (int period = 1; period <= demandServed.size(); period++) {
