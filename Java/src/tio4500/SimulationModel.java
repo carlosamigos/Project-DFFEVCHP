@@ -41,7 +41,7 @@ public class SimulationModel {
     public void saveDaySimulationModel(){
         try{
             NumberFormat formatter = new DecimalFormat("#0.000");
-            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_probleminstance_"+problemInstance.getFileName() + ".txt");
+            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt");
             writer.println(dayNumberString+" : "+Integer.toString(dayNumber));
             writer.println(startIndexString+" : "+Integer.toString(Constants.START_INDEX));
             writer.println(problemInstanceFileName +" : "+problemInstance.getFileName());
