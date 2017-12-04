@@ -33,7 +33,7 @@ public class Constants {
 
     // Parameters for Mosel
     public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 180; // In seconds
-    public final static int OBJECTIVE_MODE = 2;
+    public final static int OBJECTIVE_MODE = 4;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
