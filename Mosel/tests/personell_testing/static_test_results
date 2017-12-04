@@ -1,0 +1,18 @@
+Solver: ../Mosel/tests/personell_testing/model/main_basic_symmetry_valid_var1.mos
+                            Test                            |   Time   |  Value   |   Gap    
+    test_8nodes_1so_2c_5mov_3charging_1finishes_0MODE_a     | 600.09s. |  79.53   |  68.88%  
+    test_8nodes_1so_2c_5mov_3charging_1finishes_0MODE_b     | 600.28s. |   N/A    |   N/A%   
+    test_8nodes_1so_2c_5mov_3charging_1finishes_0MODE_c     | 600.08s. |  56.83   |  27.78%  
+    test_8nodes_2so_2c_5mov_3charging_1finishes_0MODE_a     | 600.08s. |  29.96   |  12.7%   
+    test_8nodes_2so_2c_5mov_3charging_1finishes_0MODE_b     | 600.09s. |  48.12   |  19.07%  
+    test_8nodes_2so_2c_5mov_3charging_1finishes_0MODE_c     | 600.08s. |   38.9   |  21.45%  
+    test_8nodes_3so_2c_5mov_3charging_1finishes_0MODE_a     |  5.37s.  |  32.61   |    0%    
+    test_8nodes_3so_2c_5mov_3charging_1finishes_0MODE_b     | 13.03s.  |  28.16   |    0%    
+    test_8nodes_3so_2c_5mov_3charging_1finishes_0MODE_c     | 100.18s. |  38.92   |    0%    
+    test_8nodes_4so_2c_5mov_3charging_1finishes_0MODE_a     |  11.4s.  |  35.62   |    0%    
+    test_8nodes_4so_2c_5mov_3charging_1finishes_0MODE_b     |  6.11s.  |  19.48   |    0%    
+    test_8nodes_4so_2c_5mov_3charging_1finishes_0MODE_c     | 600.14s. |  32.72   |  1.44%   
+    test_8nodes_5so_2c_5mov_3charging_1finishes_0MODE_a     |  8.14s.  |   47.2   |    0%    
+    test_8nodes_5so_2c_5mov_3charging_1finishes_0MODE_b     | 30.86s.  |  30.91   |    0%    
+    test_8nodes_5so_2c_5mov_3charging_1finishes_0MODE_c     | 119.7s.  |  34.44   |    0%    
+
