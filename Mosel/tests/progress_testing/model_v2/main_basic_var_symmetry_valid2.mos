@@ -6,12 +6,12 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
+	DataFile = '../test_9nodes_3so_2c_6mov_3charging_1finishes_0MODE_a.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
-	writeToFile = true;
+	writeToFile = false;
 	MaxSolveTimeSeconds = 300;
 end-parameters
 
@@ -528,9 +528,7 @@ forall(jj in pNodes, nn in visits, pp in rOperators | nn <= visitList(jj)) do
 end-do
 
 
-forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(jj)) do
-	lowEffort(ii, mm, jj, nn, pp) := h(ii, mm, jj, nn, pp)+ sum(kk in rNodes, ll in visits) h(jj, nn, kk, ll, pp) >= x(ii, mm, jj, nn, pp);
-end-do
+
 
 ! Initial handling by real
 declarations
@@ -660,6 +658,7 @@ declarations
 	maxCHandling			: dynamic array(cNodes, visits)								of linctr;
 	chargingCarVisit        : dynamic array(rNodes, visits)								of linctr;
 	travelFlow              : dynamic array(rNodes, visits)                             of linctr;
+	travelFlowBasic			: dynamic array(rNodes, visits)						        of linctr;
 	travelFlowZero			: dynamic array(rNodes, visits)                             of linctr;
 	endTimeFree             : dynamic array(rNodes, visits)                             of linctr;
 	endTimeLastVisit        : dynamic array(rNodes, visits)                             of linctr;
@@ -702,12 +701,11 @@ forall(ii in rNodes, mm in visits| mm < visitList(ii)) do
 		((1 - r(ii, mm+1)) *
 		(timeLimit + timeLimitLastVisit));
 end-do
-
-
-forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
-	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
+(!
+forall(ii in rNodes, mm in visits | mm < visitList(ii)) do
+	travelFlowBasic(ii, mm) := t(ii,mm) <= t(ii,mm+1)
 end-do
-
+!)
 
 forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
 	endTimeFree(ii, mm) := t(ii, mm) <= timeLimit + (timeLimitLastVisit * sum(pp in rOperators) x(ii, mm, destinationNodeROperator(pp),1,pp));
@@ -753,6 +751,14 @@ end-declarations
 
 forall(ii in pNodes, mm in visits | mm <= visitList(ii)) do
 	handlingControl2(ii, mm) :=  sum(jj in cNodes, nn in visits, pp in rOperators) x(ii, mm, jj, nn, pp) <= sum(jj in cNodes, nn in visits, pp in rOperators) h(ii, mm, jj, nn, pp)
+end-do
+
+forall(ii in rNodes, mm in visits | mm <= visitList(ii)) do
+	travelFlowZero(ii, mm) := t(ii, mm) <= (timeLimit + timeLimitLastVisit) * r(ii, mm);
+end-do
+
+forall(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators | mm <= visitList(ii) and nn <= visitList(jj)) do
+	lowEffort(ii, mm, jj, nn, pp) := h(ii, mm, jj, nn, pp)+ sum(kk in rNodes, ll in visits) h(jj, nn, kk, ll, pp) >= x(ii, mm, jj, nn, pp);
 end-do
 
 
@@ -1074,6 +1080,9 @@ if writeToFile then
 end-if
 
 end-model
+
+
+
 
 
 
