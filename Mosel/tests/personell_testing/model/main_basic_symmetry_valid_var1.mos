@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
+	DataFile = '../test_8nodes_3so_2c_5mov_3charging_1finishes_10time_0MODE_a.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 300;
+	MaxSolveTimeSeconds = 600;
 end-parameters
 
 
@@ -980,6 +980,8 @@ forall(pp in rOperators) do
 end-do
 !)
 
+deviation := sum(ii in pNodes) (getsol(sPlus(ii)) + getsol(sEndC(ii)));
+
 if writeToFile then
 	fopen(OutputPathRegular, F_OUTPUT);
 	forall(pp in rOperators) do
@@ -1063,15 +1065,16 @@ if writeToFile then
 	end-do
 	
 	
-	
+
 	
 	fclose(F_OUTPUT)
 	
 	! TIL SIMEN
 	fopen("../Mosel/runStats", F_OUTPUT);
 	writeln(getparam("XPRS_MIPOBJVAL"));
-	writeln(getparam("XPRS_BESTBOUND"));	
+	writeln(getparam("XPRS_BESTBOUND"));
 	writeln(endTimeMosel-startTimeMosel);
+	writeln(deviation);
 	fclose(F_OUTPUT);
 	! SLUTT TIL SIMEN
 	
