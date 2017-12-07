@@ -9,10 +9,10 @@ public class Constants {
     public final static String MOSEL_OUTPUT_REAL= "../Mosel/output/realOperators/";
     public final static String MOSEL_OUTPUT_ARTIFICIAL= "../Mosel/output/artificialOperators/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/dynamic/";
+    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/progress_testing/";
     public final static String TEST_DYNAMIC_FOLDER = "../Mosel/tests/dynamic/";
     public final static String TEST_DYNAMIC_INITIAL_FOLDER = "../Mosel/tests/dynamic/initial/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/dynamic/model/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/progress_testing/model_v3/";
     
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
@@ -32,7 +32,7 @@ public class Constants {
     public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
-    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 180; // In seconds
+    public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 60; // In seconds
     public final static int OBJECTIVE_MODE = 4;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
