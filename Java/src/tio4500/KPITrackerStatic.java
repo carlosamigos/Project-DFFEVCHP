@@ -18,6 +18,8 @@ public class KPITrackerStatic {
     private String bestBound;
     private String timeUsed;
     private String gap;
+    private String rdev;
+    private String cdev;
 
     public void setResults(String dataFilePath){
         ArrayList<String> currResults = new ArrayList<String>();
@@ -46,6 +48,8 @@ public class KPITrackerStatic {
         this.bestBound = currResults.get(1);
         this.timeUsed = timeString;
         this.gap = gapString;
+        this.rdev = df.format(Double.parseDouble(currResults.get(3)));
+        this.cdev = df.format(Double.parseDouble(currResults.get(4)));
     }
 
     public String getName() {
@@ -62,5 +66,13 @@ public class KPITrackerStatic {
 
     public String getGap() {
         return gap;
+    }
+    
+    public String getRDev() {
+    	return this.rdev;
+    }
+    
+    public String getCDev() {
+    	return this.cdev;
     }
 }
