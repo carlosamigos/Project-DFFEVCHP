@@ -1072,6 +1072,8 @@ if writeToFile then
 	writeln(getparam("XPRS_MIPOBJVAL"));
 	writeln(getparam("XPRS_BESTBOUND"));	
 	writeln(endTimeMosel-startTimeMosel);
+	writeln(deviationRel);
+	writeln(deviationCharg);
 	fclose(F_OUTPUT);
 	! SLUTT TIL SIMEN
 	
