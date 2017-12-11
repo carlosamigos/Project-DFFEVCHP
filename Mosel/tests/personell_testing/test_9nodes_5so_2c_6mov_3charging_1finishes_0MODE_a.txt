@@ -64,6 +64,6 @@ idealStateP: [1 2 3 1 0 1 0 1 3]
 
 demandP: [0 1 -1 0 0 1 -1 0 0] 
 
-mode: 2
+mode: 4 
 sequenceBigM: 10
 visitList: [2 5 2 3 2 3 2 2 5 4 2 1 1 1 1 1 1 1 1 1 1] 

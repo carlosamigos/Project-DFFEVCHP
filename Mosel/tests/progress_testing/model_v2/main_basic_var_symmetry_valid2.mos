@@ -11,7 +11,7 @@ parameters
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
-	writeToFile = false;
+	writeToFile = true;
 	MaxSolveTimeSeconds = 300;
 end-parameters
 

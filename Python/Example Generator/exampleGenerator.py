@@ -16,7 +16,7 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 3
+EXAMPLES = 2
 
 #BOARD SIZE - DONT CHANGE
 XSIZE = 8
@@ -36,9 +36,9 @@ CAPACITY = [2, 2]
 TOTALCAPACITY = [3, 2]
 
 #OPERATORS
-NUMOPERATORS = 3
-STARTETIMEOP = [5, 0, 0]
-HANDLINGOP = [1, 0, 0]
+NUMOPERATORS = 1
+STARTETIMEOP = [5]
+HANDLINGOP = [1]
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
@@ -50,7 +50,7 @@ CLUSTER = True
 # Thirds paramter: Weight for not setting vehicles to charging
 # Fourth paramter: Weight for traveling by service operator
 # Fifth paramter: Weight for handling by service operator
-MODES_RUN2 = [[2, 10, 30, 0.05, 0.4], [4, 10, 30, 0.05, 0.4]]
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4]]
 
 class World:
 
