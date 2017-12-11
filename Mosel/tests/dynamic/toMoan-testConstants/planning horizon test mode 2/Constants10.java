@@ -25,11 +25,7 @@ public class Constants {
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
     public final static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_FOLDER + "results/static_results_";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
-
-    //Cost parameters
-    public final static double COST_POSTPONED = 30;
-    public final static double COST_DEVIATION = 10;
-
+    
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*8; // Minutes from midnight
     public final static int END_TIME = 60*16;
@@ -37,7 +33,7 @@ public class Constants {
 
     // Parameters for Mosel
     public final static int MAX_SOLVE_TIME_MOSEL_SECONDS = 180; // In seconds
-    public final static int OBJECTIVE_MODE = 4;
+    public final static int OBJECTIVE_MODE = 2;
     public final static boolean PRINT_MOSEL_RESULTS = false;
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
