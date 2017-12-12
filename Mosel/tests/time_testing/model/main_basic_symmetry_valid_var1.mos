@@ -434,7 +434,7 @@ if(mode = 3) then
 end-if
 
 if(mode = 4) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) 
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
