@@ -1,0 +1,69 @@
+numVisits: 4
+numPNodes: 9
+numCNodes: 2
+numROperators: 3
+numAOperators: 1
+
+hNodes : 8
+wNodes : 8
+nodeSubsetIndexes: [1 2 3 4 5 6 7 8 9] 
+
+startNodeROperator: [8 7 2] 
+originNodeROperator: [12 13 14] 
+destinationNodeROperator: [15 16 17] 
+cToP: [2 8] 
+parkingNodeAOperator: [2] 
+chargingNodeAOperator: [10] 
+
+chargingSlotsAvailable: [2 2] 
+totalNumberOfChargingSlots: [3 2] 
+
+costOfDeviation : 10
+costOfPostponedCharging : 30
+costOfExtraTime : 0.5
+costOfTravel: 0.05
+costOfTravelH: 0.4
+
+travelTimeVehicle: [0.0 8.0 6.2 15.1 12.0 11.1 15.6 16.0 10.4 8.0 16.0 
+		8.0 0.0 4.8 16.9 13.7 11.8 17.2 13.7 9.5 1.0 13.7 
+		9.9 8.3 0.0 12.9 8.8 7.0 12.4 11.1 10.5 8.3 11.1 
+		15.8 18.2 14.9 0.0 5.4 9.5 2.8 13.7 19.8 18.2 13.7 
+		12.2 13.8 10.5 5.1 0.0 4.8 4.1 11.5 17.6 13.8 11.5 
+		11.3 11.8 8.5 9.8 5.3 0.0 8.8 11.2 15.4 11.8 11.2 
+		17.0 18.6 15.2 3.7 4.8 8.5 0.0 12.7 18.8 18.6 12.7 
+		15.5 14.3 11.2 14.1 11.0 11.7 13.1 0.0 9.7 14.3 1.0 
+		11.6 9.9 8.9 20.4 17.6 16.4 19.7 9.8 0.0 9.9 9.8 
+		8.0 1.0 4.8 16.9 13.7 11.8 17.2 13.7 9.5 0.0 13.7 
+		15.5 14.3 11.2 14.1 11.0 11.7 13.1 1.0 9.7 14.3 0.0 ]
+
+travelTimeBike: [0.0 10.4 8.1 18.4 13.5 11.7 17.7 17.4 24.1 10.4 17.4 
+		10.1 0.0 5.9 20.8 16.4 12.0 20.6 14.1 16.9 1.0 14.1 
+		12.4 10.4 0.0 16.5 12.1 7.0 16.3 9.5 13.1 10.4 9.5 
+		23.5 28.0 17.8 0.0 5.7 10.5 2.1 14.5 20.5 28.0 14.5 
+		19.6 23.5 13.3 5.4 0.0 4.6 5.1 12.8 18.8 23.5 12.8 
+		18.4 22.2 12.1 11.0 5.0 0.0 10.6 10.5 16.5 22.2 10.5 
+		24.8 30.0 19.9 3.4 5.5 9.0 0.0 13.1 19.1 30.0 13.1 
+		27.1 23.9 15.9 16.6 13.8 12.1 14.8 0.0 6.0 23.9 1.0 
+		30.4 23.6 15.7 19.1 16.3 14.7 17.3 2.5 0.0 23.6 2.5 
+		10.1 1.0 5.9 20.8 16.4 12.0 20.6 14.1 16.9 0.0 14.1 
+		27.1 23.9 15.9 16.6 13.8 12.1 14.8 1.0 6.0 23.9 0.0 ]
+
+handlingTimeP: 4
+handlingTimeC: 5
+travelTimeToOriginR: [5 0 0] 
+travelTimeToParkingA: [4] 
+timeLimit: 10
+timeLimitLastVisit: 10
+maxTravelHToC: 30
+
+initialHandling: [1 0 0] 
+initialRegularInP: [1 2 3 1 0 2 1 3 1] 
+initialInNeedP: [1 0 1 1 0 0 0 0 0] 
+finishedDuringC: [1 0] 
+idealStateP: [1 2 3 3 2 2 0 2 3] 
+
+demandP: [1 0 -1 0 0 0 -1 0 -1] 
+
+mode: 2 
+sequenceBigM: 10
+visitList: [2 3 2 3 2 2 2 2 2 4 2 1 1 1 1 1 1] 

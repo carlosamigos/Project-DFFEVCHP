@@ -980,6 +980,11 @@ forall(pp in rOperators) do
 end-do
 !)
 
+
+deviationRel := sum(ii in pNodes) getsol(sPlus(ii));
+deviationCharg := sum(ii in pNodes) getsol(sEndC(ii));
+
+
 if writeToFile then
 	fopen(OutputPathRegular, F_OUTPUT);
 	forall(pp in rOperators) do
@@ -1072,6 +1077,8 @@ if writeToFile then
 	writeln(getparam("XPRS_MIPOBJVAL"));
 	writeln(getparam("XPRS_BESTBOUND"));	
 	writeln(endTimeMosel-startTimeMosel);
+	writeln(deviationRel);
+	writeln(deviationCharg);
 	fclose(F_OUTPUT);
 	! SLUTT TIL SIMEN
 	

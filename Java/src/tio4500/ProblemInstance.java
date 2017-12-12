@@ -93,6 +93,9 @@ public class ProblemInstance {
         stateSpecificKeys.add("mode");
         stateSpecificKeys.add("visitList");
         stateSpecificKeys.add("numVisits");
+        stateSpecificKeys.add("costOfDeviation");
+        stateSpecificKeys.add("costOfPostponedCharging");
+
     }
 
     private void readProblemFromFile() throws IOException{
@@ -561,6 +564,12 @@ public class ProblemInstance {
             visitList = visitList.substring(0, visitList.length() -1) + "]";
             writer.println("visitList : " + visitList);
             writer.println("numVisits : " + maxVisit);
+
+
+            // add cost parameters
+            writer.println("costOfPostponedCharging : "+ Constants.COST_POSTPONED);
+            writer.println("costOfDeviation : "+ Constants.COST_DEVIATION);
+
             writer.close();
         } catch (FileNotFoundException e){
             System.out.println(e.getMessage());

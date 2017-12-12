@@ -1,0 +1,69 @@
+numVisits: 5
+numPNodes: 9
+numCNodes: 2
+numROperators: 3
+numAOperators: 1
+
+hNodes : 8
+wNodes : 8
+nodeSubsetIndexes: [1 2 3 4 5 6 7 8 9] 
+
+startNodeROperator: [2 4 9] 
+originNodeROperator: [12 13 14] 
+destinationNodeROperator: [15 16 17] 
+cToP: [2 8] 
+parkingNodeAOperator: [2] 
+chargingNodeAOperator: [10] 
+
+chargingSlotsAvailable: [2 2] 
+totalNumberOfChargingSlots: [3 2] 
+
+costOfDeviation : 10
+costOfPostponedCharging : 30
+costOfExtraTime : 0.5
+costOfTravel: 0.05
+costOfTravelH: 0.4
+
+travelTimeVehicle: [0.0 4.5 8.0 7.9 12.8 15.6 16.6 15.6 17.2 4.5 15.6 
+		4.0 0.0 7.8 7.6 12.5 14.8 16.4 15.3 16.9 1.0 15.3 
+		9.3 8.7 0.0 9.9 11.1 20.1 14.9 13.5 15.1 8.7 13.5 
+		7.2 6.6 8.5 0.0 7.8 13.2 11.7 14.2 15.8 6.6 14.2 
+		12.5 11.9 11.3 7.8 0.0 11.5 6.6 10.3 10.7 11.9 10.3 
+		16.5 15.7 20.4 13.6 10.9 0.0 13.7 15.5 9.7 15.7 15.5 
+		22.6 21.1 21.2 19.2 16.3 11.9 0.0 14.7 5.5 21.1 14.7 
+		16.2 15.6 14.5 14.9 11.3 14.4 10.9 0.0 9.3 15.6 1.0 
+		17.1 15.6 19.1 13.8 11.1 6.4 13.0 13.0 0.0 15.6 13.0 
+		4.0 1.0 7.8 7.6 12.5 14.8 16.4 15.3 16.9 0.0 15.3 
+		16.2 15.6 14.5 14.9 11.3 14.4 10.9 1.0 9.3 15.6 0.0 ]
+
+travelTimeBike: [0.0 6.1 18.3 9.6 16.8 14.1 17.6 22.7 19.8 6.1 22.7 
+		6.6 0.0 16.2 7.2 14.2 13.2 16.7 20.2 18.9 1.0 20.2 
+		20.6 17.2 0.0 13.4 11.7 21.7 15.9 15.3 19.4 17.2 15.3 
+		13.2 9.8 16.8 0.0 8.8 10.8 11.3 14.8 14.1 9.8 14.8 
+		25.2 22.5 18.4 11.6 0.0 13.6 5.8 10.6 9.4 22.5 10.6 
+		25.9 23.0 31.0 17.0 13.9 0.0 10.0 16.5 10.9 23.0 16.5 
+		18.4 23.2 23.1 17.5 8.2 9.5 0.0 7.5 3.6 23.2 7.5 
+		27.4 27.3 18.2 18.6 12.1 15.7 6.9 0.0 8.2 27.3 1.0 
+		31.1 30.6 28.6 21.8 12.5 11.9 5.2 10.4 0.0 30.6 10.4 
+		6.6 1.0 16.2 7.2 14.2 13.2 16.7 20.2 18.9 0.0 20.2 
+		27.4 27.3 18.2 18.6 12.1 15.7 6.9 1.0 8.2 27.3 0.0 ]
+
+handlingTimeP: 4
+handlingTimeC: 5
+travelTimeToOriginR: [5 0 0] 
+travelTimeToParkingA: [7] 
+timeLimit: 40
+timeLimitLastVisit: 10
+maxTravelHToC: 30
+
+initialHandling: [1 0 0] 
+initialRegularInP: [2 1 1 2 1 1 3 1 1] 
+initialInNeedP: [0 1 0 0 0 0 0 1 1] 
+finishedDuringC: [1 0] 
+idealStateP: [0 0 4 2 2 0 3 0 3] 
+
+demandP: [0 0 0 0 -1 0 0 1 1] 
+
+mode: 2 
+sequenceBigM: 10
+visitList: [2 5 3 2 2 2 2 2 5 4 2 1 1 1 1 1 1] 

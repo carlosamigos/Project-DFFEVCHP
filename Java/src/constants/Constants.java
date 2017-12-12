@@ -12,7 +12,7 @@ public class Constants {
     public final static String TEST_STATIC_FOLDER = "../Mosel/tests/progress_testing/";
     public final static String TEST_DYNAMIC_FOLDER = "../Mosel/tests/dynamic/";
     public final static String TEST_DYNAMIC_INITIAL_FOLDER = "../Mosel/tests/dynamic/initial/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/progress_testing/model_v3/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/dynamic/model/";
     
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
@@ -25,7 +25,11 @@ public class Constants {
     public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
     public final static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_FOLDER + "results/static_results_";
     public final static String STATIC_RUN_STATS = "../Mosel/runStats";
-    
+
+    //Cost parameters
+    public final static double COST_POSTPONED = 30;
+    public final static double COST_DEVIATION = 10;
+
     // Time specific parameters : Minutes
     public final static int START_TIME = 60*8; // Minutes from midnight
     public final static int END_TIME = 60*16;
