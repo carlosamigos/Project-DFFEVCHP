@@ -48,7 +48,9 @@ public class StaticTestSuite extends TestSuite {
 		String time = StringUtils.center("Time", 10);
 		String value = StringUtils.center("Value", 10);
 		String gap = StringUtils.center("Gap", 10);
-		String headerLine = name + "|" + time + "|" + value + "|" + gap;
+		String rdev = StringUtils.center("rDev", 10);
+		String cdev = StringUtils.center("cDev", 10);
+		String headerLine = name + "|" + time + "|" + value + "|" + gap + "|" + rdev + "|" + cdev;
 		fh.writeFile(data + headerLine);
 
 	}
@@ -62,6 +64,10 @@ public class StaticTestSuite extends TestSuite {
 		data += StringUtils.center(tracker.getBestSolution(),10);
 		data += "|";
 		data += StringUtils.center(tracker.getGap() + "%", 10);
+		data += "|";
+		data += StringUtils.center(tracker.getRDev(), 10);
+		data += "|";
+		data += StringUtils.center(tracker.getCDev(), 10);
 		
 		fh.writeFile(data);
 	}

@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_8nodes_3so_2c_5mov_3charging_1finishes_10time_0MODE_a.txt';
+	DataFile = '../test_8nodes_3so_2c_5mov_3charging_1finishes_60time_0MODE_a.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -434,7 +434,7 @@ if(mode = 3) then
 end-if
 
 if(mode = 4) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
