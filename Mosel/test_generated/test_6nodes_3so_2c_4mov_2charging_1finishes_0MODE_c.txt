@@ -1,14 +1,14 @@
-numVisits: 3
+numVisits: 5
 numPNodes: 6
 numCNodes: 2
 numROperators: 3
 numAOperators: 1
 
-hNodes : 3
-wNodes : 2
+hNodes : 2
+wNodes : 3
 nodeSubsetIndexes: [1 2 3 4 5 6] 
 
-startNodeROperator: [6 4 1] 
+startNodeROperator: [5 1 5] 
 originNodeROperator: [9 10 11] 
 destinationNodeROperator: [12 13 14] 
 cToP: [1 6] 
@@ -45,19 +45,19 @@ travelTimeBike: [0.0 20.6 41.2 20.6 29.2 46.0 1.0 46.0
 handlingTimeP: 4
 handlingTimeC: 5
 travelTimeToOriginR: [5 0 0] 
-travelTimeToParkingA: [3] 
+travelTimeToParkingA: [9] 
 timeLimit: 60
 timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [1 0 0] 
-initialRegularInP: [0 0 2 1 2 1] 
-initialInNeedP: [0 0 0 1 0 1] 
+initialRegularInP: [2 1 2 1 0 0] 
+initialInNeedP: [0 0 1 0 0 1] 
 finishedDuringC: [1 0] 
-idealStateP: [2 3 0 1 0 2] 
+idealStateP: [1 1 0 1 1 4] 
 
 demandP: [0 0 0 0 0 0] 
 
 mode: 2
 sequenceBigM: 10
-visitList: [3 3 2 2 2 2 3 2 1 1 1 1 1 1] 
+visitList: [3 2 3 2 2 5 3 2 1 1 1 1 1 1] 
