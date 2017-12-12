@@ -637,7 +637,7 @@ def createNodes(world):
             pState = random.randint(0, 3)
             cState = random.randint(0, 1)
             iState = random.randint(0, 4)
-            demand = random.randint(-1, 1)
+            demand = 0
             yCord = j
             node = pNode(xCord, yCord, pState, cState, iState, demand)
             world.addNodes(node)
