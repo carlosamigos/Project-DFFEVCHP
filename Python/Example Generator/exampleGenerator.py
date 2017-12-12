@@ -16,29 +16,29 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 2
+EXAMPLES = 1
 
 #BOARD SIZE - DONT CHANGE
 XSIZE = 8
 YSIZE = 8
 
 #ALLOWED MOVES
-MOVES = 5
-CARSCHARGING = 3
+MOVES = 4
+CARSCHARGING = 2
 
 #PARKING NODES USED
-MAXNODES = 9
+MAXNODES = 6
 
 #CHARGING NODES
 NUMCHARGING = 2
-PARKINGC = [2, 7]
+PARKINGC = [1, 6]
 CAPACITY = [2, 2]
 TOTALCAPACITY = [3, 2]
 
 #OPERATORS
-NUMOPERATORS = 1
-STARTETIMEOP = [5]
-HANDLINGOP = [1]
+NUMOPERATORS = 3
+STARTETIMEOP = [5, 0, 0]
+HANDLINGOP = [1, 0 , 0]
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
@@ -695,7 +695,7 @@ def buildWorld():
     world.createRealIdeal()
     world.shuffleIdealState()
     world.setTimeConstants(4, 5, 60, 10, 30)
-    if (len(world.pNodes) > 10):
+    if (len(world.pNodes) > 0):
         world.calculateDistances()
     else:
         world.calculateRealDistances(cords)
