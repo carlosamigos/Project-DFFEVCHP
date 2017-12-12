@@ -16,11 +16,11 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 1
+EXAMPLES = 3
 
 #BOARD SIZE - DONT CHANGE
-XSIZE = 2
-YSIZE = 3
+XSIZE = 3
+YSIZE = 2
 
 #ALLOWED MOVES
 MOVES = 4
@@ -631,9 +631,9 @@ class fCCars:
 
 # PNODES
 def createNodes(world):
-    for i in range(XSIZE):
+    for i in range(YSIZE):
         xCord = i
-        for j in range(YSIZE):
+        for j in range(XSIZE):
             pState = random.randint(0, 3)
             cState = random.randint(0, 1)
             iState = random.randint(0, 4)
