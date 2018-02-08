@@ -9,11 +9,11 @@ public class Constants {
     public final static String MOSEL_OUTPUT_REAL= "../Mosel/output/realOperators/";
     public final static String MOSEL_OUTPUT_ARTIFICIAL= "../Mosel/output/artificialOperators/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/progress_testing/";
+    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/dynamic/";
     public final static String TEST_DYNAMIC_FOLDER = "../Mosel/tests/dynamic/";
     public final static String TEST_DYNAMIC_INITIAL_FOLDER = "../Mosel/tests/dynamic/initial/";
     public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/dynamic/model/";
-    
+
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
 
@@ -72,7 +72,7 @@ public class Constants {
         NEUTRAL,
         MIDDAY_RUSH;
     }
-    
+
     public enum SolverType {
     	MOSEL;
     }
