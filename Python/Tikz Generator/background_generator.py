@@ -28,9 +28,9 @@ def draw_parking(ideal_state):
         x2 = x_right_from_node(node, step, columns)
         y2 = y_top_from_node(node, step, columns, rows)
         s += "    \\node at (" + "{:.2f}".format(x2) + "," + "{:.2f}".format(y2) + ") (right_corner_" + str(node) + ") {};\n"
-        s += "    \\node[below left = 1mm of right_corner_" + str(node) + "] (ideal_png_" + str(node) + ") {\\includegraphics[height=" +\
-                car_height_string + "]{\"tex/img/car_green\".png}};\n"
-        s += "    \\node[left = 1mm of ideal_png_" + str(node) + "] (ideal_text_" + str(node) + ") {Ideal: " + str(ideal_state[node]) + " x};\n"
+        #s += "    \\node[below left = 1mm of right_corner_" + str(node) + "] (ideal_png_" + str(node) + ") {\\includegraphics[height=" +\
+        #        car_height_string + "]{\"tex/img/car_green\".png}};\n"
+        s += "    \\node[below left = 1mm of right_corner_" + str(node) + "] (ideal_text_" + str(node) + ") {Ideal: " + str(ideal_state[node]) + "};\n"
 
         y3 = y_bottom_from_node(node, step, columns, rows)
         x -= sign_dist
@@ -52,19 +52,19 @@ def draw_charging(capacity):
         p_node = general_info["cToP"][node]
         s += "    \\node[right = " + "{:.2f}".format(sign_dist) + "pt of p_sign_" +  str(p_node) + "] {\\includegraphics[width=" +\
                 sign_width + "cm]{\"tex/img/csign\".pdf}};\n"
-        s += "    \\node[below = 1mm of ideal_png_" + str(p_node) + "] (capacity_png_" + str(p_node) + ") {\\includegraphics[height=" +\
-                car_height_string + "]{\"tex/img/car_orange\".png}};\n"
-        s += "    \\node[left = 1mm of capacity_png_" + str(p_node) + "] (capacity_text_" + str(p_node) + ") {Capacity: " + str(capacity[node]) + " x};\n"
+        #s += "    \\node[below = 1mm of ideal_png_" + str(p_node) + "] (capacity_png_" + str(p_node) + ") {\\includegraphics[height=" +\
+        #        car_height_string + "]{\"tex/img/car_orange\".png}};\n"
+        s += "    \\node[below = 5mm of ideal_text_" + str(p_node) + ".east, anchor=north east] (capacity_text_" + str(p_node) + ") {Capacity: " + str(capacity[node]) + "};\n"
 
     return s
 
 def draw_sidebar():
     s = ""
-    x = - step/1.9
-    y = height - 1
+    x = width/2.0
+    y = height + 1
 
-    s += "    \\node at (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y) + ") (sidebar_header) {\\Huge Timestep: };\n"
-    s += "    \\node[below = 1.5cm of sidebar_header.west, anchor=west] (sidebar_time_to_header) {\\Huge\\underline{Time to origin}};\n"
+    s += "    \\node[anchor=east] at (" + "{:.2f}".format(x) + "," + "{:.2f}".format(y) + ") (sidebar_header) {\\Huge \\textbf{Timestep: }};\n"
+    #s += "    \\node[below = 1.5cm of sidebar_header.west, anchor=west] (sidebar_time_to_header) {\\Huge\\underline{Time to origin}};\n"
 
     return s
 

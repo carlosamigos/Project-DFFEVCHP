@@ -34,6 +34,14 @@ report:
 	@echo "Done copying"
 	cd ../../../Report/Figures/ProblemDescription && git add * && git commit -m "Updated tikz files" && git pull && git push
 
+strip:
+	@for file in $$(ls -d tex/report/snapshot_*.tex); \
+	do \
+		python3 tikz_stripper.py $$file; \
+	done; \
+	true
+
+
 clean:
 	@rm -f tex/*.aux
 	@rm -f tex/*.log
