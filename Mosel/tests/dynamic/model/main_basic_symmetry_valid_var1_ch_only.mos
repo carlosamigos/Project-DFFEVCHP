@@ -419,7 +419,7 @@ end-if
 ! All in mode 1, but introducing a cost of travel dependent on distance, not just the travel itself
 
 if(mode = 2) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
+	Objective := !costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + !
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) +
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
@@ -434,8 +434,8 @@ if(mode = 3) then
 end-if
 
 if(mode = 4) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
-			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
+	Objective := !costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +!
+			 costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
@@ -1076,13 +1076,14 @@ if writeToFile then
 	writeln(getparam("XPRS_BESTBOUND"));
 	writeln(endTimeMosel-startTimeMosel);
 	writeln(deviationRel);
-    writeln(deviationCharg);
+	writeln(deviationCharg);
 	fclose(F_OUTPUT);
 	! SLUTT TIL SIMEN
 	
 end-if
 
 end-model
+
 
 
 

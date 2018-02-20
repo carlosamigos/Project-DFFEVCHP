@@ -6,9 +6,9 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_8nodes_3so_2c_5mov_3charging_1finishes_60time_0MODE_a.txt';
-	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
-	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
+	DataFile = 'test_6nodes_3so_2c_4mov_2charging_1finishes_0MODE_a.txt';
+	OutputPathRegular = "outputServiceOperatorsPath.txt";
+	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
@@ -434,12 +434,12 @@ if(mode = 3) then
 end-if
 
 if(mode = 4) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii))+ 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
 			  costOfTravel  * sum(ii in rNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeBike(ii, jj) * (x(ii,mm,jj,nn,pp) - h(ii, mm, jj, nn, pp)) +
-			  0.1 * sum(ii in cNodes, mm in visits) t(ii, mm);
+			  0.01 * sum(ii in rNodes, mm in visits) t(ii, mm);
 end-if
 
 ! ### End of declaration of objective ### !		

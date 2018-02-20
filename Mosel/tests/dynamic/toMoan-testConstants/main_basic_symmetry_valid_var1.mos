@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = '../test_8nodes_3so_2c_5mov_3charging_1finishes_60time_0MODE_a.txt';
+	DataFile = '../Mosel/tests/test_4x4_4so_3c.txt';
 	OutputPathRegular = "../Mosel/output/outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "../Mosel/output/outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 600;
+	MaxSolveTimeSeconds = 300;
 end-parameters
 
 
@@ -434,7 +434,7 @@ if(mode = 3) then
 end-if
 
 if(mode = 4) then
-	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) +
+	Objective := costOfDeviation * (sum(ii in pNodes) sPlus(ii)) + 
 			  costOfPostponedCharging * (sum(ii in pNodes) sEndC(ii))+
 			  (costOfExtraTime * (sum(ii in rNodes, mm in visits) tMinus(ii, mm))) + 
 			  costOfTravelH  * sum(ii in pNodes, mm in visits, jj in rNodes, nn in visits, pp in rOperators) travelTimeVehicle(ii, jj) * h(ii,mm,jj,nn,pp) + 
@@ -980,8 +980,10 @@ forall(pp in rOperators) do
 end-do
 !)
 
+
 deviationRel := sum(ii in pNodes) getsol(sPlus(ii));
 deviationCharg := sum(ii in pNodes) getsol(sEndC(ii));
+
 
 if writeToFile then
 	fopen(OutputPathRegular, F_OUTPUT);
@@ -1066,17 +1068,17 @@ if writeToFile then
 	end-do
 	
 	
-
+	
 	
 	fclose(F_OUTPUT)
 	
 	! TIL SIMEN
 	fopen("../Mosel/runStats", F_OUTPUT);
 	writeln(getparam("XPRS_MIPOBJVAL"));
-	writeln(getparam("XPRS_BESTBOUND"));
+	writeln(getparam("XPRS_BESTBOUND"));	
 	writeln(endTimeMosel-startTimeMosel);
 	writeln(deviationRel);
-    writeln(deviationCharg);
+	writeln(deviationCharg);
 	fclose(F_OUTPUT);
 	! SLUTT TIL SIMEN
 	
