@@ -55,7 +55,7 @@ public class DynamicTestSuite extends TestSuite{
 					// Read clean demand requests
 					ProblemInstance problemInstance = new ProblemInstance(test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
-					solverSimulationModel.readSimulationModelFromFile(); // Burde vært i konstruktoren til SimulationModel?
+					solverSimulationModel.readSimulationModelFromFile(); // Burde vaert i konstruktoren til SimulationModel?
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);
 					problem.solve();
 					
