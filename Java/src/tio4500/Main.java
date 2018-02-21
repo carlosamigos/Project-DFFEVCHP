@@ -3,6 +3,8 @@ package tio4500;
 
 import java.util.HashMap;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+
 import constants.Constants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
@@ -85,6 +87,11 @@ public class Main {
     			break;
     		}
     	}
+    	
+    	System.out.println(Constants.TEST_DYNAMIC_FOLDER);
+    	System.out.println(Constants.TEST_STATIC_FOLDER);
+    	System.out.println(Constants.SOLVER_TYPE);
+    	System.out.println(Constants.TEST_DYNAMIC_INITIAL_FOLDER);
     }
 
 }
