@@ -4,15 +4,25 @@ public class Constants {
 
     public final static int NUMBER_OF_DAYS_TO_TEST = 4;
 
+    // General parameters
+    public static SolverType SOLVER_TYPE = SolverType.MOSEL;
+    public static TestType TEST_TYPE = TestType.STATIC;
+    
     // Folders
     public final static String PROBLEM_FOLDER = "../Mosel/";
     public final static String MOSEL_OUTPUT_REAL= "../Mosel/output/realOperators/";
     public final static String MOSEL_OUTPUT_ARTIFICIAL= "../Mosel/output/artificialOperators/";
     public final static String SIMULATIONS_FOLDER = "../Simulations/";
-    public final static String TEST_STATIC_FOLDER = "../Mosel/tests/progress_testing/";
-    public final static String TEST_DYNAMIC_FOLDER = "../Mosel/tests/dynamic/";
-    public final static String TEST_DYNAMIC_INITIAL_FOLDER = "../Mosel/tests/dynamic/initial/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/tests/dynamic/model/";
+    public final static String TEST_FOLDER = "../Testing/";
+    public final static String TEST_INPUT_FOLDER = TEST_FOLDER + "Input/";
+    public final static String TEST_OUTPUT_FOLDER = TEST_FOLDER + "Output/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/models/";
+    public final static String DEFAULT_STATIC_TEST_FOLDER = "Default/";
+    public final static String DEFAULT_DYNAMIC_TEST_FOLDER = "Default/";
+    public static String TEST_STATIC_FOLDER = TEST_INPUT_FOLDER + "Static/" + DEFAULT_STATIC_TEST_FOLDER;
+    public static String TEST_DYNAMIC_FOLDER = TEST_INPUT_FOLDER + "Dynamic/" + DEFAULT_DYNAMIC_TEST_FOLDER;
+    public static String TEST_DYNAMIC_INITIAL_FOLDER = TEST_DYNAMIC_FOLDER + "Initial/";
+   
     
     // Indexing
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
@@ -21,10 +31,13 @@ public class Constants {
     public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath";
     public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators";
     public final static String DEMAND_REQUESTS = "demand_request";
-    public final static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
-    public final static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
-    public final static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_FOLDER + "results/static_results_";
-    public final static String STATIC_RUN_STATS = "../Mosel/runStats";
+    public static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
+    public static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
+    public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Dynamic/" + "results/static_results_";
+    public static String STATIC_RUN_STATS = "../Mosel/runStats";
+    
+    // Solver
+    
 
     //Cost parameters
     public final static double COST_POSTPONED = 30;
@@ -67,6 +80,7 @@ public class Constants {
 
     public final static int LOCK_TIME_CAR_FOR_OPERATOR = 15;
 
+   
     public enum nodeDemandGroup{
         MORNING_RUSH,
         NEUTRAL,
@@ -74,8 +88,13 @@ public class Constants {
     }
     
     public enum SolverType {
-    	MOSEL;
+    	MOSEL,
+    	GA;
     }
-
+    
+    public enum TestType {
+    	STATIC,
+    	DYNAMIC;
+    }
 
 }
