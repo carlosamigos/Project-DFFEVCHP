@@ -3,8 +3,6 @@ package tio4500;
 
 import java.util.HashMap;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-
 import constants.Constants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
