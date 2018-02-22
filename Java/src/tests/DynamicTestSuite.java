@@ -46,7 +46,7 @@ public class DynamicTestSuite extends TestSuite{
 				
 				// Simulate demand requests during day
 				SimulationModel simModel = new SimulationModel(day, cleanProblemInstance);
-				simModel.createNewDaySimulationModel(); // I konstruktøren til SimulationModel?
+				simModel.createNewDaySimulationModel(); // I konstruktoren til SimulationModel?
 				simModel.saveDaySimulationModel();
 				//Solve for each solver
 				
@@ -55,7 +55,7 @@ public class DynamicTestSuite extends TestSuite{
 					// Read clean demand requests
 					ProblemInstance problemInstance = new ProblemInstance(test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
-					solverSimulationModel.readSimulationModelFromFile(); // Burde vært i konstruktøren til SimulationModel?
+					solverSimulationModel.readSimulationModelFromFile(); // Burde vaert i konstruktoren til SimulationModel?
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);
 					problem.solve();
 					

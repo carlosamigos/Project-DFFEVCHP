@@ -46,8 +46,8 @@ def draw_operators(operator_info):
 
 def draw_snapshot(snapshot, i, time_step):
     s = draw_nodes(snapshot["ideal_state"], snapshot["capacity"])
-    time_elapsed = "{:.1f}".format(i*time_step)
-    s += "    \\node[right = 0cm of sidebar_header] {\\Huge " + time_elapsed + "/" + "{:.1f}".format(max_time) + "};\n"
+    time_elapsed = "{:.0f}".format(i*time_step)
+    s += "    \\node[right = 0cm of sidebar_header] {\\Huge \\textbf{" + time_elapsed + "/" + "{:.0f}".format(max_time) + "}};\n"
     for parking_node in range(n_nodes):
         s += fill_parking(parking_node, snapshot["cars_parked"][parking_node], snapshot["cars_need"][parking_node])
     

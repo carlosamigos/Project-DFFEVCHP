@@ -138,7 +138,7 @@ def fill_node_with_operators(node, operators_in_node):
     relative = [("left", "1.2cm"), ("right", "1.2cm"), ("above", "1.2cm"), ("below", "1.2cm")]
 
     if len(operators_in_node) > 0:
-        operator_id = operators_in_node[0]["id"]
+        operator_id = operators_in_node[0]["id"] + 1
         s += "    \\node at (" + x + "," + y + ") (operator_" + str(operator_id) + ")"+\
                 " {\\includegraphics[height=" + man_height_string + "]{\"tex/img/" + obj + "\".png}};\n"
         s += "    \\node[above left = -0.35cm of operator_" + str(operator_id) + "] {" + str(operator_id) + "};\n"
@@ -148,7 +148,7 @@ def fill_node_with_operators(node, operators_in_node):
             rel_counter = 0
             for i in range(1, len(operators_in_node)):
                 operator = operators_in_node[i]
-                operator_id = operator["id"]
+                operator_id = operator["id"] + 1
                 relative_string = "[" + relative[rel_counter][0] + " = " + relative[rel_counter][1] +\
                         " of operator_" + str(prev_operator) + "]"
                 s += "    \\node" + relative_string + " (operator_" + str(operator_id) + ")"+\
@@ -161,6 +161,8 @@ def fill_node_with_operators(node, operators_in_node):
 def draw_moving_object(from_node, to_node, covered, operator, obj):
     if to_node >= n_nodes:
         to_node = c_to_p[to_node - n_nodes]
+
+    operator += 1
 
     from_x = x_mid_from_node(from_node, step, columns)
     from_y = y_mid_from_node(from_node, step, columns, rows)
