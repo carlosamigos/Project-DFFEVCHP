@@ -1,10 +1,12 @@
-package tio4500;
+package code.kpitracker;
 
 import constants.Constants;
-import tio4500.simulations.Entities.Operator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import code.DynamicProblem;
+import code.problem.entities.Operator;
 
 public class KPITrackerDynamic {
 
@@ -39,56 +41,54 @@ public class KPITrackerDynamic {
         staticKPITrackers = new ArrayList<>();
     }
 
-    void addStaticKPItracker(KPITrackerStatic tracker){
+    public void addStaticKPItracker(KPITrackerStatic tracker){
         staticKPITrackers.add(tracker);
     }
 
-    void increaseDemandNotServedForPeriod(int period){
+    public void increaseDemandNotServedForPeriod(int period){
         // given periods start at 1
         int demandNotServed = demandsNotServed.get(period-1) + 1;
-        int currentDemandServed = demandServed.get(period-1);
         demandsNotServed.set(period-1,demandNotServed);
     }
 
-    void increaseDemandServedForPeriod(int period){
+    public void increaseDemandServedForPeriod(int period){
         // given periods start at 1
         int current = demandServed.get(period-1);
         demandServed.set(period-1,current +1);
     }
 
-    void increaseNumberOfOperatorsAbandoned(int period){
+    public void increaseNumberOfOperatorsAbandoned(int period){
         // given periods start at 1
         int current = numberOfOperatorsAbandoned.get(period-1);
         numberOfOperatorsAbandoned.set(period-1,current + 1);
     }
 
-    void increaseNumberOfCarsSetToCharging(int period){
+    public void increaseNumberOfCarsSetToCharging(int period){
         // given periods start at 1
         int current = numberOfCarsSetToCharging.get(period-1);
         numberOfCarsSetToCharging.set(period-1,current + 1);
     }
 
-    void increaseCarTotalTravelTimeDoneByOperator(double travelTime){
+    public void increaseCarTotalTravelTimeDoneByOperator(double travelTime){
         totalCarTravelDoneByServiceOperators += travelTime;
         double batterUsed = travelTime * Constants.BATTERY_USED_PER_TIME_UNIT;
         electricityUsedWhenRelocatingCars += batterUsed;
     }
 
-    void increaseBikeTotalTravelTimeDoneByOperator(double travelTime){
+    public void increaseBikeTotalTravelTimeDoneByOperator(double travelTime){
         totalBikeTravelDoneByServiceOperators += travelTime;
     }
 
-    void addInNeedWaitingTime(double waitingTime){
+    public void addInNeedWaitingTime(double waitingTime){
         waitingTimeBeforeCarInNeedAreCharged.add(waitingTime);
     }
 
-    void updateIdleTimeForOperators(){
+    public void updateIdleTimeForOperators(){
         for (Operator operator: dynamicProblem.getProblemInstance().getOperators()) {
             this.idleTimeForServiceOperators.add(operator.getTotalIdleTime());
         }
     }
 
-    
     public ArrayList<Integer> getDemandsNotServed() {
 		return demandsNotServed;
 	}

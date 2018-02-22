@@ -1,10 +1,7 @@
-package tio4500;
+package code.simulation;
 
 
 import constants.Constants;
-
-import tio4500.simulations.DemandRequest;
-import tio4500.simulations.Nodes.ParkingNode;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,6 +11,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import code.problem.ProblemInstance;
+import code.problem.nodes.ParkingNode;
 
 public class SimulationModel {
 
@@ -109,6 +109,8 @@ public class SimulationModel {
         } catch (IllegalArgumentException e){
             e.printStackTrace();
             return;
+        } finally {
+        
         }
     }
 

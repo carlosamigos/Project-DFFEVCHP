@@ -1,9 +1,10 @@
-package tio4500.simulations.Nodes;
+package code.problem.nodes;
 
 import constants.Constants;
-import tio4500.simulations.Entities.Car;
 
 import java.util.ArrayList;
+
+import code.problem.entities.Car;
 
 public class ParkingNode extends Node{
 

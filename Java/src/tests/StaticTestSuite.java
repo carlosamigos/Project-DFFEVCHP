@@ -1,10 +1,10 @@
 package tests;
 
+import code.StaticProblemFile;
+import code.kpitracker.KPITrackerStatic;
+import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
-import tio4500.KPITrackerStatic;
-import tio4500.StaticProblem;
-import tio4500.solvers.Solver;
 import utils.StringUtils;
 
 public class StaticTestSuite extends TestSuite {
@@ -27,7 +27,7 @@ public class StaticTestSuite extends TestSuite {
 			for(String testName : testFileNames) {
 				printEstimatedTimeLeft(timePerRun, runsLeft);
 				KPITrackerStatic tracker = new KPITrackerStatic();
-				StaticProblem staticProblem = new StaticProblem(Constants.TEST_STATIC_FOLDER + testName);
+				StaticProblemFile staticProblem = new StaticProblemFile(Constants.TEST_STATIC_FOLDER + testName);
 				solver.solve(staticProblem);
 				tracker.setResults(staticProblem.getFilePath());
 				writeTestResult(tracker);

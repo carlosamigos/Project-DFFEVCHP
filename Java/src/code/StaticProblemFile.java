@@ -1,12 +1,12 @@
-package tio4500;
+package code;
 
-public class StaticProblem {
+public class StaticProblemFile {
 
     private final String filePath;
     private final String fileName;
 
 
-    public StaticProblem(String filePath) {
+    public StaticProblemFile(String filePath) {
         this.filePath = filePath;
         String[] split = filePath.split("/");
         this.fileName = split[split.length-1];

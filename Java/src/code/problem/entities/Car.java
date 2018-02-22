@@ -1,6 +1,6 @@
-package tio4500.simulations.Entities;
+package code.problem.entities;
 
-import tio4500.simulations.Nodes.Node;
+import code.problem.nodes.Node;
 
 public class Car implements Comparable {
 

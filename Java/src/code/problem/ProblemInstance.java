@@ -1,16 +1,17 @@
-package tio4500;
+package code.problem;
 
 import constants.Constants;
-import tio4500.simulations.Entities.Car;
-import tio4500.simulations.Entities.Operator;
-import tio4500.simulations.Nodes.ChargingNode;
-import tio4500.simulations.Nodes.Node;
-import tio4500.simulations.Nodes.ParkingNode;
-import tio4500.simulations.Travels.CustomerTravel;
-import tio4500.simulations.Travels.OperatorTravel;
 
 import java.io.*;
 import java.util.*;
+
+import code.problem.entities.Car;
+import code.problem.entities.Operator;
+import code.problem.nodes.ChargingNode;
+import code.problem.nodes.Node;
+import code.problem.nodes.ParkingNode;
+import code.problem.travels.CustomerTravel;
+import code.problem.travels.OperatorTravel;
 
 public class ProblemInstance {
 

@@ -1,7 +1,7 @@
-package tio4500.simulations.Travels;
+package code.problem.travels;
 
-import tio4500.simulations.Entities.Car;
-import tio4500.simulations.Nodes.ParkingNode;
+import code.problem.entities.Car;
+import code.problem.nodes.ParkingNode;
 
 public class CustomerTravel extends Travel{
 

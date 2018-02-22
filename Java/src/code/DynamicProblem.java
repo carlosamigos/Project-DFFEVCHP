@@ -1,17 +1,6 @@
-package tio4500;
+package code;
 
 import constants.Constants;
-import tio4500.simulations.DemandRequest;
-import tio4500.simulations.Entities.Car;
-import tio4500.simulations.Entities.Operator;
-import tio4500.simulations.Nodes.ChargingNode;
-import tio4500.simulations.Nodes.Node;
-import tio4500.simulations.Nodes.ParkingNode;
-import tio4500.simulations.Travels.CustomerTravel;
-import tio4500.simulations.Travels.OperatorArrival;
-import tio4500.simulations.Travels.OperatorDeparture;
-import tio4500.simulations.Travels.OperatorTravel;
-import tio4500.solvers.Solver;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,6 +8,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+
+import code.kpitracker.KPITrackerDynamic;
+import code.kpitracker.KPITrackerStatic;
+import code.problem.ProblemInstance;
+import code.problem.entities.Car;
+import code.problem.entities.Operator;
+import code.problem.nodes.ChargingNode;
+import code.problem.nodes.Node;
+import code.problem.nodes.ParkingNode;
+import code.problem.travels.CustomerTravel;
+import code.problem.travels.OperatorArrival;
+import code.problem.travels.OperatorDeparture;
+import code.problem.travels.OperatorTravel;
+import code.simulation.DemandRequest;
+import code.simulation.SimulationModel;
+import code.solver.Solver;
 
 public class DynamicProblem {
 
@@ -55,7 +60,7 @@ public class DynamicProblem {
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
             KPITrackerStatic tracker = new KPITrackerStatic();
-            StaticProblem problem = new StaticProblem(Constants.TEST_DYNAMIC_FOLDER + fileName);
+            StaticProblemFile problem = new StaticProblemFile(Constants.TEST_DYNAMIC_FOLDER + fileName);
             this.solver.solve(problem);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;

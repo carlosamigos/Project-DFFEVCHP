@@ -41,7 +41,6 @@ public class FileHandler {
 	private void openFile() {
 		this.bw = null;
 		this.fw = null;
-		
 		try {
 			file = new File(this.filePath);
 

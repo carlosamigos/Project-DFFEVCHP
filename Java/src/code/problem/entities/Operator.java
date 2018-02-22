@@ -1,7 +1,7 @@
-package tio4500.simulations.Entities;
+package code.problem.entities;
 
+import code.problem.nodes.Node;
 import constants.Constants;
-import tio4500.simulations.Nodes.Node;
 
 public class Operator {
 

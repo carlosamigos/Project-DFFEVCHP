@@ -1,7 +1,7 @@
-package tio4500.simulations.Travels;
+package code.problem.travels;
 
-import tio4500.simulations.Entities.Operator;
-import tio4500.simulations.Nodes.Node;
+import code.problem.entities.Operator;
+import code.problem.nodes.Node;
 
 public class OperatorArrival {
 

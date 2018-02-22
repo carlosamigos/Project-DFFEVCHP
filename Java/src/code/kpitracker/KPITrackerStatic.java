@@ -1,7 +1,6 @@
-package tio4500;
+package code.kpitracker;
 
 import constants.Constants;
-import tio4500.solvers.Solver;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,6 +9,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Stream;
+
+import code.solver.Solver;
 
 public class KPITrackerStatic {
 
@@ -48,8 +49,8 @@ public class KPITrackerStatic {
         this.bestBound = currResults.get(1);
         this.timeUsed = timeString;
         this.gap = gapString;
-        this.rdev = df.format(Double.parseDouble(currResults.get(3)));
-        this.cdev = df.format(Double.parseDouble(currResults.get(4)));
+        //this.rdev = df.format(Double.parseDouble(currResults.get(3)));
+        //this.cdev = df.format(Double.parseDouble(currResults.get(4)));
     }
 
     public String getName() {

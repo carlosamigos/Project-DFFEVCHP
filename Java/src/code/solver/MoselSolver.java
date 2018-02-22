@@ -1,8 +1,7 @@
-package tio4500.solvers;
+package code.solver;
 
+import code.StaticProblemFile;
 import constants.Constants;
-import tio4500.StaticProblem;
-//import com.dashoptimization.*;
 
 public class MoselSolver extends Solver {
 
@@ -20,7 +19,7 @@ public class MoselSolver extends Solver {
 	}
 
 	@Override
-	public void solve(StaticProblem problem) {
+	public void solve(StaticProblemFile problem) {
 		compile();
 		fixParameters(problem.getFileName());
 		fixDataFile(problem.getFilePath());

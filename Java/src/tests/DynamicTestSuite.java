@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import code.DynamicProblem;
+import code.kpitracker.KPITrackerDynamic;
+import code.kpitracker.KPITrackerStatic;
+import code.problem.ProblemInstance;
+import code.simulation.SimulationModel;
+import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
-import tio4500.DynamicProblem;
-import tio4500.KPITrackerDynamic;
-import tio4500.KPITrackerStatic;
-import tio4500.ProblemInstance;
-import tio4500.SimulationModel;
-import tio4500.solvers.Solver;
 import utils.FileHandler;
 import utils.StringUtils;
 

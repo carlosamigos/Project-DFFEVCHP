@@ -3,17 +3,15 @@ package tests;
 import java.io.File;
 import java.io.FileFilter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.stream.Collectors;
 
+import code.solver.MoselSolver;
+import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
-import tio4500.solvers.MoselSolver;
-import tio4500.solvers.Solver;
 import utils.FileHandler;
 import utils.StringUtils;
 
@@ -36,6 +34,7 @@ public abstract class TestSuite {
 				        return name.endsWith(".txt") && pathname.isFile();
 				    }
 		});
+		System.out.println(testFolder);
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());

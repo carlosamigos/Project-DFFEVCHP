@@ -1,4 +1,4 @@
-package tio4500.simulations.Nodes;
+package code.problem.nodes;
 
 public abstract class Node {
 

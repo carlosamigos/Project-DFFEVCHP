@@ -16,7 +16,7 @@ public class Constants {
     public final static String TEST_FOLDER = "../Testing/";
     public final static String TEST_INPUT_FOLDER = TEST_FOLDER + "Input/";
     public final static String TEST_OUTPUT_FOLDER = TEST_FOLDER + "Output/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/models/";
+    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/Models/main models/";
     public final static String DEFAULT_STATIC_TEST_FOLDER = "Default/";
     public final static String DEFAULT_DYNAMIC_TEST_FOLDER = "Default/";
     public static String TEST_STATIC_FOLDER = TEST_INPUT_FOLDER + "Static/" + DEFAULT_STATIC_TEST_FOLDER;
@@ -31,7 +31,7 @@ public class Constants {
     public final static String OUTPUT_REAL_SERVICE_PATHS = "outputServiceOperatorsPath";
     public final static String OUTPUT_ARTIFICIAL_SERVICE_PATHS = "outputArtificialServiceOperators";
     public final static String DEMAND_REQUESTS = "demand_request";
-    public static String STATIC_TEST_SUITE_RESULTS_FILE = "../Mosel/tests/progress_testing/static_test_results";
+    public static String STATIC_TEST_SUITE_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Static/" + DEFAULT_STATIC_TEST_FOLDER + "results";
     public static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
     public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Dynamic/" + "results/static_results_";
     public static String STATIC_RUN_STATS = "../Mosel/runStats";

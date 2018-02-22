@@ -1,11 +1,11 @@
-package tio4500.simulations;
-
-import tio4500.simulations.Nodes.ParkingNode;
+package code.simulation;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-public class DemandRequest implements Comparable{
+import code.problem.nodes.ParkingNode;
+
+public class DemandRequest implements Comparable<Object> {
 
     private ParkingNode node;
     private double time;

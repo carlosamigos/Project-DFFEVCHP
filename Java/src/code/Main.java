@@ -1,4 +1,4 @@
-package tio4500;
+package code;
 
 
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import constants.Constants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
 import tests.TestSuite;
-import utils.FileHandler;
 
 public class Main {
 
@@ -21,29 +20,7 @@ public class Main {
     	} else {
     		testSuite = new DynamicTestSuite(Constants.SOLVER_TYPE, Constants.NUMBER_OF_DAYS_TO_TEST);
     	}
-    	//testSuite.runTestSuite();
-
-	/*
-        ProblemInstance instance = new ProblemInstance(Constants.EXAMPLE_NUMBER);
-        SimulationModel simulationModel = new SimulationModel(Constants.DAY_NUMBER,instance);
-
-
-        if(Constants.CREATE_NEW_SIMULATION_MODEL){
-            simulationModel.createNewDaySimulationModel();
-            simulationModel.saveDaySimulationModel();
-        } else{
-            simulationModel.readSimulationModelFromFile();
-        }
-        instance.writeProblemInstanceToFile();
-
-        DynamicProblem dynProb = new DynamicProblem(instance, simulationModel, Constants.solverType);
-        dynProb.solve();
-		
-        StaticTestSuite testSuite = new StaticTestSuite(Constants.solverType);
-        testSuite.runTestSuite();
-        */
-    	
-    	
+    	testSuite.runTestSuite();
     }
     
     // Sets file paths and solver type based on command line arguments.
@@ -86,11 +63,12 @@ public class Main {
     			break;
     		}
     	}
-    	
+    	/*
     	System.out.println(Constants.TEST_DYNAMIC_FOLDER);
     	System.out.println(Constants.TEST_STATIC_FOLDER);
     	System.out.println(Constants.SOLVER_TYPE);
     	System.out.println(Constants.TEST_DYNAMIC_INITIAL_FOLDER);
+    	*/
     }
 
 }
