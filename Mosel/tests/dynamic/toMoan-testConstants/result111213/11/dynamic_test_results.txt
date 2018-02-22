@@ -1,0 +1,20 @@
+
+Test test_8nodes_3so_2c_a
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+        ../Mosel/tests/dynamic/model/main_basic_symmetry_valid_var1.mos         |       60.13       |         0         |        0         |        8         |     269.58      |      313.42      |    313.42     |      223.35       |      431.4      
+
+Test test_8nodes_3so_2c_b
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+        ../Mosel/tests/dynamic/model/main_basic_symmetry_valid_var1.mos         |       53.26       |         0         |        0         |        9         |      213.6      |      283.28      |    283.28     |        214        |     523.39      
+
+Test test_8nodes_3so_2c_c
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+        ../Mosel/tests/dynamic/model/main_basic_symmetry_valid_var1.mos         |       52.34       |       0.01        |        0         |        10        |     266.53      |       375        |      375      |      288.44       |     392.16      
+
+Test test_8nodes_3so_2c_d
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+        ../Mosel/tests/dynamic/model/main_basic_symmetry_valid_var1.mos         |       53.66       |         0         |        0         |        10        |     296.08      |      318.65      |    318.65     |      248.54       |     392.64      
+
+Test test_8nodes_3so_2c_e
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+        ../Mosel/tests/dynamic/model/main_basic_symmetry_valid_var1.mos         |       52.94       |         0         |        0         |        11        |     284.88      |      267.58      |    267.58     |      255.98       |     472.58      
