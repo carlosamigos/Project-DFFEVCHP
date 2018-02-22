@@ -38,7 +38,8 @@ public class StaticTestSuite extends TestSuite {
 			fh.writeFile("\n\n");
 		}
 		
-		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE + " for results.");
+		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE 
+				+ this.timeStamp + " for results.");
 	}
 	
 	private void writeTestHeader(String fileName) {

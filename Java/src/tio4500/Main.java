@@ -65,6 +65,7 @@ public class Main {
     		switch(key) {
     		case "static":
     			Constants.TEST_STATIC_FOLDER = Constants.TEST_INPUT_FOLDER + "Static/" + input.get(key) + "/";
+    			Constants.STATIC_TEST_SUITE_RESULTS_FILE = Constants.TEST_OUTPUT_FOLDER + "Static/" + input.get(key) + "/";
     			break;
     		case "dynamic":
     			Constants.TEST_TYPE = Constants.TestType.DYNAMIC;

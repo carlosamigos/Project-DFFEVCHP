@@ -2,8 +2,12 @@ package tests;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import constants.Constants;
@@ -20,6 +24,7 @@ public abstract class TestSuite {
 	protected ArrayList<Solver> solvers;
 	protected FileHandler fh;
 	protected final SolverType solverType;
+	protected final String timeStamp;
 	
 	protected TestSuite(SolverType solverType, String testFolder, String resultFile) {
 		this.solverType = solverType;
@@ -35,7 +40,11 @@ public abstract class TestSuite {
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
 		
-		this.fh = new FileHandler(resultFile, true, true);
+		LocalTime time = LocalTime.now();
+		LocalDate date = LocalDate.now();
+		this.timeStamp = "_" + date.getDayOfMonth() + "_" + date.getMonth() + "-" + time.getHour() + "_" + time.getMinute() +
+				"_" + time.getSecond();
+		this.fh = new FileHandler(resultFile + this.timeStamp, true, true);
 	}
 	
 	protected void instantiateSolvers() {

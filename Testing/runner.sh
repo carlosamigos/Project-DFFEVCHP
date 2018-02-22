@@ -5,14 +5,11 @@ read USER
 
 case $USER in
     "magnusnm" )
-        echo "PbY8!12" ;;
+        echo "PbY8!12" | pbcopy ;;
     "carlaj" )
-        echo "Yx66!aB" ;;
+        echo "Yx66!aB" | pbcopy ;;
     "simehe" )
-        echo "" ;;
+        echo "" | pbcopy ;;
 esac
 
-ARRAY=(`ls Input`)
-for i in ${ARRAY[*]}; do
-    echo "$i";
-done
+ssh $USER@solstorm-login.iot.ntnu.no
