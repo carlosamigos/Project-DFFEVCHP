@@ -1,7 +1,8 @@
 #!/bin/bash
 
-echo -n "Username: "
-read USER
+USER="magnusnm"
+#echo -n "Username: "
+#read USER
 
 case $USER in
     "magnusnm" )
