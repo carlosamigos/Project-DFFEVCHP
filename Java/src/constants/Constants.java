@@ -86,7 +86,7 @@ public class Constants {
         NEUTRAL,
         MIDDAY_RUSH;
     }
-    
+
     public enum SolverType {
     	MOSEL,
     	GA;
