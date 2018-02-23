@@ -6,7 +6,7 @@ public class Constants {
 
     // General parameters
     public static SolverType SOLVER_TYPE = SolverType.MOSEL;
-    public static TestType TEST_TYPE = TestType.STATIC;
+    public static TestType TEST_TYPE = TestType.DYNAMIC;
     
     // Folders
     public final static String PROBLEM_FOLDER = "../Mosel/";
@@ -33,7 +33,8 @@ public class Constants {
     public final static String DEMAND_REQUESTS = "demand_request";
     public static String STATIC_TEST_SUITE_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Static/" + DEFAULT_STATIC_TEST_FOLDER + "results";
     public static String DYNAMIC_TEST_SUITE_RESULTS_FILE = PROBLEM_FOLDER + "dynamic_test_results";
-    public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Dynamic/" + "results/static_results_";
+    public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_OUTPUT_FOLDER + "Dynamic/" + DEFAULT_DYNAMIC_TEST_FOLDER
+            + "/static_results_";
     public static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Solver
