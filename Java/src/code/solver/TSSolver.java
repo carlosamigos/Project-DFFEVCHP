@@ -3,13 +3,14 @@ package code.solver;
 import java.util.ArrayList;
 
 import code.StaticProblemFile;
+import code.problem.ProblemInstance;
+import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
 
 public class TSSolver extends Solver {
 	
 	private TSIndividual individual;
-	private TSIndividual best;
 	private TabuList tabuList;
 	private final int iterations;
 	private final int neighborhoodSize;
@@ -23,25 +24,26 @@ public class TSSolver extends Solver {
 	}
 	
 	@Override
-	public void solve(StaticProblemFile problem) {
-		// TODO Auto-generated method stub
+	public void solve(ProblemInstance problemInstance) {
 		int iteration = 0;
-		this.tabuList = new TabuList();
-		// Add individual to tabu list
+		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
-			ArrayList<TSIndividual> neighborhood = getNeighbors();
-			TSIndividual candidate = neighborhood.remove(this.neighborhoodSize-1);
-			for(TSIndividual newCandidate : neighborhood) {
-				if (candidate.compareTo(newCandidate) > 0) { // Must also check if candidate is in tabu list
+			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
+			ArrayList<Mutation> neighborhood = getNeighbors();
+			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
+
+			for(Mutation newCandidate : neighborhood) {
+				if (this.individual.deltaFitness(candidate) > this.individual.deltaFitness(newCandidate)) {
 					candidate = newCandidate;
 				}
 			}
 			
-			if(this.best.compareTo(candidate) > 0) {
-				this.best = candidate;
+			if(this.individual.deltaFitness(candidate) < 0) {
+				this.individual.performMutation(candidate);
 			}
 			
-			// Add candidate to tabuList and adjust tabuList accordingly
+			tabuList.add(candidate);
+			iteration++;
 		}
 	}
 	
@@ -50,15 +52,18 @@ public class TSSolver extends Solver {
 	}
 	
 	public TSIndividual getBest() {
-		return this.best;
+		return this.individual;
 	}
 	
 	private boolean done(int iteration) {
-		return iteration > iterations;
+		return iteration >= iterations;
 	}
 	
-	private ArrayList<TSIndividual> getNeighbors() {
-		ArrayList<TSIndividual> neighborhood = new ArrayList<TSIndividual>();
+	// Get neighbors that are not in the tabuList
+	private ArrayList<Mutation> getNeighbors() {
+		ArrayList<Mutation> neighborhood = new ArrayList<>();
+		for(int i = 0; i < this.neighborhoodSize; i++) {
+		}
 		return neighborhood;
 	}
 	

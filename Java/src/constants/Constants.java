@@ -81,6 +81,11 @@ public class Constants {
     public final static int LOCK_TIME_CAR_FOR_OPERATOR = 15;
 
    
+    // TabuSearch Specifics
+    public final static int TABU_NEIGHBORHOOD_SIZE = 10;
+    public final static int TABU_SIZE = 10;
+    public final static int TABU_ITERATIONS = 5;
+    
     public enum nodeDemandGroup{
         MORNING_RUSH,
         NEUTRAL,

@@ -11,6 +11,7 @@ public class Swap2 extends Mutation{
 	private final int j;
 	private final int hashType = 1;
 	private final int hashCode;
+	public final static int id = 1;
 
 	public Swap2(int i, int j) {
 		this.i = i;
@@ -34,13 +35,20 @@ public class Swap2 extends Mutation{
 	public int getJ() {
 		return j;
 	}
+	
+	public int getId() {
+		return this.id;
+	}
 
 	@Override
 	public int hashCode() {
 	    return hashCode;
 	}
 
-
+	public double deltaFitness(Individual individual) {
+		return individual.deltaFitness(this);
+	}
+	
 
 	@Override
 	public void doMutation(Individual individual) {

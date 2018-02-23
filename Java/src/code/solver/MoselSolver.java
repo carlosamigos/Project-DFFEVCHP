@@ -1,6 +1,7 @@
 package code.solver;
 
 import code.StaticProblemFile;
+import code.problem.ProblemInstance;
 import constants.Constants;
 
 public class MoselSolver extends Solver {
@@ -19,12 +20,12 @@ public class MoselSolver extends Solver {
 	}
 
 	@Override
-	public void solve(StaticProblemFile problem) {
+	public void solve(ProblemInstance problemInstance) {
 		compile();
-		fixParameters(problem.getFileName());
-		fixDataFile(problem.getFilePath());
+		fixParameters(problemInstance.getFileName());
+		fixDataFile(problemInstance.getFilePath());
 
-		System.out.print("Solving " + problem.getFilePath() + " ");
+		System.out.print("Solving " + problemInstance.getFilePath() + " ");
 		//this.model.run();
 		//this.model.reset();
 	}

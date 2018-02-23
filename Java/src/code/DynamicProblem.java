@@ -61,7 +61,7 @@ public class DynamicProblem {
             }
             KPITrackerStatic tracker = new KPITrackerStatic();
             StaticProblemFile problem = new StaticProblemFile(Constants.TEST_DYNAMIC_FOLDER + fileName);
-            this.solver.solve(problem);
+            this.solver.solve(problemInstance);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
             tracker.setResults(problem.getFilePath());

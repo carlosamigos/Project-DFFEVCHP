@@ -15,6 +15,7 @@ import code.problem.travels.OperatorTravel;
 
 public class ProblemInstance {
 
+	private String filePath;
     private String fileName;
     private ArrayList<ParkingNode> parkingNodes;
     private ArrayList<ChargingNode> chargingNodes;
@@ -49,8 +50,12 @@ public class ProblemInstance {
     private String initialHandlingString = "";
     private int numberOfCarsTakenByCustomers = 0;
 
-    public ProblemInstance(String fileName) {
-        this.fileName = fileName;
+    
+    
+    public ProblemInstance(String filePath) {
+    	this.filePath = filePath;
+    	String[] split = filePath.split("/");
+        this.fileName = split[split.length-1];
         this.parkingNodes = new ArrayList<>();
         this.chargingNodes = new ArrayList<>();
         this.cars = new ArrayList<>();
@@ -305,6 +310,10 @@ public class ProblemInstance {
 
     public String getFileName() {
         return fileName;
+    }
+    
+    public String getFilePath() {
+    	return this.filePath;
     }
 
     public ArrayList<ParkingNode> getParkingNodes() {

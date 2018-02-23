@@ -1,27 +1,40 @@
 package code.solver.heuristics.tabusearch;
 
-import code.solver.heuristics.Individual;
-
 import java.util.ArrayList;
 
-public class TSIndividual extends Individual {
+import code.solver.heuristics.Individual;
+import code.solver.heuristics.mutators.Mutation;
+import code.solver.heuristics.mutators.Swap2;
 
-	private double fitness;
-	private boolean altered = false;
+public class TSIndividual extends Individual {
 	
 	public TSIndividual() {
-		
-	}
-	
-	public double getFitness() {
-		if (this.altered) {
-			calculateFitness();
+		this.representation = new ArrayList<>();
+		for(int i = 10; i >= 0; i--) {
+			representation.add(i);
 		}
-		return this.fitness;
+		calculateFitness();
 	}
 	
-	private void calculateFitness() {
+	protected void calculateFitness() {
+		this.fitness = 0.0;
+		for(int i = 0; i < this.representation.size(); i++) {
+			fitness += Math.abs((Integer) representation.get(i) - i);
+		}
+	}
+	
+	public double deltaFitness(Swap2 swap) {
+		int i = swap.getI();
+		int j = swap.getJ();
+		double before =  Math.abs((int) this.representation.get(i) - i) +  Math.abs((int) this.representation.get(j) - j); 
+		double after =  Math.abs((int) this.representation.get(i) - j) +  Math.abs((int) this.representation.get(j) - i); 
+		return after - before;
 		
+	}
+	
+	public void performMutation(Mutation mutation) {
+		this.fitness += mutation.deltaFitness(this);
+		mutation.doMutation(this);
 	}
 
 	@Override
@@ -29,9 +42,22 @@ public class TSIndividual extends Individual {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-    @Override
-    public ArrayList<Object> getRepresentation() {
 
-        return null;
-    }
+	@Override
+	public double deltaFitness(Mutation mutation) {
+		if(mutation instanceof Swap2) {
+			return deltaFitness((Swap2) mutation); 
+		} else {
+			return 0;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		for(Object i : this.representation) {
+			s += i.toString() + " ";
+		}
+		return s + "\n";
+	}
 }

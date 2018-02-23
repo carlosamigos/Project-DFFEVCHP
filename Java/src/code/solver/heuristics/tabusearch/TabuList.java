@@ -24,7 +24,7 @@ public class TabuList {
 
 	public boolean add(Mutation mutation){
 		// returns true if move is allowed, false if not
-		if(tabuSet.contains(mutation)){
+		if(isTabu(mutation)){
 			return false;
 		} else {
 			tabuQueue.add(0, mutation);
@@ -35,6 +35,10 @@ public class TabuList {
 			}
 			return true;
 		}
+	}
+	
+	public boolean isTabu(Mutation mutation) {
+		return tabuSet.contains(mutation); 
 	}
 
 

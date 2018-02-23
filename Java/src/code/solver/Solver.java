@@ -1,9 +1,10 @@
 package code.solver;
 
 import code.StaticProblemFile;
+import code.problem.ProblemInstance;
 
 public abstract class Solver {
-	public abstract void solve(StaticProblemFile problem);
+	public abstract void solve(ProblemInstance problemInstance);
 	public abstract String getInfo();
 
 }

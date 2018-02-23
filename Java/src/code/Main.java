@@ -3,6 +3,7 @@ package code;
 
 import java.util.HashMap;
 
+import code.solver.TSSolver;
 import constants.Constants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
@@ -12,7 +13,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-    	setConstants(args);
+    	TSSolver solver = new TSSolver(Constants.TABU_ITERATIONS, Constants.TABU_NEIGHBORHOOD_SIZE, Constants.TABU_SIZE);
+    	solver.solve(null);
+    	System.out.println(solver.getBest());
+    	/*setConstants(args);
     	TestSuite testSuite;
     	
     	if(Constants.TEST_TYPE == Constants.TestType.STATIC) {
@@ -21,6 +25,7 @@ public class Main {
     		testSuite = new DynamicTestSuite(Constants.SOLVER_TYPE, Constants.NUMBER_OF_DAYS_TO_TEST);
     	}
     	testSuite.runTestSuite();
+    	*/
     }
     
     // Sets file paths and solver type based on command line arguments.

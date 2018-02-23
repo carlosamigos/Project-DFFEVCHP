@@ -2,6 +2,7 @@ package tests;
 
 import code.StaticProblemFile;
 import code.kpitracker.KPITrackerStatic;
+import code.problem.ProblemInstance;
 import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
@@ -27,9 +28,9 @@ public class StaticTestSuite extends TestSuite {
 			for(String testName : testFileNames) {
 				printEstimatedTimeLeft(timePerRun, runsLeft);
 				KPITrackerStatic tracker = new KPITrackerStatic();
-				StaticProblemFile staticProblem = new StaticProblemFile(Constants.TEST_STATIC_FOLDER + testName);
-				solver.solve(staticProblem);
-				tracker.setResults(staticProblem.getFilePath());
+				ProblemInstance problemInstance = new ProblemInstance(Constants.TEST_STATIC_FOLDER + testName);
+				solver.solve(problemInstance);
+				tracker.setResults(problemInstance.getFilePath());
 				writeTestResult(tracker);
 				runsLeft--;
 			}
