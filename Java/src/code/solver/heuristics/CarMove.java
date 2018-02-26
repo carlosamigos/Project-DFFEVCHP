@@ -39,4 +39,9 @@ public class CarMove {
     public Double getEarliestDepartureTime() {
         return earliestDepartureTime;
     }
+
+    @Override
+    public String toString() {
+        return "(" + fromNode.getNodeId() + "->" + toNode.getNodeId() + ")";
+    }
 }
