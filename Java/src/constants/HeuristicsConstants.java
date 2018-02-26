@@ -1,6 +1,9 @@
 package constants;
 
 public class HeuristicsConstants {
+    
+    // Chromosome Generator
+    public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 10;

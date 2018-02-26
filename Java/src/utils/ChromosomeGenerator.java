@@ -5,6 +5,7 @@ import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.CarMove;
+import constants.HeuristicsConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,10 +46,8 @@ public class ChromosomeGenerator {
     private static void createCarMovesForRegularCars(HashMap<Car, ArrayList<CarMove>> carMoves, ArrayList<ParkingNode> senderNodes,
                                                      ArrayList<ParkingNode> receiverNodes, HashSet<Car> carsUsed,
                                                      ProblemInstance problemInstance) throws NullPointerException{
-        //TODO: Move this constant to Constants!
-        float carMoveTimeThreshold = 3/3;
-        //TODO: END
 
+        double carMoveTimeThreshold = HeuristicsConstants.MAX_THRESHOLD_CARMOVE_DISTANCE;
         double travelTime;
         for(ParkingNode senderNode : senderNodes){
             int numberOfCarsToMove = findNumberOfCarsToMoveIn(senderNode,problemInstance);
@@ -91,10 +90,6 @@ public class ChromosomeGenerator {
         }
     }
 
-    private static ArrayList<ChargingNode> findChargingNodesForCarInNeed(Car car, ProblemInstance problemInstance){
-        // If complex queries are needed (for instance, the nearest two nodes)
-        return problemInstance.getChargingNodes();
-    }
 
     private static void createCarMovesForCarsInNeedOfCharging(HashMap<Car, ArrayList<CarMove>> carMoves, ProblemInstance problemInstance){
         for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
