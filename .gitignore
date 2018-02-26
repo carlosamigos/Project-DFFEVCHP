@@ -23,3 +23,7 @@ Mosel/output/artificialOperators/*
 Mosel/output/realOperators/*
 Simulations/*
 Mosel/runStats
+Testing/Input/Static/Default/*
+Testing/Input/Dynamic/Default/*
+Testing/Output/Static/Default/*
+Testing/Output/Dynamic/Default/*
