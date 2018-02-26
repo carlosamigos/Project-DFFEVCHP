@@ -20,18 +20,12 @@ public class Main {
     	boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
-
     	
-    	/*TSSolver solver = new TSSolver();
-    	solver.solve(null);
-    	System.out.println(solver.getBest());
-    	*/
+//    	TSSolver solver = new TSSolver();
+//    	solver.solve(null);
+//    	System.out.println(solver.getBest());
     	
     	if(!testing) {
-	    	TSSolver solver = new TSSolver();
-	    	solver.solve(null);
-	    	System.out.println(solver.getBest());
-	    	
 	    	TestSuite testSuite;
 	    	
 	    	if(Constants.TEST_TYPE == Constants.TestType.STATIC) {
