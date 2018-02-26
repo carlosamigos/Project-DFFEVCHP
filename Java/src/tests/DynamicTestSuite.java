@@ -169,7 +169,7 @@ public class DynamicTestSuite extends TestSuite{
 	private void writeTestHeader(String testName) {
 		String data = "\nTest " + testName + "\n";
 		this.staticKPIfh = new FileHandler(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName, true, true);
-		System.out.println(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName);
+		//System.out.println(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName);
 		
 		fh.writeFile(data);
 		staticKPIfh.writeFile(data);
