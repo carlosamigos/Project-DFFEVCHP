@@ -2,10 +2,11 @@ package constants;
 
 public class Constants {
 
+
 	// General Parameters
 	public final static boolean PRINT_OUT_ACTIONS = false;
 	
-    // Cost Parameters
+	// Cost Parameters
     public final static double COST_POSTPONED = 30;
     public final static double COST_DEVIATION = 10;
 

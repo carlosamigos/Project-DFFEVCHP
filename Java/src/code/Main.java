@@ -21,6 +21,12 @@ public class Main {
     	boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
+
+    	/*
+    	TSSolver solver = new TSSolver(Constants.TABU_ITERATIONS, Constants.TABU_NEIGHBORHOOD_SIZE, Constants.TABU_SIZE);
+    	solver.solve(null);
+    	System.out.println(solver.getBest());
+    	*/
     	
     	if(!testing) {
 	    	TSSolver solver = new TSSolver();

@@ -12,8 +12,6 @@ import code.problem.entities.Operator;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
-import code.problem.travels.CustomerTravel;
-import code.problem.travels.OperatorTravel;
 
 public class ProblemInstance {
 
@@ -35,6 +33,7 @@ public class ProblemInstance {
     private int numPNodes = 0;
     private int numCNodes = 0;
     private int numROperators = 0;
+    private double maxTravelTimeCar = Double.MAX_VALUE;
     private double handlingTimeP = 0;
     private double handlingTimeC = 0;
 
@@ -265,7 +264,9 @@ public class ProblemInstance {
         for (String timeRow : timeRows) {
             ArrayList<Double> newTimeRow = new ArrayList<>();
             for (String timeDouble : timeRow.split(" ")) {
-                newTimeRow.add(Double.parseDouble(timeDouble));
+                double time = Double.parseDouble(timeDouble);
+                newTimeRow.add(time);
+                this.maxTravelTimeCar = Double.max(this.maxTravelTimeCar,time);
             }
             travelTimesCar.add(newTimeRow);
         }
@@ -276,7 +277,8 @@ public class ProblemInstance {
         for (String timeRow : timeRows) {
             ArrayList<Double> newTimeRow = new ArrayList<>();
             for (String timeDouble : timeRow.split(" ")) {
-                newTimeRow.add(Double.parseDouble(timeDouble));
+                double time = Double.parseDouble(timeDouble);
+                newTimeRow.add(time);
             }
             travelTimesBike.add(newTimeRow);
         }
@@ -618,6 +620,10 @@ public class ProblemInstance {
 
     public void setNumberOfCarsTakenByCustomers(int numberOfCarsTakenByCustomers) {
         this.numberOfCarsTakenByCustomers = numberOfCarsTakenByCustomers;
+    }
+
+    public double getMaxTravelTimeCar() {
+        return maxTravelTimeCar;
     }
 
     public double getHandlingTimeP() {
