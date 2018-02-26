@@ -1,3 +1,0 @@
-                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
-     ../Mosel/Models/main models/main_basic_symmetry_valid_var1_ch_only.mos     |       42.13       |       0.01        |        0         |        1         |        0        |        0         |       0       |         0         |      1125       
-         ../Mosel/Models/main models/main_basic_symmetry_valid_var1.mos         |       41.96       |         0         |        0         |        2         |        0        |        0         |       0       |         0         |      1125       
