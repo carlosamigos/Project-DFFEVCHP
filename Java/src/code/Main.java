@@ -9,7 +9,6 @@ import java.util.HashMap;
 import code.solver.TSSolver;
 import constants.Constants;
 import constants.FileConstants;
-import constants.HeuristicsConstants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
 import tests.TestSuite;
@@ -22,8 +21,8 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
 
-    	/*
-    	TSSolver solver = new TSSolver(Constants.TABU_ITERATIONS, Constants.TABU_NEIGHBORHOOD_SIZE, Constants.TABU_SIZE);
+    	
+    	/*TSSolver solver = new TSSolver();
     	solver.solve(null);
     	System.out.println(solver.getBest());
     	*/

@@ -1,6 +1,5 @@
 package code.problem.nodes;
 
-import constants.Constants;
 import constants.SimulationConstants;
 
 import java.util.ArrayList;

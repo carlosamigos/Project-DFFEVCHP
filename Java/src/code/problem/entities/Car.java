@@ -2,7 +2,7 @@ package code.problem.entities;
 
 import code.problem.nodes.Node;
 
-public class Car implements Comparable {
+public class Car implements Comparable<Object> {
 
     private final int carId;
     private double batteryLevel;
