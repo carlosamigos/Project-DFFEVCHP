@@ -24,6 +24,7 @@ import code.problem.travels.OperatorTravel;
 import code.simulation.DemandRequest;
 import code.simulation.SimulationModel;
 import code.solver.Solver;
+import utils.ChromosomeGenerator;
 
 public class DynamicProblem {
 
@@ -760,11 +761,11 @@ public class DynamicProblem {
         arrivals.get(operatorArrival.getOperator()).add(operatorArrival);
     }
 
+
     private void updateOptimalNumberOfCarsInParking(double time){
-        predictNumberOfCarsPickedUpNextPeriod(time);
-        double totalCarsPredicted = 0;
+        double totalCarsInDemand = 0;
         double nextPeriodDemand;
-        HashMap<ParkingNode,Double> map = new HashMap<>();
+        HashMap<ParkingNode,Double> demandMap = new HashMap<>();
         for (ParkingNode pNode: problemInstance.getParkingNodes()) {
             if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
@@ -773,33 +774,74 @@ public class DynamicProblem {
             } else {
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             }
-            totalCarsPredicted+= nextPeriodDemand/2;
-            map.put(pNode,nextPeriodDemand/2);
+            totalCarsInDemand+= nextPeriodDemand;
+            demandMap.put(pNode,nextPeriodDemand);
         }
-        int numberOfCarsAvailableNextPeriod = 0;
-        for (Car car : problemInstance.getCars()) {
-            if (car.getRemainingChargingTime()==0){
-                numberOfCarsAvailableNextPeriod+=1;
+        HashMap<ParkingNode, Integer> idealState = new HashMap<>();
+
+        // Find number of available cars
+        int totalCarsAvailableThisPeriod = 0;
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            totalCarsAvailableThisPeriod += parkingNode.getCarsRegular().size();
+        }
+
+        // Make first ideal state
+        int carsAllocatedIdealState = 0;
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            int carsToAdd = (int) (demandMap.get(parkingNode) / totalCarsInDemand * totalCarsAvailableThisPeriod + 0.5);
+            carsAllocatedIdealState += carsToAdd;
+            idealState.put(parkingNode, carsToAdd);
+        }
+
+        // Fix remaining cars
+        int remainingCars = totalCarsAvailableThisPeriod - carsAllocatedIdealState;
+        if(remainingCars < 0 ){
+            // Too many in ideal state, remove some, preferrably those with most cars.
+            while(remainingCars != 0){
+                ParkingNode maxNode = findNodeWithMostCarsInIdealState(idealState);
+                idealState.put(maxNode, idealState.get(maxNode) - 1);
+                remainingCars +=1;
+            }
+        } else if (remainingCars > 0){
+            // Prioritize adding cars to empty zones.
+            while(remainingCars != 0){
+                ParkingNode minNode = findNodeWithFewestCarsInIdealState(idealState);
+                idealState.put(minNode, idealState.get(minNode) + 1);
+                remainingCars -=1;
             }
         }
-        for (ChargingNode cNode: problemInstance.getChargingNodes()) {
-            for (Car car: cNode.getCarsCurrentlyCharging()) {
-                if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
-                    numberOfCarsAvailableNextPeriod+=1;
-                }
-            }
+
+        for(ParkingNode parkingNode : idealState.keySet()){
+            parkingNode.setIdealNumberOfAvailableCarsThisPeriod(idealState.get(parkingNode));
         }
-        for (ParkingNode pNode : problemInstance.getParkingNodes()) {
-            numberOfCarsAvailableNextPeriod -= pNode.getPredictedNumberOfCarsDemandedThisPeriod();
-        }
-        for (ParkingNode pNode : map.keySet()) {
-            int demandInteger = (int) Math.floor(map.get(pNode) / totalCarsPredicted * numberOfCarsAvailableNextPeriod);
-            if(time + Constants.TIME_LIMIT_STATIC_PROBLEM*2 > Constants.END_TIME){
-                demandInteger = (int) Math.floor(numberOfCarsAvailableNextPeriod / problemInstance.getParkingNodes().size());
-            }
-            pNode.setIdealNumberOfAvailableCarsThisPeriod(demandInteger);
-        }
+
+
     }
+
+    private ParkingNode findNodeWithMostCarsInIdealState(HashMap<ParkingNode, Integer> idealState){
+        ParkingNode maxNode = null;
+        int maxNumberOfCars = Integer.MIN_VALUE;
+        for(ParkingNode parkingNode : idealState.keySet()){
+            if(idealState.get(parkingNode) > maxNumberOfCars || (idealState.get(parkingNode) == maxNumberOfCars && Math.random() > 0.5)){
+                maxNumberOfCars = idealState.get(parkingNode);
+                maxNode = parkingNode;
+            }
+        }
+        return maxNode;
+    }
+
+    private ParkingNode findNodeWithFewestCarsInIdealState(HashMap<ParkingNode, Integer> idealState){
+        ParkingNode minNode = null;
+        int minNumberOfCars = Integer.MAX_VALUE;
+        for(ParkingNode parkingNode : idealState.keySet()){
+            if(idealState.get(parkingNode) < minNumberOfCars || (idealState.get(parkingNode) == minNumberOfCars && Math.random() > 0.5)){
+                minNumberOfCars = idealState.get(parkingNode);
+                minNode = parkingNode;
+            }
+        }
+        return minNode;
+    }
+
 
     private void predictNumberOfCarsPickedUpNextPeriod(double time){
         double nextPeriodDemand;
@@ -812,7 +854,7 @@ public class DynamicProblem {
                 } else {
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
                 }
-                int demandInt = (int) Math.floor(nextPeriodDemand/2);
+                int demandInt = (int) (nextPeriodDemand + 0.5);
                 pNode.setPredictedNumberOfCarsDemandedThisPeriod(demandInt);
             }
         } else {
