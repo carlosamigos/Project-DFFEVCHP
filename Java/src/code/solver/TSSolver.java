@@ -57,15 +57,18 @@ public class TSSolver extends Solver {
 			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
 			ArrayList<Mutation> neighborhood = getNeighbors();
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
+			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 
 			for(Mutation newCandidate : neighborhood) {
-				if (this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate) 
-						< this.mutationToDelta.get(candidate.getId()).runCommand(candidate)) {
+				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
+				if (newCandidateDelta < candidateDelta) {
 					candidate = newCandidate;
+					candidateDelta = newCandidateDelta;
 				}
 			}
 			
-			if(this.mutationToDelta.get(candidate.getId()).runCommand(candidate) < 0) {
+			if(candidateDelta < 0) {
+				this.individual.addToFitness(candidateDelta);
 				this.individual.performMutation(candidate);
 			}
 			

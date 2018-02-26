@@ -22,12 +22,6 @@ public class Swap3 extends Mutation{
 	}
 
 	@Override
-	public double deltaFitness(Individual individual) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
 		return 0;

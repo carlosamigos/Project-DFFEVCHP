@@ -1,7 +1,6 @@
 package code.solver.heuristics.ga;
 
 import code.solver.heuristics.Individual;
-import code.solver.heuristics.mutators.Mutation;
 
 public class GAIndividual extends Individual {
 
@@ -15,12 +14,6 @@ public class GAIndividual extends Individual {
 	protected void calculateFitness() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public double deltaFitness(Mutation mutation) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

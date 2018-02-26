@@ -36,8 +36,11 @@ public class TSIndividual extends Individual {
 		return 0.0;
 	}
 	
+	public void addToFitness(double delta) {
+		this.fitness += delta;
+	}
+	
 	public void performMutation(Mutation mutation) {
-		this.fitness += mutation.deltaFitness(this);
 		mutation.doMutation(this);
 	}
 
@@ -46,14 +49,9 @@ public class TSIndividual extends Individual {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
-	public double deltaFitness(Mutation mutation) {
-		if(mutation instanceof Swap2) {
-			return deltaFitness((Swap2) mutation); 
-		} else {
-			return 0;
-		}
+	
+	public double optimalInsertionValue() {
+		return 0.0;
 	}
 	
 	@Override
