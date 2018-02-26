@@ -2,6 +2,8 @@ package code.simulation;
 
 
 import constants.Constants;
+import constants.FileConstants;
+import constants.SimulationConstants;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -41,7 +43,7 @@ public class SimulationModel {
     public void saveDaySimulationModel(){
         try{
             NumberFormat formatter = new DecimalFormat("#0.000");
-            PrintWriter writer = new PrintWriter(Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt");
+            PrintWriter writer = new PrintWriter(FileConstants.SIMULATIONS_FOLDER + FileConstants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt");
             writer.println(dayNumberString+" : "+Integer.toString(dayNumber));
             writer.println(startIndexString+" : "+Integer.toString(Constants.START_INDEX));
             writer.println(problemInstanceFileName +" : "+problemInstance.getFileName());
@@ -61,7 +63,7 @@ public class SimulationModel {
     public void readSimulationModelFromFile(){
         demandRequests = new HashMap<>();
         try{
-            String readString = Constants.SIMULATIONS_FOLDER + Constants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt";
+            String readString = FileConstants.SIMULATIONS_FOLDER + FileConstants.DEMAND_REQUESTS + "_day_"+Integer.toString(dayNumber)+"_problemInstance_"+problemInstance.getFileName() + ".txt";
             FileReader fileReader = new FileReader(readString);
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
@@ -115,12 +117,16 @@ public class SimulationModel {
     }
 
     private double getDemandRateForNodeAtTime(ParkingNode parkingNode, double time){
-        if(parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MIDDAY_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.sin((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
-        } else if (parkingNode.getDemandGroup()== Constants.nodeDemandGroup.MORNING_RUSH){
-            return (Constants.HIGH_RATE_LAMBDA - Constants.LOW_RATE_LAMBDA)*Math.cos((time-Constants.START_TIME)*Math.asin(1)/Constants.END_TIME)+Constants.LOW_RATE_LAMBDA;
+        if(parkingNode.getDemandGroup()== SimulationConstants.nodeDemandGroup.MIDDAY_RUSH){
+            return (SimulationConstants.HIGH_RATE_LAMBDA - SimulationConstants.LOW_RATE_LAMBDA) * 
+            		Math.sin((time-Constants.START_TIME) * 
+            				Math.asin(1)/Constants.END_TIME)+SimulationConstants.LOW_RATE_LAMBDA;
+        } else if (parkingNode.getDemandGroup()== SimulationConstants.nodeDemandGroup.MORNING_RUSH){
+            return (SimulationConstants.HIGH_RATE_LAMBDA - SimulationConstants.LOW_RATE_LAMBDA) * 
+            		Math.cos((time-Constants.START_TIME) * 
+            				Math.asin(1)/Constants.END_TIME)+SimulationConstants.LOW_RATE_LAMBDA;
         } else {
-            return Constants.MEDIUM_RATE_LAMBDA;
+            return SimulationConstants.MEDIUM_RATE_LAMBDA;
         }
     }
 
@@ -167,20 +173,20 @@ public class SimulationModel {
     }
 
     public double findExpectedNumberOfArrivalsNormalBetween(double start, double end){
-        return (end-start)*Constants.MEDIUM_RATE_LAMBDA;
+        return (end-start)*SimulationConstants.MEDIUM_RATE_LAMBDA;
     }
 
     private double lambdaMorningRushIntegral(double time){
-        double low = Constants.LOW_RATE_LAMBDA;
-        double high = Constants.HIGH_RATE_LAMBDA;
+        double low = SimulationConstants.LOW_RATE_LAMBDA;
+        double high = SimulationConstants.HIGH_RATE_LAMBDA;
         double gradient = -(high-low)/(Constants.END_TIME-Constants.START_TIME);
         double intersection = high - gradient*Constants.START_TIME;
         return 0.5*gradient*time*time + intersection*time;
     }
 
     private double lambdaMiddayRushIntegral(double time){
-        double low = Constants.LOW_RATE_LAMBDA;
-        double high = Constants.HIGH_RATE_LAMBDA;
+        double low = SimulationConstants.LOW_RATE_LAMBDA;
+        double high = SimulationConstants.HIGH_RATE_LAMBDA;
         double gradient = (high-low)/(Constants.END_TIME-Constants.START_TIME);
         double intersection = low - gradient*Constants.START_TIME;
         return 0.5*gradient*time*time + intersection*time;

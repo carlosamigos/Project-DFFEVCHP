@@ -1,17 +1,17 @@
 package tests;
 
-import code.StaticProblemFile;
 import code.kpitracker.KPITrackerStatic;
 import code.problem.ProblemInstance;
 import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
+import constants.FileConstants;
 import utils.StringUtils;
 
 public class StaticTestSuite extends TestSuite {
 	
 	public StaticTestSuite(SolverType solverType) {
-		super(solverType, Constants.TEST_STATIC_FOLDER, Constants.STATIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, FileConstants.TEST_STATIC_FOLDER, FileConstants.STATIC_TEST_SUITE_RESULTS_FILE);
 	}
 	
 	public void runTestSuite() {
@@ -28,7 +28,7 @@ public class StaticTestSuite extends TestSuite {
 			for(String testName : testFileNames) {
 				printEstimatedTimeLeft(timePerRun, runsLeft);
 				KPITrackerStatic tracker = new KPITrackerStatic();
-				ProblemInstance problemInstance = new ProblemInstance(Constants.TEST_STATIC_FOLDER + testName);
+				ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + testName);
 				solver.solve(problemInstance);
 				tracker.setResults(problemInstance.getFilePath());
 				writeTestResult(tracker);
@@ -39,7 +39,7 @@ public class StaticTestSuite extends TestSuite {
 			fh.writeFile("\n\n");
 		}
 		
-		System.out.println("\nDone with all tests. See the file " + Constants.STATIC_TEST_SUITE_RESULTS_FILE 
+		System.out.println("\nDone with all tests. See the file " + FileConstants.STATIC_TEST_SUITE_RESULTS_FILE 
 				+ this.timeStamp + " for results.");
 	}
 	

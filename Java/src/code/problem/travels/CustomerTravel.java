@@ -1,6 +1,5 @@
 package code.problem.travels;
 
-import code.problem.entities.Car;
 import code.problem.nodes.ParkingNode;
 
 public class CustomerTravel extends Travel{

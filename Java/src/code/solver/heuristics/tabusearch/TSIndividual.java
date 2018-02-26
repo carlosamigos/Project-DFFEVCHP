@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import code.solver.heuristics.Individual;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.mutators.Swap2;
+import code.solver.heuristics.mutators.Swap3;
 
 public class TSIndividual extends Individual {
 	
 	public TSIndividual() {
 		this.representation = new ArrayList<>();
-		for(int i = 10; i >= 0; i--) {
+		for(int i = 9; i >= 0; i--) {
 			representation.add(i);
 		}
 		calculateFitness();
@@ -29,7 +30,10 @@ public class TSIndividual extends Individual {
 		double before =  Math.abs((int) this.representation.get(i) - i) +  Math.abs((int) this.representation.get(j) - j); 
 		double after =  Math.abs((int) this.representation.get(i) - j) +  Math.abs((int) this.representation.get(j) - i); 
 		return after - before;
-		
+	}
+	
+	public double deltaFitness(Swap3 swap) {
+		return 0.0;
 	}
 	
 	public void performMutation(Mutation mutation) {

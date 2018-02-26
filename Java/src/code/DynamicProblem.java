@@ -1,6 +1,8 @@
 package code;
 
 import constants.Constants;
+import constants.FileConstants;
+import constants.SimulationConstants;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -61,11 +63,10 @@ public class DynamicProblem {
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
             KPITrackerStatic tracker = new KPITrackerStatic();
-            StaticProblemFile problem = new StaticProblemFile(Constants.TEST_DYNAMIC_FOLDER + fileName);
             this.solver.solve(problemInstance);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
-            tracker.setResults(problem.getFilePath());
+            tracker.setResults(problemInstance.getFilePath());
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
         }
         kpiTrackerDyanmic.updateIdleTimeForOperators();
@@ -140,7 +141,7 @@ public class DynamicProblem {
                     car.setPreviousNode(arrivalNode);
                     car.setCurrentNextNode(arrivalNode);
                     if(arrivalNode instanceof  ParkingNode){
-                        if(car.getBatteryLevel() < Constants.SOFT_CHARGING_THRESHOLD){
+                        if(car.getBatteryLevel() < SimulationConstants.SOFT_CHARGING_THRESHOLD){
                             ((ParkingNode) arrivalNode).getCarsInNeed().add(car);
                         } else {
                             ((ParkingNode) arrivalNode).getCarsRegular().add(car);
@@ -167,8 +168,8 @@ public class DynamicProblem {
                     int rndIndex = new Random().nextInt(problemInstance.getParkingNodes().size());
                     ParkingNode arrivalNode = problemInstance.getParkingNodes().get(rndIndex);
                     double travelTime = problemInstance.getTravelTimesCar().get(pNode.getNodeId() - Constants.START_INDEX).get(arrivalNode.getNodeId()-Constants.START_INDEX);
-                    travelTime *=  (Math.random()* (Constants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
-                    travelTime += Constants.CUSTOMER_CONSTANT_TIME_USED;
+                    travelTime *=  (Math.random()* (SimulationConstants.CUSTOMER_TIME_MULTIPLICATOR-1) + 1);
+                    travelTime += SimulationConstants.CUSTOMER_CONSTANT_TIME_USED;
                     double arrivalTime = nextDemandReqTime + travelTime;
                     CustomerTravel newCustomerTravel = new CustomerTravel(nextDemandReqTime,pNode,arrivalTime,arrivalNode);
                     Car travelCar = findAvailableCarForCustomerInNode(pNode);
@@ -317,7 +318,7 @@ public class DynamicProblem {
                             car.setPreviousNode(arrivalNode);
                             car.setCurrentNextNode(arrivalNode);
                             if(arrivalNode instanceof  ParkingNode){
-                                if(car.getBatteryLevel() < Constants.SOFT_CHARGING_THRESHOLD){
+                                if(car.getBatteryLevel() < SimulationConstants.SOFT_CHARGING_THRESHOLD){
                                     ((ParkingNode) arrivalNode).getCarsInNeed().add(car);
                                 } else {
                                     ((ParkingNode) arrivalNode).getCarsRegular().add(car);
@@ -347,12 +348,12 @@ public class DynamicProblem {
                 if(Constants.PRINT_OUT_ACTIONS){
                     System.out.println("Customer arrives with car "+ car + " in node " + arrivalNode);
                 }
-                if(car.getBatteryLevel() < Constants.SOFT_CHARGING_THRESHOLD){
+                if(car.getBatteryLevel() < SimulationConstants.SOFT_CHARGING_THRESHOLD){
                     // assuming that if close to charging station, customer sets to charging
                     if(problemInstance.getParkingNodeToChargingNode().get(arrivalNode)!=null){
                         //charging node nearby
                         double random = Math.random();
-                        if(random < Constants.PROBABILITY_CUSTOMERS_CHARGE){
+                        if(random < SimulationConstants.PROBABILITY_CUSTOMERS_CHARGE){
                             //set car to charging
                             ChargingNode cNode = problemInstance.getParkingNodeToChargingNode().get(arrivalNode);
                             if(checkIfCarIsAllowedToSetToChargingForCustomerInNode(cNode, operatorTravels)){
@@ -479,12 +480,16 @@ public class DynamicProblem {
         for (Car car : problemInstance.getCars()) {
             if(!car.getPreviousNode().equals(car.getCurrentNextNode())){
                 // car is on the run
-                double newBatteryLevel = (car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT) > 0 ? (car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT) : 0;
+                double newBatteryLevel = 
+                		(car.getBatteryLevel() - (time - previousTime) * SimulationConstants.BATTERY_USED_PER_TIME_UNIT) 
+                		> 0 ? (car.getBatteryLevel() - (time - previousTime) * 
+                				SimulationConstants.BATTERY_USED_PER_TIME_UNIT) : 0;
                 car.setBatteryLevel(newBatteryLevel);
             } else if(car.getCurrentNextNode() instanceof ChargingNode && car.getPreviousNode() instanceof ChargingNode){
                 // car is charging
-                car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime)*Constants.BATTERY_CHARGED_PER_TIME_UNIT);
-                car.setRemainingChargingTime((1.0-car.getBatteryLevel())*Constants.CHARGING_TIME_FULL);
+                car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime) * 
+                		SimulationConstants.BATTERY_CHARGED_PER_TIME_UNIT);
+                car.setRemainingChargingTime((1.0-car.getBatteryLevel())*SimulationConstants.CHARGING_TIME_FULL);
                 if(car.getBatteryLevel() >=1.0){
                     car.setRemainingChargingTime(0);
                     car.setBatteryLevel(1.0);
@@ -502,12 +507,17 @@ public class DynamicProblem {
     private void updateBatteryLevelOnCar(double time, double previousTime, Car car){
         if(!car.getPreviousNode().equals(car.getCurrentNextNode())){
             // car is on the run
-            double newBatteryLevel = (car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT) > 0 ? (car.getBatteryLevel() - (time - previousTime)*Constants.BATTERY_USED_PER_TIME_UNIT) : 0;
+            double newBatteryLevel = (car.getBatteryLevel() - (time - previousTime) * 
+            		SimulationConstants.BATTERY_USED_PER_TIME_UNIT) > 0 ? 
+            				(car.getBatteryLevel() - (time - previousTime) * 
+            						SimulationConstants.BATTERY_USED_PER_TIME_UNIT) : 0;
             car.setBatteryLevel(newBatteryLevel);
         } else if(car.getCurrentNextNode() instanceof ChargingNode && car.getPreviousNode() instanceof ChargingNode){
             // car is charging
-            car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime)*Constants.BATTERY_CHARGED_PER_TIME_UNIT);
-            car.setRemainingChargingTime((1.0-car.getBatteryLevel())*Constants.CHARGING_TIME_FULL);
+            car.setBatteryLevel(car.getBatteryLevel() + (time - previousTime) * 
+            		SimulationConstants.BATTERY_CHARGED_PER_TIME_UNIT);
+            car.setRemainingChargingTime((1.0-car.getBatteryLevel()) * 
+            		SimulationConstants.CHARGING_TIME_FULL);
             if(car.getBatteryLevel() >=1.0){
                 car.setRemainingChargingTime(0);
                 car.setBatteryLevel(1.0);
@@ -526,7 +536,7 @@ public class DynamicProblem {
             return node.getCarsRegular().get(0);
         }
         for (Car car : node.getCarsInNeed()) {
-            if(car.getBatteryLevel() > Constants.HARD_CHARGING_THRESHOLD){
+            if(car.getBatteryLevel() > SimulationConstants.HARD_CHARGING_THRESHOLD){
                 return car;
             }
         }
@@ -543,7 +553,8 @@ public class DynamicProblem {
                 for (OperatorDeparture departure: operatorDepartures.get(operator)) {
                     Node arrivalNode = operatorTravel.getArrivalNode();
                     if(arrivalNode.equals(departure.getNode())){
-                        if(departure.getDepartureTime() > time && departure.getDepartureTime() < time + Constants.LOCK_TIME_CAR_FOR_OPERATOR && departure.getNode().equals(node)){
+                        if(departure.getDepartureTime() > time && departure.getDepartureTime() < 
+                        		time + SimulationConstants.LOCK_TIME_CAR_FOR_OPERATOR && departure.getNode().equals(node)){
                             //if handles to parking:
                             if(departure.getOperatorArrival() != null && departure.getOperatorArrival().getNode() instanceof ParkingNode && departure.isHandling()){
                                 carsNeededByOperatorsTheNextMinutes +=1;
@@ -559,7 +570,7 @@ public class DynamicProblem {
         int inNeedAvailable = 0;
         for (ParkingNode pNode: problemInstance.getParkingNodes()) {
             for (Car car: pNode.getCarsInNeed()) {
-                if(car.getBatteryLevel() > Constants.HARD_CHARGING_THRESHOLD){
+                if(car.getBatteryLevel() > SimulationConstants.HARD_CHARGING_THRESHOLD){
                     inNeedAvailable++;
                 }
             }
@@ -651,7 +662,7 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorArrival>> arrivals = new HashMap<>();
 
         try {
-            FileReader fileReader = new FileReader(Constants.MOSEL_OUTPUT_REAL + fileName + ".txt");
+            FileReader fileReader = new FileReader(FileConstants.MOSEL_OUTPUT_REAL + fileName + ".txt");
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -767,9 +778,9 @@ public class DynamicProblem {
         double nextPeriodDemand;
         HashMap<ParkingNode,Double> demandMap = new HashMap<>();
         for (ParkingNode pNode: problemInstance.getParkingNodes()) {
-            if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
+            if(pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MIDDAY_RUSH)){
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
-            } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
+            } else if (pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MORNING_RUSH)){
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
             } else {
                 nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
@@ -847,9 +858,9 @@ public class DynamicProblem {
         double nextPeriodDemand;
         if(time + Constants.TIME_LIMIT_STATIC_PROBLEM <= Constants.END_TIME){
             for (ParkingNode pNode: problemInstance.getParkingNodes()) {
-                if(pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MIDDAY_RUSH)){
+                if(pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MIDDAY_RUSH)){
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
-                } else if (pNode.getDemandGroup().equals(Constants.nodeDemandGroup.MORNING_RUSH)){
+                } else if (pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MORNING_RUSH)){
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);
                 } else {
                     nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time, time + Constants.TIME_LIMIT_STATIC_PROBLEM);

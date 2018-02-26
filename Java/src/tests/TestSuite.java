@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import code.solver.MoselSolver;
 import code.solver.Solver;
-import constants.Constants;
 import constants.Constants.SolverType;
+import constants.FileConstants;
 import utils.FileHandler;
 import utils.StringUtils;
 
@@ -39,10 +39,7 @@ public abstract class TestSuite {
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
 		
-		LocalTime time = LocalTime.now();
-		LocalDate date = LocalDate.now();
-		this.timeStamp = "_" + date.getDayOfMonth() + "_" + date.getMonth() + "-" + time.getHour() + "_" + time.getMinute() +
-				"_" + time.getSecond();
+		this.timeStamp = getTimestamp();
 		this.fh = new FileHandler(resultFile + this.timeStamp, true, true);
 	}
 	
@@ -58,7 +55,7 @@ public abstract class TestSuite {
 	
 	protected void instantiateMoselSolvers() {
 		this.solvers = new ArrayList<Solver>();
-		File[] moselFiles = (new File(Constants.MOSEL_TEST_FILES_FOLDER)).listFiles();
+		File[] moselFiles = (new File(FileConstants.MOSEL_TEST_FILES_FOLDER)).listFiles();
 		ArrayList<String> moselFileNames =  new ArrayList<String>();
 		for(File file : moselFiles) {
 			if(file.getName().contains(".mos")) {
@@ -67,7 +64,7 @@ public abstract class TestSuite {
 		}
 
 		for(String moselFileName : moselFileNames) {
-			solvers.add(new MoselSolver(Constants.MOSEL_TEST_FILES_FOLDER + moselFileName));
+			solvers.add(new MoselSolver(FileConstants.MOSEL_TEST_FILES_FOLDER + moselFileName));
 		}
 	}
 	
@@ -79,5 +76,12 @@ public abstract class TestSuite {
 		int minutes = totalMinutes - totalHours*60;
 		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
 		System.out.println("(Time left: " + hoursAndMinutes + ")");
+	}
+	
+	protected String getTimestamp() {
+		LocalTime time = LocalTime.now();
+		LocalDate date = LocalDate.now();
+		return date.getDayOfMonth() + "_" + date.getMonth() + "-" + time.getHour() + "_" + time.getMinute() +
+				"_" + time.getSecond();
 	}
 }

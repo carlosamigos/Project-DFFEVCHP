@@ -1,6 +1,7 @@
 package code.problem.nodes;
 
 import constants.Constants;
+import constants.SimulationConstants;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class ParkingNode extends Node{
     private ArrayList<Car> carsInNeed;
     private ArrayList<Car> carsRegular;
     private Double demandRate = 0.0;
-    private Constants.nodeDemandGroup demandGroup = null;
+    private SimulationConstants.nodeDemandGroup demandGroup = null;
     private int idealNumberOfAvailableCarsThisPeriod = 0;
     private int predictedNumberOfCarsDemandedThisPeriod = 0;
 
@@ -50,11 +51,11 @@ public class ParkingNode extends Node{
         carsRegular.remove(car);
     }
 
-    public Constants.nodeDemandGroup getDemandGroup() {
+    public SimulationConstants.nodeDemandGroup getDemandGroup() {
         return demandGroup;
     }
 
-    public void setDemandGroup(Constants.nodeDemandGroup demandGroup) {
+    public void setDemandGroup(SimulationConstants.nodeDemandGroup demandGroup) {
         this.demandGroup = demandGroup;
     }
 

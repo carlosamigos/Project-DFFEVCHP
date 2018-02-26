@@ -1,6 +1,5 @@
 package code.solver;
 
-import code.StaticProblemFile;
 import code.problem.ProblemInstance;
 
 public abstract class Solver {

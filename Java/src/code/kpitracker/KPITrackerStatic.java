@@ -1,16 +1,13 @@
 package code.kpitracker;
 
-import constants.Constants;
+import constants.FileConstants;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.stream.Stream;
-
-import code.solver.Solver;
 
 public class KPITrackerStatic {
 
@@ -24,7 +21,7 @@ public class KPITrackerStatic {
 
     public void setResults(String dataFilePath){
         ArrayList<String> currResults = new ArrayList<String>();
-        try (Stream<String> stream = Files.lines(Paths.get(Constants.STATIC_RUN_STATS))) {
+        try (Stream<String> stream = Files.lines(Paths.get(FileConstants.STATIC_RUN_STATS))) {
             stream.forEach(result -> currResults.add(result));
         } catch (IOException e) {
             System.out.println("Could not find stats file from static run");
@@ -75,5 +72,9 @@ public class KPITrackerStatic {
     
     public String getCDev() {
     	return this.cdev;
+    }
+    
+    public String getBestBound() {
+    	return this.bestBound;
     }
 }

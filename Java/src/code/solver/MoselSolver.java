@@ -1,8 +1,8 @@
 package code.solver;
 
-import code.StaticProblemFile;
 import code.problem.ProblemInstance;
 import constants.Constants;
+import constants.FileConstants;
 
 public class MoselSolver extends Solver {
 
@@ -38,7 +38,7 @@ public class MoselSolver extends Solver {
 	private void fixParameters(String fileName) {
 		String parameters = "printParams=" + Constants.PRINT_MOSEL_PARAMETERS + "," + "printResults="
 				+ Constants.PRINT_MOSEL_RESULTS + "," + "MaxSolveTimeSeconds=" + Constants.MAX_SOLVE_TIME_MOSEL_SECONDS
-				+ "," + "OutputPathArtificial=" + Constants.MOSEL_OUTPUT_ARTIFICIAL + fileName+ ".txt," + "OutputPathRegular=" + Constants.MOSEL_OUTPUT_REAL
+				+ "," + "OutputPathArtificial=" + FileConstants.MOSEL_OUTPUT_ARTIFICIAL + fileName+ ".txt," + "OutputPathRegular=" + FileConstants.MOSEL_OUTPUT_REAL
 				+ fileName + ".txt,";
 
 		//model.execParams = parameters;
@@ -46,8 +46,8 @@ public class MoselSolver extends Solver {
 
 	private void compile() {
 		try {
-			//this.mosel.compile(Constants.PROBLEM_FOLDER + this.moselFileName);
-			//this.model = this.mosel.loadModel(Constants.PROBLEM_FOLDER + this.bimFileName);
+			//this.mosel.compile(FileConstants.PROBLEM_FOLDER + this.moselFileName);
+			//this.model = this.mosel.loadModel(FileConstants.PROBLEM_FOLDER + this.bimFileName);
 		}
 
 		catch (Exception e) {

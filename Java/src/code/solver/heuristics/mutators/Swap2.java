@@ -7,11 +7,12 @@ import java.util.Collections;
 
 public class Swap2 extends Mutation{
 
+	public final static int id = 1;
+	
 	private final int i;
 	private final int j;
 	private final int hashType = 1;
 	private final int hashCode;
-	public final static int id = 1;
 
 	public Swap2(int i, int j) {
 		this.i = i;
@@ -37,7 +38,7 @@ public class Swap2 extends Mutation{
 	}
 	
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	@Override
