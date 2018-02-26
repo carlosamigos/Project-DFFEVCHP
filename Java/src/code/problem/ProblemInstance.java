@@ -1,6 +1,8 @@
 package code.problem;
 
 import constants.Constants;
+import constants.FileConstants;
+import constants.SimulationConstants;
 
 import java.io.*;
 import java.util.*;
@@ -105,7 +107,7 @@ public class ProblemInstance {
     }
 
     private void readProblemFromFile() throws IOException{
-        BufferedReader br = new BufferedReader(new FileReader(Constants.TEST_DYNAMIC_INITIAL_FOLDER +fileName + ".txt"));
+        BufferedReader br = new BufferedReader(new FileReader(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER +fileName + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -242,7 +244,7 @@ public class ProblemInstance {
                 cars.add(newRegularCar);
             }
             for (int j = 0; j < initialInNeedPArray.get(i-Constants.START_INDEX); j++) {
-                Car newCarInNeed = new Car(carId,Constants.SOFT_CHARGING_THRESHOLD*0.999);
+                Car newCarInNeed = new Car(carId,SimulationConstants.SOFT_CHARGING_THRESHOLD*0.999);
                 newCarInNeed.setCurrentNextNode(newParkingNode);
                 newCarInNeed.setPreviousNode(newParkingNode);
                 carId++;
@@ -288,8 +290,8 @@ public class ProblemInstance {
         int nodesWithVaryingDemand;
         int nodesWithHighDemand;
         try{
-            nodesWithVaryingDemand =  (int) Math.round(numPNodes*Constants.PERCENTAGE_AFFECTED_BY_RUSH_HOUR);
-            nodesWithHighDemand = (int) Math.round(nodesWithVaryingDemand*Constants.PERCENTAGE_RUSH_HOUR_SPLIT);
+            nodesWithVaryingDemand =  (int) Math.round(numPNodes*SimulationConstants.PERCENTAGE_AFFECTED_BY_RUSH_HOUR);
+            nodesWithHighDemand = (int) Math.round(nodesWithVaryingDemand*SimulationConstants.PERCENTAGE_RUSH_HOUR_SPLIT);
         } catch (Exception e){
             System.out.println("Casting Error");
             nodesWithVaryingDemand = 0;
@@ -299,11 +301,11 @@ public class ProblemInstance {
         for (int i = Constants.START_INDEX; i < numPNodes + Constants.START_INDEX; i++) {
             ParkingNode parkingNode = (ParkingNode) nodeMap.get(i);
             if(i >= nodesWithVaryingDemand + Constants.START_INDEX){
-                parkingNode.setDemandGroup(Constants.nodeDemandGroup.NEUTRAL);
+                parkingNode.setDemandGroup(SimulationConstants.nodeDemandGroup.NEUTRAL);
             }else if( i < nodesWithHighDemand+Constants.START_INDEX){
-                parkingNode.setDemandGroup(Constants.nodeDemandGroup.MORNING_RUSH);
+                parkingNode.setDemandGroup(SimulationConstants.nodeDemandGroup.MORNING_RUSH);
             } else {
-                parkingNode.setDemandGroup(Constants.nodeDemandGroup.MIDDAY_RUSH);
+                parkingNode.setDemandGroup(SimulationConstants.nodeDemandGroup.MIDDAY_RUSH);
             }
         }
     }
@@ -374,7 +376,7 @@ public class ProblemInstance {
         //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
-            PrintWriter writer = new PrintWriter(Constants.TEST_DYNAMIC_FOLDER + fileName +".txt", "UTF-8");
+            PrintWriter writer = new PrintWriter(FileConstants.TEST_DYNAMIC_FOLDER + fileName +".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {
                 if(!stateSpecificKeys.contains(key)){
                     if(key.equals("travelTimeVehicle")){

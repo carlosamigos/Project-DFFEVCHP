@@ -13,6 +13,7 @@ import code.simulation.SimulationModel;
 import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
+import constants.FileConstants;
 import utils.FileHandler;
 import utils.StringUtils;
 
@@ -22,7 +23,7 @@ public class DynamicTestSuite extends TestSuite{
 	private FileHandler staticKPIfh;
 	
 	public DynamicTestSuite(SolverType solverType, int days) {
-		super(solverType, Constants.TEST_DYNAMIC_INITIAL_FOLDER, Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE);
+		super(solverType, FileConstants.TEST_DYNAMIC_INITIAL_FOLDER, FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE);
 		this.days = days;
 	}
 
@@ -71,7 +72,7 @@ public class DynamicTestSuite extends TestSuite{
 			writeKPIs();
 		}
 		
-		System.out.println("\nDone with all tests. See the file " + Constants.DYNAMIC_TEST_SUITE_RESULTS_FILE + " for results.");
+		System.out.println("\nDone with all tests. See the file " + FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE + " for results.");
 	}
 	
 	private void addKPITracker(Solver solver, KPITrackerDynamic tracker) {
@@ -168,8 +169,7 @@ public class DynamicTestSuite extends TestSuite{
 	
 	private void writeTestHeader(String testName) {
 		String data = "\nTest " + testName + "\n";
-		this.staticKPIfh = new FileHandler(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName, true, true);
-		System.out.println(Constants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName);
+		this.staticKPIfh = new FileHandler(FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName + "_" + getTimestamp(), true, true);
 		
 		fh.writeFile(data);
 		staticKPIfh.writeFile(data);

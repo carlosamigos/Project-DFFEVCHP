@@ -1,13 +1,9 @@
 package code.solver.heuristics.tabusearch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Queue;
 
-import code.solver.heuristics.Individual;
 import code.solver.heuristics.mutators.Mutation;
-import code.solver.heuristics.mutators.Swap2;
 
 public class TabuList {
 

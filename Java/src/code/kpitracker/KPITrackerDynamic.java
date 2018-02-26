@@ -1,6 +1,7 @@
 package code.kpitracker;
 
 import constants.Constants;
+import constants.SimulationConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +72,7 @@ public class KPITrackerDynamic {
 
     public void increaseCarTotalTravelTimeDoneByOperator(double travelTime){
         totalCarTravelDoneByServiceOperators += travelTime;
-        double batterUsed = travelTime * Constants.BATTERY_USED_PER_TIME_UNIT;
+        double batterUsed = travelTime * SimulationConstants.BATTERY_USED_PER_TIME_UNIT;
         electricityUsedWhenRelocatingCars += batterUsed;
     }
 
