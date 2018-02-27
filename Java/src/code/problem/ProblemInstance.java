@@ -37,7 +37,6 @@ public class ProblemInstance {
     private double handlingTimeP = 0;
     private double handlingTimeC = 0;
 
-
     private HashMap<String, String> inputFileMap = new HashMap<>();
     private HashMap<String, String> inputFileMapRaw = new HashMap<>();
 
@@ -51,8 +50,7 @@ public class ProblemInstance {
     private String initialHandlingString = "";
     private int numberOfCarsTakenByCustomers = 0;
 
-    
-    
+
     public ProblemInstance(String filePath) {
     	this.filePath = filePath;
     	String[] split = filePath.split("/");
@@ -373,7 +371,6 @@ public class ProblemInstance {
         }
     }
 
-
     public void writeProblemInstanceToFile(){
         //System.out.println("Writing state to file...");
         // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
@@ -613,11 +610,7 @@ public class ProblemInstance {
     public HashMap<ParkingNode, ChargingNode> getParkingNodeToChargingNode() {
         return parkingNodeToChargingNode;
     }
-
-    public int getNumberOfCarsTakenByCustomers() {
-        return numberOfCarsTakenByCustomers;
-    }
-
+    
     public void setNumberOfCarsTakenByCustomers(int numberOfCarsTakenByCustomers) {
         this.numberOfCarsTakenByCustomers = numberOfCarsTakenByCustomers;
     }
