@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
+import code.problem.entities.Car;
+import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.mutators.Swap2;
 import code.solver.heuristics.mutators.Swap3;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
 import constants.HeuristicsConstants;
+import utils.ChromosomeGenerator;
 
 public class TSSolver extends Solver {
 	
@@ -19,15 +22,17 @@ public class TSSolver extends Solver {
 	private final int neighborhoodSize;
 	private final int tabuSize;
 	private HashMap<Integer, Command> mutationToDelta;
+	private final HashMap<Car, ArrayList<CarMove>> carToCarMoves;
 	
-	public TSSolver() {
+	public TSSolver(ProblemInstance problemInstance) {
 		this(HeuristicsConstants.TABU_ITERATIONS, 
-				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE, HeuristicsConstants.TABU_SIZE);
+				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE, HeuristicsConstants.TABU_SIZE, problemInstance);
 	}
 	
-	public TSSolver(int iterations, int neighborhoodSize, int tabuSize) {
+	public TSSolver(int iterations, int neighborhoodSize, int tabuSize, ProblemInstance problemInstance) {
+		this.carToCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.iterations = iterations;
-		this.individual =  new TSIndividual();
+		this.individual =  new TSIndividual(problemInstance);
 		this.neighborhoodSize = neighborhoodSize;
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();

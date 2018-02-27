@@ -2,26 +2,47 @@ package code.solver.heuristics.tabusearch;
 
 import java.util.ArrayList;
 
+import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
+import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.mutators.Swap2;
 import code.solver.heuristics.mutators.Swap3;
+import constants.Constants;
 
 public class TSIndividual extends Individual {
 	
-	public TSIndividual() {
+	private ArrayList<Operator> operators;
+	//private final int[] idealState;
+	private int[] currentState;
+	
+	private double costOfPostponed = 0.0;
+	private double costOfTravel = 0.0;
+	private double costOfUnmetIdeal = 0.0;
+	
+	public TSIndividual(ProblemInstance problemInstance) {
 		this.representation = new ArrayList<>();
-		for(int i = 9; i >= 0; i--) {
-			representation.add(i);
-		}
+		this.operators = new ArrayList<>();
+		initializeOperators();
 		calculateFitness();
 	}
 	
+	private void initializeOperators() {
+		
+	}
+	
+	/*
+	 * 1. Prioritize charging cars
+	 * 2. Minimize travel distance
+	 * 3. Meet ideal state
+	 */
 	protected void calculateFitness() {
-		this.fitness = 0.0;
-		for(int i = 0; i < this.representation.size(); i++) {
-			fitness += Math.abs((Integer) representation.get(i) - i);
+		for(Operator op : operators) {
+			this.costOfPostponed += op.getCostOfPostponed();
+			this.costOfTravel += op.getCostOfTravel();
 		}
+		
+		this.fitness = this.costOfPostponed + this.costOfTravel + this.costOfUnmetIdeal;
 	}
 	
 	public double deltaFitness(Swap2 swap) {
