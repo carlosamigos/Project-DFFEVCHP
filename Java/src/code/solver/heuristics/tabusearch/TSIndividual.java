@@ -37,8 +37,6 @@ public class TSIndividual extends Individual {
 	 */
 	protected void calculateFitness() {
 		for(Operator op : operators) {
-			this.awardForCharging += op.getAwardForCharging();
-			this.costOfTravel += op.getCostOfTravel();
 		}
 		
 		this.fitness = this.awardForCharging + this.costOfTravel + this.costOfUnmetIdeal;
