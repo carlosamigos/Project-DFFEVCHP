@@ -6,29 +6,43 @@ public class Operator {
 
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
-	private int travelTime;
+	private double travelTime;
+	private double startTime;
 	private double costOfPostponed;
 	private double costOfTravel;
 	
 	
-	public Operator(ArrayList<CarMove> carMoves) {
-		this.carMoves = carMoves;
+	public Operator(double startTime) {
+		this.carMoves = new ArrayList<>();
+		this.startTime = startTime;
 	}
 	
 	public CarMove getCarMove(int index) {
 		return carMoves.get(index);
 	}
 	
-	public void insertCar(CarMove carMove) {
+	public void insertCarMove(CarMove carMove) {
 		this.carMoves.add(carMove);
+	}
+	
+	public void insertCarMoves(ArrayList<CarMove> carMoves) {
+		this.carMoves.addAll(carMoves);
 	}
 	
 	public int getCarsBeingCharged() {
 		return this.carsBeingCharged;
 	}
 	
-	public int getTravelTime() {
+	public double getTravelTime() {
 		return this.travelTime;
+	}
+	
+	public double getStartTime() {
+		return this.startTime;
+	}
+	
+	public void addToTravelTime(double deltaTime) {
+		this.travelTime += deltaTime;
 	}
 	
 	public double getCostOfPostponed() {
