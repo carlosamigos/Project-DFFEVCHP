@@ -8,7 +8,6 @@ import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.mutators.Swap2;
 import code.solver.heuristics.mutators.Swap3;
-import constants.Constants;
 
 public class TSIndividual extends Individual {
 	
