@@ -4,7 +4,7 @@ import code.problem.ProblemInstance;
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
-import code.solver.heuristics.CarMove;
+import code.solver.heuristics.entities.CarMove;
 import constants.HeuristicsConstants;
 
 import java.util.ArrayList;
