@@ -8,15 +8,18 @@ import constants.HeuristicsConstants;
 
 public class Operator {
 
-	private final double startingTime;
-	private final double timeLimit;	
-	private ArrayList<CarMove> carMoves;	
-	
+	private ArrayList<CarMove> carMoves;
+	private int carsBeingCharged;
+	private double travelTime;
+	private double startTime;
+	private double timeLimit;
+	private double costOfPostponed;
+	private double costOfTravel;
 	private double fitness;
 	
-	public Operator(ArrayList<CarMove> carMoves, double startingTime, double timeLimit) {
-		this.carMoves = carMoves;
-		this.startingTime = startingTime;
+	public Operator(double startTime, double timeLimit) {
+		this.carMoves = new ArrayList<>();
+		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 	}
 	
@@ -24,12 +27,36 @@ public class Operator {
 		return carMoves.get(index);
 	}
 	
-	public void insertCar(CarMove carMove) {
+	public void insertCarMove(CarMove carMove) {
 		this.carMoves.add(carMove);
 	}
 	
 	public void insertCarMove(int position, CarMove carMove) {
 		carMoves.add(position, carMove);
+	}
+		
+	public void insertCarMoves(ArrayList<CarMove> carMoves) {
+		this.carMoves.addAll(carMoves);
+	}
+	
+	public int getCarsBeingCharged() {
+		return this.carsBeingCharged;
+	}
+	
+	public double getTravelTime() {
+		return this.travelTime;
+	}
+	
+	public double getStartTime() {
+		return this.startTime;
+	}
+	
+	public void addToTravelTime(double deltaTime) {
+		this.travelTime += deltaTime;
+	}
+	
+	public double getCostOfPostponed() {
+		return this.costOfPostponed;
 	}
 	
 	public void removeCarMove(int position) {
