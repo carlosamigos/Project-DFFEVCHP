@@ -1,4 +1,4 @@
-package code.solver.heuristics;
+package code.solver.heuristics.entities;
 
 import code.problem.entities.Car;
 import code.problem.nodes.Node;
