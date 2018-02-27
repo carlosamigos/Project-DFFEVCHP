@@ -2,25 +2,26 @@ package code.solver.heuristics.entities;
 
 import java.util.ArrayList;
 
+import code.problem.ProblemInstance;
+import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
-import code.solver.heuristics.mutators.Swap2;
 import constants.HeuristicsConstants;
 
 public class Operator {
 
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
+	private final Node startNode;
+	private final double startTime;
+	private final double timeLimit;
 	private double travelTime;
-	private double startTime;
-	private double timeLimit;
-	private double costOfPostponed;
-	private double costOfTravel;
 	private double fitness;
 	
-	public Operator(double startTime, double timeLimit) {
+	public Operator(double startTime, double timeLimit, Node startNode) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
+		this.startNode = startNode;
 	}
 	
 	public CarMove getCarMove(int index) {
@@ -55,40 +56,81 @@ public class Operator {
 		this.travelTime += deltaTime;
 	}
 	
-	public double getCostOfPostponed() {
-		return this.costOfPostponed;
-	}
-	
 	public void removeCarMove(int position) {
 		carMoves.remove(position);
 	}
 	
 	/*
 	 * Calculates the change in fitness a mutation of type Insert would cause
-	 * Input: A mutation of type Insert. Insert contains an object and an index
+	 * Input: A mutation of type Insert. Insert contains an object and an index.
 	 */
-	public double getDeltaFitness(Insert insert) {
+	public double getDeltaFitness(Insert insert, ProblemInstance problemInstance) {
 		double newFitness = 0.0;
-		double currentTime = 0.0;
-		int start = 0;
-		int end = carMoves.size();
-		int index = insert.getIndex();
-		CarMove carMove = (CarMove) insert.getObject();
+		double currentTime = this.startTime;
 		
-		if(index == 0) {
-			currentTime += carMove.getTravelTime();
-			start++;
-		} else if (index == end-1) {
-			end--;
+		int index = insert.getIndex();
+		
+		Node previousNode = this.startNode;
+		CarMove currentMove;
+		
+		for(int i = 0; i < index; i++) {
+			currentMove = this.carMoves.get(i);
+			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+		
+			if(currentTime > this.timeLimit) {
+				return newFitness - this.fitness;
+			}
+			
+			newFitness = addCarToChargingStation(currentMove, currentTime);
+			previousNode = currentMove.getToNode();
 		}
 		
-		for(int i = start; i < end; i++) {
-			if(i == index) {
-				
+		
+		currentMove = (CarMove) insert.getObject();
+		currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+		
+		if(currentTime > this.timeLimit) {
+			return newFitness - this.fitness;
+		}
+		
+		// This check need to check if there are enough available charging spots as well, and alter that count.
+		newFitness = addCarToChargingStation(currentMove, currentTime);
+		previousNode = currentMove.getToNode();
+		
+		for(int i = index; i < carMoves.size(); i++) {
+			currentMove = this.carMoves.get(i);
+			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+		
+			if(currentTime > this.timeLimit) {
+				return newFitness - this.fitness;
 			}
+			
+			newFitness = addCarToChargingStation(currentMove, currentTime);
+			previousNode = currentMove.getToNode();
 		}
 		
 		return newFitness - this.fitness;
+	}
+	
+	private double getChangeInTravelTime(CarMove currentMove, Node previousNode, ProblemInstance problemInstance) {
+		Node currentNode = currentMove.getFromNode();
+		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), currentNode.getNodeId()) +
+				currentMove.getTravelTime();
+	}
+	
+	
+	/*
+	 * Checks if a car move ends in charging station. If there is available capacity at the charging station
+	 * the value of charging is calculated and returned. The capacity of the charging station is updated accordingly
+	 */
+	private double addCarToChargingStation(CarMove move, double time) {
+		
+		if(move.isToCharging()) {
+			// if check for capacity at charging station
+			return getChargingReward(time);
+		}
+		
+		return 0.0;
 	}
 	
 	private double getChargingReward(double time) {
