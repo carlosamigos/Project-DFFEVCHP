@@ -14,6 +14,7 @@ public class ParkingNode extends Node{
     private SimulationConstants.nodeDemandGroup demandGroup = null;
     private int idealNumberOfAvailableCarsThisPeriod = 0;
     private int predictedNumberOfCarsDemandedThisPeriod = 0;
+    private int carsArrivingThisPeriod = 0;
 
     public ParkingNode(int nodeId) {
         super(nodeId);
@@ -72,6 +73,14 @@ public class ParkingNode extends Node{
 
     public void setPredictedNumberOfCarsDemandedThisPeriod(int predictedNumberOfCarsDemandedThisPeriod) {
         this.predictedNumberOfCarsDemandedThisPeriod = predictedNumberOfCarsDemandedThisPeriod;
+    }
+
+    public int getCarsArrivingThisPeriod() {
+        return carsArrivingThisPeriod;
+    }
+
+    public void setCarsArrivingThisPeriod(int carsArrivingThisPeriod) {
+        this.carsArrivingThisPeriod = carsArrivingThisPeriod;
     }
 
     @Override

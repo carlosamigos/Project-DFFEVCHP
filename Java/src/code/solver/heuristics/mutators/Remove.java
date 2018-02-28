@@ -16,6 +16,10 @@ public class Remove extends Mutation{
         hashCode = Integer.parseInt(hashString);
     }
 
+    public int getIndex() {
+        return index;
+    }
+
     @Override
     public int getId() {
         return id;

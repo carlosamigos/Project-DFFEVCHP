@@ -75,6 +75,7 @@ public class ProblemInstance {
             System.out.println("File could not be read for "+fileName + " in problemInstance");
             System.exit(1);
         }
+        updateParameters();
 
 
     }
@@ -639,24 +640,43 @@ public class ProblemInstance {
     private void updateNumberOfAvailableChargingStations(){
         // Do not consider the number of cars that will finish charging.
         // Available = total slots - (num charging + number of operators arriving with car)
-        HashMap<ChargingNode, Integer> operatorsAriving = new HashMap<>();
+        HashMap<ChargingNode, Integer> availableChargingStations = new HashMap<>();
         for(ChargingNode chargingNode : chargingNodes){
-            operatorsAriving.put(chargingNode, chargingNode.getNumberOfTotalChargingSlots() - chargingNode.getCarsCurrentlyCharging().size());
+            availableChargingStations.put(chargingNode, chargingNode.getNumberOfTotalChargingSlots() - chargingNode.getCarsCurrentlyCharging().size());
         }
         for(Operator operator : operators){
             Node arrivalNode = operator.getNextOrCurrentNode();
             if(arrivalNode instanceof ChargingNode && operator.getTimeRemainingToCurrentNextNode() > 0 && operator.getTimeRemainingToCurrentNextNode() < Constants.TIME_LIMIT_STATIC_PROBLEM){
                 ChargingNode cArrivalNode = (ChargingNode) arrivalNode;
-                operatorsAriving.put(cArrivalNode, operatorsAriving.get(cArrivalNode)  - 1);
+                availableChargingStations.put(cArrivalNode, availableChargingStations.get(cArrivalNode)  - 1);
             }
         }
-        for(ChargingNode chargingNode : chargingNodes){
-            chargingNode.setNumberOfAvailableChargingSpotsNextPeriod(operatorsAriving.get(chargingNode));
-        }
 
+        System.out.println("\n");
+        for(ChargingNode chargingNode : chargingNodes){
+            System.out.println("Available: " + availableChargingStations.get(chargingNode));
+            chargingNode.setNumberOfAvailableChargingSpotsNextPeriod(availableChargingStations.get(chargingNode));
+        }
+        System.out.println("\n");
 
 
     }
+
+    /*
+    private void updateNumberOfArrivingCarsInParkingNodes(){
+        // Both cars finishing charging and those operators arriving
+        HashMap<ParkingNode, Integer> carsArriving = new HashMap<>();
+        for(ParkingNode parkingNode : parkingNodes){
+            carsArriving.put(parkingNode, 0);
+        }
+        // Find cars charging
+        for(ChargingNode chargingNode : chargingNodes){
+            for(Car car : chargingNode.getCarsCurrentlyCharging()){
+
+            }
+        }
+    }
+    */
 
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
+import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
+import code.solver.heuristics.mutators.Remove;
 import constants.HeuristicsConstants;
 
 public class Operator {
@@ -157,7 +159,31 @@ public class Operator {
 		
 		return newFitness - this.fitness;
 	}
-	
+
+
+	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
+
+		double currentFitness = this.fitness;
+		int index = remove.getIndex();
+		CarMove toRemove = carMoves.get(index);
+		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
+		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
+		double currTimeContribution = getTimeContribution(prevNode,toRemove, nextNode, problemInstance);
+		double newTimeContribution  = (nextNode != null) ? problemInstance.getTravelTimeBike(prevNode.getNodeId(), nextNode.getNodeId()) : 0;
+		//TODO
+
+
+		return 0.0;
+
+
+	}
+
+	private double getTimeContribution(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
+		return problemInstance.getTravelTimeBike(prev.getNodeId(), curr.getFromNode().getNodeId())
+				+ curr.getTravelTime()
+				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode().getNodeId(), next.getNodeId()) : 0);
+	}
+
 	private double getChangeInTravelTime(CarMove currentMove, Node previousNode, ProblemInstance problemInstance) {
 		Node currentNode = currentMove.getFromNode();
 		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), currentNode.getNodeId()) +
@@ -184,7 +210,6 @@ public class Operator {
 		double capacityPenalty = (Math.max(0, this.chargingCapacityUsed.get(node) - 
 				node.getNumberOfAvailableChargingSpotsNextPeriod())) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 		double chargingReward = (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
-		
 		return capacityPenalty - chargingReward;
 	}
 }
