@@ -58,6 +58,7 @@ public class TSIndividual extends Individual {
 
 	private void initiateCapacities(){
 		this.capacities = new HashMap<>();
+		//int[] chargingCapacities = problemInstance.g
 		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
 			capacities.put(problemInstance.getChargingNodes().get(i), problemInstance.getChargingNodes().get(i).getNumberOfTotalChargingSlots());
 
@@ -131,6 +132,7 @@ public class TSIndividual extends Individual {
 			Node fromNode = carMoves.get(car).get(0).getFromNode();
 			double distanceCandidate = problemInstance.getTravelTimeBike(node.getNodeId(), fromNode.getNodeId());
 			if(distanceCandidate < distance){
+				break;
 
 			}
 
@@ -141,6 +143,7 @@ public class TSIndividual extends Individual {
 	private double rateCarMove(CarMove carMove, double distance){
 		double fitNess = 0;
 		fitNess += (carMove.getTravelTime() + distance)*costOfTravel;
+		return 0.0;
 
 
 	}
