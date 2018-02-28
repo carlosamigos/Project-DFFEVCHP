@@ -28,8 +28,13 @@ public class TSIndividual extends Individual {
 	 */
 
 	private int[] currentState;
+<<<<<<< HEAD
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
+=======
+	
+	private double awardForCharging = 0.0;
+>>>>>>> master
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
 	
@@ -113,11 +118,9 @@ public class TSIndividual extends Individual {
 
 	protected void calculateFitness() {
 		for(Operator op : operators) {
-			this.costOfPostponed += op.getCostOfPostponed();
-			this.costOfTravel += op.getCostOfTravel();
 		}
 		
-		this.fitness = this.costOfPostponed + this.costOfTravel + this.costOfUnmetIdeal;
+		this.fitness = this.awardForCharging + this.costOfTravel + this.costOfUnmetIdeal;
 	}
 	
 	public double deltaFitness(Swap2 swap) {

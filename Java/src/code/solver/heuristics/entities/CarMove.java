@@ -1,6 +1,7 @@
 package code.solver.heuristics.entities;
 
 import code.problem.entities.Car;
+import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
 
@@ -9,39 +10,45 @@ public class CarMove {
     private ParkingNode fromNode;
     private Node toNode; //either ParkingNode or ChargingNode
     private Car car;
-    private Double travelTime;
-    private Double earliestDepartureTime;
+    private final double travelTime;
+    private final double earliestDepartureTime;
+    private final boolean isToCharging;
 
-    public CarMove(ParkingNode fromNode, Node toNode, Car car, Double travelTime, Double earliestDepartureTime) {
+    public CarMove(ParkingNode fromNode, Node toNode, Car car, double travelTime, double earliestDepartureTime) {
         this.fromNode = fromNode;
         this.toNode = toNode;
         this.car = car;
         this.travelTime = travelTime;
         this.earliestDepartureTime = earliestDepartureTime;
+        this.isToCharging = (toNode instanceof ChargingNode) ? true : false;
     }
 
     public ParkingNode getFromNode() {
-        return fromNode;
+        return this.fromNode;
     }
 
     public Node getToNode() {
-        return toNode;
+        return this.toNode;
     }
 
     public Car getCar() {
-        return car;
+        return this.car;
     }
 
-    public Double getTravelTime() {
-        return travelTime;
+    public double getTravelTime() {
+        return this.travelTime;
     }
 
-    public Double getEarliestDepartureTime() {
-        return earliestDepartureTime;
+    public double getEarliestDepartureTime() {
+        return this.earliestDepartureTime;
+    }
+    
+    public boolean isToCharging() {
+    	return this.isToCharging;
     }
 
     @Override
     public String toString() {
-        return "(" + fromNode.getNodeId() + "->" + toNode.getNodeId() + ")";
+        return "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
     }
 }
