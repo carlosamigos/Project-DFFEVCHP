@@ -16,8 +16,7 @@ import tests.TestSuite;
 public class Main {
 
     public static void main(String[] args) {
-
-    	boolean testing = true;
+		boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
     	

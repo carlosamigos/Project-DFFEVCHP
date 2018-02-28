@@ -335,6 +335,10 @@ public class ProblemInstance {
     public ArrayList<ArrayList<Double>> getTravelTimesBike() {
         return travelTimesBike;
     }
+    
+    public double getTravelTimeBike(int n1, int n2) {
+    	return this.travelTimesBike.get(n1).get(n2);
+    }
 
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
         return travelTimesCar;
