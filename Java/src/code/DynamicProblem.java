@@ -59,7 +59,6 @@ public class DynamicProblem {
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.updateParameters();
             problemInstance.writeProblemInstanceToFile();
-
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
@@ -69,6 +68,7 @@ public class DynamicProblem {
             subproblemNo++;
             tracker.setResults(problemInstance.getFilePath());
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
+
 
         }
         kpiTrackerDyanmic.updateIdleTimeForOperators();
@@ -383,12 +383,14 @@ public class DynamicProblem {
             updateIdleTimesOperators(time,previousTime);
 
 
+
         }
         updateBatteryLevels(endTime,time);
         updateRemainingTravelTimesForOperators(endTime,operatorTravels);
         updateNumberOfCarsTakenByCustomers(customerTravels);
         updateTimeInNeedState(endTime,time);
         updateIdleTimesOperators(endTime,time);
+
     }
 
     private boolean checkIfCarIsAllowedToSetToChargingForCustomerInNode(ChargingNode node, HashMap<Operator,OperatorTravel> operatorTravels){
@@ -411,6 +413,8 @@ public class DynamicProblem {
             }
         }
     }
+
+
 
     private void updateIdleTimesOperator(Operator operator,double time, double previousTime){
         if(operator.getNextOrCurrentNode().equals(operator.getPreviousNode())){
