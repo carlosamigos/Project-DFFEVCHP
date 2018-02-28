@@ -17,6 +17,8 @@ public class Operator {
 	private double travelTime;
 	private double fitness;
 	
+	private double deltaFitness;
+	
 	public Operator(double startTime, double timeLimit, Node startNode) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
@@ -50,6 +52,10 @@ public class Operator {
 	
 	public double getStartTime() {
 		return this.startTime;
+	}
+	
+	public Node getStartNode() {
+		return this.startNode;
 	}
 	
 	public void addToTravelTime(double deltaTime) {
