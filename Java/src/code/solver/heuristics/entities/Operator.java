@@ -13,7 +13,7 @@ public class Operator {
 
 	private ArrayList<CarMove> chargingMoves;
 	private HashMap<CarMove, double[]> startEndChargingMoves;
-	private HashMap<ChargingNode, Integer> chargingCapacity;
+	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
 	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
@@ -29,7 +29,7 @@ public class Operator {
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
-		this.chargingCapacity = chargingCapacity;
+		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
 		this.startEndChargingMoves = new HashMap<>();
 		calculateInitialFitness(problemInstance);
@@ -98,6 +98,7 @@ public class Operator {
 			if(currentMove.isToCharging()) {
 				ChargingNode node = (ChargingNode) currentMove.getToNode();
 				fitness += getChargingFitness(currentTime, node);
+				this.chargingCapacityUsed.put(node, this.chargingCapacityUsed.get(node)+1);
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
 				this.startEndChargingMoves.put(currentMove, timings);
@@ -180,7 +181,7 @@ public class Operator {
 	
 	
 	private double getChargingFitness(double time, ChargingNode node) {
-		double capacityPenalty = (Math.max(0, this.chargingCapacity.get(node) - 
+		double capacityPenalty = (Math.max(0, this.chargingCapacityUsed.get(node) - 
 				node.getNumberOfAvailableChargingSpotsNextPeriod())) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 		double chargingReward = (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
 		
