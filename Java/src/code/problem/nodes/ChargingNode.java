@@ -10,6 +10,7 @@ public class ChargingNode extends Node{
 
     private int numberOfTotalChargingSlots = 0;
     private HashSet<Car> carsCurrentlyCharging;
+    private int numberOfAvailableChargingSpotsNextPeriod = 0;
 
     public ChargingNode(int nodeId) {
         super(nodeId);
@@ -36,6 +37,14 @@ public class ChargingNode extends Node{
 
     public void setNumberOfTotalChargingSpots(int numberOfTotalChargingSlots) {
         this.numberOfTotalChargingSlots = numberOfTotalChargingSlots;
+    }
+
+    public int getNumberOfAvailableChargingSpotsNextPeriod() {
+        return numberOfAvailableChargingSpotsNextPeriod;
+    }
+
+    public void setNumberOfAvailableChargingSpotsNextPeriod(int numberOfAvailableChargingSpotsNextPeriod) {
+        this.numberOfAvailableChargingSpotsNextPeriod = numberOfAvailableChargingSpotsNextPeriod;
     }
 
     @Override

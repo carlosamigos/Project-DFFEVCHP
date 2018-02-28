@@ -58,6 +58,7 @@ public class DynamicProblem {
 
             updateOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
+            problemInstance.updateParameters();
             problemInstance.writeProblemInstanceToFile();
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
