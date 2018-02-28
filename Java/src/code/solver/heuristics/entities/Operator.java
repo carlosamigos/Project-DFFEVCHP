@@ -141,24 +141,28 @@ public class Operator {
 		
 		double addedTravelTime;
 		if(index == 0) {
-			addedTravelTime = problemInstance.getTravelTimeBike(this.startNode, fromNode) 
-					+ problemInstance.getTravelTimeBike(toNode, this.carMoves.get(0).getFromNode())
-					+ insertMove.getTravelTime()
-					- problemInstance.getTravelTimeBike(this.startNode, this.carMoves.get(0).getFromNode());
+			addedTravelTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode(), problemInstance);
+			currentTime += addedTravelTime;
+			if(insertMove.isToCharging()) {
+				ChargingNode node = (ChargingNode) insertMove.getToNode();
+				deltaFitness += getChargingFitness(currentTime, node);	
+			}
 		}
 		
 		for(CarMove move : this.chargingMoves) {
 			int moveIndex = this.chargingMoveIndex.get(move);
-			if (moveIndex >= index) {
+			if (moveIndex >= index && startEndChargingMoves.get(move)[1] <= this.timeLimit) {
 				
 			}
 		}
 		
 		return 0.0;
 	}
+	
 	private double getChargingFitness(double time, ChargingNode node) {
 		return getCapacityPenalty(node) - getChargingReward(time);
 	}
+	
 	
 	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
 
