@@ -6,6 +6,7 @@ import java.util.HashMap;
 import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
 import utils.ChromosomeGenerator;
+import code.problem.nodes.Node;
 
 import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
@@ -18,6 +19,14 @@ public class TSIndividual extends Individual {
 	
 	private ArrayList<Operator> operators;
 	//private final int[] idealState;
+
+	//TODO
+
+	/*
+	private Hashmap<Charging Station, Integer> capacities;
+	priavte Hashmap<Nodes, Integer> deviationFromIdealState;
+	 */
+
 	private int[] currentState;
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
@@ -28,6 +37,11 @@ public class TSIndividual extends Individual {
 
 		this.representation = new ArrayList<>();
 		this.operators = new ArrayList<>();
+		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
+			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode());
+			//operators.add(op);
+			continue;
+		}
 		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		initializeOperators();
 		calculateFitness();
@@ -38,6 +52,21 @@ public class TSIndividual extends Individual {
 	private void initializeOperators() {
 		boolean operatorAvailable = true;
 		while(operatorAvailable){
+			operatorAvailable = false;
+			for (int i = 0; i < operators.size(); i++) {
+				Node startNode =
+				//Node nearest = findNearestNode(Node, CarMoves)
+				//CarMove chosen = pickBestCarMove(Node)
+				//if(timeAvailable(chosen.Time)){
+					//operatorAvailable = true;
+					//operators.get(i).add(chosen)
+					//double getTotalTime = calculateTime(chosen)
+					//operators.get(i).UpdateTime(Node node, chosen)
+					//chosen.endNode == chargingNode? : updateCapacity() : updateDeviationFromIdeal();
+				//}
+
+
+			}
 
 		}
 		
@@ -72,6 +101,16 @@ public class TSIndividual extends Individual {
 	 * 2. Minimize travel distance
 	 * 3. Meet ideal state
 	 */
+
+
+	private CarMove findnearestCarMove(Node node){
+		double distance = Integer.MAX_VALUE;
+		for(Car car : carMoves.keySet()){
+			Node fromNode = carMoves.get(car).get(0).getFromNode();
+
+		}
+	}
+
 	protected void calculateFitness() {
 		for(Operator op : operators) {
 			this.costOfPostponed += op.getCostOfPostponed();
