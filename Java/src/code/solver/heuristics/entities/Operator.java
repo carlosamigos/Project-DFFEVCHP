@@ -1,6 +1,7 @@
 package code.solver.heuristics.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
@@ -9,6 +10,9 @@ import constants.HeuristicsConstants;
 
 public class Operator {
 
+	private ArrayList<CarMove> chargingMoves;
+	private HashMap<CarMove, double[]> startEndChargingMoves;
+	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
 	private final Node startNode;
@@ -64,6 +68,23 @@ public class Operator {
 	
 	public void removeCarMove(int position) {
 		carMoves.remove(position);
+	}
+	
+	
+	private void calculateInitialFitness(ProblemInstance problemInstance) {
+		double currentTime = this.startTime;
+		Node previousNode = this.startNode;
+		CarMove currentMove;
+		
+		
+		for(int i = 0; i < this.carMoves.size(); i++) {
+			currentMove = this.carMoves.get(i);
+			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+			
+			if(currentTime > this.timeLimit) {
+				return;
+			}
+		}
 	}
 	
 	/*
@@ -142,5 +163,6 @@ public class Operator {
 	private double getChargingReward(double time) {
 		return Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD;
 	}
+	
 	
 }
