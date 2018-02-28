@@ -105,7 +105,7 @@ public class Operator {
 		
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
-			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+			//currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
 			
 			if(currentTime > this.timeLimit) {
 				return;
@@ -130,12 +130,36 @@ public class Operator {
 	 * Input: A mutation of type Insert. Insert contains an object and an index.
 	 */
 	public double getDeltaFitness(Insert insert, ProblemInstance problemInstance) {
-		double newFitness = 0.0;
+		double deltaFitness = 0.0;
 		double currentTime = this.startTime;
+		
+		int index = insert.getIndex();
+		CarMove insertMove = (CarMove) insert.getObject();
+		Node toNode = insertMove.getToNode();
+		Node fromNode = insertMove.getFromNode();
+		
+		
+		double addedTravelTime;
+		if(index == 0) {
+			addedTravelTime = problemInstance.getTravelTimeBike(this.startNode, fromNode) 
+					+ problemInstance.getTravelTimeBike(toNode, this.carMoves.get(0).getFromNode())
+					+ insertMove.getTravelTime()
+					- problemInstance.getTravelTimeBike(this.startNode, this.carMoves.get(0).getFromNode());
+		}
+		
+		for(CarMove move : this.chargingMoves) {
+			int moveIndex = this.chargingMoveIndex.get(move);
+			if (moveIndex >= index) {
+				
+			}
+		}
+		
 		return 0.0;
 	}
-
-
+	private double getChargingFitness(double time, ChargingNode node) {
+		return getCapacityPenalty(node) - getChargingReward(time);
+	}
+	
 	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
 
 		double currentFitness = this.fitness;
@@ -147,46 +171,29 @@ public class Operator {
 		boolean carMoveDoesCharge = toRemove.isToCharging();
 
 
-
 		return 0.0;
-
 
 	}
 
 	private double getAbsDeltaTime(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
-		double currTimeContribution = problemInstance.getTravelTimeBike(prev.getNodeId(), curr.getFromNode().getNodeId())
+		double currTimeContribution = problemInstance.getTravelTimeBike(prev, curr.getFromNode())
 				+ curr.getTravelTime()
-				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode().getNodeId(), next.getNodeId()) : 0);
-		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev.getNodeId(), next.getNodeId()) : 0;
+				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode(), next) : 0);
+		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev, next) : 0;
 		return Math.abs(currTimeContribution - newTimeContribution);
 	}
 
-	private double getChangeInTravelTime(CarMove currentMove, Node previousNode, ProblemInstance problemInstance) {
-		Node currentNode = currentMove.getFromNode();
-		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), currentNode.getNodeId()) +
-				currentMove.getTravelTime();
-	}
-	
 	
 	/*
-	 * Checks if a car move ends in charging station. If there is available capacity at the charging station
-	 * the value of charging is calculated and returned. The capacity of the charging station is updated accordingly
+	 * Calculates the penalty of charging an extra car at a charging node.
+	 * The penalty is zero as long as the capacity is not broken.
 	 */
-	private double addCarToChargingStation(CarMove move, double time) {
-		
-		if(move.isToCharging()) {
-			// if check for capacity at charging station
-			//return getChargingReward(time);
-		}
-		
-		return 0.0;
+	private double getCapacityPenalty(ChargingNode node) {
+		return (Math.max(0, (1 + this.chargingCapacityUsed.get(node)) - node.getNumberOfAvailableChargingSpotsNextPeriod())) 
+				* HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 	}
 	
-	
-	private double getChargingFitness(double time, ChargingNode node) {
-		double capacityPenalty = (Math.max(0, this.chargingCapacityUsed.get(node) - 
-				node.getNumberOfAvailableChargingSpotsNextPeriod())) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
-		double chargingReward = (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
-		return capacityPenalty - chargingReward;
+	private double getChargingReward(double time) {
+		return (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
 	}
 }

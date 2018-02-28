@@ -341,8 +341,8 @@ public class ProblemInstance {
         return travelTimesBike;
     }
     
-    public double getTravelTimeBike(int n1, int n2) {
-    	return this.travelTimesBike.get(n1).get(n2);
+    public double getTravelTimeBike(Node n1, Node n2) {
+    	return this.travelTimesBike.get(n1.getNodeId()).get(n2.getNodeId());
     }
 
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
