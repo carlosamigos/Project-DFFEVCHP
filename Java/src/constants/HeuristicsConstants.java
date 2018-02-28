@@ -10,6 +10,7 @@ public class HeuristicsConstants {
     public final static int TABU_SIZE = 10;
     public final static int TABU_ITERATIONS = 5;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;
+    public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
     
     // Genetic Algorithm
     
