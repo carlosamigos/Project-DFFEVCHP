@@ -23,15 +23,13 @@ public class Remove extends Mutation{
 
     @Override
     public void doMutation(Individual individual) {
-
-        //TODO
-
+        individual.getRepresentation().remove(this.index);
     }
 
     @Override
     public boolean equals(Object o) {
         if(o instanceof  Remove){
-            return ((Remove) o).hashCode() == this.hashCode;
+            return o.hashCode() == this.hashCode;
         } return false;
     }
 
