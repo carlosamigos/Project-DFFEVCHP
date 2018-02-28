@@ -16,6 +16,7 @@ public class Operator {
 	private ArrayList<CarMove> chargingMoves;
 	private HashMap<CarMove, double[]> startEndChargingMoves;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
+	private HashMap<CarMove, Integer> chargingMoveIndex;
 	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
@@ -34,11 +35,20 @@ public class Operator {
 		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
 		this.startEndChargingMoves = new HashMap<>();
+		this.chargingMoveIndex = new HashMap<>();
 		calculateInitialFitness(problemInstance);
 	}
 	
 	public CarMove getCarMove(int index) {
 		return carMoves.get(index);
+	}
+
+	public double getTimeLimit(){
+		return timeLimit;
+	}
+
+	public int getCarMovesSize(){
+		return carMoves.size();
 	}
 	
 	public void insertCarMove(CarMove carMove) {
@@ -72,6 +82,10 @@ public class Operator {
 	public void addToTravelTime(double deltaTime) {
 		this.travelTime += deltaTime;
 	}
+
+	public void addCarMove(CarMove carMove){
+		carMoves.add(carMove);
+	}
 	
 	public void removeCarMove(int position) {
 		carMoves.remove(position);
@@ -104,6 +118,7 @@ public class Operator {
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
 				this.startEndChargingMoves.put(currentMove, timings);
+				this.chargingMoveIndex.put(currentMove, i);
 			}
 		}
 	}
@@ -115,49 +130,7 @@ public class Operator {
 	public double getDeltaFitness(Insert insert, ProblemInstance problemInstance) {
 		double newFitness = 0.0;
 		double currentTime = this.startTime;
-		
-		int index = insert.getIndex();
-		
-		Node previousNode = this.startNode;
-		CarMove currentMove;
-		
-		for(int i = 0; i < index; i++) {
-			currentMove = this.carMoves.get(i);
-			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
-		
-			if(currentTime > this.timeLimit) {
-				return newFitness - this.fitness;
-			}
-			
-			newFitness = addCarToChargingStation(currentMove, currentTime);
-			previousNode = currentMove.getToNode();
-		}
-		
-		
-		currentMove = (CarMove) insert.getObject();
-		currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
-		
-		if(currentTime > this.timeLimit) {
-			return newFitness - this.fitness;
-		}
-		
-		// This check need to check if there are enough available charging spots as well, and alter that count.
-		newFitness = addCarToChargingStation(currentMove, currentTime);
-		previousNode = currentMove.getToNode();
-		
-		for(int i = index; i < carMoves.size(); i++) {
-			currentMove = this.carMoves.get(i);
-			currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
-		
-			if(currentTime > this.timeLimit) {
-				return newFitness - this.fitness;
-			}
-			
-			newFitness = addCarToChargingStation(currentMove, currentTime);
-			previousNode = currentMove.getToNode();
-		}
-		
-		return newFitness - this.fitness;
+		return 0.0;
 	}
 
 
