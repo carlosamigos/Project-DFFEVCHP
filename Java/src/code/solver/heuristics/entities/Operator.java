@@ -29,6 +29,14 @@ public class Operator {
 	public CarMove getCarMove(int index) {
 		return carMoves.get(index);
 	}
+
+	public double getTimeLimit(){
+		return timeLimit;
+	}
+
+	public int getCarMovesSize(){
+		return carMoves.size();
+	}
 	
 	public void insertCarMove(CarMove carMove) {
 		this.carMoves.add(carMove);
@@ -60,6 +68,10 @@ public class Operator {
 	
 	public void addToTravelTime(double deltaTime) {
 		this.travelTime += deltaTime;
+	}
+
+	public void addCarMove(CarMove carMove){
+		carMoves.add(carMove);
 	}
 	
 	public void removeCarMove(int position) {

@@ -74,7 +74,7 @@ public class ProblemInstance {
         } catch (IOException e){
             System.out.println("File could not be read for "+fileName + " in problemInstance");
             System.exit(1);
-        }
+        }updateParameters();
 
 
     }
