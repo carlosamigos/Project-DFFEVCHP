@@ -23,11 +23,15 @@ public class Operator {
 	
 	private double deltaFitness;
 	
-	public Operator(double startTime, double timeLimit, Node startNode) {
+	public Operator(double startTime, double timeLimit, Node startNode, ProblemInstance problemInstance) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
+		
+		this.chargingMoves = new ArrayList<>();
+		this.startEndChargingMoves = new HashMap<>();
+		calculateInitialFitness(problemInstance);
 	}
 	
 	public CarMove getCarMove(int index) {
@@ -75,6 +79,7 @@ public class Operator {
 		double currentTime = this.startTime;
 		Node previousNode = this.startNode;
 		CarMove currentMove;
+		this.fitness = 0.0;
 		
 		
 		for(int i = 0; i < this.carMoves.size(); i++) {
@@ -83,6 +88,13 @@ public class Operator {
 			
 			if(currentTime > this.timeLimit) {
 				return;
+			}
+			
+			if(currentMove.isToCharging() && canCharge(currentMove)) {
+				fitness += getChargingReward(currentTime);
+				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
+				this.chargingMoves.add(currentMove);
+				this.startEndChargingMoves.put(currentMove, timings);
 			}
 		}
 	}
@@ -158,6 +170,11 @@ public class Operator {
 		}
 		
 		return 0.0;
+	}
+	
+	private boolean canCharge(CarMove move) {
+		// Must check capacity!
+		return true;
 	}
 	
 	private double getChargingReward(double time) {
