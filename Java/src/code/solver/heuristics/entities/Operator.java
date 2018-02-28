@@ -14,6 +14,7 @@ public class Operator {
 
 	private ArrayList<CarMove> chargingMoves;
 	private HashMap<CarMove, double[]> startEndChargingMoves;
+	private HashMap<CarMove, Double> chargingMoveFitness;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
 	private HashMap<CarMove, Integer> chargingMoveIndex;
 	
@@ -33,6 +34,7 @@ public class Operator {
 		this.startNode = startNode;
 		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
+		this.chargingMoveFitness = new HashMap<>();
 		this.startEndChargingMoves = new HashMap<>();
 		this.chargingMoveIndex = new HashMap<>();
 		calculateInitialFitness(problemInstance);
@@ -101,7 +103,6 @@ public class Operator {
 		CarMove currentMove;
 		this.fitness = 0.0;
 		
-		
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
 			//currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
@@ -112,10 +113,12 @@ public class Operator {
 			
 			if(currentMove.isToCharging()) {
 				ChargingNode node = (ChargingNode) currentMove.getToNode();
-				fitness += getChargingFitness(currentTime, node);
+				double chargingFitness = getChargingFitness(currentTime, node);
+				fitness += chargingFitness;
 				this.chargingCapacityUsed.put(node, this.chargingCapacityUsed.get(node)+1);
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
+				this.chargingMoveFitness.put(currentMove, chargingFitness);
 				this.startEndChargingMoves.put(currentMove, timings);
 				this.chargingMoveIndex.put(currentMove, i);
 			}
@@ -165,7 +168,7 @@ public class Operator {
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
 		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
-
+		boolean carMoveDoesCharge = toRemove.isToCharging();
 
 
 		return 0.0;
