@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import code.problem.ProblemInstance;
 import code.solver.TSSolver;
 import constants.Constants;
 import constants.FileConstants;
@@ -20,7 +21,7 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
     	
-//    	TSSolver solver = new TSSolver();
+    	TSSolver solver = new TSSolver(new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_8nodes_3so_2c_a"));
 //    	solver.solve(null);
 //    	System.out.println(solver.getBest());
     	

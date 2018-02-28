@@ -7,6 +7,7 @@ import code.problem.ProblemInstance;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
+import code.solver.heuristics.mutators.Remove;
 import constants.HeuristicsConstants;
 
 public class Operator {
@@ -40,6 +41,14 @@ public class Operator {
 	public CarMove getCarMove(int index) {
 		return carMoves.get(index);
 	}
+
+	public double getTimeLimit(){
+		return timeLimit;
+	}
+
+	public int getCarMovesSize(){
+		return carMoves.size();
+	}
 	
 	public void insertCarMove(CarMove carMove) {
 		this.carMoves.add(carMove);
@@ -72,6 +81,10 @@ public class Operator {
 	public void addToTravelTime(double deltaTime) {
 		this.travelTime += deltaTime;
 	}
+
+	public void addCarMove(CarMove carMove){
+		carMoves.add(carMove);
+	}
 	
 	public void removeCarMove(int position) {
 		carMoves.remove(position);
@@ -80,7 +93,7 @@ public class Operator {
 	/*
 	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
-	 * and when the moves happen.
+	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateInitialFitness(ProblemInstance problemInstance) {
 		double currentTime = this.startTime;
@@ -140,11 +153,33 @@ public class Operator {
 		
 		return 0.0;
 	}
-	
-			
 	private double getChargingFitness(double time, ChargingNode node) {
 		return getCapacityPenalty(node) - getChargingReward(time);
 	}
+	
+	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
+
+		double currentFitness = this.fitness;
+		int index = remove.getIndex();
+		CarMove toRemove = carMoves.get(index);
+		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
+		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
+
+		double deltaTimeC = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
+		//TODO
+
+		return 0.0;
+
+	}
+
+	private double getAbsDeltaTime(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
+		double currTimeContribution = problemInstance.getTravelTimeBike(prev, curr.getFromNode())
+				+ curr.getTravelTime()
+				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode(), next) : 0);
+		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev, next) : 0;
+		return Math.abs(currTimeContribution - newTimeContribution);
+	}
+
 	
 	/*
 	 * Calculates the penalty of charging an extra car at a charging node.
