@@ -28,13 +28,9 @@ public class TSIndividual extends Individual {
 	 */
 
 	private int[] currentState;
-<<<<<<< HEAD
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
-=======
-	
 	private double awardForCharging = 0.0;
->>>>>>> master
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
 	
@@ -43,7 +39,7 @@ public class TSIndividual extends Individual {
 		this.representation = new ArrayList<>();
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
-			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode());
+			//Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode());
 			//operators.add(op);
 			continue;
 		}
@@ -59,7 +55,7 @@ public class TSIndividual extends Individual {
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (int i = 0; i < operators.size(); i++) {
-				Node startNode =
+				//Node startNode =
 				//Node nearest = findNearestNode(Node, CarMoves)
 				//CarMove chosen = pickBestCarMove(Node)
 				//if(timeAvailable(chosen.Time)){
@@ -114,6 +110,7 @@ public class TSIndividual extends Individual {
 			Node fromNode = carMoves.get(car).get(0).getFromNode();
 
 		}
+		return null;
 	}
 
 	protected void calculateFitness() {
