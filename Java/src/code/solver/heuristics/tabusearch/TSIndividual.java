@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.entities.Car;
+import code.problem.nodes.ChargingNode;
+import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
+import constants.Constants;
 import utils.ChromosomeGenerator;
 import code.problem.nodes.Node;
 
@@ -18,39 +21,56 @@ import code.solver.heuristics.mutators.Swap3;
 public class TSIndividual extends Individual {
 	
 	private ArrayList<Operator> operators;
-	//private final int[] idealState;
 
-	//TODO
+	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
+	private HashMap<ChargingNode, Integer> capacities;
+	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
-	/*
-	private Hashmap<Charging Station, Integer> capacities;
-	priavte Hashmap<Nodes, Integer> deviationFromIdealState;
-	 */
-
-	private int[] currentState;
-<<<<<<< HEAD
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
-=======
-	
+	ProblemInstance problemInstance;
 	private double awardForCharging = 0.0;
->>>>>>> master
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
 	
 	public TSIndividual(ProblemInstance problemInstance) {
-
+		this.problemInstance = problemInstance;
 		this.representation = new ArrayList<>();
-		this.operators = new ArrayList<>();
-		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
-			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode());
-			//operators.add(op);
-			continue;
-		}
+		createOperators();
+		initiateCapacities();
+		initiateDeviations();
 		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		initializeOperators();
 		calculateFitness();
 
+	}
+
+	private void createOperators(){
+		this.operators = new ArrayList<>();
+		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
+
+			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
+					problemInstance.getOperators().get(i).getNextOrCurrentNode());
+			operators.add(op);
+		}
+
+	}
+
+	private void initiateCapacities(){
+		this.capacities = new HashMap<>();
+		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
+			capacities.put(problemInstance.getChargingNodes().get(i), problemInstance.getChargingNodes().get(i).getNumberOfTotalChargingSlots());
+
+		}
+
+	}
+
+	private void initiateDeviations(){
+		this.deviationFromIdealState = new HashMap<>();
+		for (int i = 0; i < problemInstance.getParkingNodes().size(); i++) {
+			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars());
+
+		}
 	}
 
 	//Choose the car moves that goes into the initial solution for each operator
@@ -59,7 +79,7 @@ public class TSIndividual extends Individual {
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (int i = 0; i < operators.size(); i++) {
-				Node startNode =
+				Node startNode = operators.get(i).getStartNode();
 				//Node nearest = findNearestNode(Node, CarMoves)
 				//CarMove chosen = pickBestCarMove(Node)
 				//if(timeAvailable(chosen.Time)){
@@ -69,12 +89,8 @@ public class TSIndividual extends Individual {
 					//operators.get(i).UpdateTime(Node node, chosen)
 					//chosen.endNode == chargingNode? : updateCapacity() : updateDeviationFromIdeal();
 				//}
-
-
 			}
-
 		}
-		
 	}
 
 	/* Suggestion 1:
@@ -110,10 +126,23 @@ public class TSIndividual extends Individual {
 
 	private CarMove findnearestCarMove(Node node){
 		double distance = Integer.MAX_VALUE;
+		CarMove carMove;
 		for(Car car : carMoves.keySet()){
 			Node fromNode = carMoves.get(car).get(0).getFromNode();
+			double distanceCandidate = problemInstance.getTravelTimeBike(node.getNodeId(), fromNode.getNodeId());
+			if(distanceCandidate < distance){
+
+			}
 
 		}
+		return null;
+	}
+
+	private double rateCarMove(CarMove carMove, double distance){
+		double fitNess = 0;
+		fitNess += (carMove.getTravelTime() + distance)*costOfTravel;
+
+
 	}
 
 	protected void calculateFitness() {
