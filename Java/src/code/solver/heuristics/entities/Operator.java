@@ -140,7 +140,7 @@ public class Operator {
 	}
 	
 	private double getChargingReward(double time) {
-		return (this.timeLimit - time) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD;
+		return Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD;
 	}
 	
 }
