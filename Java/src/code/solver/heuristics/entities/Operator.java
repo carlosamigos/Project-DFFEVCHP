@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
-import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
@@ -94,7 +93,7 @@ public class Operator {
 	/*
 	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
-	 * and when the moves happen.
+	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateInitialFitness(ProblemInstance problemInstance) {
 		double currentTime = this.startTime;
@@ -141,8 +140,8 @@ public class Operator {
 		CarMove toRemove = carMoves.get(index);
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
-		double currTimeContribution = getTimeContribution(prevNode,toRemove, nextNode, problemInstance);
-		double newTimeContribution  = (nextNode != null) ? problemInstance.getTravelTimeBike(prevNode.getNodeId(), nextNode.getNodeId()) : 0;
+
+		double deltaTimeC = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
 		//TODO
 
 
@@ -151,10 +150,12 @@ public class Operator {
 
 	}
 
-	private double getTimeContribution(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
-		return problemInstance.getTravelTimeBike(prev.getNodeId(), curr.getFromNode().getNodeId())
+	private double getAbsDeltaTime(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
+		double currTimeContribution = problemInstance.getTravelTimeBike(prev.getNodeId(), curr.getFromNode().getNodeId())
 				+ curr.getTravelTime()
 				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode().getNodeId(), next.getNodeId()) : 0);
+		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev.getNodeId(), next.getNodeId()) : 0;
+		return Math.abs(currTimeContribution - newTimeContribution);
 	}
 
 	private double getChangeInTravelTime(CarMove currentMove, Node previousNode, ProblemInstance problemInstance) {
