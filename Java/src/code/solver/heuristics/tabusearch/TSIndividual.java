@@ -26,9 +26,20 @@ public class TSIndividual extends Individual {
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
+<<<<<<< HEAD
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
 	ProblemInstance problemInstance;
+=======
+	/*
+	private Hashmap<Charging Station, Integer> capacities;
+	priavte Hashmap<Nodes, Integer> deviationFromIdealState;
+	 */
+
+	private int[] currentState;
+	private HashMap<Car, ArrayList<CarMove>> carMoves;
+	private double costOfPostponed = 0.0;
+>>>>>>> master
 	private double awardForCharging = 0.0;
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
@@ -36,9 +47,18 @@ public class TSIndividual extends Individual {
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
 		this.representation = new ArrayList<>();
+<<<<<<< HEAD
 		createOperators();
 		initiateCapacities();
 		initiateDeviations();
+=======
+		this.operators = new ArrayList<>();
+		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
+			//Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode());
+			//operators.add(op);
+			continue;
+		}
+>>>>>>> master
 		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		initializeOperators();
 		calculateFitness();
@@ -80,7 +100,11 @@ public class TSIndividual extends Individual {
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (int i = 0; i < operators.size(); i++) {
+<<<<<<< HEAD
 				Node startNode = operators.get(i).getStartNode();
+=======
+				//Node startNode =
+>>>>>>> master
 				//Node nearest = findNearestNode(Node, CarMoves)
 				//CarMove chosen = pickBestCarMove(Node)
 				//if(timeAvailable(chosen.Time)){
@@ -138,6 +162,7 @@ public class TSIndividual extends Individual {
 
 		}
 		return null;
+<<<<<<< HEAD
 	}
 
 	private double rateCarMove(CarMove carMove, double distance){
@@ -146,6 +171,8 @@ public class TSIndividual extends Individual {
 		return 0.0;
 
 
+=======
+>>>>>>> master
 	}
 
 	protected void calculateFitness() {

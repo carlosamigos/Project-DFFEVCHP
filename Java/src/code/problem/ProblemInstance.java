@@ -33,6 +33,7 @@ public class ProblemInstance {
     private int numPNodes = 0;
     private int numCNodes = 0;
     private int numROperators = 0;
+    private int carsInNeedOfCharging = 0;
     private double maxTravelTimeCar = Double.MAX_VALUE;
     private double handlingTimeP = 0;
     private double handlingTimeC = 0;
@@ -167,14 +168,19 @@ public class ProblemInstance {
     private void setUpOperators(){
         String startNodesString = inputFileMap.get("startNodeROperator");
         String[] startNodeList = startNodesString.substring(1,startNodesString.length()-1).split(" ");
+        String timeRemainingString = inputFileMap.get("travelTimeToOriginR");
+        String[] timeRemainingList = timeRemainingString.substring(1,timeRemainingString.length()-1).split(" ");
         for (int operatorId = Constants.START_INDEX; operatorId < startNodeList.length+Constants.START_INDEX; operatorId++) {
             int nodeId = Integer.parseInt(startNodeList[operatorId-Constants.START_INDEX]);
             Node node = nodeMap.get(nodeId);
             Operator newOperator = new Operator(operatorId);
             newOperator.setNextOrCurrentNode(node);
+            Double remainingTime = Double.parseDouble(timeRemainingList[operatorId-Constants.START_INDEX]);
+            newOperator.setTimeRemainingToCurrentNextNode(remainingTime);
             operators.add(newOperator);
             operatorMap.put(operatorId,newOperator);
         }
+        this.numROperators = this.operators.size();
     }
 
     private void setUpNodesAndCars() {
@@ -338,16 +344,8 @@ public class ProblemInstance {
     	return this.travelTimesBike.get(n1).get(n2);
     }
 
-    public void setTravelTimesBike(ArrayList<ArrayList<Double>> travelTimesBike) {
-        this.travelTimesBike = travelTimesBike;
-    }
-
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
         return travelTimesCar;
-    }
-
-    public void setTravelTimesCar(ArrayList<ArrayList<Double>> travelTimesCar) {
-        this.travelTimesCar = travelTimesCar;
     }
 
     public HashMap<Integer, Node> getNodeMap() {
@@ -629,6 +627,49 @@ public class ProblemInstance {
 
     public double getHandlingTimeC() {
         return handlingTimeC;
+    }
+
+    public void updateCarsInNeedOfCharging(){
+        this.carsInNeedOfCharging = 0;
+        for(ParkingNode parkingNode : parkingNodes){
+            carsInNeedOfCharging += parkingNode.getCarsInNeed().size();
+        }
+    }
+
+    private void updateNumberOfAvailableChargingStations(){
+        // Do not consider the number of cars that will finish charging.
+        // Available = total slots - (num charging + number of operators arriving with car)
+        HashMap<ChargingNode, Integer> operatorsAriving = new HashMap<>();
+        for(ChargingNode chargingNode : chargingNodes){
+            operatorsAriving.put(chargingNode, chargingNode.getNumberOfTotalChargingSlots() - chargingNode.getCarsCurrentlyCharging().size());
+        }
+        for(Operator operator : operators){
+            Node arrivalNode = operator.getNextOrCurrentNode();
+            if(arrivalNode instanceof ChargingNode && operator.getTimeRemainingToCurrentNextNode() > 0 && operator.getTimeRemainingToCurrentNextNode() < Constants.TIME_LIMIT_STATIC_PROBLEM){
+                ChargingNode cArrivalNode = (ChargingNode) arrivalNode;
+                operatorsAriving.put(cArrivalNode, operatorsAriving.get(cArrivalNode)  - 1);
+            }
+        }
+        for(ChargingNode chargingNode : chargingNodes){
+            chargingNode.setNumberOfAvailableChargingSpotsNextPeriod(operatorsAriving.get(chargingNode));
+        }
+
+
+
+    }
+
+    public int getCarsInNeedOfCharging() {
+        return carsInNeedOfCharging;
+    }
+
+    public int getNumROperators() {
+        return numROperators;
+    }
+
+    public void updateParameters(){
+        updateNumberOfAvailableChargingStations();
+        updateCarsInNeedOfCharging();
+
     }
 
     @Override
