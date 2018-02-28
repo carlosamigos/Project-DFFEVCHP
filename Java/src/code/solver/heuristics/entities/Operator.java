@@ -8,13 +8,13 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
 import code.solver.heuristics.mutators.Remove;
+import constants.Constants;
 import constants.HeuristicsConstants;
 
 public class Operator {
 
-	private ArrayList<CarMove> chargingMoves;
+	private ArrayList<CarMove> chargingMoves; //need to be chronologic
 	private HashMap<CarMove, double[]> startEndChargingMoves;
-	private HashMap<CarMove, Double> chargingMoveFitness;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
 	private HashMap<CarMove, Integer> chargingMoveIndex;
 	
@@ -34,7 +34,6 @@ public class Operator {
 		this.startNode = startNode;
 		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
-		this.chargingMoveFitness = new HashMap<>();
 		this.startEndChargingMoves = new HashMap<>();
 		this.chargingMoveIndex = new HashMap<>();
 		calculateInitialFitness(problemInstance);
@@ -118,7 +117,6 @@ public class Operator {
 				this.chargingCapacityUsed.put(node, this.chargingCapacityUsed.get(node)+1);
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
-				this.chargingMoveFitness.put(currentMove, chargingFitness);
 				this.startEndChargingMoves.put(currentMove, timings);
 				this.chargingMoveIndex.put(currentMove, i);
 			}
@@ -157,18 +155,35 @@ public class Operator {
 		return 0.0;
 	}
 	private double getChargingFitness(double time, ChargingNode node) {
-		return getCapacityPenalty(node) - getChargingReward(time);
+		return getCapacityPenalty(node, true, 0) - getChargingReward(time);
 	}
 	
 	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
-
 		double currentFitness = this.fitness;
+		double newFitness = this.fitness;
 		int index = remove.getIndex();
 		CarMove toRemove = carMoves.get(index);
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
 		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
-		boolean carMoveDoesCharge = toRemove.isToCharging();
+
+		//double currCarMoveChargingFitness = (toRemove.isToCharging()) ? getChargingReward(endTime): 0;
+		//newFitness -= currCarMoveFitness;
+		boolean doChange = false;
+		HashMap<ChargingNode, Integer> capacityChanged = new HashMap<>();
+		for(CarMove carMove : chargingMoves){
+			if(startEndChargingMoves.get(carMove)[1] > Constants.TIME_LIMIT_STATIC_PROBLEM){
+				break;
+			}
+			if(doChange){
+				//find fitness before and after
+				startEndChargingMoves.get(carMove)[0] -= deltaTime;
+				startEndChargingMoves.get(carMove)[1] -= deltaTime;
+			}
+			else if(carMove.equals(toRemove)){
+				doChange = true;
+			}
+		}
 
 
 		return 0.0;
@@ -188,9 +203,19 @@ public class Operator {
 	 * Calculates the penalty of charging an extra car at a charging node.
 	 * The penalty is zero as long as the capacity is not broken.
 	 */
-	private double getCapacityPenalty(ChargingNode node) {
-		return (Math.max(0, (1 + this.chargingCapacityUsed.get(node)) - node.getNumberOfAvailableChargingSpotsNextPeriod())) 
-				* HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+	private double getCapacityPenalty(ChargingNode arrivalNode, boolean isAddingCarMove, int alreadyAdjusted) {
+		int currentUsed = this.chargingCapacityUsed.get(arrivalNode) + alreadyAdjusted;
+		int available = arrivalNode.getNumberOfAvailableChargingSpotsNextPeriod();
+		if(isAddingCarMove){
+			if(currentUsed >= available){
+				return HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+			}
+		}else {
+			if(currentUsed > available){
+				return -HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+			}
+		}
+		return 0;
 	}
 	
 	private double getChargingReward(double time) {
