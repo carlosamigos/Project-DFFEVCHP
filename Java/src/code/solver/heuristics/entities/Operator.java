@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
+import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
 import constants.HeuristicsConstants;
@@ -12,6 +13,7 @@ public class Operator {
 
 	private ArrayList<CarMove> chargingMoves;
 	private HashMap<CarMove, double[]> startEndChargingMoves;
+	private HashMap<ChargingNode, Integer> chargingCapacity;
 	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
@@ -21,14 +23,13 @@ public class Operator {
 	private double travelTime;
 	private double fitness;
 	
-	private double deltaFitness;
-	
-	public Operator(double startTime, double timeLimit, Node startNode, ProblemInstance problemInstance) {
+	public Operator(double startTime, double timeLimit, Node startNode, ProblemInstance problemInstance, 
+			HashMap<ChargingNode, Integer> chargingCapacity) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
-		
+		this.chargingCapacity = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
 		this.startEndChargingMoves = new HashMap<>();
 		calculateInitialFitness(problemInstance);
@@ -74,7 +75,11 @@ public class Operator {
 		carMoves.remove(position);
 	}
 	
-	
+	/*
+	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
+	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
+	 * and when the moves happen.
+	 */
 	private void calculateInitialFitness(ProblemInstance problemInstance) {
 		double currentTime = this.startTime;
 		Node previousNode = this.startNode;
@@ -90,8 +95,9 @@ public class Operator {
 				return;
 			}
 			
-			if(currentMove.isToCharging() && canCharge(currentMove)) {
-				fitness += getChargingReward(currentTime);
+			if(currentMove.isToCharging()) {
+				ChargingNode node = (ChargingNode) currentMove.getToNode();
+				fitness += getChargingFitness(currentTime, node);
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
 				this.startEndChargingMoves.put(currentMove, timings);
@@ -166,20 +172,18 @@ public class Operator {
 		
 		if(move.isToCharging()) {
 			// if check for capacity at charging station
-			return getChargingReward(time);
+			//return getChargingReward(time);
 		}
 		
 		return 0.0;
 	}
 	
-	private boolean canCharge(CarMove move) {
-		// Must check capacity!
-		return true;
+	
+	private double getChargingFitness(double time, ChargingNode node) {
+		double capacityPenalty = (Math.max(0, this.chargingCapacity.get(node) - 
+				node.getNumberOfAvailableChargingSpotsNextPeriod())) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+		double chargingReward = (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
+		
+		return capacityPenalty - chargingReward;
 	}
-	
-	private double getChargingReward(double time) {
-		return Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD;
-	}
-	
-	
 }
