@@ -24,7 +24,7 @@ public class Insert extends Mutation{
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof  Insert){
-			return ((Insert) o).hashCode() == this.hashCode;
+			return o.hashCode() == this.hashCode;
 		} return false;
 	}
 
@@ -47,8 +47,7 @@ public class Insert extends Mutation{
 
 	@Override
 	public void doMutation(Individual individual) {
-		ArrayList<Object> rep = individual.getRepresentation();
-		rep.add(this.i, this.o);
+		individual.getRepresentation().add(this.i, this.o);
 	}
 
 	@Override

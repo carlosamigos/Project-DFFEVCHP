@@ -7,6 +7,7 @@ import code.problem.ProblemInstance;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
+import code.solver.heuristics.mutators.Remove;
 import constants.HeuristicsConstants;
 
 public class Operator {
@@ -92,7 +93,7 @@ public class Operator {
 	/*
 	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
-	 * and when the moves happen.
+	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateInitialFitness(ProblemInstance problemInstance) {
 		double currentTime = this.startTime;
@@ -130,7 +131,33 @@ public class Operator {
 		double currentTime = this.startTime;
 		return 0.0;
 	}
-	
+
+
+	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
+
+		double currentFitness = this.fitness;
+		int index = remove.getIndex();
+		CarMove toRemove = carMoves.get(index);
+		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
+		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
+
+		double deltaTimeC = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
+		//TODO
+
+
+		return 0.0;
+
+
+	}
+
+	private double getAbsDeltaTime(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
+		double currTimeContribution = problemInstance.getTravelTimeBike(prev.getNodeId(), curr.getFromNode().getNodeId())
+				+ curr.getTravelTime()
+				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode().getNodeId(), next.getNodeId()) : 0);
+		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev.getNodeId(), next.getNodeId()) : 0;
+		return Math.abs(currTimeContribution - newTimeContribution);
+	}
+
 	private double getChangeInTravelTime(CarMove currentMove, Node previousNode, ProblemInstance problemInstance) {
 		Node currentNode = currentMove.getFromNode();
 		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), currentNode.getNodeId()) +
@@ -157,7 +184,6 @@ public class Operator {
 		double capacityPenalty = (Math.max(0, this.chargingCapacityUsed.get(node) - 
 				node.getNumberOfAvailableChargingSpotsNextPeriod())) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 		double chargingReward = (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
-		
 		return capacityPenalty - chargingReward;
 	}
 }
