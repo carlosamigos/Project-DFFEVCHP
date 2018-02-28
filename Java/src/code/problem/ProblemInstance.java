@@ -168,11 +168,15 @@ public class ProblemInstance {
     private void setUpOperators(){
         String startNodesString = inputFileMap.get("startNodeROperator");
         String[] startNodeList = startNodesString.substring(1,startNodesString.length()-1).split(" ");
+        String timeRemainingString = inputFileMap.get("travelTimeToOriginR");
+        String[] timeRemainingList = timeRemainingString.substring(1,timeRemainingString.length()-1).split(" ");
         for (int operatorId = Constants.START_INDEX; operatorId < startNodeList.length+Constants.START_INDEX; operatorId++) {
             int nodeId = Integer.parseInt(startNodeList[operatorId-Constants.START_INDEX]);
             Node node = nodeMap.get(nodeId);
             Operator newOperator = new Operator(operatorId);
             newOperator.setNextOrCurrentNode(node);
+            Double remainingTime = Double.parseDouble(timeRemainingList[operatorId-Constants.START_INDEX]);
+            newOperator.setTimeRemainingToCurrentNextNode(remainingTime);
             operators.add(newOperator);
             operatorMap.put(operatorId,newOperator);
         }
