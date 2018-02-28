@@ -140,9 +140,9 @@ public class Operator {
 		CarMove toRemove = carMoves.get(index);
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
+		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
 
-		double deltaTimeC = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
-		//TODO
+
 
 
 		return 0.0;
