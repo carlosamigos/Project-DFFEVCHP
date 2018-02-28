@@ -28,13 +28,9 @@ public class TSIndividual extends Individual {
 	 */
 
 	private int[] currentState;
-<<<<<<< HEAD
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 	private double costOfPostponed = 0.0;
-=======
-	
 	private double awardForCharging = 0.0;
->>>>>>> master
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
 	
