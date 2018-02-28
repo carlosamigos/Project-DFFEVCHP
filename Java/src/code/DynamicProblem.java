@@ -55,11 +55,11 @@ public class DynamicProblem {
                 System.out.println("\n\n");
                 System.out.println("Sub problem "+subproblemNo+" starting at time: "+timeToHHMM(time));
             }
-
             updateOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.updateParameters();
             problemInstance.writeProblemInstanceToFile();
+
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
@@ -69,6 +69,7 @@ public class DynamicProblem {
             subproblemNo++;
             tracker.setResults(problemInstance.getFilePath());
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
+
         }
         kpiTrackerDyanmic.updateIdleTimeForOperators();
         if(Constants.PRINT_OUT_ACTIONS){
@@ -86,8 +87,6 @@ public class DynamicProblem {
         }else{
             HH = ""+hours;
         }
-
-
         if (minutesLeft <10){
             MM = "0" + minutesLeft;
         }else{

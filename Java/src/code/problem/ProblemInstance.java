@@ -336,16 +336,8 @@ public class ProblemInstance {
         return travelTimesBike;
     }
 
-    public void setTravelTimesBike(ArrayList<ArrayList<Double>> travelTimesBike) {
-        this.travelTimesBike = travelTimesBike;
-    }
-
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
         return travelTimesCar;
-    }
-
-    public void setTravelTimesCar(ArrayList<ArrayList<Double>> travelTimesCar) {
-        this.travelTimesCar = travelTimesCar;
     }
 
     public HashMap<Integer, Node> getNodeMap() {
@@ -650,12 +642,10 @@ public class ProblemInstance {
                 operatorsAriving.put(cArrivalNode, operatorsAriving.get(cArrivalNode)  - 1);
             }
         }
-        System.out.println("\n");
         for(ChargingNode chargingNode : chargingNodes){
-            System.out.println(chargingNode + " has available spots:" +operatorsAriving.get(chargingNode));
             chargingNode.setNumberOfAvailableChargingSpotsNextPeriod(operatorsAriving.get(chargingNode));
         }
-        System.out.println("\n");
+
 
 
     }
