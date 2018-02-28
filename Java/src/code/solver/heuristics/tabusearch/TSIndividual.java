@@ -36,7 +36,6 @@ public class TSIndividual extends Individual {
 	private double costOfUnmetIdeal = 0.0;
 
 	public TSIndividual(ProblemInstance problemInstance) {
-		System.out.println("Hello");
 		this.problemInstance = problemInstance;
 		this.representation = new ArrayList<>();
 		createOperators();
@@ -51,7 +50,7 @@ public class TSIndividual extends Individual {
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
 			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
-					problemInstance.getOperators().get(i).getNextOrCurrentNode());
+					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance, capacities);
 			operators.add(op);
 		}
 
@@ -60,7 +59,6 @@ public class TSIndividual extends Individual {
 	private void initiateCapacities(){
 		this.capacities = new HashMap<>();
 		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
-			System.out.println(problemInstance.getChargingNodes().get(i).getNumberOfAvailableChargingSpotsNextPeriod());
 			capacities.put(problemInstance.getChargingNodes().get(i), problemInstance.getChargingNodes().get(i).getNumberOfAvailableChargingSpotsNextPeriod());
 		}
 	}
