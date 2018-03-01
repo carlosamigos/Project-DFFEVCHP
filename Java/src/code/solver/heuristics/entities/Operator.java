@@ -66,7 +66,11 @@ public class Operator {
 	public int getCarsBeingCharged() {
 		return this.carsBeingCharged;
 	}
-	
+
+	public ArrayList<CarMove> getCarMoves() {
+		return carMoves;
+	}
+
 	public double getTravelTime() {
 		return this.travelTime;
 	}

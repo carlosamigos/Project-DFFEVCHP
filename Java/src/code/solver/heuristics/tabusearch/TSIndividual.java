@@ -171,7 +171,11 @@ public class TSIndividual extends Individual {
 	}
 
 	protected void calculateFitness() {
-		for(Operator op : operators) {
+		double totalFitness = 0;
+		for(Operator operator : operators) {
+			for(CarMove carMove : operator.getCarMoves()){
+
+			}
 		}
 		
 		this.fitness = this.awardForCharging + this.costOfTravel + this.costOfUnmetIdeal;
