@@ -118,11 +118,11 @@ public class TSIndividual extends Individual {
 		return node;
 	}
 
+
 	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
 		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), carMove.getFromNode().getNodeId()) + carMove.getTravelTime();
-	}
 
-	//Work to do
+	
 	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
 		double addDistance = calculateDistanceCarMove(previousNode, carMove);
 		return (op.getStartTime() + op.getTravelTime() + addDistance < op.getTimeLimit());
@@ -134,7 +134,7 @@ public class TSIndividual extends Individual {
 		for(Car car : carMovesCopy.keySet()){
 			if(carMovesCopy.get(car).size() > 0){
 				Node fromNode = carMovesCopy.get(car).get(0).getFromNode();
-				double distanceCandidate = problemInstance.getTravelTimeBike(node.getNodeId(), fromNode.getNodeId());
+				double distanceCandidate = problemInstance.getTravelTimeBike(node, fromNode);
 				if(distanceCandidate < distance){
 					distance = distanceCandidate;
 					double fitNess = Double.MAX_VALUE;
