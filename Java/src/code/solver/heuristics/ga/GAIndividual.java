@@ -2,6 +2,8 @@ package code.solver.heuristics.ga;
 
 import code.solver.heuristics.Individual;
 
+import java.util.ArrayList;
+
 public class GAIndividual extends Individual {
 
 	@Override
@@ -14,6 +16,11 @@ public class GAIndividual extends Individual {
 	protected void calculateFitnessOfIndividual() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ArrayList<Object> getRepresentation() {
+		return null;
 	}
 
 }

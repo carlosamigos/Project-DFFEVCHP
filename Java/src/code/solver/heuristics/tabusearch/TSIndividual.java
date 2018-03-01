@@ -21,7 +21,7 @@ import code.solver.heuristics.mutators.Swap3;
 
 public class TSIndividual extends Individual {
 	
-	private ArrayList<Operator> operators;
+	private ArrayList<Object> operators;
 
 	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
 	private HashMap<ChargingNode, Integer> capacities;
@@ -43,7 +43,6 @@ public class TSIndividual extends Individual {
 
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
-		this.representation = new ArrayList<>();
 		createOperators();
 		initiateCapacities();
 		initiateDeviations();
@@ -84,7 +83,8 @@ public class TSIndividual extends Individual {
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		while(operatorAvailable){
 			operatorAvailable = false;
-			for (Operator op: operators) {
+			for (Object obop: operators) {
+				Operator op = (Operator) obop;
 				Node startNode = findPreviousNode(op);
 				CarMove chosen = findnearestCarMove(startNode, carMovesCopy);
 				if(chosen != null){
@@ -184,7 +184,8 @@ public class TSIndividual extends Individual {
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
 		double totalFitness = 0;
 		// Calculate time reward fitness
-		for(Operator operator : operators) {
+		for(Object op : operators) {
+			Operator operator = (Operator) op;
 			double currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoves()){
@@ -207,6 +208,11 @@ public class TSIndividual extends Individual {
 		this.fitness = totalFitness;
 	}
 
+	@Override
+	public ArrayList<Object> getRepresentation() {
+		return this.operators;
+	}
+
 	private void increaseCapacityUsedInNode(ChargingNode chargingNode, HashMap<ChargingNode, Integer> capacityUsed){
 		if(capacityUsed.get(chargingNode) == null){
 			capacityUsed.put(chargingNode, 0);
@@ -217,8 +223,8 @@ public class TSIndividual extends Individual {
 		//TODO: to be removed or changed
 		int i = swap.getI();
 		int j = swap.getJ();
-		double before =  Math.abs((int) this.representation.get(i) - i) +  Math.abs((int) this.representation.get(j) - j); 
-		double after =  Math.abs((int) this.representation.get(i) - j) +  Math.abs((int) this.representation.get(j) - i); 
+		double before =  Math.abs((int) this.getRepresentation().get(i) - i) +  Math.abs((int) this.getRepresentation().get(j) - j);
+		double after =  Math.abs((int) this.getRepresentation().get(i) - j) +  Math.abs((int) this.getRepresentation().get(j) - i);
 		return after - before;
 	}
 	
@@ -248,7 +254,7 @@ public class TSIndividual extends Individual {
 	@Override
 	public String toString() {
 		String s = "";
-		for(Object i : this.representation) {
+		for(Object i : this.getRepresentation()) {
 			s += i.toString() + " ";
 		}
 		return s + "\n";
