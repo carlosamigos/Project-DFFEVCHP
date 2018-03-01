@@ -86,7 +86,7 @@ public class TSIndividual extends Individual {
 						operatorAvailable = true;
 						op.addCarMove(chosen);
 						carMovesCopy.remove(chosen.getCar());
-						double addDistance = calculateDistanceCarmMove(startNode, chosen);
+						double addDistance = calculateDistanceCarMove(startNode, chosen);
 						op.addToTravelTime(addDistance);
 						if(chosen.getToNode() instanceof ChargingNode){
 							updateCapacity((ChargingNode) chosen.getToNode());
@@ -118,13 +118,13 @@ public class TSIndividual extends Individual {
 		return node;
 	}
 
-	private double calculateDistanceCarmMove(Node previousNode, CarMove carMove){
+	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
 		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), carMove.getFromNode().getNodeId()) + carMove.getTravelTime();
 	}
 
 	//Work to do
 	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
-		double addDistance = calculateDistanceCarmMove(previousNode, carMove);
+		double addDistance = calculateDistanceCarMove(previousNode, carMove);
 		return (op.getStartTime() + op.getTravelTime() + addDistance < op.getTimeLimit());
 	}
 
