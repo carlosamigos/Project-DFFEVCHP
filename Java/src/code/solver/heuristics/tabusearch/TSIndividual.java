@@ -8,6 +8,7 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
 import constants.Constants;
+import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
 import code.problem.nodes.Node;
 
@@ -29,11 +30,15 @@ public class TSIndividual extends Individual {
 
 	private ProblemInstance problemInstance;
 
+	//Fitness parameters
 	private double costOfPostponed = 0.0;
 	private double awardForCharging = 0.0;
 	private double awardForMeetingIdeal = 0.0;
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
+
+	//Placeholder Weights
+
 
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
@@ -132,14 +137,15 @@ public class TSIndividual extends Individual {
 
 	private CarMove findnearestCarMove(Node node, HashMap<Car, ArrayList<CarMove>> carMovesCopy){
 		double distance = Integer.MAX_VALUE;
+		double fitNess = Double.MAX_VALUE;
 		CarMove cMove = null;
 		for(Car car : carMovesCopy.keySet()){
 			if(carMovesCopy.get(car).size() > 0){
 				Node fromNode = carMovesCopy.get(car).get(0).getFromNode();
 				double distanceCandidate = problemInstance.getTravelTimeBike(node, fromNode);
-				if(distanceCandidate < distance){
+				//Accepting twice the distance
+				if(distanceCandidate < distance*2){
 					distance = distanceCandidate;
-					double fitNess = Double.MAX_VALUE;
 					for(CarMove carMove: carMovesCopy.get(car)){
 						double fitNessCancidate = rateCarMove(carMove, distance);
 						if(fitNessCancidate < fitNess){
@@ -155,17 +161,17 @@ public class TSIndividual extends Individual {
 
 	private double rateCarMove(CarMove carMove, double distance){
 		double fitNess = 0;
-		fitNess += (carMove.getTravelTime() + distance)*costOfTravel;
+		fitNess += (carMove.getTravelTime() + distance)* HeuristicsConstants.TABU_TRAVEL_COST;
 		if(carMove.getToNode() instanceof ChargingNode){
 			if(capacities.get(carMove.getToNode()) <= 0){
-				fitNess = Double.MAX_VALUE;
+				fitNess = HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
-			fitNess += -awardForCharging * capacities.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
-				fitNess = Double.MAX_VALUE;
+				fitNess = HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
 			}
-			fitNess += -awardForMeetingIdeal * deviationFromIdealState.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_IDEAL_STATE_REWARD * deviationFromIdealState.get(carMove.getToNode());
 		}
 		return fitNess;
 
