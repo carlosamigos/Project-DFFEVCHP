@@ -233,10 +233,19 @@ public class ProblemInstance {
             }
         }
 
+        ArrayList<Integer> initialIdealStateArray = new ArrayList<>();
+        if(inputFileMap.get("idealStateP").length() > 2){
+            String[] idealStateStringArray = inputFileMap.get("idealStateP").replace("[","").replace("]","").split(" ");
+            for(i = 0; i < idealStateStringArray.length; i ++){
+                initialIdealStateArray.add(Integer.parseInt(idealStateStringArray[i]));
+            }
+        }
+
         // Create nodes
         int carId = Constants.START_INDEX;
         for (i = Constants.START_INDEX; i < numPNodes+Constants.START_INDEX; i++) {
             ParkingNode newParkingNode = new ParkingNode(i);
+            newParkingNode.setIdealNumberOfAvailableCarsThisPeriod(initialIdealStateArray.get(i - Constants.START_INDEX));
             parkingNodes.add(newParkingNode);
             addNodeToNodeMap(newParkingNode);
             for (int j = 0; j < initialRegularInPArray.get(i-Constants.START_INDEX); j++) {
@@ -651,15 +660,9 @@ public class ProblemInstance {
                 availableChargingStations.put(cArrivalNode, availableChargingStations.get(cArrivalNode)  - 1);
             }
         }
-
-        System.out.println("\n");
         for(ChargingNode chargingNode : chargingNodes){
-            System.out.println("Available: " + availableChargingStations.get(chargingNode));
             chargingNode.setNumberOfAvailableChargingSpotsNextPeriod(availableChargingStations.get(chargingNode));
         }
-        System.out.println("\n");
-
-
     }
 
     /*
@@ -689,7 +692,6 @@ public class ProblemInstance {
     public void updateParameters(){
         updateNumberOfAvailableChargingStations();
         updateCarsInNeedOfCharging();
-
     }
 
     @Override
