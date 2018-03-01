@@ -11,7 +11,7 @@ public class GAIndividual extends Individual {
 	}
 
 	@Override
-	protected void calculateFitness() {
+	protected void calculateFitnessOfIndividual() {
 		// TODO Auto-generated method stub
 		
 	}

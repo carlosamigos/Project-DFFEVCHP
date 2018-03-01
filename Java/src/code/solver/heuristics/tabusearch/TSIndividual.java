@@ -8,6 +8,7 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
 import constants.Constants;
+import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
 import code.problem.nodes.Node;
 
@@ -29,6 +30,7 @@ public class TSIndividual extends Individual {
 
 	private ProblemInstance problemInstance;
 
+	private double fitness = 0.0;
 	private double costOfPostponed = 0.0;
 	private double awardForCharging = 0.0;
 	private double awardForMeetingIdeal = 0.0;
@@ -43,7 +45,7 @@ public class TSIndividual extends Individual {
 		initiateDeviations();
 		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		initializeOperators();
-		calculateFitness();
+		calculateFitnessOfIndividual();
 	}
 
 	private void createOperators(){
@@ -170,18 +172,43 @@ public class TSIndividual extends Individual {
 
 	}
 
-	protected void calculateFitness() {
+	protected void calculateFitnessOfIndividual() {
+		//TODO: To be tested. Should update all fitness-related parameters in Operators
+		// Considers only charging time and capacity at the moment
+		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
 		double totalFitness = 0;
+		// Calculate time reward fitness
 		for(Operator operator : operators) {
+			double currentTime = operator.getStartTime();
+			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoves()){
-
+				currentTime += problemInstance.getTravelTimeBike(prevNode, carMove.getFromNode());
+				currentTime += carMove.getTravelTime();
+				if(carMove.isToCharging()){
+					totalFitness -= operator.getChargingReward(currentTime);
+					increaseCapacityUsedInNode((ChargingNode) carMove.getToNode(), capacityUsed);
+				}
+				prevNode = carMove.getToNode();
 			}
 		}
-		
-		this.fitness = this.awardForCharging + this.costOfTravel + this.costOfUnmetIdeal;
+		for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
+			int availableChargingSpots = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+			if(capacityUsed.get(chargingNode) != null){
+				int used = capacityUsed.get(chargingNode);
+				totalFitness += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY * Math.max(used - availableChargingSpots,0);
+			}
+		}
+		this.fitness = totalFitness;
+	}
+
+	private void increaseCapacityUsedInNode(ChargingNode chargingNode, HashMap<ChargingNode, Integer> capacityUsed){
+		if(capacityUsed.get(chargingNode) == null){
+			capacityUsed.put(chargingNode, 0);
+		} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
 	}
 	
 	public double deltaFitness(Swap2 swap) {
+		//TODO: to be removed or changed
 		int i = swap.getI();
 		int j = swap.getJ();
 		double before =  Math.abs((int) this.representation.get(i) - i) +  Math.abs((int) this.representation.get(j) - j); 
@@ -190,6 +217,7 @@ public class TSIndividual extends Individual {
 	}
 	
 	public double deltaFitness(Swap3 swap) {
+		//TODO: to be removed or changed
 		return 0.0;
 	}
 	

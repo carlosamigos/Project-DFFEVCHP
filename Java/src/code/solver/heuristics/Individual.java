@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class Individual implements Comparable<Object> {
 	protected ArrayList<Object> representation;
-	protected abstract void calculateFitness();
+	protected abstract void calculateFitnessOfIndividual();
 	protected double fitness;
 	
 	public ArrayList<Object> getRepresentation() {
