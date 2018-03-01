@@ -190,27 +190,50 @@ public class Operator {
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
 		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
+		double currCarMoveChargingFitness = (toRemove.isToCharging())
+				? getChargingReward(startEndChargingMoves.get(toRemove)[1]): 0;
+		double deltaCapFitness = (toRemove.isToCharging()) ? getCapacityPenalty((ChargingNode) toRemove.getToNode(),
+				false, 0) : 0;
+		newFitness += -currCarMoveChargingFitness + deltaCapFitness;
 
-		//double currCarMoveChargingFitness = (toRemove.isToCharging()) ? getChargingReward(endTime): 0;
-		//newFitness -= currCarMoveFitness;
-		boolean doChange = false;
-		HashMap<ChargingNode, Integer> capacityChanged = new HashMap<>();
-		for(CarMove carMove : chargingMoves){
-			if(startEndChargingMoves.get(carMove)[1] > Constants.TIME_LIMIT_STATIC_PROBLEM){
+		// Iterate over subsequent charging nodes
+		boolean doFitnessUpdates = false;
+		HashMap<ChargingNode, Integer> capacityChanged = new HashMap<>(); // Those not initialized are 0.
+		if(toRemove.isToCharging()){
+			capacityChanged.put((ChargingNode) toRemove.getToNode(), -1);
+		}
+		for (int i = 0; i < chargingMoves.size(); i++) {
+			CarMove chargingMove = chargingMoves.get(i);
+			int index2 = this.chargingMoveIndex.get(chargingMove);
+			if(startEndChargingMoves.get(chargingMove)[1] - deltaTime > Constants.TIME_LIMIT_STATIC_PROBLEM){
+				// no change in fitness
 				break;
 			}
-			if(doChange){
+			if(doFitnessUpdates){
 				//find fitness before and after
-				startEndChargingMoves.get(carMove)[0] -= deltaTime;
-				startEndChargingMoves.get(carMove)[1] -= deltaTime;
+				double endTime = startEndChargingMoves.get(chargingMove)[1];
+				double currentChargingReward = getChargingReward(endTime);
+				double newChargingReward     = getChargingReward(endTime - deltaTime);
+				double deltaReward = newChargingReward - currentChargingReward;
+				newFitness += deltaReward;
+				// kun en positiv endring i capacity fitness dersom chargingNoden går fra over planning period til under planning period!
+				if(endTime > Constants.TIME_LIMIT_STATIC_PROBLEM && endTime - deltaTime < Constants.TIME_LIMIT_STATIC_PROBLEM){
+					ChargingNode chargingNode = (ChargingNode) chargingMove.getToNode();
+					if(capacityChanged.get(chargingNode) == null){
+						capacityChanged.put(chargingNode, 0);
+					}
+					double deltaCapacityPenalty = getCapacityPenalty(chargingNode, true,capacityChanged.get(chargingNode) );
+					capacityChanged.put(chargingNode, capacityChanged.get(chargingNode) + 1);
+					newFitness += deltaCapacityPenalty;
+				}
 			}
-			else if(carMove.equals(toRemove)){
-				doChange = true;
+			else if(index2 >= index){
+				// start doing fitness updates on these charging fitness
+				doFitnessUpdates = true;
 			}
 		}
 
-
-		return 0.0;
+		return newFitness - currentFitness;
 
 	}
 
