@@ -66,7 +66,11 @@ public class Operator {
 	public int getCarsBeingCharged() {
 		return this.carsBeingCharged;
 	}
-	
+
+	public ArrayList<CarMove> getCarMoves() {
+		return carMoves;
+	}
+
 	public double getTravelTime() {
 		return this.travelTime;
 	}
@@ -104,7 +108,7 @@ public class Operator {
 		
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
-			//currentTime += getChangeInTravelTime(currentMove, previousNode, problemInstance);
+			currentTime += getTravelTime(previousNode, currentMove, problemInstance);
 			
 			if(currentTime > this.timeLimit) {
 				return;
@@ -133,30 +137,74 @@ public class Operator {
 		
 		int index = insert.getIndex();
 		CarMove insertMove = (CarMove) insert.getObject();
-		Node toNode = insertMove.getToNode();
-		Node fromNode = insertMove.getFromNode();
 		
+		HashMap<ChargingNode, Integer> capacityChanged = new HashMap<>();
 		
-		double addedTravelTime;
+		double deltaTime;
 		if(index == 0) {
-			addedTravelTime = problemInstance.getTravelTimeBike(this.startNode, fromNode) 
-					+ problemInstance.getTravelTimeBike(toNode, this.carMoves.get(0).getFromNode())
-					+ insertMove.getTravelTime()
-					- problemInstance.getTravelTimeBike(this.startNode, this.carMoves.get(0).getFromNode());
+			deltaTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode(), problemInstance);
+		} else {
+			Node next = (index+1 > this.carMoves.size()) ? null : this.carMoves.get(index+1).getFromNode();
+			deltaTime = getAbsDeltaTime(this.carMoves.get(index).getToNode(), insertMove, next, problemInstance);
+		}
+		
+		Node previous = this.startNode;
+		
+		for(int i = 0; i < index; i++) {
+			CarMove move = this.carMoves.get(i);
+			currentTime += getTravelTime(previous, move, problemInstance);
+			previous = move.getToNode();
+		}
+		
+		currentTime += getTravelTime(previous, insertMove, problemInstance);
+		
+		if(currentTime < this.timeLimit && insertMove.isToCharging()) {
+			ChargingNode chargingNode = (ChargingNode) insertMove.getToNode();
+			deltaFitness += getChargingFitness(currentTime, chargingNode);
 		}
 		
 		for(CarMove move : this.chargingMoves) {
 			int moveIndex = this.chargingMoveIndex.get(move);
-			if (moveIndex >= index) {
+			double endTime = startEndChargingMoves.get(move)[1];
+			if (moveIndex >= index && endTime <= this.timeLimit) {
+				deltaFitness += getChangeInChargingFitness(endTime, deltaTime);
 				
+				if(endTime + deltaTime > this.timeLimit) {
+					ChargingNode chargingNode = (ChargingNode) move.getToNode();
+					deltaFitness += getChangeInCapacityFitness(chargingNode, false, capacityChanged);
+				}
 			}
 		}
 		
-		return 0.0;
+		return deltaFitness;
 	}
+	
+	private double getChangeInChargingFitness(double oldTime, double timeChange) {
+		double oldReward = getChargingReward(oldTime);
+		double newReward = getChargingReward(oldTime + timeChange);
+		return -newReward + oldReward;     
+	}
+	
+	private double getChangeInCapacityFitness(ChargingNode node, boolean isAdding, HashMap<ChargingNode, Integer> capacityChanged) {
+		if(capacityChanged.get(node) == null){
+			capacityChanged.put(node, 0);
+		}
+		
+		double capacityDelta = getCapacityPenalty(node, isAdding, capacityChanged.get(node));
+		int capacityChange = isAdding ? 1 : -1;
+		capacityChanged.put(node, capacityChanged.get(node) + capacityChange);
+		return capacityDelta;
+	}
+	
+	private double getTravelTime(Node previous, CarMove move, ProblemInstance problemInstance) {
+		return problemInstance.getTravelTimeBike(previous, move.getFromNode()) 
+				+ move.getTravelTime();
+	}
+	
 	private double getChargingFitness(double time, ChargingNode node) {
 		return getCapacityPenalty(node, true, 0) - getChargingReward(time);
 	}
+	
 	
 	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
 		double currentFitness = this.fitness;
@@ -181,19 +229,17 @@ public class Operator {
 		for (int i = 0; i < chargingMoves.size(); i++) {
 			CarMove chargingMove = chargingMoves.get(i);
 			int index2 = this.chargingMoveIndex.get(chargingMove);
-			if(startEndChargingMoves.get(chargingMove)[1] - deltaTime > Constants.TIME_LIMIT_STATIC_PROBLEM){
+			if(startEndChargingMoves.get(chargingMove)[1] - deltaTime > this.timeLimit){
 				// no change in fitness
 				break;
 			}
 			if(doFitnessUpdates){
 				//find fitness before and after
 				double endTime = startEndChargingMoves.get(chargingMove)[1];
-				double currentChargingReward = getChargingReward(endTime);
-				double newChargingReward     = getChargingReward(endTime - deltaTime);
-				double deltaReward = newChargingReward - currentChargingReward;
-				newFitness += deltaReward;
+				newFitness += getChangeInChargingFitness(endTime, -deltaTime);
+
 				// kun en positiv endring i capacity fitness dersom chargingNoden går fra over planning period til under planning period!
-				if(endTime > Constants.TIME_LIMIT_STATIC_PROBLEM && endTime - deltaTime < Constants.TIME_LIMIT_STATIC_PROBLEM){
+				if(endTime > this.timeLimit && endTime - deltaTime < this.timeLimit){
 					ChargingNode chargingNode = (ChargingNode) chargingMove.getToNode();
 					if(capacityChanged.get(chargingNode) == null){
 						capacityChanged.put(chargingNode, 0);
@@ -241,7 +287,7 @@ public class Operator {
 		return 0;
 	}
 	
-	private double getChargingReward(double time) {
+	public double getChargingReward(double time) {
 		return (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
 	}
 }

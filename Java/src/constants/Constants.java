@@ -12,7 +12,7 @@ public class Constants {
 
     // Test Parameters
     public static SolverType SOLVER_TYPE = SolverType.MOSEL;
-    public static TestType TEST_TYPE = TestType.STATIC;
+    public static TestType TEST_TYPE = TestType.DYNAMIC;
     public final static int NUMBER_OF_DAYS_TO_TEST = 4;
     public final static int START_TIME = 60*8; // Minutes from midnight
     public final static int END_TIME = 60*16;
