@@ -665,21 +665,35 @@ public class ProblemInstance {
         }
     }
 
-    /*
     private void updateNumberOfArrivingCarsInParkingNodes(){
         // Both cars finishing charging and those operators arriving
         HashMap<ParkingNode, Integer> carsArriving = new HashMap<>();
         for(ParkingNode parkingNode : parkingNodes){
             carsArriving.put(parkingNode, 0);
         }
-        // Find cars charging
+        // Find cars finishing charging
         for(ChargingNode chargingNode : chargingNodes){
             for(Car car : chargingNode.getCarsCurrentlyCharging()){
-
+                if(car.getRemainingChargingTime() < Constants.TIME_LIMIT_STATIC_PROBLEM){
+                    ParkingNode associatedParkingNode = chargingToParkingNode.get(chargingNode);
+                    carsArriving.put(associatedParkingNode, carsArriving.get(associatedParkingNode) + 1);
+                }
             }
         }
+        // Find operators arriving to parking node
+        for(Operator operator : operators){
+            if( operator.getTimeRemainingToCurrentNextNode() > 0
+                    && Constants.TIME_LIMIT_STATIC_PROBLEM > operator.getTimeRemainingToCurrentNextNode()
+                    && operator.getNextOrCurrentNode() instanceof ParkingNode){
+                ParkingNode parkingNode = (ParkingNode) operator.getNextOrCurrentNode();
+                carsArriving.put(parkingNode, carsArriving.get(parkingNode) + 1);
+            }
+        }
+        for(ParkingNode parkingNode : parkingNodes){
+            parkingNode.setCarsArrivingThisPeriod(carsArriving.get(parkingNode));
+        }
+
     }
-    */
 
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;
@@ -692,6 +706,7 @@ public class ProblemInstance {
     public void updateParameters(){
         updateNumberOfAvailableChargingStations();
         updateCarsInNeedOfCharging();
+        updateNumberOfArrivingCarsInParkingNodes();
     }
 
     @Override
