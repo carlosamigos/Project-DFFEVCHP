@@ -54,6 +54,7 @@ public class ProblemInstance {
 
     public ProblemInstance(String filePath) {
     	this.filePath = filePath;
+    	System.out.println(filePath);
     	String[] split = filePath.split("/");
         this.fileName = split[split.length-1];
         this.parkingNodes = new ArrayList<>();
@@ -106,7 +107,7 @@ public class ProblemInstance {
     }
 
     private void readProblemFromFile() throws IOException{
-        BufferedReader br = new BufferedReader(new FileReader(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER +fileName + ".txt"));
+        BufferedReader br = new BufferedReader(new FileReader(this.filePath + ".txt"));
         try {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
