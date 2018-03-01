@@ -66,7 +66,11 @@ public class Operator {
 	public int getCarsBeingCharged() {
 		return this.carsBeingCharged;
 	}
-	
+
+	public ArrayList<CarMove> getCarMoves() {
+		return carMoves;
+	}
+
 	public double getTravelTime() {
 		return this.travelTime;
 	}
@@ -283,7 +287,7 @@ public class Operator {
 		return 0;
 	}
 	
-	private double getChargingReward(double time) {
+	public double getChargingReward(double time) {
 		return (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
 	}
 }
