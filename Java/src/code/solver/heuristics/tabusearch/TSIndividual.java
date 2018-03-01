@@ -120,7 +120,8 @@ public class TSIndividual extends Individual {
 
 
 	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
-		return problemInstance.getTravelTimeBike(previousNode.getNodeId(), carMove.getFromNode().getNodeId()) + carMove.getTravelTime();
+		return problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode()) + carMove.getTravelTime();
+	}
 
 	
 	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
