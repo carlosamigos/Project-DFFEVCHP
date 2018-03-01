@@ -129,19 +129,19 @@ public class Operator {
 	 */
 	public double getDeltaFitness(Insert insert, ProblemInstance problemInstance) {
 		double deltaFitness = 0.0;
-		int alreadyAdjusted = 0;
 		double currentTime = this.startTime;
 		
 		int index = insert.getIndex();
 		CarMove insertMove = (CarMove) insert.getObject();
 		
+		HashMap<ChargingNode, Integer> capacityChanged = new HashMap<>();
 		
-		double addedTravelTime;
+		double deltaTime;
 		if(index == 0) {
-			addedTravelTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode(), problemInstance);
+			deltaTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode(), problemInstance);
 		} else {
 			Node next = (index+1 > this.carMoves.size()) ? null : this.carMoves.get(index+1).getFromNode();
-			addedTravelTime = getAbsDeltaTime(this.carMoves.get(index).getToNode(), insertMove, next, problemInstance);
+			deltaTime = getAbsDeltaTime(this.carMoves.get(index).getToNode(), insertMove, next, problemInstance);
 		}
 		
 		Node previous = this.startNode;
@@ -153,23 +153,43 @@ public class Operator {
 		}
 		
 		currentTime += getTravelTime(previous, insertMove, problemInstance);
-		if(currentTime > this.timeLimit) {
-			return 0.0;
-		}
 		
-		if(insertMove.isToCharging()) {
+		if(currentTime < this.timeLimit && insertMove.isToCharging()) {
 			ChargingNode chargingNode = (ChargingNode) insertMove.getToNode();
-			deltaFitness += getCapacityPenalty(chargingNode, true, alreadyAdjusted);
+			deltaFitness += getChargingFitness(currentTime, chargingNode);
 		}
 		
 		for(CarMove move : this.chargingMoves) {
 			int moveIndex = this.chargingMoveIndex.get(move);
-			if (moveIndex >= index && startEndChargingMoves.get(move)[1] <= this.timeLimit) {
+			double endTime = startEndChargingMoves.get(move)[1];
+			if (moveIndex >= index && endTime <= this.timeLimit) {
+				deltaFitness += getChangeInChargingFitness(endTime, deltaTime);
 				
+				if(endTime + deltaTime > this.timeLimit) {
+					ChargingNode chargingNode = (ChargingNode) move.getToNode();
+					deltaFitness += getChangeInCapacityFitness(chargingNode, false, capacityChanged);
+				}
 			}
 		}
 		
-		return 0.0;
+		return deltaFitness;
+	}
+	
+	private double getChangeInChargingFitness(double oldTime, double timeChange) {
+		double oldReward = getChargingReward(oldTime);
+		double newReward = getChargingReward(oldTime + timeChange);
+		return -newReward + oldReward;     
+	}
+	
+	private double getChangeInCapacityFitness(ChargingNode node, boolean isAdding, HashMap<ChargingNode, Integer> capacityChanged) {
+		if(capacityChanged.get(node) == null){
+			capacityChanged.put(node, 0);
+		}
+		
+		double capacityDelta = getCapacityPenalty(node, isAdding, capacityChanged.get(node));
+		int capacityChange = isAdding ? 1 : -1;
+		capacityChanged.put(node, capacityChanged.get(node) + capacityChange);
+		return capacityDelta;
 	}
 	
 	private double getTravelTime(Node previous, CarMove move, ProblemInstance problemInstance) {
@@ -205,19 +225,17 @@ public class Operator {
 		for (int i = 0; i < chargingMoves.size(); i++) {
 			CarMove chargingMove = chargingMoves.get(i);
 			int index2 = this.chargingMoveIndex.get(chargingMove);
-			if(startEndChargingMoves.get(chargingMove)[1] - deltaTime > Constants.TIME_LIMIT_STATIC_PROBLEM){
+			if(startEndChargingMoves.get(chargingMove)[1] - deltaTime > this.timeLimit){
 				// no change in fitness
 				break;
 			}
 			if(doFitnessUpdates){
 				//find fitness before and after
 				double endTime = startEndChargingMoves.get(chargingMove)[1];
-				double currentChargingReward = getChargingReward(endTime);
-				double newChargingReward     = getChargingReward(endTime - deltaTime);
-				double deltaReward = newChargingReward - currentChargingReward;
-				newFitness += deltaReward;
+				newFitness += getChangeInChargingFitness(endTime, -deltaTime);
+
 				// kun en positiv endring i capacity fitness dersom chargingNoden går fra over planning period til under planning period!
-				if(endTime > Constants.TIME_LIMIT_STATIC_PROBLEM && endTime - deltaTime < Constants.TIME_LIMIT_STATIC_PROBLEM){
+				if(endTime > this.timeLimit && endTime - deltaTime < this.timeLimit){
 					ChargingNode chargingNode = (ChargingNode) chargingMove.getToNode();
 					if(capacityChanged.get(chargingNode) == null){
 						capacityChanged.put(chargingNode, 0);
