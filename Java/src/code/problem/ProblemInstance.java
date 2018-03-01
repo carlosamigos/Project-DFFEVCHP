@@ -54,7 +54,6 @@ public class ProblemInstance {
 
     public ProblemInstance(String filePath) {
     	this.filePath = filePath;
-    	System.out.println(filePath);
     	String[] split = filePath.split("/");
         this.fileName = split[split.length-1];
         this.parkingNodes = new ArrayList<>();
@@ -352,7 +351,7 @@ public class ProblemInstance {
     }
     
     public double getTravelTimeBike(Node n1, Node n2) {
-    	return this.travelTimesBike.get(n1.getNodeId()).get(n2.getNodeId());
+    	return this.travelTimesBike.get(n1.getNodeId()-Constants.START_INDEX).get(n2.getNodeId()-Constants.START_INDEX);
     }
 
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
