@@ -26,7 +26,12 @@ public class TSIndividual extends Individual {
 	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
+
+	//Keep track of all car moves
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
+
+	//Keep track of car moves that are not currently being used
+	private HashMap<Car, ArrayList<CarMove>> unusedCarMoves;
 
 	private ProblemInstance problemInstance;
 	
@@ -43,11 +48,15 @@ public class TSIndividual extends Individual {
 
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
+		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+
+		// Constructing initial solution
 		createOperators();
 		initiateCapacities();
 		initiateDeviations();
-		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		addCarMovesToOperators();
+		// -----------------------------
 		calculateFitnessOfIndividual();
 	}
 
@@ -83,7 +92,8 @@ public class TSIndividual extends Individual {
 		this.deviationFromIdealState = new HashMap<>();
 		for (int i = 0; i < problemInstance.getParkingNodes().size(); i++) {
 			//Todo: Does not take into account cars that we know will arrive to the parking node during the planning period.
-			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() - problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
+			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() + problemInstance.getParkingNodes().get(i).getCarsArrivingThisPeriod()
+					- problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 		}
 	}
@@ -97,13 +107,14 @@ public class TSIndividual extends Individual {
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		while(operatorAvailable){
 			operatorAvailable = false;
-			for (Object obop: operators) {
+			for (Object obop: this.operators) {
 				Operator op = (Operator) obop;
 				Node startNode = findPreviousNode(op);
 				CarMove chosen = findnearestCarMove(startNode, carMovesCopy);
 				if(chosen != null){
 					if(timeAvailable(op, startNode, chosen)){
 						operatorAvailable = true;
+						this.unusedCarMoves.get(chosen.getCar()).remove(chosen);
 						op.addCarMove(chosen);
 						carMovesCopy.remove(chosen.getCar());
 						double addDistance = calculateDistanceCarMove(startNode, chosen);
