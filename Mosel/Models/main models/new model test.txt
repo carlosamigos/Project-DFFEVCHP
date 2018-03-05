@@ -65,7 +65,7 @@ visitList: [3 2 2 2 4 2 3 2 1 1 1 1 1 1]
 numCarMovesP : 8
 numCarMovesC : 4
 numCars : 6
-numTasks : 5
+numTasks : 10
 numDeficitNodes : 2
 
 deficitTranslate : [3 5] 

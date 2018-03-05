@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'new model test 2.txt';
+	DataFile = 'new model test.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -247,20 +247,23 @@ Objective := costOfDeviation * sum(ii in pNodes) s_minus(ii) +
 declarations
 	oneMovePerCar   : dynamic array(cars)                              of linctr;
 	oneRoutePerTask : dynamic array(rOperators, tasks)                 of linctr;
-	taskOrdering    : dynamic array(rOperators, carMoves, tasks)       of linctr;
+	taskOrdering    : dynamic array(rOperators, tasks)       of linctr;
 end-declarations 
 
 forall(cc in cars) do
 	oneMovePerCar(cc) := sum(pp in rOperators, rr in carMoves, mm in tasks | cc = carMoveCars(rr)) x(pp, rr, mm) <= 1;
 end-do
 
+
 forall(pp in rOperators, mm in tasks) do
 	oneRoutePerTask(pp, mm) := sum(rr in carMoves) x(pp, rr, mm) <= 1;
 end-do
 
-forall(pp in rOperators, rr in carMoves, mm in tasks | mm <> numTasks) do
-	taskOrdering(pp, rr, mm) := x(pp, rr, mm + 1) <= x(pp, rr, mm);
+
+forall(pp in rOperators, mm in tasks | mm <> numTasks) do
+	taskOrdering(pp, mm) := sum(rr in carMoves) x(pp, rr, mm + 1) <= sum(r2 in carMoves)x(pp, r2, mm);
 end-do
+
 
 ! ### End of declaration of routing constraints ### !	
 
@@ -312,13 +315,16 @@ forall(pp in rOperators, rr in carMoves) do
 end-do
 
 
+
 forall(pp in rOperators) do
 	timeDeviation(pp) := t(pp, numTasks) + t_minus(pp) - t_plus(pp) = timeLimit;
 end-do
 
+
 forall(pp in rOperators) do
 	timeOverTime(pp) := t(pp, numTasks) <= timeLimit + timeLimitLastVisit;
 end-do
+
 
 ! ### End of declaration of time constraints ### !	
 
@@ -326,5 +332,13 @@ end-do
 setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
 
+forall(pp in rOperators) do
+	writeln(sum(rr in carMoves, mm in tasks)getsol(x(pp,rr,mm)));
+end-do
+
+
+forall(ii in Nodes) do
+	writeln(sum(pp in rOperators, rr in carMoves, mm in tasks | ii = carMoveDestination(rr))getsol(x(pp,rr,mm)));
+end-do
 
 end-model
