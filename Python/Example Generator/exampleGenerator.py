@@ -156,7 +156,6 @@ class World:
             self.nodes.pop((r))
         return cords
 
-
     def giveRealCoordinatesCluster(self):
         pass
 
@@ -289,7 +288,6 @@ class World:
                     self.pNodes[r].iState -= 1
                     sumIStateAfter -= 1
 
-
     def calculateMovesToIDeal(self):
         moves = 0
         initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
@@ -382,9 +380,6 @@ class World:
             moves = self.calculateMovesToIDeal()
 
 
-
-
-
     ### SET CONSTANTS ###
 
     def setConstants(self, visits, mode, sBigM):
@@ -414,11 +409,11 @@ class World:
     ## FILE HANDLER ##
 
     def writeToFile(self, example):
-        fileName = "../../Mosel/test_generated/" + str(example) + "_a.txt"
+        fileName = "../../Mosel/tests/" + str(example) + "_a.txt"
         if (os.path.exists(fileName)):
-            fileName = "../../Mosel/test_generated/" + str(example) + "_b.txt"
+            fileName = "../../Mosel/tests/" + str(example) + "_b.txt"
             if (os.path.exists(fileName)):
-                fileName = "../../Mosel/test_generated/" + str(example) + "_c.txt"
+                fileName = "../../Mosel/tests/" + str(example) + "_c.txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
@@ -586,9 +581,6 @@ class World:
         string += "] \n"
         f.write(string)
         #print(string)
-
-
-
 
 class pNode:
 
