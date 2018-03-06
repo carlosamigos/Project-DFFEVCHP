@@ -10,17 +10,48 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 
 
-# CONSTANTS
+### CONSTANTS ####
+
+# EUCLEDEAN DISTANCE - DON'T CHANGE #
 DISTANCESCALE = 3
+
+# NUMBER OF EXAMPLES TO CREATE #
+EXAMPLES = 3
+
+#BOARD SIZE - DONT CHANGE
+XSIZE = 5
+YSIZE = 2
+
+#ALLOWED MOVES
+MOVES = 10
 CARSCHARGING = 3
-MOVES = 7
-MAXNODES = 9
+
+#PARKING NODES USED
+MAXNODES = 16
+
+#CHARGING NODES
+NUMCHARGING = 2
+PARKINGC = [1, 8]
+CAPACITY = [2, 2]
+TOTALCAPACITY = [2, 2]
+
+#OPERATORS
+NUMOPERATORS = 3
+STARTETIMEOP = [5, 0, 0]
+HANDLINGOP = [1, 0 , 0]
+NUMTASKS = 5
+
+# MAKING NODES - DON' CHANGE #
 SPREAD = True
 CLUSTER = True
 
-MODES_RUN_1 = [[2, 10, 30, 0.05, 0.4], [1, 10, 30, 0.05, 0.4], [2, 30, 30, 0.05, 0.4], [1, 30, 30, 0.05, 0.4], [2, 30, 30, 0.4, 0.4], [1, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4], [4, 30, 30, 0.4, 0.4]]
-MODES_RUN_2 = [[2, 10, 30, 0.05, 0.4],  [2, 30, 30, 0.05, 0.4],  [2, 30, 30, 0.4, 0.4], [4, 10, 30, 0.05, 0.4], [4, 30, 30, 0.05, 0.4]]
-MODES_RUN2 = [[2, 10, 30, 0.05, 0.4] , [4, 10, 30, 0.05, 0.4]]
+# OUTPUT - the lists are run in a foor loop #
+# First parameter: Mode - 2 equals the normal one, and 4 equals the one that tries to reduce time when visiting charging nodes
+# Second paramter: Weight for not meeting ideal state
+# Thirds paramter: Weight for not setting vehicles to charging
+# Fourth paramter: Weight for traveling by service operator
+# Fifth paramter: Weight for handling by service operator
+MODES_RUN2 = [[2, 10, 30, 0.05, 0.4]]
 
 class World:
 
@@ -65,6 +96,7 @@ class World:
         self.surp = []
         self.deficit = []
         self.charg = []
+        self.cars = []
 
     def addDim(self, xCord, yCord):
         self.XCORD = xCord
@@ -84,6 +116,10 @@ class World:
 
     def addfCCars(self, fCCar):
         self.fCCars.append(fCCar)
+
+    def addCar(self, car):
+        self.cars.append(car)
+
 
     ## CALCULATE DISTANCE ##
 
@@ -125,7 +161,6 @@ class World:
             self.pNodes.pop((r))
             self.nodes.pop((r))
         return cords
-
 
     def giveRealCoordinatesCluster(self):
         pass
@@ -255,9 +290,9 @@ class World:
                 sumIStateAfter += 1
             else:
                 r = random.randint(0, len(self.pNodes) - 1)
-                self.pNodes[r].iState -= 1
-                sumIStateAfter -= 1
-
+                if(self.pNodes[r].iState > 0):
+                    self.pNodes[r].iState -= 1
+                    sumIStateAfter -= 1
 
     def calculateMovesToIDeal(self):
         moves = 0
@@ -301,7 +336,6 @@ class World:
             return False
         return True
 
-
     def shuffleIdealState(self):
         moves = self.calculateMovesToIDeal()
         iStateList = []
@@ -341,7 +375,7 @@ class World:
                 r2 = random.randint(0, len(self.pNodes) - 1)
                 while (r1 == r2 or iStateList[r1] == 0 or self.checkSurplusNode(r2) or self.checkdeficitNode(r1)):
                     r1 = random.randint(0, len(self.pNodes) - 1)
-                    r2 = random.randint(0, len(self.pNodes) - 1)
+                    r2 = random.randint(0, len(self.pNodes) -1)
                 iStateList[r1] -= 1
                 iStateList[r2] += 1
 
@@ -350,7 +384,10 @@ class World:
 
             moves = self.calculateMovesToIDeal()
 
-
+    def calculateNodeDiff(self):
+        initial_theta, initial_handling, initial_lambda, initial_service = self.calculateInitialAdd()
+        for i in range(len(self.pNodes)):
+            self.pNodes[i].surplus = (self.pNodes[i].pState + initial_lambda[i]) - (self.pNodes[i].iState + self.pNodes[i].demand)
 
 
 
@@ -553,11 +590,118 @@ class World:
             if (i < len(self.visitList) - 1):
                 string += " "
         string += "] \n"
+        string += "\n"
+        count = 0
+        for i in range(len(self.cars)):
+            if not(self.cars[i].charging):
+                for j in range(len(self.cars[i].destinations)):
+                    count += 1
+        string += "numCarMovesP : " + str(count) + "\n"
+        count = 0
+        for i in range(len(self.cars)):
+            if(self.cars[i].charging):
+                for j in range(len(self.cars[i].destinations)):
+                    count += 1
+        string += "numCarMovesC : " + str(count) + "\n"
+        string += "numCars : " + str(len(self.cars)) + "\n"
+        string += "numTasks : " + str(NUMTASKS) + "\n"
+        count = 0
+        for i in range(len(self.pNodes)):
+            if(self.pNodes[i].surplus < 0):
+                count += 1
+        string += "numDeficitNodes : " + str(count) + "\n"
+        string += "\n"
+        deficitNodes = []
+        for i in range(len(self.pNodes)):
+            if (self.pNodes[i].surplus < 0):
+                deficitNodes.append(i)
+        string += "deficitTranslate : ["
+        for i in range(len(deficitNodes)):
+            string += str(deficitNodes[i]+1)
+            if (i < len(deficitNodes) - 1):
+                string += " "
+        string += "] \n"
+        string += "deficitCarsInNode : ["
+        for i in range(len(deficitNodes)):
+            string += str(-self.pNodes[deficitNodes[i]].surplus)
+            if (i < len(deficitNodes) - 1):
+                string += " "
+        string += "] \n"
+        string += "carMoveCars : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(i+1)
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if(j < len(self.cars[i].destinations) -1):
+                        string += " "
+        string += "] \n"
+        string += "carMoveOrigin : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.cars[i].parkingNode)
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if(j < len(self.cars[i].destinations) -1):
+                        string += " "
+        string += "] \n"
+        string += "carMoveDestination : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.cars[i].destinations[j])
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if(j < len(self.cars[i].destinations) -1):
+                        string += " "
+        string += "] \n"
+        string += "carMoveHandlingTime : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.distancesC[(self.cars[i].parkingNode -1)*len(self.nodes) + self.cars[i].destinations[j] -1])
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if(j < len(self.cars[i].destinations) -1):
+                        string += " "
+        string += "] \n"
+        string += "carMoveStartingTime : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.cars[i].startTime)
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if (j < len(self.cars[i].destinations) - 1):
+                        string += " "
+        string += "] \n"
+        count = 0
+        for i in range(len(self.pNodes)):
+            if(self.pNodes[i].cState > 0):
+                count += 1
+        string += "numCarsInCNeedNodes : " + str(count)
+        string += "\n"
+        carsInNeedCNodes = []
+        for i in range(len(self.pNodes)):
+            if (self.pNodes[i].cState > 0):
+                carsInNeedCNodes.append(i)
+        string += "carsInNeedCTranslate : ["
+        for i in range(len(carsInNeedCNodes)):
+            string += str(carsInNeedCNodes[i] + 1)
+            if (i < len(carsInNeedCNodes) - 1):
+                string += " "
+        string += "] \n"
+        string += "carsInNeedNodes : ["
+        for i in range(len(carsInNeedCNodes)):
+            string += str(self.pNodes[carsInNeedCNodes[i]].cState)
+            if (i < len(carsInNeedCNodes) - 1):
+                string += " "
+        string += "] \n"
+
         f.write(string)
         print(string)
-
-
-
 
 class pNode:
 
@@ -569,6 +713,7 @@ class pNode:
         self.cState = cState
         self.iState = iState
         self.demand = demand
+        self.surplus = 0
 
 class cNode:
 
@@ -598,22 +743,32 @@ class fCCars:
         self.remainingTime = remainingTime
 
 
+class car:
+    def __init__(self, startTime, parkingNode, charging):
+        self.startTime = startTime
+        self.parkingNode = parkingNode
+        self.destinations = []
+        self.charging = charging
+
+    def calculateDestinations(self, world):
+        pass
+
+
+
 # PNODES
 def createNodes(world):
-    xRange = int(input("How many nodes on the X-axis: "))
-    yRange = int(input("How many nodes on the Y-axis: "))
-    for i in range(xRange):
+    for i in range(YSIZE):
         xCord = i
-        for j in range(yRange):
+        for j in range(XSIZE):
             pState = random.randint(0, 3)
             cState = random.randint(0, 1)
             iState = random.randint(0, 4)
-            demand = random.randint(-1, 1)
+            demand = 0
             yCord = j
             node = pNode(xCord, yCord, pState, cState, iState, demand)
             world.addNodes(node)
             world.addPNodes(node)
-    world.addDim(xRange, yRange)
+    world.addDim(XSIZE, YSIZE)
 
 # ARTIFICIAL OPERATORS
 def createFCCars(world, time, cNode, pNode):
@@ -622,16 +777,13 @@ def createFCCars(world, time, cNode, pNode):
 
 # CNODES
 def createCNodes(world):
-    string = "\n You can create a charging node in parking node 1 to: " + str(len(world.pNodes))
-    print(string)
-    numCNodes = int(input("How many do yoy want to create: "))
+    numCNodes = NUMCHARGING
     for i in range(numCNodes):
-        print("\n")
         print("Creating charging node: ", i+1)
-        pNodeNum = int(input("Which parking node should it be located in: "))
+        pNodeNum = PARKINGC[i]
         pNode = world.pNodes[pNodeNum-1]
-        capacity = int(input("How many available charging slots right now: "))
-        totalCapacity = int(input("What is the total capacity: "))
+        capacity = CAPACITY[i]
+        totalCapacity = TOTALCAPACITY[i]
         fCCars = totalCapacity - capacity
         for j in range(fCCars):
             time = random.randint(0, 10)
@@ -642,13 +794,12 @@ def createCNodes(world):
 
 # OPERATORS
 def createOperators(world):
-    numOperators = int(input("\n What is the number of operators "))
+    numOperators = NUMOPERATORS
     for i in range(numOperators):
-        print("\n")
         print("Creating operator", i+1)
         startNode = random.randint(1, len(world.pNodes))
-        time = int(input("What is the starting time: "))
-        handling = int(input("Are they handling, 1 if yes: "))
+        time = STARTETIMEOP[i]
+        handling = HANDLINGOP[i]
         if(handling == 1):
             op = operator(startNode, time, True)
             world.addOperator(op)
@@ -658,60 +809,96 @@ def createOperators(world):
             world.addOperator(op)
 
 
+# Cars
+
+def createCars(world):
+    initial_theta, initial_handling, initial_lambda, initial_service = world.calculateInitialAdd()
+    movesDef = []
+    movesSurp = []
+    movesCharg = []
+    for i in range(len(world.pNodes)):
+        deficit = (world.pNodes[i].iState + world.pNodes[i].demand) - (world.pNodes[i].pState + initial_lambda[i])
+        surplus = (world.pNodes[i].pState) - (world.pNodes[i].iState + world.pNodes[i].demand)
+        movesDef.append(max(deficit, 0))
+        movesSurp.append(max(surplus, 0))
+        movesCharg.append(world.pNodes[i].cState)
+    for i in range(len(world.cNodes) + 2 * len(world.operators)):
+        movesDef.append(1)
+        movesSurp.append(1)
+        movesCharg.append(1)
+    for i in range(len(world.pNodes)):
+        for j in range(movesSurp[i]):
+            newCar = car(0, i+1, False)
+            for x in range(len(world.pNodes)):
+                if(movesDef[x] > 0):
+                    newCar.destinations.append(x + 1)
+            world.addCar(newCar)
+        if(initial_lambda[i] > 0 and initial_lambda[i] > movesDef[i]):
+            for j in range(len(world.operators)):
+                if(world.operators[j].handling and world.operators[j].startNode - 1 == i):
+                    newCar = car(world.operators[j].startTime, i+1, False)
+                    for x in range(len(world.pNodes)):
+                        if (movesDef[x] > 0 and x != i):
+                            newCar.destinations.append(x + 1)
+                    world.addCar(newCar)
+            for j in range(len(world.fCCars)):
+                if(world.fCCars[j].parkingNode -1 == i):
+                    newCar = car(world.fCCars[j].remainingTime, i + 1, False)
+                    for x in range(len(world.pNodes)):
+                        if (movesDef[x] > 0 and x != i):
+                            newCar.destinations.append(x + 1)
+                    world.addCar(newCar)
+    for i in range(len(world.pNodes)):
+        for j in range(movesCharg[i]):
+            newCar = car(0, i + 1, True)
+            for x in range(len(CAPACITY)):
+                if(CAPACITY[x] > 0):
+                    newCar.destinations.append(len(world.pNodes) + x +1)
+            world.addCar(newCar)
 
 
-def main():
-    print("\n WELCOME TO THE EXAMPLE CREATOR \n")
+
+def buildWorld():
     world = World()
-    #world.setCordConstants((59.956751, 10.861843), (59.908674, 10.670612))
     world.setCordConstants((59.952483, 10.795069), (59.904574, 10.681527))
     createNodes(world)
     cords = []
-    if(SPREAD):
+    if (SPREAD):
         cords = world.giveRealCoordinatesSpread()
     createCNodes(world)
     createOperators(world)
     world.createRealIdeal()
     world.shuffleIdealState()
-    print("DONE")
     world.setTimeConstants(4, 5, 60, 10, 30)
-    if(len(world.pNodes) > 10):
+    if (len(world.pNodes) > 0):
         world.calculateDistances()
     else:
         world.calculateRealDistances(cords)
     world.calculateVisitList()
     world.calculateMovesListToIdeal()
     maxVisit = max(world.visitList)
+    createCars(world)
+    world.calculateNodeDiff()
     for i in range(len(MODES_RUN2)):
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
         moves = world.calculateMovesToIDeal()
-        #filepath = "test_" + str(world.YCORD) + "x" + str(world.XCORD) + "_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(i) + "MODE"
         filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(i) + "MODE"
         world.writeToFile(filepath)
 
+
+
+def main():
+    print("\n WELCOME TO THE EXAMPLE CREATOR \n")
+    for i in range(EXAMPLES):
+        print("Creating instance: ", i)
+        buildWorld()
+
 main()
 
-"""
-string += "surplusList: ["
-for i in range(len(self.surp)):
-    string += str(self.surp[i])
-    if (i < len(self.surp) - 1):
-        string += " "
-string += "] \n"
-string += "deficitList: ["
-for i in range(len(self.deficit)):
-    string += str(self.deficit[i])
-    if (i < len(self.deficit) - 1):
-        string += " "
-string += "] \n"
-string += "allList: ["
-for i in range(len(self.deficit)):
-    string += str(self.deficit[i] + self.surp[i] + self.charg[i])
-    if (i < len(self.deficit) - 1):
-        string += " "
-string += "] \n"
-"""
-# TODO: Create a new location template, so that zobnes scale equally
-# TODO: More crontol paramters for generating boards with an equal amount of: Cars to be handled, cars to be charged, cars that finish charging
+list = [1, 2, 3]
+
+
+
+
 
