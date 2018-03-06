@@ -20,25 +20,25 @@ EXAMPLES = 3
 
 #BOARD SIZE - DONT CHANGE
 XSIZE = 5
-YSIZE = 4
+YSIZE = 2
 
 #ALLOWED MOVES
-MOVES = 9
+MOVES = 10
 CARSCHARGING = 3
 
 #PARKING NODES USED
-MAXNODES = 20
+MAXNODES = 16
 
 #CHARGING NODES
-NUMCHARGING = 3
-PARKINGC = [1, 8, 14]
-CAPACITY = [2, 2, 2]
-TOTALCAPACITY = [2, 2, 2]
+NUMCHARGING = 2
+PARKINGC = [1, 8]
+CAPACITY = [2, 2]
+TOTALCAPACITY = [2, 2]
 
 #OPERATORS
-NUMOPERATORS = 4
-STARTETIMEOP = [5, 0, 0, 0]
-HANDLINGOP = [1, 0 , 0, 0]
+NUMOPERATORS = 3
+STARTETIMEOP = [5, 0, 0]
+HANDLINGOP = [1, 0 , 0]
 NUMTASKS = 5
 
 # MAKING NODES - DON' CHANGE #
@@ -677,6 +677,29 @@ class World:
                     if (j < len(self.cars[i].destinations) - 1):
                         string += " "
         string += "] \n"
+        count = 0
+        for i in range(len(self.pNodes)):
+            if(self.pNodes[i].cState > 0):
+                count += 1
+        string += "numCarsInCNeedNodes : " + str(count)
+        string += "\n"
+        carsInNeedCNodes = []
+        for i in range(len(self.pNodes)):
+            if (self.pNodes[i].cState > 0):
+                carsInNeedCNodes.append(i)
+        string += "carsInNeedCTranslate : ["
+        for i in range(len(carsInNeedCNodes)):
+            string += str(carsInNeedCNodes[i] + 1)
+            if (i < len(carsInNeedCNodes) - 1):
+                string += " "
+        string += "] \n"
+        string += "carsInNeedNodes : ["
+        for i in range(len(carsInNeedCNodes)):
+            string += str(self.pNodes[carsInNeedCNodes[i]].cState)
+            if (i < len(carsInNeedCNodes) - 1):
+                string += " "
+        string += "] \n"
+
         f.write(string)
         print(string)
 
