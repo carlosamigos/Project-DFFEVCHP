@@ -73,7 +73,7 @@ public class TSIndividual extends Individual {
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
 			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
-					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance, capacities);
+					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), capacities);
 			operators.add(op);
 		}
 
