@@ -212,7 +212,7 @@ public class TSIndividual extends Individual {
 
 
 
-	protected void calculateFitnessOfIndividual() {
+	protected double calculateFitnessOfIndividual() {
 		//TODO: To be tested. Should update all fitness-related parameters in Operators
 		// Considers only charging time and capacity at the moment
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
@@ -239,7 +239,7 @@ public class TSIndividual extends Individual {
 				totalFitness += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY * Math.max(used - availableChargingSpots,0);
 			}
 		}
-		this.fitness = totalFitness;
+		return totalFitness;
 	}
 
 	@Override
@@ -255,17 +255,34 @@ public class TSIndividual extends Individual {
 	
 	public double deltaFitness(IntraMove intraMove) {
 		Operator operator = intraMove.getOperator();
-
-		return 0.0;
+		int removeIndex = intraMove.getRemoveIndex();
+		int insertIndex = intraMove.getInsertIndex();
 		
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities); 
+		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
+		double oldFitness = operator.getFitness();
+		
+		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.addCarMove(insertIndex, carMove);
+		operator.calculateFitness();
+		
+		double deltaFitness = operator.getFitness() - oldFitness;
+		
+		operator.setCarMoves(oldCarMoves);
+		operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		operator.setFitness(oldFitness);
+		
+		return deltaFitness;
 	}
 	
-	public void performMutation(Swap1 swap) {
-		/*
-		 * 1. Remove
-		 * 2. Insert
-		 */
+	public void performMutation(IntraMove intraMove) {
+		Operator operator = intraMove.getOperator();
+		int removeIndex = intraMove.getRemoveIndex();
+		int insertIndex = intraMove.getInsertIndex();
+		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.addCarMove(insertIndex, carMove);
 	}
+	
 	
 	public void addToFitness(double delta) {
 		this.fitness += delta;

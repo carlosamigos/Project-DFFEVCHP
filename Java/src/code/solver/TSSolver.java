@@ -6,10 +6,8 @@ import java.util.HashMap;
 import code.problem.ProblemInstance;
 import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
+import code.solver.heuristics.mutators.IntraMove;
 import code.solver.heuristics.mutators.Mutation;
-import code.solver.heuristics.mutators.Swap1;
-import code.solver.heuristics.mutators.Swap2;
-import code.solver.heuristics.mutators.Swap3;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
 import constants.HeuristicsConstants;
@@ -48,16 +46,16 @@ public class TSSolver extends Solver {
 	 */
 	private void setMutationToDelta() {
 		this.mutationToDelta = new HashMap<>();
-		this.mutationToDelta.put(Swap1.id, (Mutation mutation) -> {
-			Swap1 swap = (Swap1) mutation;
+		this.mutationToDelta.put(IntraMove.id, (Mutation mutation) -> {
+			IntraMove swap = (IntraMove) mutation;
 			return this.individual.deltaFitness(swap);
 		});
 	}
 	
 	private void setMutationToPerform() {
 		this.mutationToPerform = new HashMap<>();
-		this.mutationToPerform.put(Swap1.id, (Mutation mutation) -> {
-			Swap1 swap = (Swap1) mutation;
+		this.mutationToPerform.put(IntraMove.id, (Mutation mutation) -> {
+			IntraMove swap = (IntraMove) mutation;
 			return this.individual.deltaFitness(swap);
 		});
 	}
@@ -106,11 +104,6 @@ public class TSSolver extends Solver {
 	private ArrayList<Mutation> getNeighbors() {
 		ArrayList<Mutation> neighborhood = new ArrayList<>();
 		for(int i = 0; i < this.neighborhoodSize; i++) {
-			for(int j = 0; j < 9; j++) {
-				for(int k = j+1; k < 10; k++) {
-					neighborhood.add(new Swap2(j, k));
-				}
-			}
 		}
 		return neighborhood;
 	}

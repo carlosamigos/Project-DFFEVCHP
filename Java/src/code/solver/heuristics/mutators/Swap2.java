@@ -1,10 +1,5 @@
 package code.solver.heuristics.mutators;
 
-import code.solver.heuristics.Individual;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class Swap2 extends Mutation{
 
 	public final static int id = 2;
