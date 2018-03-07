@@ -21,15 +21,21 @@ import code.solver.heuristics.mutators.Swap3;
 
 public class TSIndividual extends Individual {
 	
-	private ArrayList<Operator> operators;
+	private ArrayList<Object> operators;
 
 	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
+
+	//Keep track of all car moves
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
 
-	private ProblemInstance problemInstance;
+	//Keep track of car moves that are not currently being used
+	private HashMap<Car, ArrayList<CarMove>> unusedCarMoves;
 
+	private ProblemInstance problemInstance;
+	
+	//Fitness parameters
 	private double fitness = 0.0;
 	private double costOfPostponed = 0.0;
 	private double awardForCharging = 0.0;
@@ -37,17 +43,32 @@ public class TSIndividual extends Individual {
 	private double costOfTravel = 0.0;
 	private double costOfUnmetIdeal = 0.0;
 
+	//Placeholder Weights
+
+
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
-		this.representation = new ArrayList<>();
+		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+
+		// Constructing initial solution
 		createOperators();
 		initiateCapacities();
 		initiateDeviations();
-		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
-		initializeOperators();
+		addCarMovesToOperators();
+		// -----------------------------
 		calculateFitnessOfIndividual();
 	}
 
+	//================================================================================
+	// Construct the initial solutions
+	//================================================================================
+
+
+	// INITIATORS
+	// -------------------------------------------------------------------------------
+
+	//Initiate operators
 	private void createOperators(){
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
@@ -58,6 +79,7 @@ public class TSIndividual extends Individual {
 
 	}
 
+	//Initiate charging station capacities
 	private void initiateCapacities(){
 		this.capacities = new HashMap<>();
 		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
@@ -65,27 +87,34 @@ public class TSIndividual extends Individual {
 		}
 	}
 
+	//Initiate deviation from ideal states
 	private void initiateDeviations(){
 		this.deviationFromIdealState = new HashMap<>();
 		for (int i = 0; i < problemInstance.getParkingNodes().size(); i++) {
 			//Todo: Does not take into account cars that we know will arrive to the parking node during the planning period.
-			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() - problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
+			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() + problemInstance.getParkingNodes().get(i).getCarsArrivingThisPeriod()
+					- problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 		}
 	}
 
-	//Choose the car moves that goes into the initial solution for each operator
-	private void initializeOperators() {
+	//  IDENTIFY CAR MOVES FOR INITIAL SOLUTION
+	// -------------------------------------------------------------------------------
+
+	// Overall algorithm
+	private void addCarMovesToOperators() {
 		boolean operatorAvailable = true;
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		while(operatorAvailable){
 			operatorAvailable = false;
-			for (Operator op: operators) {
+			for (Object obop: this.operators) {
+				Operator op = (Operator) obop;
 				Node startNode = findPreviousNode(op);
 				CarMove chosen = findnearestCarMove(startNode, carMovesCopy);
 				if(chosen != null){
 					if(timeAvailable(op, startNode, chosen)){
 						operatorAvailable = true;
+						this.unusedCarMoves.get(chosen.getCar()).remove(chosen);
 						op.addCarMove(chosen);
 						carMovesCopy.remove(chosen.getCar());
 						double addDistance = calculateDistanceCarMove(startNode, chosen);
@@ -101,46 +130,18 @@ public class TSIndividual extends Individual {
 		}
 	}
 
-	private void updateDeviation(ParkingNode parkingNode){
-		deviationFromIdealState.put(parkingNode, deviationFromIdealState.get(parkingNode) +1);
-	}
-
-	private void updateCapacity(ChargingNode chargingNode){
-		capacities.put(chargingNode, capacities.get(chargingNode) - 1);
-	}
-
-	private Node findPreviousNode(Operator op){
-		Node node;
-		int carMoveSize = op.getCarMovesSize();
-		if(carMoveSize > 0){
-			node = op.getCarMove(carMoveSize - 1).getToNode();
-		}else{
-			node = op.getStartNode();
-		}
-		return node;
-	}
-
-
-	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
-		return problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode()) + carMove.getTravelTime();
-	}
-
-	
-	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
-		double addDistance = calculateDistanceCarMove(previousNode, carMove);
-		return (op.getStartTime() + op.getTravelTime() + addDistance < op.getTimeLimit());
-	}
-
+	// Identify car moves to be evaluated
 	private CarMove findnearestCarMove(Node node, HashMap<Car, ArrayList<CarMove>> carMovesCopy){
 		double distance = Integer.MAX_VALUE;
+		double fitNess = Double.MAX_VALUE;
 		CarMove cMove = null;
 		for(Car car : carMovesCopy.keySet()){
 			if(carMovesCopy.get(car).size() > 0){
 				Node fromNode = carMovesCopy.get(car).get(0).getFromNode();
 				double distanceCandidate = problemInstance.getTravelTimeBike(node, fromNode);
-				if(distanceCandidate < distance){
+				//Accepting twice the distance
+				if(distanceCandidate < distance*3){
 					distance = distanceCandidate;
-					double fitNess = Double.MAX_VALUE;
 					for(CarMove carMove: carMovesCopy.get(car)){
 						double fitNessCancidate = rateCarMove(carMove, distance);
 						if(fitNessCancidate < fitNess){
@@ -154,23 +155,64 @@ public class TSIndividual extends Individual {
 		return cMove;
 	}
 
+	// Evaluate car moves based on fitness
 	private double rateCarMove(CarMove carMove, double distance){
 		double fitNess = 0;
-		fitNess += (carMove.getTravelTime() + distance)*costOfTravel;
+		fitNess += (carMove.getTravelTime() + distance)* HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION;
 		if(carMove.getToNode() instanceof ChargingNode){
 			if(capacities.get(carMove.getToNode()) <= 0){
-				fitNess = Double.MAX_VALUE;
+				fitNess = HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
-			fitNess += -awardForCharging * capacities.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
-				fitNess = Double.MAX_VALUE;
+				fitNess = HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
 			}
-			fitNess += -awardForMeetingIdeal * deviationFromIdealState.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_IDEAL_STATE_REWARD * deviationFromIdealState.get(carMove.getToNode());
 		}
 		return fitNess;
 
 	}
+
+	//  HELPER METHODS
+	// -------------------------------------------------------------------------------
+
+	// Update deviation from ideal state as car moves are chosen
+	private void updateDeviation(ParkingNode parkingNode){
+		deviationFromIdealState.put(parkingNode, deviationFromIdealState.get(parkingNode) +1);
+	}
+
+	// Update charging station capacities as car moves are chosen
+	private void updateCapacity(ChargingNode chargingNode){
+		capacities.put(chargingNode, capacities.get(chargingNode) - 1);
+	}
+
+	// Identifies which node a service operator is travelling from
+	private Node findPreviousNode(Operator op){
+		Node node;
+		int carMoveSize = op.getCarMovesSize();
+		if(carMoveSize > 0){
+			node = op.getCarMove(carMoveSize - 1).getToNode();
+		}else{
+			node = op.getStartNode();
+		}
+		return node;
+	}
+
+	// Calculates the total distance to travel when evaluating a car move
+	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
+		return problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode()) + carMove.getTravelTime();
+	}
+
+	// Calculates if there is available time left to do another move.
+	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
+		double addDistance = calculateDistanceCarMove(previousNode, carMove);
+		return (op.getStartTime() + op.getTravelTime() + addDistance < op.getTimeLimit());
+	}
+
+	// -------------------------------------------------------------------------------
+
+
 
 	protected void calculateFitnessOfIndividual() {
 		//TODO: To be tested. Should update all fitness-related parameters in Operators
@@ -178,7 +220,8 @@ public class TSIndividual extends Individual {
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
 		double totalFitness = 0;
 		// Calculate time reward fitness
-		for(Operator operator : operators) {
+		for(Object op : operators) {
+			Operator operator = (Operator) op;
 			double currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoves()){
@@ -201,6 +244,11 @@ public class TSIndividual extends Individual {
 		this.fitness = totalFitness;
 	}
 
+	@Override
+	public ArrayList<Object> getRepresentation() {
+		return this.operators;
+	}
+
 	private void increaseCapacityUsedInNode(ChargingNode chargingNode, HashMap<ChargingNode, Integer> capacityUsed){
 		if(capacityUsed.get(chargingNode) == null){
 			capacityUsed.put(chargingNode, 0);
@@ -211,8 +259,8 @@ public class TSIndividual extends Individual {
 		//TODO: to be removed or changed
 		int i = swap.getI();
 		int j = swap.getJ();
-		double before =  Math.abs((int) this.representation.get(i) - i) +  Math.abs((int) this.representation.get(j) - j); 
-		double after =  Math.abs((int) this.representation.get(i) - j) +  Math.abs((int) this.representation.get(j) - i); 
+		double before =  Math.abs((int) this.getRepresentation().get(i) - i) +  Math.abs((int) this.getRepresentation().get(j) - j);
+		double after =  Math.abs((int) this.getRepresentation().get(i) - j) +  Math.abs((int) this.getRepresentation().get(j) - i);
 		return after - before;
 	}
 	
@@ -242,7 +290,7 @@ public class TSIndividual extends Individual {
 	@Override
 	public String toString() {
 		String s = "";
-		for(Object i : this.representation) {
+		for(Object i : this.getRepresentation()) {
 			s += i.toString() + " ";
 		}
 		return s + "\n";

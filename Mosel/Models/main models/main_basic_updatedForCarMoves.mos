@@ -1,0 +1,411 @@
+model DVFFEVRP
+
+!options explterm
+!options noimplicit
+
+uses "mmxprs";
+
+parameters
+	DataFile = 'test_12nodes_3so_2c_7mov_3charging_0finishes_0MODE_a.txt';
+	OutputPathRegular = "outputServiceOperatorsPath.txt";
+	OutputPathArtificial = "outputArtificialServiceOperators.txt";
+	printParams = true;
+	printResults = true;
+	writeToFile = true;
+	MaxSolveTimeSeconds = 600;
+end-parameters
+
+
+(! ### Start of initialization of set sizes ### !)
+
+declarations
+	numPNodes        :	integer; ! Number of parking Nodes
+	numDeficitNodes  :	integer; ! Number of deficit parking nodes
+	numCNodes        :	integer; ! Number of charging Nodes
+	numRNodes        :	integer; ! Number of real Nodes
+	numNodes         :	integer; ! Total number of Nodes
+	numROperators    :  integer; ! Number of real operators
+	numCarMovesP     :  integer; ! Number of car moves to parking nodes
+	numCarMovesC     :  integer; ! Number of car moves to charging nodes
+	numCars          :  integer; ! Number of cars 
+	numTasks         :  integer  ! Number of taks
+	numCarsInCNeedNodes : integer ! Number of nodes that have cars in need of charging
+end-declarations
+
+initializations from DataFile
+	numPNodes;
+	numDeficitNodes;
+	numCNodes;
+	numROperators;
+	numCarMovesP;
+	numCarMovesC;
+	numCars;
+	numTasks;
+	numCarsInCNeedNodes
+end-initializations
+
+! ### End of initialization of set sizes ### !
+
+
+! ### Start of declaration of sets ### !
+declarations
+	Nodes             : set of integer; ! Set of all Nodes
+	pNodes            : set of integer; ! Set of all parking Nodes. A subset of Nodes. Surplus first, then deficit
+	cNodes     		  : set of integer; ! Set of all charging Nodes. A subset of Nodes.
+	deficitNodes      : set of integer; ! Set of all deficit nodes
+	rOperators        : set of integer; ! Set of all real operators.
+	tasks             : set of integer; ! Set of all possible visits
+	cars              : set of integer; ! Set of all cars 
+	carMoves          : set of integer; ! Set of all car moves
+	carMovesP         : set of integer; ! Set of car moves that ends in parking nodes
+	carMovesC         : set of integer; ! Set of car moves that ends in charging nodes
+	carsInCNeedNodes  : set of integer; ! Set of cars that require charging
+end-declarations
+
+
+! Initialize all node sets ! 
+numNodes          := numCNodes + numPNodes;
+pNodes            := 1 .. numPNodes;
+cNodes   	      := (numPNodes + 1) .. numNodes;
+Nodes    	      := pNodes + cNodes;
+deficitNodes      := 1 .. numDeficitNodes;
+carsInCNeedNodes  := 1 .. numCarsInCNeedNodes; 
+
+! Initialize operator sets !
+rOperators := 1 .. numROperators;
+
+! Initialize all tasks !
+tasks             := 1 .. numTasks;
+
+! Initialize all car sets !
+cars              := 1 .. numCars;
+
+! Initialize all carMove sets !
+numCarMoves       := numCarMovesP + numCarMovesC;
+carMovesP         :=  1 .. numCarMovesP;
+carMovesC         := (numCarMovesP + 1) .. numCarMoves;
+carMoves          := carMovesP + carMovesC;
+
+! ### End of initialization of sets ### !
+
+
+if printParams then
+	writeln('------ Counts ------');
+	writeln('Number of Nodes:                ', numNodes);
+	writeln('Number of deficit Nodes:        ', numDeficitNodes);
+	writeln('Number of parking Nodes:        ', numPNodes);
+	writeln('Number of charging Nodes:       ', numCNodes);
+	
+	writeln('');
+	writeln('------ Sets ------');
+	writeln('All Nodes:               ', Nodes);
+	writeln('Parking Nodes:           ', pNodes);
+	writeln('Charging Nodes:          ', cNodes);
+	writeln('Operators:               ', rOperators);
+	writeln('');
+end-if
+
+
+! ### Start of declaration of Parameters ### !
+declarations
+	! Operator !
+	startNodeROperator        : array(rOperators) of integer; ! Actual start node for real operators
+	
+	! Node references:  !
+	deficitTranslate          : array(deficitNodes) of integer;
+	deficitCarsInNode         : array(deficitNodes) of integer;
+	carsInNeedCTranslate      : array(carsInCNeedNodes) of integer;
+	
+	! Car moves !
+	carMoveCars               : array(carMoves) of integer;
+	carMoveOrigin             : array(carMoves) of integer;
+	carMoveDestination        : array(carMoves) of integer;
+	 
+	! Costs !
+	costOfDeviation           : real; 
+	costOfPostponedCharging   : real;
+	costOfExtraTime           : real;
+	costOfTravel              : real;
+	costOfTravelH			  : real;
+	
+	! Times !
+	carMoveHandlingTime    	  : array(carMoves)      of real;
+	carMoveStartingTime 	  : array(carMoves)		of real;
+	travelTimeBike      	  : array(Nodes,Nodes)   of real;
+	travelTimeToOriginR  	  : array(rOperators)    of real;
+	timeLimit            	  : real;
+	timeLimitLastVisit   	  : real;
+	
+	chargingSlotsAvailable    : array(cNodes)     of integer; ! Available charging slots at charging Nodes
+	initialInNeedP            : array(pNodes)     of integer;
+	
+	!Objective function
+	mode 					  : integer;
+	
+end-declarations
+
+initializations from DataFile
+	startNodeROperator;
+	deficitTranslate;
+	deficitCarsInNode;
+	carMoveCars;
+	carMoveOrigin;
+	carMoveDestination;
+	costOfDeviation;
+	costOfPostponedCharging;
+	costOfExtraTime;
+	costOfTravel;
+	costOfTravelH;
+	carMoveHandlingTime;
+	carMoveStartingTime;
+	travelTimeBike;
+	travelTimeToOriginR;
+	timeLimit;
+	timeLimitLastVisit;
+	chargingSlotsAvailable;
+	mode;
+	initialInNeedP;
+	carsInNeedCTranslate
+end-initializations
+! ### End of initialization of Parameters ### !
+
+if printParams then
+	writeln('------ Parameters ------');
+	writeln('Actual starting node for real operators:                                 ', startNodeROperator);
+	writeln('Actual starting node for real operators:                                 ',startNodeROperator);
+	writeln('Available slots at charging stations:                                    ',chargingSlotsAvailable);
+	writeln('Cost per vehicle deviation in each node:                                 ',costOfDeviation);
+	writeln('Cost of extra time:                                                      ',costOfExtraTime);
+	writeln('Cost per vehicle of postponing chargning:                                ',costOfPostponedCharging);
+	writeln('Travel times between real Nodes using bikes:                             ',travelTimeBike);
+	writeln('Time limit for planning period:                                          ',timeLimit);
+	writeln('Time limit for last visit:                                               ',timeLimitLastVisit);
+	writeln('Remaining travel time to origin node for real operators:                 ',travelTimeToOriginR);
+	writeln('Deficit nodes:                                                           ',deficitTranslate);
+	writeln('Deficit cars:                                                            ',deficitCarsInNode);
+	writeln('CarMove cars:                                                            ',carMoveCars);
+	writeln('CarMove origin:                                                          ',carMoveOrigin);
+	writeln('CarMove destination:                                                     ',carMoveDestination);
+	
+end-if
+
+
+! ### Start of declaration of Variables ### !
+
+declarations
+	x         : dynamic array(rOperators, carMoves, tasks)  of mpvar;
+	t         : dynamic array(rOperators, tasks)            of mpvar;
+	t_plus    : dynamic array(rOperators)                   of mpvar;
+	t_minus   : dynamic array(rOperators)                   of mpvar;
+	s_minus   : dynamic array(deficitNodes)                 of mpvar;
+	s_c       : dynamic array(carsInCNeedNodes)                       of mpvar;				
+end-declarations
+
+! ### End of declaration of Variables ### !
+
+! ### Start of creation of Variables ### !
+
+forall(pp in rOperators, rr in carMoves, mm in tasks) do 
+	create(x(pp,rr,mm));
+	x(pp,rr,mm) is_binary;
+end-do
+
+forall(pp in rOperators, mm in tasks) do 
+	create(t(pp,mm));
+	t(pp,mm) is_semcont 0;
+end-do
+
+forall(pp in rOperators) do 
+	create(t_plus(pp));
+	t_plus(pp) is_semcont 0;
+	create(t_minus(pp));
+	t_minus(pp) is_semcont 0;
+end-do
+
+forall(ii in carsInCNeedNodes) do 
+	create(s_c(ii));
+	s_c(ii) is_semint 0;
+end-do
+
+forall(ii in deficitNodes) do
+	create(s_minus(ii));
+	s_minus(ii) is_semint 0;
+end-do
+
+! ### End of creation of Variables ### !
+
+
+! ### Start of declaration of OBJECTIVE ### !
+declarations
+		Objective: linctr;
+end-declarations
+
+Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
+			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
+			  costOfExtraTime * sum(pp in rOperators) t_plus(pp) + 
+			  costOfTravelH  * sum(pp in rOperators, rr in carMoves, mm in tasks) x(pp,rr,mm);
+
+! ### End of declaration of objective ### !	
+
+
+
+
+
+! ### Start of declaration of ROUTING CONSTRAINTS ### !		
+declarations
+	oneMovePerCar   : dynamic array(cars)                              of linctr;
+	oneRoutePerTask : dynamic array(rOperators, tasks)                 of linctr;
+	taskOrdering    : dynamic array(rOperators, tasks)       of linctr;
+end-declarations 
+
+forall(cc in cars) do
+	oneMovePerCar(cc) := sum(pp in rOperators, rr in carMoves, mm in tasks | cc = carMoveCars(rr)) x(pp, rr, mm) <= 1;
+end-do
+
+
+forall(pp in rOperators, mm in tasks) do
+	oneRoutePerTask(pp, mm) := sum(rr in carMoves) x(pp, rr, mm) <= 1;
+end-do
+
+
+forall(pp in rOperators, mm in tasks | mm <> numTasks) do
+	taskOrdering(pp, mm) := sum(rr in carMoves) x(pp, rr, mm + 1) <= sum(r2 in carMoves)x(pp, r2, mm);
+end-do
+
+
+! ### End of declaration of routing constraints ### !	
+
+
+! ### Start of declaration of balance CONSTRAINTS ### !		
+declarations
+	moveToDeficit           : dynamic array(deficitNodes)     of linctr;
+	postponedChargingCars   : dynamic array(carsInCNeedNodes) of linctr;
+	chargingCapacity        : dynamic array(cNodes)           of linctr;
+end-declarations 
+
+forall(ii in deficitNodes) do
+	moveToDeficit(ii) := sum(pp in rOperators, rr in carMoves, mm in tasks | deficitTranslate(ii) = carMoveDestination(rr)) x(pp, rr, mm) +
+						 s_minus(ii) = deficitCarsInNode(ii);
+end-do
+
+forall(ii in carsInCNeedNodes) do
+	postponedChargingCars(ii) := s_c(ii) + sum(pp in rOperators, rr in carMovesC, mm in tasks | carMoveOrigin(rr) = carsInNeedCTranslate(ii)) x(pp, rr, mm) = initialInNeedP(carsInNeedCTranslate(ii));
+end-do
+
+
+forall(ii in cNodes) do
+	chargingCapacity(ii) := sum(pp in rOperators, rr in carMovesC, mm in tasks | ii = carMoveDestination(rr)) x(pp, rr, mm) <= chargingSlotsAvailable(ii);
+end-do
+
+! ### End of declaration of balance constraints ### !	
+
+
+! ### Start of declaration of time CONSTRAINTS ### !		
+
+declarations
+	travelTime              : dynamic array(rOperators, carMoves, tasks)     of linctr;
+	startMoving				: dynamic array(rOperators, carMoves, tasks) 	   of linctr;
+	startMovingOperator		: dynamic array(rOperators, carMoves) 	        	   of linctr;
+	timeDeviation     		: dynamic array(rOperators) 	        	   of linctr;
+	timeOverTime     		: dynamic array(rOperators) 	        	   of linctr;
+end-declarations 
+
+forall(pp in rOperators, rr in carMoves, mm in tasks | mm <> numTasks) do
+	travelTime(pp, rr, mm) := t(pp,mm) + carMoveHandlingTime(rr) * x(pp, rr, mm) + sum(r2 in carMoves | r2 <> rr) travelTimeBike(carMoveDestination(rr), carMoveOrigin(r2))* x(pp, r2, mm + 1) <= t(pp, mm+1);
+end-do
+
+forall(pp in rOperators, rr in carMoves, mm in tasks) do
+	startMoving(pp, rr, mm) := carMoveStartingTime(rr) * x(pp, rr, mm) <= t(pp, mm);
+end-do
+
+
+forall(pp in rOperators, rr in carMoves) do
+	startMovingOperator(pp, rr) := (travelTimeToOriginR(pp) + travelTimeBike(startNodeROperator(pp), carMoveOrigin(rr))) * x(pp, rr, 1) <= t(pp,1);
+end-do
+
+
+
+forall(pp in rOperators) do
+	timeDeviation(pp) := t(pp, numTasks) + t_minus(pp) - t_plus(pp) = timeLimit;
+end-do
+
+
+forall(pp in rOperators) do
+	timeOverTime(pp) := t(pp, numTasks) <= timeLimit + timeLimitLastVisit;
+end-do
+
+
+! ### End of declaration of time constraints ### !	
+
+
+setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
+minimize(Objective);
+
+writeln(" ");
+writeln("Operators:");
+forall(pp in rOperators) do
+	writeln('Number of tasks done by operator ', pp, ': ', sum(rr in carMoves, mm in tasks)getsol(x(pp,rr,mm)));
+end-do
+writeln(' ');
+writeln("Deficit Nodes:")
+forall(ii in deficitNodes) do
+	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
+end-do
+
+writeln("Deficit Nodes:")
+forall(ii in deficitNodes) do
+	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
+end-do
+
+writeln(' ');
+
+! ### Variables used for printing ### !
+declarations
+	currNode       : integer;
+	endTime        : real;
+	foundX         : boolean;
+end-declarations
+
+if printResults then
+	forall(pp in rOperators) do
+		currNode := startNodeROperator(pp);
+		currTask := 1;
+		foundX := true;
+		write('Route of operator ', pp, ': ');
+		write('(', currNode, ', 1) -> ');
+		while(foundX) do
+			foundX := false;
+			forall(rr in carMoves) do
+				if getsol(x(pp, rr, currTask)) >= 0.5 then
+					if (carMoveOrigin(rr) <> currNode) then
+						write(' ');
+						write('(T)');
+						write('(', currNode, ', ', carMoveOrigin(rr),') -> ');
+					end-if
+					write(' ');
+					write('(H)');
+					write('(t:', getsol(t(pp, currTask)), ')')
+					write('(', carMoveOrigin(rr), ', ', carMoveDestination(rr),') -> ');
+					foundX := true;
+					currNode := carMoveDestination(rr);
+					currTask := currTask +1;
+				end-if
+			end-do
+			if(foundX = false) then
+				if(currTask > 1) then
+					forall(rr in carMoves) do
+						if getsol(x(pp, rr, currTask -1)) >= 0.5 then
+							endTime := getsol(t(pp, currTask -1));
+							endTime := endTime + carMoveHandlingTime(rr);
+							write(' ');
+							write('(EndTime: ', endTime, ')');
+						end-if
+					end-do
+				end-if
+			end-if
+		end-do	
+	writeln('');
+	end-do
+end-if
+
+end-model
