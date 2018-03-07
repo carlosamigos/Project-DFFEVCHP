@@ -4,7 +4,7 @@ import code.solver.heuristics.Individual;
 
 public class Swap3 extends Mutation{
 
-	public final static int id = 2;
+	public final static int id = 3;
 
 	@Override
 	public boolean equals(Object o) {
