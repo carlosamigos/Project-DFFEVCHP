@@ -27,11 +27,8 @@ public class TSIndividual extends Individual {
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
-	//Keep track of all car moves
+	//Keep track of all car moves not in use
 	private HashMap<Car, ArrayList<CarMove>> carMoves;
-
-	//Keep track of car moves that are not currently being used
-	private HashMap<Car, ArrayList<CarMove>> unusedCarMoves;
 
 	private ProblemInstance problemInstance;
 	
@@ -49,7 +46,6 @@ public class TSIndividual extends Individual {
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
 		this.carMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
-		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 
 		// Constructing initial solution
 		createOperators();
@@ -91,7 +87,6 @@ public class TSIndividual extends Individual {
 	private void initiateDeviations(){
 		this.deviationFromIdealState = new HashMap<>();
 		for (int i = 0; i < problemInstance.getParkingNodes().size(); i++) {
-			//Todo: Does not take into account cars that we know will arrive to the parking node during the planning period.
 			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() + problemInstance.getParkingNodes().get(i).getCarsArrivingThisPeriod()
 					- problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
@@ -102,28 +97,29 @@ public class TSIndividual extends Individual {
 	// -------------------------------------------------------------------------------
 
 	// Overall algorithm
+	// * Adds car moves until no car moves remaining
 	private void addCarMovesToOperators() {
 		boolean operatorAvailable = true;
-		HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+		//HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
+		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.carMoves);
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (Object obop: this.operators) {
 				Operator op = (Operator) obop;
 				Node startNode = findPreviousNode(op);
-				CarMove chosen = findnearestCarMove(startNode, carMovesCopy);
+				double startTime = op.getStartTime() + op.getTravelTime();
+				CarMove chosen = findnearestCarMove(startNode, startTime, carMovesCopy);
 				if(chosen != null){
-					if(timeAvailable(op, startNode, chosen)){
-						operatorAvailable = true;
-						this.unusedCarMoves.get(chosen.getCar()).remove(chosen);
-						op.addCarMove(chosen);
-						carMovesCopy.remove(chosen.getCar());
-						double addDistance = calculateDistanceCarMove(startNode, chosen);
-						op.addToTravelTime(addDistance);
-						if(chosen.getToNode() instanceof ChargingNode){
-							updateCapacity((ChargingNode) chosen.getToNode());
-						}else{
-							updateDeviation((ParkingNode) chosen.getToNode());
-						}
+					operatorAvailable = true;
+					this.carMoves.get(chosen.getCar()).remove(chosen);
+					op.addCarMove(chosen);
+					carMovesCopy.remove(chosen.getCar());
+					double addDistance = calculateDistanceCarMove(startNode, startTime, chosen) ;
+					op.addToTravelTime(addDistance);
+					if(chosen.getToNode() instanceof ChargingNode){
+						updateCapacity((ChargingNode) chosen.getToNode());
+					}else{
+						updateDeviation((ParkingNode) chosen.getToNode());
 					}
 				}
 			}
@@ -131,44 +127,47 @@ public class TSIndividual extends Individual {
 	}
 
 	// Identify car moves to be evaluated
-	private CarMove findnearestCarMove(Node node, HashMap<Car, ArrayList<CarMove>> carMovesCopy){
+	//* Identifies all car moves, and chooses the best each iteration
+	private CarMove findnearestCarMove(Node node, double startTime, HashMap<Car, ArrayList<CarMove>> carMovesCopy){
 		double distance = Integer.MAX_VALUE;
 		double fitNess = Double.MAX_VALUE;
 		CarMove cMove = null;
 		for(Car car : carMovesCopy.keySet()){
 			if(carMovesCopy.get(car).size() > 0){
 				Node fromNode = carMovesCopy.get(car).get(0).getFromNode();
-				double distanceCandidate = problemInstance.getTravelTimeBike(node, fromNode);
-				//Accepting twice the distance
-				if(distanceCandidate < distance*3){
-					distance = distanceCandidate;
-					for(CarMove carMove: carMovesCopy.get(car)){
-						double fitNessCancidate = rateCarMove(carMove, distance);
-						if(fitNessCancidate < fitNess){
-							cMove = carMove;
-							fitNess = fitNessCancidate;
-						}
+				double distanceCandidate = problemInstance.getTravelTimeBike(node, fromNode) +
+						Math.max(carMovesCopy.get(car).get(0).getEarliestDepartureTime() - (startTime + problemInstance.getTravelTimeBike(node, fromNode)), 0);
+				distance = distanceCandidate;
+				for(CarMove carMove: carMovesCopy.get(car)){
+					double fitNessCancidate = rateCarMove(carMove, distance);
+					if(fitNessCancidate < fitNess){
+						cMove = carMove;
+						fitNess = fitNessCancidate;
 					}
 				}
 			}
 		}
+
 		return cMove;
 	}
 
 	// Evaluate car moves based on fitness
+	// * Assumes that deviation from ideal state is a positive number if there is no deficit.
 	private double rateCarMove(CarMove carMove, double distance){
 		double fitNess = 0;
-		fitNess += (carMove.getTravelTime() + distance)* HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION;
+		fitNess += (distance)* HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION;
 		if(carMove.getToNode() instanceof ChargingNode){
 			if(capacities.get(carMove.getToNode()) <= 0){
-				fitNess = HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+				fitNess += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
+			// Capacity is positive
 			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
-				fitNess = HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
+				fitNess += HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
 			}
-			fitNess += -HeuristicsConstants.TABU_IDEAL_STATE_REWARD * deviationFromIdealState.get(carMove.getToNode());
+			// Deviation is negative if deficit node
+			fitNess += HeuristicsConstants.TABU_IDEAL_STATE_REWARD * deviationFromIdealState.get(carMove.getToNode());
 		}
 		return fitNess;
 
@@ -200,17 +199,19 @@ public class TSIndividual extends Individual {
 	}
 
 	// Calculates the total distance to travel when evaluating a car move
-	private double calculateDistanceCarMove(Node previousNode, CarMove carMove){
-		return problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode()) + carMove.getTravelTime();
+	private double calculateDistanceCarMove(Node previousNode, double startTime, CarMove carMove){
+		return problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode()) +
+				Math.max(0, carMove.getEarliestDepartureTime() - (startTime + problemInstance.getTravelTimeBike(previousNode, carMove.getFromNode())))
+						+ carMove.getTravelTime();
 	}
 
-	// Calculates if there is available time left to do another move.
-	private boolean timeAvailable(Operator op, Node previousNode, CarMove carMove){
-		double addDistance = calculateDistanceCarMove(previousNode, carMove);
-		return (op.getStartTime() + op.getTravelTime() + addDistance < op.getTimeLimit());
-	}
 
 	// -------------------------------------------------------------------------------
+
+	//================================================================================
+	// Find moves that can replace ejected
+	//================================================================================
+
 
 
 
