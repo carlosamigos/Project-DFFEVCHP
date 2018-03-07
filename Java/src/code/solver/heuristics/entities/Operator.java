@@ -55,6 +55,7 @@ public class Operator {
 		this.changed = true;
 		this.carMoves.add(carMove);
 	}
+	
 
 	public void addCarMove(int index, CarMove carMove) {
 		this.changed = true;

@@ -21,6 +21,18 @@ public class IntraMove extends Mutation {
 		this.hashCode = Integer.parseInt(hashString);
 	}
 
+	public Operator getOperator() {
+		return operator;
+	}
+
+	public int getI() {
+		return i;
+	}
+
+	public int getJ() {
+		return j;
+	}
+
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
