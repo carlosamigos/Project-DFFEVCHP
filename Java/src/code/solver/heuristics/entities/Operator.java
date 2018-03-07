@@ -3,7 +3,6 @@ package code.solver.heuristics.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import code.problem.ProblemInstance;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.solver.heuristics.mutators.Insert;
@@ -17,6 +16,7 @@ public class Operator {
 	private HashMap<CarMove, double[]> startEndChargingMoves;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
 	private HashMap<CarMove, Integer> chargingMoveIndex;
+	private ArrayList<ArrayList<Double>> travelTimesBike;
 	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
@@ -26,17 +26,19 @@ public class Operator {
 	private double travelTime;
 	private double fitness;
 	
-	public Operator(double startTime, double timeLimit, Node startNode, ProblemInstance problemInstance, 
+	public Operator(double startTime, double timeLimit, Node startNode, 
+			ArrayList<ArrayList<Double>> travelTimesBike, 
 			HashMap<ChargingNode, Integer> chargingCapacity) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
+		this.travelTimesBike = travelTimesBike;
 		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingMoves = new ArrayList<>();
 		this.startEndChargingMoves = new HashMap<>();
 		this.chargingMoveIndex = new HashMap<>();
-		calculateInitialFitness(problemInstance);
+		calculateInitialFitness();
 	}
 	
 	public CarMove getCarMove(int index) {
@@ -100,7 +102,7 @@ public class Operator {
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
-	private void calculateInitialFitness(ProblemInstance problemInstance) {
+	private void calculateInitialFitness() {
 		double currentTime = this.startTime;
 		Node previousNode = this.startNode;
 		CarMove currentMove;
@@ -108,12 +110,11 @@ public class Operator {
 		
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
-			currentTime += getTravelTime(previousNode, currentMove, problemInstance);
+			currentTime += getTravelTime(previousNode, currentMove);
 			
 			if(currentTime > this.timeLimit) {
 				return;
 			}
-			
 			if(currentMove.isToCharging()) {
 				ChargingNode node = (ChargingNode) currentMove.getToNode();
 				double chargingFitness = getChargingFitness(currentTime, node);
@@ -131,7 +132,7 @@ public class Operator {
 	 * Calculates the change in fitness a mutation of type Insert would cause
 	 * Input: A mutation of type Insert. Insert contains an object and an index.
 	 */
-	public double getDeltaFitness(Insert insert, ProblemInstance problemInstance) {
+	public double getDeltaFitness(Insert insert) {
 		double deltaFitness = 0.0;
 		double currentTime = this.startTime;
 		
@@ -142,21 +143,21 @@ public class Operator {
 		
 		double deltaTime;
 		if(index == 0) {
-			deltaTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode(), problemInstance);
+			deltaTime = getAbsDeltaTime(this.startNode, insertMove, this.carMoves.get(0).getFromNode());
 		} else {
-			Node next = (index+1 > this.carMoves.size()) ? null : this.carMoves.get(index+1).getFromNode();
-			deltaTime = getAbsDeltaTime(this.carMoves.get(index).getToNode(), insertMove, next, problemInstance);
+			Node next = (index+1 > this.carMoves.size()) ? null : this.carMoves.get(index).getFromNode();
+			deltaTime = getAbsDeltaTime(this.carMoves.get(index-1).getToNode(), insertMove, next);
 		}
 		
 		Node previous = this.startNode;
 		
 		for(int i = 0; i < index; i++) {
 			CarMove move = this.carMoves.get(i);
-			currentTime += getTravelTime(previous, move, problemInstance);
+			currentTime += getTravelTime(previous, move);
 			previous = move.getToNode();
 		}
 		
-		currentTime += getTravelTime(previous, insertMove, problemInstance);
+		currentTime += getTravelTime(previous, insertMove);
 		
 		if(currentTime < this.timeLimit && insertMove.isToCharging()) {
 			ChargingNode chargingNode = (ChargingNode) insertMove.getToNode();
@@ -178,6 +179,7 @@ public class Operator {
 		
 		return deltaFitness;
 	}
+	*/
 	
 	private double getChangeInChargingFitness(double oldTime, double timeChange) {
 		double oldReward = getChargingReward(oldTime);
@@ -196,8 +198,8 @@ public class Operator {
 		return capacityDelta;
 	}
 	
-	private double getTravelTime(Node previous, CarMove move, ProblemInstance problemInstance) {
-		return problemInstance.getTravelTimeBike(previous, move.getFromNode()) 
+	private double getTravelTime(Node previous, CarMove move) {
+		return getTravelTimeBike(previous, move.getFromNode()) 
 				+ move.getTravelTime();
 	}
 	
@@ -206,14 +208,14 @@ public class Operator {
 	}
 	
 	
-	public double getDeltaFitness(Remove remove, ProblemInstance problemInstance){
+	public double getDeltaFitness(Remove remove){
 		double currentFitness = this.fitness;
 		double newFitness = this.fitness;
 		int index = remove.getIndex();
 		CarMove toRemove = carMoves.get(index);
 		Node prevNode = (index > 0) ? carMoves.get(index - 1).getToNode() : this.startNode;
 		Node nextNode = (index < carMoves.size()-1) ? carMoves.get(index + 1).getFromNode() : null;
-		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode, problemInstance);
+		double deltaTime = getAbsDeltaTime(prevNode, toRemove , nextNode);
 		double currCarMoveChargingFitness = (toRemove.isToCharging())
 				? getChargingReward(startEndChargingMoves.get(toRemove)[1]): 0;
 		double deltaCapFitness = (toRemove.isToCharging()) ? getCapacityPenalty((ChargingNode) toRemove.getToNode(),
@@ -258,13 +260,26 @@ public class Operator {
 		return newFitness - currentFitness;
 
 	}
+	*/
 
-	private double getAbsDeltaTime(Node prev, CarMove curr, Node next, ProblemInstance problemInstance){
-		double currTimeContribution = problemInstance.getTravelTimeBike(prev, curr.getFromNode())
+	private double getAbsDeltaTime(Node prev, CarMove curr, Node next){
+		double currTimeContribution = getTravelTimeBike(prev, curr.getFromNode())
+	private void performMutation(Remove remove){
+
+	}
 				+ curr.getTravelTime()
-				+ ((next != null) ? problemInstance.getTravelTimeBike(curr.getToNode(), next) : 0);
-		double newTimeContribution  = (next != null) ? problemInstance.getTravelTimeBike(prev, next) : 0;
+				+ ((next != null) ? getTravelTimeBike(curr.getToNode(), next) : 0);
+		double newTimeContribution  = (next != null) ? getTravelTimeBike(prev, next) : 0;
 		return Math.abs(currTimeContribution - newTimeContribution);
+	}
+	
+	private double getTravelTimeBike(Node n1, Node n2) {
+		double t0 = this.travelTimesBike
+				.get(n1.getNodeId() - Constants.START_INDEX)
+				.get(n2.getNodeId() - Constants.START_INDEX);
+		return this.travelTimesBike
+				.get(n1.getNodeId() - Constants.START_INDEX)
+				.get(n2.getNodeId() - Constants.START_INDEX);
 	}
 
 	
