@@ -7,11 +7,11 @@ import java.util.Collections;
 
 public class Swap2 extends Mutation{
 
-	public final static int id = 1;
+	public final static int id = 2;
 	
 	private final int i;
 	private final int j;
-	private final int hashType = 1;
+	private final int hashType = 2;
 	private final int hashCode;
 
 	public Swap2(int i, int j) {
@@ -44,18 +44,6 @@ public class Swap2 extends Mutation{
 	@Override
 	public int hashCode() {
 	    return hashCode;
-	}
-
-	/*
-	public double deltaFitness(Individual individual) {
-		return individual.deltaFitness(this);
-	}
-	*/
-
-	@Override
-	public void doMutation(Individual individual) {
-		ArrayList<Object> rep = individual.getRepresentation();
-		Collections.swap(rep, i,j);
 	}
 
 	@Override

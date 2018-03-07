@@ -46,11 +46,6 @@ public class Insert extends Mutation{
 	}
 
 	@Override
-	public void doMutation(Individual individual) {
-		individual.getRepresentation().add(this.i, this.o);
-	}
-
-	@Override
 	public String toString() {
 		return "Insert: " + i;
 	}

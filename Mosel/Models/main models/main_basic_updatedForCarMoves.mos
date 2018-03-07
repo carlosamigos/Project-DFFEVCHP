@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'test_12nodes_3so_2c_7mov_3charging_0finishes_0MODE_a.txt';
+	DataFile = 'test_20nodes_4so_3c_10mov_3charging_0finishes_0MODE_c.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -114,6 +114,7 @@ declarations
 	! Node references:  !
 	deficitTranslate          : array(deficitNodes) of integer;
 	deficitCarsInNode         : array(deficitNodes) of integer;
+	carsInNeedNodes           : array(deficitNodes) of integer;
 	carsInNeedCTranslate      : array(carsInCNeedNodes) of integer;
 	
 	! Car moves !
@@ -165,7 +166,8 @@ initializations from DataFile
 	chargingSlotsAvailable;
 	mode;
 	initialInNeedP;
-	carsInNeedCTranslate
+	carsInNeedCTranslate;
+	carsInNeedNodes;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
@@ -186,7 +188,8 @@ if printParams then
 	writeln('CarMove cars:                                                            ',carMoveCars);
 	writeln('CarMove origin:                                                          ',carMoveOrigin);
 	writeln('CarMove destination:                                                     ',carMoveDestination);
-	
+	writeln('Cars in need of charging in nodes:                                       ',carsInNeedCTranslate);
+	writeln('Number of cars in need of charging:                                      ',carsInCNeedNodes);
 end-if
 
 
@@ -289,7 +292,7 @@ forall(ii in deficitNodes) do
 end-do
 
 forall(ii in carsInCNeedNodes) do
-	postponedChargingCars(ii) := s_c(ii) + sum(pp in rOperators, rr in carMovesC, mm in tasks | carMoveOrigin(rr) = carsInNeedCTranslate(ii)) x(pp, rr, mm) = initialInNeedP(carsInNeedCTranslate(ii));
+	postponedChargingCars(ii) := s_c(ii) + sum(pp in rOperators, rr in carMovesC, mm in tasks | carMoveOrigin(rr) = carsInNeedCTranslate(ii)) x(pp, rr, mm) = carsInNeedNodes(ii);
 end-do
 
 
@@ -351,10 +354,10 @@ writeln("Deficit Nodes:")
 forall(ii in deficitNodes) do
 	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
 end-do
-
-writeln("Deficit Nodes:")
-forall(ii in deficitNodes) do
-	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
+writeln(' ');
+writeln("Cars remaining in need of charging:")
+forall(ii in carsInCNeedNodes) do
+	writeln('Remaining cars at the end of the planning period ', carsInNeedCTranslate(ii), ': ', getsol(s_c(ii)));
 end-do
 
 writeln(' ');

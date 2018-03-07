@@ -7,6 +7,7 @@ import code.problem.ProblemInstance;
 import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.Mutation;
+import code.solver.heuristics.mutators.Swap1;
 import code.solver.heuristics.mutators.Swap2;
 import code.solver.heuristics.mutators.Swap3;
 import code.solver.heuristics.tabusearch.TSIndividual;
@@ -21,7 +22,10 @@ public class TSSolver extends Solver {
 	private final int iterations;
 	private final int neighborhoodSize;
 	private final int tabuSize;
+	
 	private HashMap<Integer, Command> mutationToDelta;
+	private HashMap<Integer, Command> mutationToPerform;
+	
 	private final HashMap<Car, ArrayList<CarMove>> carToCarMoves;
 	
 	public TSSolver(ProblemInstance problemInstance) {
@@ -36,6 +40,7 @@ public class TSSolver extends Solver {
 		this.neighborhoodSize = neighborhoodSize;
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();
+		this.setMutationToPerform();
 	}
 	
 	/*
@@ -43,13 +48,16 @@ public class TSSolver extends Solver {
 	 */
 	private void setMutationToDelta() {
 		this.mutationToDelta = new HashMap<>();
-		this.mutationToDelta.put(Swap2.id, (Mutation mutation) -> {
-			Swap2 swap = (Swap2) mutation;
+		this.mutationToDelta.put(Swap1.id, (Mutation mutation) -> {
+			Swap1 swap = (Swap1) mutation;
 			return this.individual.deltaFitness(swap);
 		});
-		
-		this.mutationToDelta.put(Swap3.id, (Mutation mutation) -> {
-			Swap3 swap = (Swap3) mutation;
+	}
+	
+	private void setMutationToPerform() {
+		this.mutationToPerform = new HashMap<>();
+		this.mutationToPerform.put(Swap1.id, (Mutation mutation) -> {
+			Swap1 swap = (Swap1) mutation;
 			return this.individual.deltaFitness(swap);
 		});
 	}
@@ -74,7 +82,7 @@ public class TSSolver extends Solver {
 			
 			if(candidateDelta < 0) {
 				this.individual.addToFitness(candidateDelta);
-				this.individual.performMutation(candidate);
+				this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 			}
 			
 			tabuList.add(candidate);

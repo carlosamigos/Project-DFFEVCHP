@@ -4,7 +4,6 @@ import code.solver.heuristics.Individual;
 
 public abstract class Mutation {
 	public abstract int getId();
-	public abstract void doMutation(Individual individual);
 	public abstract boolean equals(Object o);
 	public abstract int hashCode();
 	//public abstract double deltaFitness(Individual individual);

@@ -26,11 +26,6 @@ public class Remove extends Mutation{
     }
 
     @Override
-    public void doMutation(Individual individual) {
-        individual.getRepresentation().remove(this.index);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if(o instanceof  Remove){
             return o.hashCode() == this.hashCode;
