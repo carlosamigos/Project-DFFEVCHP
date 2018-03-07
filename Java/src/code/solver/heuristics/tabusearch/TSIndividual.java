@@ -1,12 +1,15 @@
 package code.solver.heuristics.tabusearch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
+import code.solver.heuristics.mutators.InterMove;
+import code.solver.heuristics.mutators.Mutation;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -16,6 +19,7 @@ import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.IntraMove;
+import utils.MathHelper;
 
 public class TSIndividual extends Individual {
 	
@@ -213,7 +217,7 @@ public class TSIndividual extends Individual {
 
 
 	protected double calculateFitnessOfIndividual() {
-		//TODO: To be tested. Should update all fitness-related parameters in Operators
+		//TODO: To be tested.
 		// Considers only charging time and capacity at the moment
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
 		double totalFitness = 0;
@@ -225,13 +229,20 @@ public class TSIndividual extends Individual {
 			for(CarMove carMove : operator.getCarMoves()){
 				currentTime += problemInstance.getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
+				if(currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM){
+					break;
+				}
 				if(carMove.isToCharging()){
 					totalFitness -= operator.getChargingReward(currentTime);
-					increaseCapacityUsedInNode((ChargingNode) carMove.getToNode(), capacityUsed);
+					ChargingNode chargingNode = (ChargingNode) carMove.getToNode();
+					if(capacityUsed.get(chargingNode) == null){
+						capacityUsed.put(chargingNode, 0);
+					} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
 				}
 				prevNode = carMove.getToNode();
 			}
 		}
+		// Calculate capacity penalties
 		for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
 			int availableChargingSpots = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 			if(capacityUsed.get(chargingNode) != null){
@@ -242,39 +253,76 @@ public class TSIndividual extends Individual {
 		return totalFitness;
 	}
 
+
 	@Override
 	public ArrayList<Object> getRepresentation() {
 		return this.operators;
 	}
 
-	private void increaseCapacityUsedInNode(ChargingNode chargingNode, HashMap<ChargingNode, Integer> capacityUsed){
-		if(capacityUsed.get(chargingNode) == null){
-			capacityUsed.put(chargingNode, 0);
-		} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
-	}
-	
+
+
+
+	//-----------  Delta Fitnesses  --------------
+
 	public double deltaFitness(IntraMove intraMove) {
 		Operator operator = intraMove.getOperator();
 		int removeIndex = intraMove.getRemoveIndex();
 		int insertIndex = intraMove.getInsertIndex();
 		
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities); 
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
 		double oldFitness = operator.getFitness();
 		
 		CarMove carMove = operator.removeCarMove(removeIndex);
 		operator.addCarMove(insertIndex, carMove);
 		operator.calculateFitness();
-		
+
 		double deltaFitness = operator.getFitness() - oldFitness;
-		
+
 		operator.setCarMoves(oldCarMoves);
-		operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
-		
+		for(Object operator1 : operators){
+			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
+		}
+		capacities = oldChargingCapacityUsed;
+
 		return deltaFitness;
 	}
-	
+
+
+	public double deltaFitness(InterMove interMove){
+		// TODO
+		Operator operatorRemove = interMove.getOperatorRemove();
+		Operator operatorInsert = interMove.getOperatorInsert();
+		int removeIndex 	    = interMove.getInsertIndex();
+		int insertIndex 		= interMove.getInsertIndex();
+
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		ArrayList<CarMove> oldCarMovesRemove = new ArrayList<>(operatorRemove.getCarMoves());
+		ArrayList<CarMove> oldCarMovesInsert = new ArrayList<>(operatorInsert.getCarMoves());
+		double oldFitness = this.fitness;
+
+		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
+		operatorRemove.calculateFitness();
+		operatorInsert.addCarMove(insertIndex, carMove);
+		operatorInsert.calculateFitness();
+
+
+		// Revert
+		operatorRemove.setCarMoves(oldCarMovesRemove);
+		//TODO
+
+
+		double deltaFitness = this.fitness - oldFitness;
+		return deltaFitness;
+
+	}
+
+
+	//-----------  Perform Mutations --------------
+
 	public void performMutation(IntraMove intraMove) {
 		Operator operator = intraMove.getOperator();
 		int removeIndex = intraMove.getRemoveIndex();
@@ -282,7 +330,26 @@ public class TSIndividual extends Individual {
 		CarMove carMove = operator.removeCarMove(removeIndex);
 		operator.addCarMove(insertIndex, carMove);
 	}
-	
+
+
+	public void performMutation(InterMove interMove){
+		// TODO
+	}
+
+	public ArrayList<Mutation> getNeighbors(int neighborhoodSize){
+		ArrayList<Mutation> neighbors = new ArrayList<>();
+		// TODO: make smarter
+		for (int i = 0; i < neighborhoodSize; i++) {
+			int randomOperatorIndex = (int) Math.random() * operators.size();
+			Operator operator = (Operator) operators.get(randomOperatorIndex);
+			int removeIndex = (int) Math.random() * operator.getCarMoves().size();
+			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operators.size());
+			IntraMove mutation = new IntraMove(operator,removeIndex, insertIndex);
+			neighbors.add(mutation);
+		}
+		return neighbors;
+	}
+
 	
 	public void addToFitness(double delta) {
 		this.fitness += delta;
@@ -306,4 +373,6 @@ public class TSIndividual extends Individual {
 		}
 		return s + "\n";
 	}
+
+
 }

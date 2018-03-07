@@ -101,7 +101,11 @@ public class Operator {
 		this.fitness = fitness;
 	}
 	
-	public void setChargingCapacityUsed(HashMap<ChargingNode, Integer> chargingCapacityUsed) {
+	public void setChargingCapacityUsedByOperator( HashMap<ChargingNode, Integer> capacityUsedByOperator) {
+		this.chargingCapacityUsedOperator = capacityUsedByOperator;
+	}
+
+	public void setChargingCapacityUsedIndividual(HashMap<ChargingNode, Integer> chargingCapacityUsed){
 		this.chargingCapacityUsed = chargingCapacityUsed;
 	}
 	
@@ -204,6 +208,10 @@ public class Operator {
 	
 	public double getChargingReward(double time) {
 		return (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
+	}
+
+	public HashMap<ChargingNode, Integer> getChargingCapacityUsedOperator() {
+		return chargingCapacityUsedOperator;
 	}
 
 	/*

@@ -1,6 +1,9 @@
 package code.solver.heuristics.mutators;
 
+import code.problem.nodes.Node;
 import code.solver.heuristics.entities.Operator;
+
+import java.util.HashMap;
 
 public class InterMove extends Mutation {
 
@@ -23,6 +26,23 @@ public class InterMove extends Mutation {
         this.hashCode = Integer.parseInt(hashString);
     }
 
+
+    public Operator getOperatorRemove() {
+        return operatorRemove;
+    }
+
+    public Operator getOperatorInsert() {
+        return operatorInsert;
+    }
+
+    public int getRemoveIndex() {
+        return removeIndex;
+    }
+
+    public int getInsertIndex() {
+        return insertIndex;
+    }
+
     @Override
     public int getId() {
         return id;
@@ -39,4 +59,5 @@ public class InterMove extends Mutation {
     public int hashCode() {
         return hashCode;
     }
+
 }
