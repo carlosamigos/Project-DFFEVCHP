@@ -47,7 +47,7 @@ public class OperatorTest {
 		capacities.put(cNode, 0);
 		
 		pNode = new ParkingNode(1);
-		operator = new Operator(startTime, endTime, pNode, travelTimes, capacities);
+		operator = new Operator(startTime, endTime, pNode, travelTimes, capacities,1);
 		
 		
 	}

@@ -13,12 +13,6 @@ public class GAIndividual extends Individual {
 	}
 
 	@Override
-	protected void calculateFitnessOfIndividual() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public ArrayList<Object> getRepresentation() {
 		return null;
 	}

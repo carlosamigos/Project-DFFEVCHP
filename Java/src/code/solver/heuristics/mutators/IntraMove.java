@@ -1,6 +1,5 @@
 package code.solver.heuristics.mutators;
 
-import code.solver.heuristics.Individual;
 import code.solver.heuristics.entities.Operator;
 
 public class IntraMove extends Mutation {
@@ -8,19 +7,24 @@ public class IntraMove extends Mutation {
 	public final static int id = 1;
 
 	private final Operator operator;
-	private final int i;
-	private final int j;
-	private final int hashType = 2;
+	private final int removeIndex;
+	private final int insertIndex;
 	private final int hashCode;
 
 
-	public IntraMove(Operator operator, int i, int j, int hashCode) {
+	public IntraMove(Operator operator, int removeIndex , int insertIndex) {
 		this.operator = operator;
-		this.i = i;
-		this.j = j;
-		String hashString = hashType + ((i <= j) ? ("" + i + j) : ("" + j + i));
+		this.removeIndex = removeIndex;
+		this.insertIndex = insertIndex;
+		String hashString = id + "" + operator.id
+				+((removeIndex <= insertIndex) ? (removeIndex +" " + insertIndex) : ( insertIndex +"" + removeIndex));
 		this.hashCode = Integer.parseInt(hashString);
 	}
+
+	public Operator getOperator() {
+		return operator;
+	}
+
 
 	@Override
 	public int getId() {
@@ -35,6 +39,14 @@ public class IntraMove extends Mutation {
 		}return false;
 	}
 
+	public int getRemoveIndex() {
+		return this.removeIndex;
+	}
+	
+	public int getInsertIndex() {
+		return this.insertIndex;
+	}
+
 	@Override
 	public int hashCode() {
 		// TODO Auto-generated method stub
@@ -43,7 +55,7 @@ public class IntraMove extends Mutation {
 
 	@Override
 	public String toString() {
-		return "Operator "+operator.id +"[" + i + ", "+ j + "]";
+		return "Operator "+ operator.id +" [" + removeIndex + ", "+ insertIndex + "]";
 	}
 
 }
