@@ -35,8 +35,7 @@ public class Operator {
 		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingCapacityUsedOperator = new HashMap<>();
 		this.id = id;
-		changed = true;
-		calculateFitness();
+		changed = false;
 	}
 	
 	public CarMove getCarMove(int index) {
@@ -92,6 +91,10 @@ public class Operator {
 	}
 	
 	public double getFitness() {
+		if(changed) {
+			calculateFitness();
+			changed = false;
+		}
 		return this.fitness;
 	}
 	
@@ -114,10 +117,6 @@ public class Operator {
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	public void calculateFitness() {
-		if(!changed) {
-			return;
-		}
-		
 		changed = false;
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			this.chargingCapacityUsed.put(chargingNode, 
@@ -130,15 +129,15 @@ public class Operator {
 		Node previousNode = this.startNode;
 		CarMove currentMove;
 		this.fitness = 0.0;
-		
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
 			currentTime += getTravelTime(previousNode, currentMove);
 			previousNode = currentMove.getToNode();
-			
+
 			if(currentTime > this.timeLimit) {
 				return;
 			}
+			
 			if(currentMove.isToCharging()) {
 				ChargingNode chargingNode = (ChargingNode) currentMove.getToNode();
 				double chargingFitness = getChargingFitness(currentTime, chargingNode);
