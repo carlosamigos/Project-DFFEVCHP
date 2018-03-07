@@ -7,6 +7,7 @@ import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
+import code.solver.heuristics.mutators.EjectionMutation;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -176,6 +177,7 @@ public class TSIndividual extends Individual {
 
 	// Update deviation from ideal state as car moves are chosen
 	private void updateDeviation(ParkingNode parkingNode){
+		//TODO: Update starting node aswell
 		deviationFromIdealState.put(parkingNode, deviationFromIdealState.get(parkingNode) +1);
 	}
 
@@ -203,14 +205,11 @@ public class TSIndividual extends Individual {
 						+ carMove.getTravelTime();
 	}
 
-
 	// -------------------------------------------------------------------------------
 
 	//================================================================================
-	// Find moves that can replace ejected
+	// Fitness calculation
 	//================================================================================
-
-
 
 
 	protected void calculateFitnessOfIndividual() {
@@ -224,6 +223,7 @@ public class TSIndividual extends Individual {
 			double currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoves()){
+				//Need to take earliest start time of the move into account
 				currentTime += problemInstance.getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
 				if(carMove.isToCharging()){
@@ -253,6 +253,32 @@ public class TSIndividual extends Individual {
 			capacityUsed.put(chargingNode, 0);
 		} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
 	}
+
+	// -------------------------------------------------------------------------------
+
+	//================================================================================
+	// All mutations/performers for moves that are ejected
+	//================================================================================
+
+	public double deltaFitness(EjectionMutation ejectionMove){
+		/*
+		 * 1. Fetch a random move for the same car
+		 * 2. Remove: Create a remove mutation based on the incoming carmove
+		 * 3. Insert: Create a insert mutation based on the new carmove
+		 * 4. Return: Deltafitness calculated - I may have to create what it is to be replaced by seperately
+		 */
+		return 0.0;
+	}
+
+	public void performeMutation(EjectionMutation ejectionMove){
+
+		/*
+		 * 1. 
+		 */
+
+	}
+
+	// -------------------------------------------------------------------------------
 	
 	public double deltaFitness(IntraMove intraMove) {
 
@@ -260,13 +286,14 @@ public class TSIndividual extends Individual {
 		return 0.0;
 		
 	}
-	
+	/*
 	public void performMutation(Swap1 swap) {
 		/*
 		 * 1. Remove
 		 * 2. Insert
-		 */
+
 	}
+	*/
 	
 	public void addToFitness(double delta) {
 		this.fitness += delta;
