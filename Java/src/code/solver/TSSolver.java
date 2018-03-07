@@ -43,15 +43,11 @@ public class TSSolver extends Solver {
 	 */
 	private void setMutationToDelta() {
 		this.mutationToDelta = new HashMap<>();
-		this.mutationToDelta.put(Swap2.id, (Mutation mutation) -> {
+		this.mutationToDelta.put(Swap1.id, (Mutation mutation) -> {
 			Swap2 swap = (Swap2) mutation;
 			return this.individual.deltaFitness(swap);
 		});
-		
-		this.mutationToDelta.put(Swap3.id, (Mutation mutation) -> {
-			Swap3 swap = (Swap3) mutation;
-			return this.individual.deltaFitness(swap);
-		});
+
 	}
 	
 	@Override

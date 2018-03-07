@@ -4,6 +4,8 @@ import code.solver.heuristics.Individual;
 
 public class Swap1 extends Mutation {
 
+	public final static int id = 1;
+	
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
