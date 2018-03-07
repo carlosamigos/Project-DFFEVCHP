@@ -53,6 +53,7 @@ public class TSIndividual extends Individual {
 		addCarMovesToOperators();
 		// -----------------------------
 		calculateFitnessOfIndividual();
+		testAdd();
 	}
 
 	//================================================================================
@@ -261,19 +262,39 @@ public class TSIndividual extends Individual {
 	//================================================================================
 
 	public double deltaFitness(EjectionMutation ejectionMove){
+		Operator operator = ejectionMove.getOperator();
+		CarMove carMoveInsert = ejectionMove.getCarMoveReplace();
+		int removeIndex = ejectionMove.getCarMoveIndex();
+
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
+		double oldFitness = operator.getFitness();
+
+		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.addCarMove(removeIndex, carMoveInsert);
+		operator.calculateFitness();
+
+		double deltaFitness = operator.getFitness() - oldFitness;
+
+		operator.setCarMoves(oldCarMoves);
+		operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		operator.setFitness(oldFitness);
+
 		/*
 		 * 1. Fetch a random move for the same car
 		 * 2. Remove: Create a remove mutation based on the incoming carmove
 		 * 3. Insert: Create a insert mutation based on the new carmove
 		 * 4. Return: Deltafitness calculated - I may have to create what it is to be replaced by seperately
 		 */
-		return 0.0;
+		return deltaFitness;
 	}
 
 	public void performeMutation(EjectionMutation ejectionMove){
 
 		/*
-		 * 1. 
+		 * 1. Remove the car move for operator at the given index
+		 * 2. Inject the new carmove at the same position
+		 * 3. Calculate new fitness
 		 */
 
 	}
@@ -315,6 +336,7 @@ public class TSIndividual extends Individual {
 	public void addToFitness(double delta) {
 		this.fitness += delta;
 	}
+
 	
 	@Override
 	public int compareTo(Object o) {
