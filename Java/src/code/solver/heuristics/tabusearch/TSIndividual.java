@@ -1,7 +1,6 @@
 package code.solver.heuristics.tabusearch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import code.problem.entities.Car;
@@ -26,6 +25,7 @@ public class TSIndividual extends Individual {
 	private ArrayList<Object> operators;
 
 	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
+	private HashMap<ChargingNode, Integer> capacitiesUsed;
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
@@ -38,7 +38,6 @@ public class TSIndividual extends Individual {
 	private ProblemInstance problemInstance;
 	
 	//Fitness parameters
-	private double fitness = 0.0;
 	private double costOfPostponed = 0.0;
 	private double awardForCharging = 0.0;
 	private double awardForMeetingIdeal = 0.0;
@@ -55,11 +54,13 @@ public class TSIndividual extends Individual {
 
 		// Constructing initial solution
 		createOperators();
-		initiateCapacities();
+		initateCapacities();
 		initiateDeviations();
 		addCarMovesToOperators();
+
+
 		// -----------------------------
-		calculateFitnessOfIndividual();
+		calculateFitness();
 	}
 
 	//================================================================================
@@ -75,19 +76,23 @@ public class TSIndividual extends Individual {
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
 			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
-					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), capacities, problemInstance.getOperators().get(i).getId());
+					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), problemInstance.getOperators().get(i).getId());
 			operators.add(op);
 		}
-
 	}
 
-	//Initiate charging station capacities
-	private void initiateCapacities(){
-		this.capacities = new HashMap<>();
-		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
-			capacities.put(problemInstance.getChargingNodes().get(i), problemInstance.getChargingNodes().get(i).getNumberOfAvailableChargingSpotsNextPeriod());
+	private void initateCapacities(){
+		capacities = new HashMap<>();
+		capacitiesUsed = new HashMap<>();
+		for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
+			capacitiesUsed.put(chargingNode, 0);
+			capacities.put(chargingNode, chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
+		}
+		for(Object op : operators){
+			((Operator)op).setChargingCapacityUsedIndividual(capacitiesUsed);
 		}
 	}
+
 
 	//Initiate deviation from ideal states
 	private void initiateDeviations(){
@@ -162,10 +167,11 @@ public class TSIndividual extends Individual {
 		double fitNess = 0;
 		fitNess += (carMove.getTravelTime() + distance)* HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION;
 		if(carMove.getToNode() instanceof ChargingNode){
-			if(capacities.get(carMove.getToNode()) <= 0){
+
+			if(capacities.get((ChargingNode) carMove.getToNode()) <= 0){
 				fitNess = HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
-			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get((ChargingNode) carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
 				fitNess = HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
@@ -216,7 +222,7 @@ public class TSIndividual extends Individual {
 
 
 
-	protected double calculateFitnessOfIndividual() {
+	protected double testCalculateFitnessOfIndividual() {
 		//TODO: To be tested.
 		// Considers only charging time and capacity at the moment
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
@@ -251,6 +257,15 @@ public class TSIndividual extends Individual {
 			}
 		}
 		return totalFitness;
+	}
+
+	private void calculateFitness(){
+		double totalFitness = 0;
+		for(Object operator : operators){
+			totalFitness += ((Operator) operator).getFitness();
+		}
+		this.fitness = totalFitness;
+		System.out.println(totalFitness);
 	}
 
 
@@ -329,6 +344,7 @@ public class TSIndividual extends Individual {
 		int insertIndex = intraMove.getInsertIndex();
 		CarMove carMove = operator.removeCarMove(removeIndex);
 		operator.addCarMove(insertIndex, carMove);
+
 	}
 
 

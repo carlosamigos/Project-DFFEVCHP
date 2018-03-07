@@ -25,14 +25,12 @@ public class Operator {
 	private boolean changed;
 	
 	public Operator(double startTime, double timeLimit, Node startNode, 
-			ArrayList<ArrayList<Double>> travelTimesBike, 
-			HashMap<ChargingNode, Integer> chargingCapacity, int id) {
+			ArrayList<ArrayList<Double>> travelTimesBike, int id) {
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
 		this.travelTimesBike = travelTimesBike;
-		this.chargingCapacityUsed = chargingCapacity;
 		this.chargingCapacityUsedOperator = new HashMap<>();
 		this.id = id;
 		changed = false;
