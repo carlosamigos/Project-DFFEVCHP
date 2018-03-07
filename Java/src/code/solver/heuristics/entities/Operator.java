@@ -127,7 +127,6 @@ public class Operator {
 			if(currentTime > this.timeLimit) {
 				return;
 			}
-			
 			if(currentMove.isToCharging()) {
 				ChargingNode chargingNode = (ChargingNode) currentMove.getToNode();
 				double chargingFitness = getChargingFitness(currentTime, chargingNode);
@@ -210,8 +209,10 @@ public class Operator {
 		}
 		
 		return deltaFitness;
-	}*/
-	
+
+	}
+	*/
+
 	private double getChangeInChargingFitness(double oldTime, double timeChange) {
 		double oldReward = getChargingReward(oldTime);
 		double newReward = getChargingReward(oldTime + timeChange);
