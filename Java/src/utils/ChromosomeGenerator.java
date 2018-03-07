@@ -16,6 +16,8 @@ public class ChromosomeGenerator {
 
     public static HashMap<Car, ArrayList<CarMove>> generateCarMovesFrom(ProblemInstance problemInstance){
 
+
+        //TODO: Generate car moves that corresponds to incomming cars, and cars that finishes charging
         HashMap<Car, ArrayList<CarMove>> carMoves = new HashMap<>();
         HashSet<Car> carsUsed = new HashSet<>();
         ArrayList<Car> carsInNeedOfCharging = new ArrayList<>();
