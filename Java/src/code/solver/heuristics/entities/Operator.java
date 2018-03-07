@@ -179,7 +179,7 @@ public class Operator {
 		
 		return deltaFitness;
 	}
-	*/
+
 	
 	private double getChangeInChargingFitness(double oldTime, double timeChange) {
 		double oldReward = getChargingReward(oldTime);
@@ -260,13 +260,14 @@ public class Operator {
 		return newFitness - currentFitness;
 
 	}
-	*/
 
-	private double getAbsDeltaTime(Node prev, CarMove curr, Node next){
-		double currTimeContribution = getTravelTimeBike(prev, curr.getFromNode())
+
 	private void performMutation(Remove remove){
 
 	}
+
+	private double getAbsDeltaTime(Node prev, CarMove curr, Node next){
+		double currTimeContribution = getTravelTimeBike(prev, curr.getFromNode())
 				+ curr.getTravelTime()
 				+ ((next != null) ? getTravelTimeBike(curr.getToNode(), next) : 0);
 		double newTimeContribution  = (next != null) ? getTravelTimeBike(prev, next) : 0;
