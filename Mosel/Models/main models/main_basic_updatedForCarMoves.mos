@@ -259,7 +259,6 @@ declarations
 	oneMovePerCar   : dynamic array(cars)                              of linctr;
 	oneRoutePerTask : dynamic array(rOperators, tasks)                 of linctr;
 	taskOrdering    : dynamic array(rOperators, tasks)       of linctr;
-	operatorPerMove : dynamic array(carMoves)                of linctr;
 end-declarations 
 
 forall(cc in cars) do
@@ -274,10 +273,6 @@ end-do
 
 forall(pp in rOperators, mm in tasks | mm <> numTasks) do
 	taskOrdering(pp, mm) := sum(rr in carMoves) x(pp, rr, mm + 1) <= sum(r2 in carMoves)x(pp, r2, mm);
-end-do
-
-forall(rr in carMoves) do
-	operatorPerMove(rr) := sum(pp in rOperators, mm in tasks) x(pp, rr, mm) <= 1;
 end-do
 
 
