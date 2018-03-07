@@ -46,14 +46,11 @@ public class Operator {
 		return timeLimit;
 	}
 
-	public int getCarMovesSize(){
-		return carMoves.size();
-	}
-	
 	public void addCarMove(CarMove carMove) {
 		this.changed = true;
 		this.carMoves.add(carMove);
 	}
+	
 
 	public void addCarMove(int index, CarMove carMove) {
 		this.changed = true;

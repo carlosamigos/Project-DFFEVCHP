@@ -102,11 +102,16 @@ public class TSSolver extends Solver {
 	
 	// Get neighbors that are not in the tabuList
 	private ArrayList<Mutation> getNeighbors() {
+
 		ArrayList<Mutation> neighborhood = new ArrayList<>();
 		for(int i = 0; i < this.neighborhoodSize; i++) {
+
+
 		}
 		return neighborhood;
 	}
+
+
 
 	@Override
 	public String getInfo() {

@@ -9,17 +9,22 @@ public class IntraMove extends Mutation {
 	private final Operator operator;
 	private final int removeIndex;
 	private final int insertIndex;
-	private final int hashType = 2;
 	private final int hashCode;
 
 
-	public IntraMove(Operator operator, int removeIndex , int insertIndex, int hashCode) {
+	public IntraMove(Operator operator, int removeIndex , int insertIndex) {
 		this.operator = operator;
 		this.removeIndex = removeIndex;
 		this.insertIndex = insertIndex;
-		String hashString = hashType + ((removeIndex <= insertIndex) ? ("" + removeIndex + insertIndex) : ("" + insertIndex + removeIndex));
+		String hashString = id + "" + operator.id
+				+((removeIndex <= insertIndex) ? (removeIndex +" " + insertIndex) : ( insertIndex +"" + removeIndex));
 		this.hashCode = Integer.parseInt(hashString);
 	}
+
+	public Operator getOperator() {
+		return operator;
+	}
+
 
 	@Override
 	public int getId() {
@@ -33,11 +38,7 @@ public class IntraMove extends Mutation {
 			return ((IntraMove) o).hashCode() == this.hashCode;
 		}return false;
 	}
-	
-	public Operator getOperator() {
-		return this.operator;
-	}
-	
+
 	public int getRemoveIndex() {
 		return this.removeIndex;
 	}

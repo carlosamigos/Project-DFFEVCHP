@@ -188,7 +188,7 @@ public class TSIndividual extends Individual {
 	// Identifies which node a service operator is travelling from
 	private Node findPreviousNode(Operator op){
 		Node node;
-		int carMoveSize = op.getCarMovesSize();
+		int carMoveSize = op.getCarMoves().size();
 		if(carMoveSize > 0){
 			node = op.getCarMove(carMoveSize - 1).getToNode();
 		}else{
