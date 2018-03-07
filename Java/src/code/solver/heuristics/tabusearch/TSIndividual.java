@@ -8,6 +8,8 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.EjectionMutation;
+import code.solver.heuristics.mutators.InterMove;
+import code.solver.heuristics.mutators.Mutation;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -17,12 +19,14 @@ import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.IntraMove;
+import utils.MathHelper;
 
 public class TSIndividual extends Individual {
 	
 	private ArrayList<Object> operators;
 
 	//These tracks how good the proposed solution is. Thus we might need two of them - one that is stable (final) and one that keeps track
+	private HashMap<ChargingNode, Integer> capacitiesUsed;
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
@@ -32,7 +36,6 @@ public class TSIndividual extends Individual {
 	private ProblemInstance problemInstance;
 	
 	//Fitness parameters
-	private double fitness = 0.0;
 	private double costOfPostponed = 0.0;
 	private double awardForCharging = 0.0;
 	private double awardForMeetingIdeal = 0.0;
@@ -48,12 +51,14 @@ public class TSIndividual extends Individual {
 
 		// Constructing initial solution
 		createOperators();
-		initiateCapacities();
+		initateCapacities();
 		initiateDeviations();
 		addCarMovesToOperators();
+
+
 		// -----------------------------
-		calculateFitnessOfIndividual();
-		testAdd();
+		calculateFitness();
+
 	}
 
 	//================================================================================
@@ -69,19 +74,23 @@ public class TSIndividual extends Individual {
 		this.operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
 			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
-					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), capacities, problemInstance.getOperators().get(i).getId());
+					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), problemInstance.getOperators().get(i).getId());
 			operators.add(op);
 		}
-
 	}
 
-	//Initiate charging station capacities
-	private void initiateCapacities(){
-		this.capacities = new HashMap<>();
-		for (int i = 0; i < problemInstance.getChargingNodes().size(); i++) {
-			capacities.put(problemInstance.getChargingNodes().get(i), problemInstance.getChargingNodes().get(i).getNumberOfAvailableChargingSpotsNextPeriod());
+	private void initateCapacities(){
+		capacities = new HashMap<>();
+		capacitiesUsed = new HashMap<>();
+		for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
+			capacitiesUsed.put(chargingNode, 0);
+			capacities.put(chargingNode, chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
+		}
+		for(Object op : operators){
+			((Operator)op).setChargingCapacityUsedIndividual(capacitiesUsed);
 		}
 	}
+
 
 	//Initiate deviation from ideal states
 	private void initiateDeviations(){
@@ -213,8 +222,8 @@ public class TSIndividual extends Individual {
 	//================================================================================
 
 
-	protected double calculateFitnessOfIndividual() {
-		//TODO: To be tested. Should update all fitness-related parameters in Operators
+	protected double testCalculateFitnessOfIndividual() {
+		//TODO: To be tested.
 		// Considers only charging time and capacity at the moment
 		HashMap<ChargingNode, Integer> capacityUsed = new HashMap<>();
 		double totalFitness = 0;
@@ -227,13 +236,20 @@ public class TSIndividual extends Individual {
 				//Need to take earliest start time of the move into account
 				currentTime += problemInstance.getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
+				if(currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM){
+					break;
+				}
 				if(carMove.isToCharging()){
 					totalFitness -= operator.getChargingReward(currentTime);
-					increaseCapacityUsedInNode((ChargingNode) carMove.getToNode(), capacityUsed);
+					ChargingNode chargingNode = (ChargingNode) carMove.getToNode();
+					if(capacityUsed.get(chargingNode) == null){
+						capacityUsed.put(chargingNode, 0);
+					} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
 				}
 				prevNode = carMove.getToNode();
 			}
 		}
+		// Calculate capacity penalties
 		for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
 			int availableChargingSpots = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 			if(capacityUsed.get(chargingNode) != null){
@@ -244,16 +260,21 @@ public class TSIndividual extends Individual {
 		return totalFitness;
 	}
 
+	private void calculateFitness(){
+		double totalFitness = 0;
+		for(Object operator : operators){
+			totalFitness += ((Operator) operator).getFitness();
+		}
+		this.fitness = totalFitness;
+		System.out.println(totalFitness);
+	}
+
+
 	@Override
 	public ArrayList<Object> getRepresentation() {
 		return this.operators;
 	}
 
-	private void increaseCapacityUsedInNode(ChargingNode chargingNode, HashMap<ChargingNode, Integer> capacityUsed){
-		if(capacityUsed.get(chargingNode) == null){
-			capacityUsed.put(chargingNode, 0);
-		} capacityUsed.put(chargingNode, capacityUsed.get(chargingNode) + 1);
-	}
 
 	// -------------------------------------------------------------------------------
 
@@ -277,7 +298,7 @@ public class TSIndividual extends Individual {
 		double deltaFitness = operator.getFitness() - oldFitness;
 
 		operator.setCarMoves(oldCarMoves);
-		operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		//operator.setChargingCapacityUsed(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
 
 		/*
@@ -300,38 +321,101 @@ public class TSIndividual extends Individual {
 	}
 
 	// -------------------------------------------------------------------------------
-	
+
+
+
+	//-----------  Delta Fitnesses  --------------
+
 	public double deltaFitness(IntraMove intraMove) {
 		Operator operator = intraMove.getOperator();
 		int removeIndex = intraMove.getRemoveIndex();
 		int insertIndex = intraMove.getInsertIndex();
 		
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities); 
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
 		double oldFitness = operator.getFitness();
 		
 		CarMove carMove = operator.removeCarMove(removeIndex);
+		System.out.println(intraMove);
 		operator.addCarMove(insertIndex, carMove);
 		operator.calculateFitness();
-		
+
 		double deltaFitness = operator.getFitness() - oldFitness;
-		
+
 		operator.setCarMoves(oldCarMoves);
-		operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
-		
+		for(Object operator1 : operators){
+			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
+		}
+		capacities = oldChargingCapacityUsed;
+
 		return deltaFitness;
 	}
 
-	
+
+	public double deltaFitness(InterMove interMove){
+		// TODO
+		Operator operatorRemove = interMove.getOperatorRemove();
+		Operator operatorInsert = interMove.getOperatorInsert();
+		int removeIndex 	    = interMove.getInsertIndex();
+		int insertIndex 		= interMove.getInsertIndex();
+
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		ArrayList<CarMove> oldCarMovesRemove = new ArrayList<>(operatorRemove.getCarMoves());
+		ArrayList<CarMove> oldCarMovesInsert = new ArrayList<>(operatorInsert.getCarMoves());
+		double oldFitness = this.fitness;
+
+		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
+		operatorRemove.calculateFitness();
+		operatorInsert.addCarMove(insertIndex, carMove);
+		operatorInsert.calculateFitness();
+
+
+		// Revert
+		operatorRemove.setCarMoves(oldCarMovesRemove);
+		//TODO
+
+
+		double deltaFitness = this.fitness - oldFitness;
+		return deltaFitness;
+
+	}
+
+
+	//-----------  Perform Mutations --------------
+
+
 	public void performMutation(IntraMove intraMove) {
 		Operator operator = intraMove.getOperator();
 		int removeIndex = intraMove.getRemoveIndex();
 		int insertIndex = intraMove.getInsertIndex();
 		CarMove carMove = operator.removeCarMove(removeIndex);
 		operator.addCarMove(insertIndex, carMove);
+
 	}
-	
+
+
+	public void performMutation(InterMove interMove){
+		// TODO
+	}
+
+	public ArrayList<Mutation> getNeighbors(int neighborhoodSize){
+		ArrayList<Mutation> neighbors = new ArrayList<>();
+		// TODO: make smarter
+		for (int i = 0; i < neighborhoodSize; i++) {
+			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+			Operator operator = (Operator) operators.get(randomOperatorIndex);
+			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoves().size());
+			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operators.size());
+			System.out.println("removeIndex: " + removeIndex + ", insertIndex: " + insertIndex );
+			IntraMove mutation = new IntraMove(operator,removeIndex, insertIndex);
+			neighbors.add(mutation);
+		}
+		return neighbors;
+	}
+
 	
 	public void addToFitness(double delta) {
 		this.fitness += delta;
@@ -356,4 +440,6 @@ public class TSIndividual extends Individual {
 		}
 		return s + "\n";
 	}
+
+
 }
