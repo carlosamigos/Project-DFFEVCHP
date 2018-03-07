@@ -254,7 +254,7 @@ public class TSIndividual extends Individual {
 	}
 	
 	public double deltaFitness(IntraMove intraMove) {
-
+		Operator operator = intraMove.getOperator();
 
 		return 0.0;
 		
