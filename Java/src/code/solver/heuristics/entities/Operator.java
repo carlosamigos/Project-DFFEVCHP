@@ -52,6 +52,7 @@ public class Operator {
 
 	public void addCarMove(int index, CarMove carMove) {
 		this.changed = true;
+		System.out.println(carMoves + " " + index);
 		this.carMoves.add(index, carMove);
 	}
 	

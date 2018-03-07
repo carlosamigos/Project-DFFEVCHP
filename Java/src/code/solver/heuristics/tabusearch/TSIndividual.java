@@ -290,6 +290,7 @@ public class TSIndividual extends Individual {
 		double oldFitness = operator.getFitness();
 		
 		CarMove carMove = operator.removeCarMove(removeIndex);
+		System.out.println(intraMove);
 		operator.addCarMove(insertIndex, carMove);
 		operator.calculateFitness();
 
@@ -356,10 +357,11 @@ public class TSIndividual extends Individual {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		for (int i = 0; i < neighborhoodSize; i++) {
-			int randomOperatorIndex = (int) Math.random() * operators.size();
+			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
-			int removeIndex = (int) Math.random() * operator.getCarMoves().size();
+			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoves().size());
 			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operators.size());
+			System.out.println("removeIndex: " + removeIndex + ", insertIndex: " + insertIndex );
 			IntraMove mutation = new IntraMove(operator,removeIndex, insertIndex);
 			neighbors.add(mutation);
 		}
