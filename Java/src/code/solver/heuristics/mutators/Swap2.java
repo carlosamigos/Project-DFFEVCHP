@@ -46,18 +46,6 @@ public class Swap2 extends Mutation{
 	    return hashCode;
 	}
 
-	/*
-	public double deltaFitness(Individual individual) {
-		return individual.deltaFitness(this);
-	}
-	*/
-
-	@Override
-	public void doMutation(Individual individual) {
-		ArrayList<Object> rep = individual.getRepresentation();
-		Collections.swap(rep, i,j);
-	}
-
 	@Override
 	public String toString() {
 		return "[" + i + ", "+ j + "]";

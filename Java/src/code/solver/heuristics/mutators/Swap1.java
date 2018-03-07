@@ -2,22 +2,22 @@ package code.solver.heuristics.mutators;
 
 import code.solver.heuristics.Individual;
 
-public class Swap3 extends Mutation{
+public class Swap1 extends Mutation {
 
-	public final static int id = 2;
+	@Override
+	public int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	@Override
 	public boolean equals(Object o) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return 0;
-	}
-
-	@Override
-	public int getId() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

@@ -18,6 +18,8 @@ public class Operator {
 	private HashMap<CarMove, Integer> chargingMoveIndex;
 	private ArrayList<ArrayList<Double>> travelTimesBike;
 	
+	private HashMap<ChargingNode, Integer> chargingCapacityUsedOperator;
+	
 	private ArrayList<CarMove> carMoves;
 	private int carsBeingCharged;
 	private final Node startNode;
@@ -38,7 +40,8 @@ public class Operator {
 		this.chargingMoves = new ArrayList<>();
 		this.startEndChargingMoves = new HashMap<>();
 		this.chargingMoveIndex = new HashMap<>();
-		calculateInitialFitness();
+		this.chargingCapacityUsedOperator = new HashMap<>();
+		calculateFitness();
 	}
 	
 	public CarMove getCarMove(int index) {
@@ -102,7 +105,15 @@ public class Operator {
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
-	private void calculateInitialFitness() {
+	private void calculateFitness() {
+		
+		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
+			this.chargingCapacityUsed.put(chargingNode, 
+					  this.chargingCapacityUsed.get(chargingNode) 
+					- this.chargingCapacityUsedOperator.get(chargingNode));
+			this.chargingCapacityUsedOperator.put(chargingNode, 0);
+		}
+		
 		double currentTime = this.startTime;
 		Node previousNode = this.startNode;
 		CarMove currentMove;
@@ -111,16 +122,26 @@ public class Operator {
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
 			currentTime += getTravelTime(previousNode, currentMove);
+			previousNode = currentMove.getToNode();
 			
 			if(currentTime > this.timeLimit) {
 				return;
 			}
 			
 			if(currentMove.isToCharging()) {
-				ChargingNode node = (ChargingNode) currentMove.getToNode();
-				double chargingFitness = getChargingFitness(currentTime, node);
+				ChargingNode chargingNode = (ChargingNode) currentMove.getToNode();
+				double chargingFitness = getChargingFitness(currentTime, chargingNode);
 				fitness += chargingFitness;
-				this.chargingCapacityUsed.put(node, this.chargingCapacityUsed.get(node)+1);
+				
+				if(!this.chargingCapacityUsedOperator.containsKey(chargingNode)) {
+					this.chargingCapacityUsedOperator.put(chargingNode, 0);
+				}
+				
+				this.chargingCapacityUsedOperator.put(chargingNode, 
+						this.chargingCapacityUsedOperator.get(chargingNode)+1);
+				
+				
+				this.chargingCapacityUsed.put(chargingNode, this.chargingCapacityUsed.get(chargingNode)+1);
 				double[] timings = {currentTime-currentMove.getTravelTime(), currentTime};
 				this.chargingMoves.add(currentMove);
 				this.startEndChargingMoves.put(currentMove, timings);
@@ -129,10 +150,20 @@ public class Operator {
 		}
 	}
 	
+	public void performMutation(Insert insert) {
+		carMoves.add(insert.getIndex(), (CarMove) insert.getObject());
+		calculateFitness();
+	}
+	
+	public void performMutation(Remove remove) {
+		carMoves.remove(remove.getIndex());
+		calculateFitness();
+	}
+	
 	/*
 	 * Calculates the change in fitness a mutation of type Insert would cause
 	 * Input: A mutation of type Insert. Insert contains an object and an index.
-	 */
+	 *
 	public double getDeltaFitness(Insert insert) {
 		double deltaFitness = 0.0;
 		double currentTime = this.startTime;
@@ -179,7 +210,7 @@ public class Operator {
 		}
 		
 		return deltaFitness;
-	}
+	}*/
 	
 	private double getChangeInChargingFitness(double oldTime, double timeChange) {
 		double oldReward = getChargingReward(oldTime);
