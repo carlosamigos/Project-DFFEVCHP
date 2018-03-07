@@ -266,7 +266,7 @@ public class TSIndividual extends Individual {
 			totalFitness += ((Operator) operator).getFitness();
 		}
 		this.fitness = totalFitness;
-		System.out.println(totalFitness);
+		//System.out.println(totalFitness);
 	}
 
 
@@ -287,7 +287,7 @@ public class TSIndividual extends Individual {
 		CarMove carMoveInsert = ejectionMove.getCarMoveReplace();
 		int removeIndex = ejectionMove.getCarMoveIndex();
 
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
 		double oldFitness = operator.getFitness();
 
@@ -298,7 +298,7 @@ public class TSIndividual extends Individual {
 		double deltaFitness = operator.getFitness() - oldFitness;
 
 		operator.setCarMoves(oldCarMoves);
-		//operator.setChargingCapacityUsed(oldChargingCapacityUsed);
+		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
 
 		/*
@@ -330,14 +330,15 @@ public class TSIndividual extends Individual {
 		Operator operator = intraMove.getOperator();
 		int removeIndex = intraMove.getRemoveIndex();
 		int insertIndex = intraMove.getInsertIndex();
-		
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+
+		//TODO: Why is capacities copied into a new hashmap?
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
 		double oldFitness = operator.getFitness();
 		
 		CarMove carMove = operator.removeCarMove(removeIndex);
-		System.out.println(intraMove);
+		//System.out.println(intraMove);
 		operator.addCarMove(insertIndex, carMove);
 		operator.calculateFitness();
 
@@ -362,7 +363,7 @@ public class TSIndividual extends Individual {
 		int removeIndex 	    = interMove.getInsertIndex();
 		int insertIndex 		= interMove.getInsertIndex();
 
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacities);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		ArrayList<CarMove> oldCarMovesRemove = new ArrayList<>(operatorRemove.getCarMoves());
 		ArrayList<CarMove> oldCarMovesInsert = new ArrayList<>(operatorInsert.getCarMoves());
 		double oldFitness = this.fitness;
@@ -409,7 +410,7 @@ public class TSIndividual extends Individual {
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoves().size());
 			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operators.size());
-			System.out.println("removeIndex: " + removeIndex + ", insertIndex: " + insertIndex );
+			//System.out.println("removeIndex: " + removeIndex + ", insertIndex: " + insertIndex );
 			IntraMove mutation = new IntraMove(operator,removeIndex, insertIndex);
 			neighbors.add(mutation);
 		}

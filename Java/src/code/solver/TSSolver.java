@@ -81,7 +81,6 @@ public class TSSolver extends Solver {
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 			for(Mutation newCandidate : neighborhood) {
 				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
-				System.out.println(newCandidateDelta);
 				if (newCandidateDelta < candidateDelta) {
 					candidate = newCandidate;
 					candidateDelta = newCandidateDelta;
