@@ -261,6 +261,13 @@ public class TSIndividual extends Individual {
 		
 	}
 	
+	public void performMutation(Swap1 swap) {
+		/*
+		 * 1. Remove
+		 * 2. Insert
+		 */
+	}
+	
 	public void addToFitness(double delta) {
 		this.fitness += delta;
 	}
