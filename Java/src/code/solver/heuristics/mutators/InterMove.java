@@ -1,9 +1,8 @@
 package code.solver.heuristics.mutators;
 
-import code.problem.nodes.Node;
+
 import code.solver.heuristics.entities.Operator;
 
-import java.util.HashMap;
 
 public class InterMove extends Mutation {
 

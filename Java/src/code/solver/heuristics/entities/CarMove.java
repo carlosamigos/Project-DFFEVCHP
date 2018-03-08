@@ -49,6 +49,6 @@ public class CarMove {
 
     @Override
     public String toString() {
-        return "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
+        return "" + car.getCarId() + "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
     }
 }
