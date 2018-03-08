@@ -350,7 +350,7 @@ public class TSIndividual extends Individual {
 		for(Object operator1 : operators){
 			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
 		}
-		capacities = oldChargingCapacityUsed;
+		capacitiesUsed = oldChargingCapacityUsed;
 
 		return deltaFitness;
 	}
