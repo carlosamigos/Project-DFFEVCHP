@@ -51,4 +51,9 @@ public class CarMove {
     public String toString() {
         return "" + car.getCarId() + "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
     }
+    
+    public String detailedToString() {
+    		return "[CarID: " + car.getCarId() + ", FromNode: " + this.fromNode.getNodeId() 
+    		+ ", ToNode: " + this.toNode.getNodeId() + ", Duration: " + this.getTravelTime() + "]";
+    }
 }

@@ -28,6 +28,7 @@ public class TSIndividual extends Individual {
 
 	// These tracks how good the proposed solution is.
 	private HashMap<ChargingNode, Integer> capacitiesUsed;
+	private HashMap<ChargingNode, Integer> prevCapacitiesUsed;
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
@@ -46,8 +47,8 @@ public class TSIndividual extends Individual {
 	//Placeholder Weights
 
 	// Constructor used exlusively for testing
-	public TSIndividual() {
-		this(null);
+	public TSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
+		this.capacitiesUsed = capacitiesUsed;
 	}
 
 	public TSIndividual(ProblemInstance problemInstance) {
@@ -89,6 +90,11 @@ public class TSIndividual extends Individual {
 			capacitiesUsed.put(chargingNode, 0);
 			capacities.put(chargingNode, chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
 		}
+		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+	}
+	
+	public void setCapacitiesUsed(HashMap<ChargingNode, Integer> capacities) {
+		this.capacitiesUsed = capacitiesUsed;
 	}
 
 
@@ -333,7 +339,7 @@ public class TSIndividual extends Individual {
 		int insertIndex = intraMove.getInsertIndex();
 
 		// Save old state
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(prevCapacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
 		double oldFitness = operator.getFitness();
@@ -459,6 +465,10 @@ public class TSIndividual extends Individual {
 	public HashMap<ChargingNode, Integer> getCapacitiesUsed() {
 		return capacitiesUsed;
 	}
+	
+	public HashMap<ChargingNode, Integer> getPrevCapacitiesUsed() {
+		return prevCapacitiesUsed;
+	}
 
 	public HashMap<Car, ArrayList<CarMove>> getUnusedCarMoves() {
 		return unusedCarMoves;
@@ -480,6 +490,16 @@ public class TSIndividual extends Individual {
 		for(Object i : this.getRepresentation()) {
 			s += i.toString() + "\n";
 		}
+		return s;
+	}
+	
+	public String detailedToString() {
+		String s = "";
+		for(Object i : this.getRepresentation()) {
+			Operator op = (Operator) i;
+			s += op.detailedToString() + "\n";
+		}
+		
 		return s;
 	}
 

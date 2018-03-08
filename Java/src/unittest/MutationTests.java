@@ -48,17 +48,15 @@ class MutationTests {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0);
+		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0, null);
 	}
 
-	@DisplayName("Mutation tests")
-	@ParameterizedTest(name = "foo")
+	@DisplayName("Mutation tests: Perform Intra")
+	@ParameterizedTest(name = "{0}")
 	@MethodSource(value = { "testOperatorFitness" })
 	void testOperatorFitness(String testName, ArrayList<CarMove> carMoves, IntraMove intraMove) {
-		
-		operator.setChargingCapacityUsedIndividual(capacities);
 		operator.addCarMoves(carMoves);
-		operator.calculateFitness();
+		
 		assertEquals(0.0, operator.getFitness());
 	}
 	
