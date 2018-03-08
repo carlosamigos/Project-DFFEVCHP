@@ -23,8 +23,8 @@ public class TSSolver extends Solver {
 	private final int neighborhoodSize;
 	private final int tabuSize;
 	
-	private HashMap<Integer, Command> mutationToDelta;
-	private HashMap<Integer, Command> mutationToPerform;
+	private HashMap<Integer, DeltaFitness> mutationToDelta;
+	private HashMap<Integer, Perform> mutationToPerform;
 	
 	private final HashMap<Car, ArrayList<CarMove>> carToCarMoves;
 	
@@ -37,6 +37,8 @@ public class TSSolver extends Solver {
 		this.carToCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.iterations = iterations;
 		this.individual =  new TSIndividual(problemInstance);
+		individual.calculateFitness();
+			
 		this.neighborhoodSize = neighborhoodSize;
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();
@@ -49,8 +51,8 @@ public class TSSolver extends Solver {
 	private void setMutationToDelta() {
 		this.mutationToDelta = new HashMap<>();
 		this.mutationToDelta.put(IntraMove.id, (Mutation mutation) -> {
-			IntraMove swap = (IntraMove) mutation;
-			return this.individual.deltaFitness(swap);
+			IntraMove intraMove = (IntraMove) mutation;
+			return this.individual.deltaFitness(intraMove);
 		});
 		this.mutationToDelta.put(InterMove.id, (Mutation mutation) -> {
 			InterMove interMove = (InterMove) mutation;
@@ -61,12 +63,12 @@ public class TSSolver extends Solver {
 	private void setMutationToPerform() {
 		this.mutationToPerform = new HashMap<>();
 		this.mutationToPerform.put(IntraMove.id, (Mutation mutation) -> {
-			IntraMove swap = (IntraMove) mutation;
-			return this.individual.deltaFitness(swap);
+			IntraMove intraMove = (IntraMove) mutation;
+			this.individual.performMutation(intraMove);
 		});
 		this.mutationToPerform.put(InterMove.id, (Mutation mutation) -> {
-			InterMove swap = (InterMove) mutation;
-			return this.individual.deltaFitness(swap);
+			InterMove interMove = (InterMove) mutation;
+			this.individual.performMutation(interMove);
 		});
 	}
 	
@@ -121,7 +123,11 @@ public class TSSolver extends Solver {
 		return "Tabu search";
 	}
 	
-	private interface Command {
+	private interface DeltaFitness {
 		double runCommand(Mutation mutation);
+	}
+	
+	private interface Perform {
+		void runCommand(Mutation mutation);
 	}
 }

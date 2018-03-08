@@ -2,9 +2,11 @@ package code.solver.heuristics.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
+import code.solver.heuristics.tabusearch.TSIndividual;
 import constants.Constants;
 import constants.HeuristicsConstants;
 
@@ -12,20 +14,23 @@ public class Operator {
 
 	public final int id;
 
-	private HashMap<ChargingNode, Integer> chargingCapacityUsed;
+	private TSIndividual individual;
 	private ArrayList<ArrayList<Double>> travelTimesBike;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsedOperator;
 
-	private ArrayList<CarMove> carMoves;
+	private ArrayList<CarMove> carMoves; // only car moves that are performed
+	private int carMoveNotDoneStartIndex=0;
 	private final Node startNode;
 	private final double startTime;
 	private final double timeLimit;
+	private double freeTime = 0;
 	private double travelTime;
 	private double fitness;
 	private boolean changed;
 	
 	public Operator(double startTime, double timeLimit, Node startNode, 
-			ArrayList<ArrayList<Double>> travelTimesBike, int id) {
+			ArrayList<ArrayList<Double>> travelTimesBike, int id, TSIndividual individual) {
+		this.individual = individual;
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
@@ -52,7 +57,9 @@ public class Operator {
 
 	public void addCarMove(int index, CarMove carMove) {
 		this.changed = true;
-		//System.out.println(carMoves + " " + index);
+		if(index > this.carMoves.size()){
+			index = this.carMoves.size();
+		}
 		this.carMoves.add(index, carMove);
 	}
 	
@@ -61,8 +68,8 @@ public class Operator {
 		this.carMoves.addAll(carMoves);
 	}
 
-	public ArrayList<CarMove> getCarMoves() {
-		return carMoves;
+	public ArrayList<CarMove> getCarMoveCopy() {
+		return new ArrayList<>(carMoves);
 	}
 
 	public double getTravelTime() {
@@ -83,7 +90,14 @@ public class Operator {
 
 	public CarMove removeCarMove(int position) {
 		this.changed = true;
+		if(position >= carMoves.size()){
+			position = carMoves.size()-1;
+		}
 		return carMoves.remove(position);
+	}
+
+	public int getCarMoveListSize(){
+		return this.carMoves.size();
 	}
 	
 	public double getFitness() {
@@ -107,20 +121,15 @@ public class Operator {
 		this.chargingCapacityUsedOperator = capacityUsedByOperator;
 	}
 
-	public void setChargingCapacityUsedIndividual(HashMap<ChargingNode, Integer> chargingCapacityUsed){
-		this.chargingCapacityUsed = chargingCapacityUsed;
-	}
-	
 	/*
 	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
 	 * bottom up at some other point. The method iterates through all car moves calculate rewards based on the moves
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
-	public void calculateFitness() {
-		changed = false;
+	private void calculateFitness() {
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
-			this.chargingCapacityUsed.put(chargingNode, 
-					  this.chargingCapacityUsed.get(chargingNode) 
+			this.individual.getCapacitiesUsed().put(chargingNode,
+					this.individual.getCapacitiesUsed().get(chargingNode)
 					- this.chargingCapacityUsedOperator.get(chargingNode));
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
@@ -135,6 +144,9 @@ public class Operator {
 			previousNode = currentMove.getToNode();
 
 			if(currentTime > this.timeLimit) {
+				this.freeTime = (this.timeLimit - currentTime);
+				// Remove surplus car moves
+				this.carMoveNotDoneStartIndex = i;
 				return;
 			}
 			
@@ -150,7 +162,7 @@ public class Operator {
 				this.chargingCapacityUsedOperator.put(chargingNode, 
 						this.chargingCapacityUsedOperator.get(chargingNode)+1);
 
-				this.chargingCapacityUsed.put(chargingNode, this.chargingCapacityUsed.get(chargingNode)+1);
+				this.individual.getCapacitiesUsed().put(chargingNode, this.individual.getCapacitiesUsed().get(chargingNode)+1);
 			}
 		}
 	}
@@ -190,7 +202,7 @@ public class Operator {
 	 * The penalty is zero as long as the capacity is not broken.
 	 */
 	private double getCapacityPenalty(ChargingNode arrivalNode, boolean isAddingCarMove, int alreadyAdjusted) {
-		int currentUsed = this.chargingCapacityUsed.get(arrivalNode) + alreadyAdjusted;
+		int currentUsed = this.individual.getCapacitiesUsed().get(arrivalNode) + alreadyAdjusted;
 		int available = arrivalNode.getNumberOfAvailableChargingSpotsNextPeriod();
 		if(isAddingCarMove){
 			if(currentUsed >= available){
@@ -221,4 +233,34 @@ public class Operator {
 		return Math.abs(currTimeContribution - newTimeContribution);
 	}
 	*/
+
+	public void cleanCarMovesNotDone(){
+		// Todo: make smarter by using the remembered start index
+		Node previousNode = this.startNode;
+		CarMove currentMove;
+		double currentTime = this.startTime;
+		for (int j = 0; j < this.carMoves.size(); j++) {
+			currentMove = this.carMoves.get(j);
+			currentTime += getTravelTime(previousNode, currentMove);
+			previousNode = currentMove.getToNode();
+			if(currentTime > timeLimit){
+				CarMove carMoveToRemove = this.carMoves.remove(j);
+				individual.getUnusedCarMoves().get(carMoveToRemove.getCar()).add(carMoveToRemove);
+			}
+
+		}
+	}
+
+	public void setChanged(boolean change){
+		this.changed = change;
+	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		for(CarMove carMove : carMoves) {
+			s += carMove + ", ";
+		}
+		return s.substring(0, s.length()-2);
+	}
 }
