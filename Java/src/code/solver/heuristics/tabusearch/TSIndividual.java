@@ -61,6 +61,11 @@ public class TSIndividual extends Individual {
 
 		// -----------------------------
 		calculateFitness();
+		
+		for(Object op : operators) {
+			System.out.println(((Operator) op).getCarMoves().size());
+		}
+		
 	}
 
 	//================================================================================
