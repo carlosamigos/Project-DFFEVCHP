@@ -156,8 +156,7 @@ public class Operator {
 			if(currentMove.isToCharging()) {
 				ChargingNode chargingNode = (ChargingNode) currentMove.getToNode();
 				this.chargingNodesVisited.add(chargingNode);
-				double chargingFitness = getChargingReward(currentTime);
-				this.fitness += chargingFitness;
+				this.fitness -= getChargingReward(currentTime);
 				
 				
 				if(!this.chargingCapacityUsedOperator.containsKey(chargingNode)) {

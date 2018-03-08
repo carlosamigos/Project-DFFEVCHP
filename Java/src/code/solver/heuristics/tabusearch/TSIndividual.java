@@ -90,7 +90,7 @@ public class TSIndividual extends Individual {
 		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 	}
 	
-	public void setCapacitiesUsed(HashMap<ChargingNode, Integer> capacities) {
+	public void setCapacitiesUsed(HashMap<ChargingNode, Integer> capacitiesUsed) {
 		this.capacitiesUsed = capacitiesUsed;
 	}
 
