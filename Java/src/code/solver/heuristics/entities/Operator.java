@@ -119,7 +119,7 @@ public class Operator {
 		this.fitness = fitness;
 	}
 	
-	public void setChargingCapacityUsedByOperator( HashMap<ChargingNode, Integer> capacityUsedByOperator) {
+	public void setChargingCapacityUsedByOperator(HashMap<ChargingNode, Integer> capacityUsedByOperator) {
 		this.chargingCapacityUsedOperator = capacityUsedByOperator;
 	}
 
@@ -132,6 +132,8 @@ public class Operator {
 		// ToDo: Need to take start time for the car move into account
 		this.chargingNodesVisited.clear();
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
+			this.individual.getPrevCapacitiesUsed().put(chargingNode, 
+					this.individual.getCapacitiesUsed().get(chargingNode));
 			this.individual.getCapacitiesUsed().put(chargingNode,
 					this.individual.getCapacitiesUsed().get(chargingNode)
 					- this.chargingCapacityUsedOperator.get(chargingNode));

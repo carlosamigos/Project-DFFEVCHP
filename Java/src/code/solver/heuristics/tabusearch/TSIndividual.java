@@ -106,7 +106,6 @@ public class TSIndividual extends Individual {
 		boolean operatorAvailable = true;
 		//HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
-		System.out.println(carMovesCopy);
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (Object obop: this.operators) {
@@ -284,7 +283,8 @@ public class TSIndividual extends Individual {
 		CarMove carMoveInsert = ejectionReplaceMutation.getCarMoveReplace();
 		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
 
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
+		this.prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
 		double oldFitness = operator.getFitness();
 
@@ -298,7 +298,7 @@ public class TSIndividual extends Individual {
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
-		capacitiesUsed = oldChargingCapacityUsed;
+		capacitiesUsed = this.prevCapacitiesUsed;
 		return deltaFitness;
 	}
 
@@ -358,7 +358,6 @@ public class TSIndividual extends Individual {
 		int insertIndex = intraMove.getInsertIndex();
 
 		// Save old state
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(prevCapacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
 		double oldFitness = operator.getFitness();
@@ -373,7 +372,7 @@ public class TSIndividual extends Individual {
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
-		capacitiesUsed = oldChargingCapacityUsed;
+		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 	}
 
@@ -385,7 +384,6 @@ public class TSIndividual extends Individual {
 		int insertIndex 		= interMove.getInsertIndex();
 
 		// Save old state
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedRemoveOperator
 				= new HashMap<>(operatorRemove.getChargingCapacityUsedOperator());
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedInsertOperator
@@ -398,8 +396,10 @@ public class TSIndividual extends Individual {
 		// Do change
 		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
 		operatorRemove.getFitness();
+		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		operatorInsert.addCarMove(insertIndex, carMove);
 		operatorInsert.getFitness();
+		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		double deltaFitness = (operatorInsert.getFitness() + operatorRemove.getFitness())
 				- (oldFitnessInsert + oldFitnessRemove);
 
@@ -412,7 +412,7 @@ public class TSIndividual extends Individual {
 		operatorInsert.setFitness(oldFitnessInsert);
 		operatorRemove.setChanged(false);
 		operatorInsert.setChanged(false);
-		capacitiesUsed = oldChargingCapacityUsed;
+		
 
 		return deltaFitness;
 
@@ -430,6 +430,7 @@ public class TSIndividual extends Individual {
 		operator.addCarMove(insertIndex, carMove);
 		operator.getFitness();
 		operator.cleanCarMovesNotDone();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 	}
 
 
@@ -444,6 +445,7 @@ public class TSIndividual extends Individual {
 		operatorInsert.addCarMove(insertIndex, carMove);
 		operatorInsert.getFitness();
 		operatorInsert.cleanCarMovesNotDone();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 	}
 
 	public ArrayList<Mutation> getNeighbors(int neighborhoodSize){
@@ -469,6 +471,9 @@ public class TSIndividual extends Individual {
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
 			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
+			/*if(this.fitness < -52 && removeOperatorIndex == 0 && insertOperatorIndex == 1) {
+				System.out.println(removeOperator.getCarMoveListSize() + ":" + removeIndex + ":" + insertIndex);
+			}*/
 			neighbors.add(interMove);
 		}
 
