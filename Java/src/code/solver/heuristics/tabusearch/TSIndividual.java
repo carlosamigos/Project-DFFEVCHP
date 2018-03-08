@@ -28,6 +28,7 @@ public class TSIndividual extends Individual {
 
 	// These tracks how good the proposed solution is.
 	private HashMap<ChargingNode, Integer> capacitiesUsed;
+	private HashMap<ChargingNode, Integer> prevCapacitiesUsed;
 	private HashMap<ChargingNode, Integer> capacities;
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 
@@ -45,6 +46,10 @@ public class TSIndividual extends Individual {
 
 	//Placeholder Weights
 
+	// Constructor used exlusively for testing
+	public TSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
+		this.capacitiesUsed = capacitiesUsed;
+	}
 
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
@@ -85,6 +90,11 @@ public class TSIndividual extends Individual {
 			capacitiesUsed.put(chargingNode, 0);
 			capacities.put(chargingNode, chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
 		}
+		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+	}
+	
+	public void setCapacitiesUsed(HashMap<ChargingNode, Integer> capacities) {
+		this.capacitiesUsed = capacitiesUsed;
 	}
 
 
@@ -326,7 +336,7 @@ public class TSIndividual extends Individual {
 		int insertIndex = intraMove.getInsertIndex();
 
 		// Save old state
-		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(prevCapacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
 		double oldFitness = operator.getFitness();
@@ -378,6 +388,8 @@ public class TSIndividual extends Individual {
 		operatorInsert.setChargingCapacityUsedByOperator(oldChargingCapacityUsedInsertOperator);
 		operatorRemove.setFitness(oldFitnessRemove);
 		operatorInsert.setFitness(oldFitnessInsert);
+		operatorRemove.setChanged(false);
+		operatorInsert.setChanged(false);
 		capacitiesUsed = oldChargingCapacityUsed;
 
 		return deltaFitness;
@@ -416,7 +428,7 @@ public class TSIndividual extends Individual {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		// 2/3 intra swaps
-		for (int i = 0; i < neighborhoodSize; i++) {
+		for (int i = 0; i < neighborhoodSize/3*2; i++) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoveListSize());
@@ -425,18 +437,17 @@ public class TSIndividual extends Individual {
 			neighbors.add(intraMove);
 		}
 		// 1/3 interswaps
-		/*
+
 		for (int i = 0; i < neighborhoodSize/3*1; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator insertOperator = (Operator) operators.get(insertOperatorIndex);
-			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoves().size());
-			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoves().size());
+			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			neighbors.add(interMove);
-
-		}*/
+		}
 		return neighbors;
 	}
 
@@ -451,6 +462,10 @@ public class TSIndividual extends Individual {
 
 	public HashMap<ChargingNode, Integer> getCapacitiesUsed() {
 		return capacitiesUsed;
+	}
+	
+	public HashMap<ChargingNode, Integer> getPrevCapacitiesUsed() {
+		return prevCapacitiesUsed;
 	}
 
 	public HashMap<Car, ArrayList<CarMove>> getUnusedCarMoves() {
@@ -473,6 +488,16 @@ public class TSIndividual extends Individual {
 		for(Object i : this.getRepresentation()) {
 			s += i.toString() + "\n";
 		}
+		return s;
+	}
+	
+	public String detailedToString() {
+		String s = "";
+		for(Object i : this.getRepresentation()) {
+			Operator op = (Operator) i;
+			s += op.detailedToString() + "\n";
+		}
+		
 		return s;
 	}
 

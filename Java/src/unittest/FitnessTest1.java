@@ -2,6 +2,11 @@ package unittest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,7 +25,7 @@ import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import constants.HeuristicsConstants;
 
-class FitnessTest {
+class FitnessTest1 {
 
 	
 	private static Operator operator;
@@ -83,3 +88,4 @@ class FitnessTest {
 				Arguments.of("Capacity broken", carMoves1, fitness2, endTime2));
 	}
 }
+

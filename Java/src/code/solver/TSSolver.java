@@ -78,6 +78,8 @@ public class TSSolver extends Solver {
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
 			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
+			
+			System.out.println(individual.detailedToString());
 			ArrayList<Mutation> neighborhood = getNeighbors();
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
@@ -115,8 +117,6 @@ public class TSSolver extends Solver {
 	private ArrayList<Mutation> getNeighbors() {
 		return individual.getNeighbors(this.neighborhoodSize);
 	}
-
-
 
 	@Override
 	public String getInfo() {

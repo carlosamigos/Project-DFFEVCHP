@@ -20,7 +20,7 @@ public class InterMove extends Mutation {
         this.operatorInsert = operatorInsert;
         this.removeIndex = removeIndex;
         this.insertIndex = insertIndex;
-        String hashString = id + "" + ((operatorInsert.id < operatorRemove.id) ? (operatorInsert.id + "" + operatorRemove) : (operatorRemove+ "" + operatorInsert.id))
+        String hashString = id + "" + ((operatorInsert.id < operatorRemove.id) ? (operatorInsert.id + "" + operatorRemove.id) : (operatorRemove.id+ "" + operatorInsert.id))
                 +((removeIndex <= insertIndex) ? (removeIndex +"" + insertIndex) : ( insertIndex +"" + removeIndex));
         this.hashCode = Integer.parseInt(hashString);
     }
