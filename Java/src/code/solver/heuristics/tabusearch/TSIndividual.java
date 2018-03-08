@@ -114,6 +114,7 @@ public class TSIndividual extends Individual {
 		boolean operatorAvailable = true;
 		//HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
+		System.out.println(carMovesCopy);
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (Object obop: this.operators) {
@@ -159,7 +160,6 @@ public class TSIndividual extends Individual {
 				}
 			}
 		}
-
 		return cMove;
 	}
 
@@ -479,17 +479,19 @@ public class TSIndividual extends Individual {
 		}
 
 		// ejectionReplace
+		/*
 		for (int i = 0; i < neighborhoodSize/3; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size();
+			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
 			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
 			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
 			//neighbors.add(ejectionReplaceMutation);
 
 
 		}
+		*/
 
 		return neighbors;
 	}
