@@ -152,11 +152,12 @@ public class TSIndividual extends Individual {
 						Math.max(carMovesCopy.get(car).get(0).getEarliestDepartureTime() - (startTime + problemInstance.getTravelTimeBike(node, fromNode)), 0);
 				distance = distanceCandidate;
 				for(CarMove carMove: carMovesCopy.get(car)){
-					double fitNessCancidate = rateCarMove(carMove, distance);
-					if(fitNessCancidate < fitNess){
-						cMove = carMove;
-						fitNess = fitNessCancidate;
+					double fitNessCancidate = rateCarMove(carMove, distance + carMove.getTravelTime());
+					if(carMove.isToCharging()){
+						System.out.println(fitNessCancidate);
+						System.out.println(carMove);
 					}
+					
 				}
 			}
 		}
@@ -173,7 +174,7 @@ public class TSIndividual extends Individual {
 				fitNess += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
 			// Capacity is positive
-			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_INITIAL_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
 				fitNess += HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
