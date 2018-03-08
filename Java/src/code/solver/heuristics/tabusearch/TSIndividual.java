@@ -291,7 +291,7 @@ public class TSIndividual extends Individual {
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
 		double oldFitness = operator.getFitness();
 
-		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.removeCarMove(removeIndex);
 		operator.addCarMove(removeIndex, carMoveInsert);
 		operator.calculateFitness();
 
@@ -304,13 +304,6 @@ public class TSIndividual extends Individual {
 			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
 		}
 		capacitiesUsed = oldChargingCapacityUsed;
-
-		/*
-		 * 1. Fetch a random move for the same car
-		 * 2. Remove: Create a remove mutation based on the incoming carmove
-		 * 3. Insert: Create a insert mutation based on the new carmove
-		 * 4. Return: Deltafitness calculated - I may have to create what it is to be replaced by seperately
-		 */
 		return deltaFitness;
 	}
 
@@ -319,11 +312,7 @@ public class TSIndividual extends Individual {
 		int removeIndex = ejectionMove.getCarMoveIndex();
 		operator.removeCarMove(removeIndex);
 		operator.addCarMove(removeIndex, ejectionMove.getCarMoveReplace());
-		/*
-		 * 1. Remove the car move for operator at the given index
-		 * 2. Inject the new carmove at the same position
-		 * 3. Calculate new fitness
-		 */
+
 
 	}
 
