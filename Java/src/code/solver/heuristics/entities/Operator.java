@@ -284,11 +284,4 @@ public class Operator {
 		return s.substring(0, s.length()-2);
 	}
 	
-	public String detailedToString() {
-		String s = "";
-		for(CarMove carMove : carMoves) {
-			s += carMove.detailedToString() + ", ";
-		}
-		return s.substring(0, s.length()-2);
-	}
 }

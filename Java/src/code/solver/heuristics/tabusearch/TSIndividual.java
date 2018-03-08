@@ -491,15 +491,5 @@ public class TSIndividual extends Individual {
 		return s;
 	}
 	
-	public String detailedToString() {
-		String s = "";
-		for(Object i : this.getRepresentation()) {
-			Operator op = (Operator) i;
-			s += op.detailedToString() + "\n";
-		}
-		
-		return s;
-	}
-
 
 }
