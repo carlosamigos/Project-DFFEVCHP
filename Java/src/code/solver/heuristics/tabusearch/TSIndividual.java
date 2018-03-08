@@ -331,7 +331,6 @@ public class TSIndividual extends Individual {
 		int removeIndex = intraMove.getRemoveIndex();
 		int insertIndex = intraMove.getInsertIndex();
 
-		//TODO: Why is capacities copied into a new hashmap?
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 		ArrayList<CarMove> oldCarMoves = new ArrayList<>(operator.getCarMoves());
