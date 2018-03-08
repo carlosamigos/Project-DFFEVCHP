@@ -51,8 +51,8 @@ public class TSSolver extends Solver {
 	private void setMutationToDelta() {
 		this.mutationToDelta = new HashMap<>();
 		this.mutationToDelta.put(IntraMove.id, (Mutation mutation) -> {
-			IntraMove swap = (IntraMove) mutation;
-			return this.individual.deltaFitness(swap);
+			IntraMove intraMove = (IntraMove) mutation;
+			return this.individual.deltaFitness(intraMove);
 		});
 		this.mutationToDelta.put(InterMove.id, (Mutation mutation) -> {
 			InterMove interMove = (InterMove) mutation;
@@ -63,12 +63,12 @@ public class TSSolver extends Solver {
 	private void setMutationToPerform() {
 		this.mutationToPerform = new HashMap<>();
 		this.mutationToPerform.put(IntraMove.id, (Mutation mutation) -> {
-			IntraMove move = (IntraMove) mutation;
-			this.individual.performMutation(move);
+			IntraMove intraMove = (IntraMove) mutation;
+			this.individual.performMutation(intraMove);
 		});
 		this.mutationToPerform.put(InterMove.id, (Mutation mutation) -> {
-			InterMove swap = (InterMove) mutation;
-			this.individual.deltaFitness(swap);
+			InterMove interMove = (InterMove) mutation;
+			this.individual.performMutation(interMove);
 		});
 	}
 	
@@ -78,7 +78,6 @@ public class TSSolver extends Solver {
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
 			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
-			//System.out.println(this.individual);
 			ArrayList<Mutation> neighborhood = getNeighbors();
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);

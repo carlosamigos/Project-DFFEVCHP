@@ -4,7 +4,7 @@ import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 
-public class EjectionMutation extends Mutation {
+public class EjectionReplaceMutation extends Mutation {
 
     public final static int id = 9;
     private final Operator operator;
@@ -14,7 +14,7 @@ public class EjectionMutation extends Mutation {
 
 
 
-    public EjectionMutation(Operator op, int index, CarMove carMoveReplace){
+    public EjectionReplaceMutation(Operator op, int index, CarMove carMoveReplace){
         this.operator = op;
         this.carMoveIndex = index;
         this.carMoveReplace = carMoveReplace;
