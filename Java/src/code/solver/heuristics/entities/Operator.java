@@ -129,7 +129,7 @@ public class Operator {
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateFitness() {
-		
+		// ToDo: Need to take start time for the car move into account
 		this.chargingNodesVisited.clear();
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			this.individual.getCapacitiesUsed().put(chargingNode,
@@ -256,6 +256,7 @@ public class Operator {
 
 	public void cleanCarMovesNotDone(){
 		// Todo: make smarter by using the remembered start index
+		// Todo: need to take starttime for the car move into account
 		/*Node previousNode = this.startNode;
 		CarMove currentMove;
 		double currentTime = this.startTime;

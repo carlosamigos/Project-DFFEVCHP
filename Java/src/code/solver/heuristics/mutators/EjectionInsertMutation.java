@@ -36,6 +36,18 @@ public class EjectionInsertMutation extends Mutation {
 
     }
 
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public int getCarMoveIndex() {
+        return carMoveIndex;
+    }
+
+    public CarMove getCarMoveReplace() {
+        return carMoveReplace;
+    }
+
     @Override
     public int hashCode() {
         return this.hashCode;
