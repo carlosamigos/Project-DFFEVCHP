@@ -300,6 +300,10 @@ public class TSIndividual extends Individual {
 		operator.setCarMoves(oldCarMoves);
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
+		for(Object operator1 : operators){
+			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
+		}
+		capacitiesUsed = oldChargingCapacityUsed;
 
 		/*
 		 * 1. Fetch a random move for the same car
@@ -311,7 +315,10 @@ public class TSIndividual extends Individual {
 	}
 
 	public void performeMutation(EjectionMutation ejectionMove){
-
+		Operator operator = ejectionMove.getOperator();
+		int removeIndex = ejectionMove.getCarMoveIndex();
+		operator.removeCarMove(removeIndex);
+		operator.addCarMove(removeIndex, ejectionMove.getCarMoveReplace());
 		/*
 		 * 1. Remove the car move for operator at the given index
 		 * 2. Inject the new carmove at the same position
