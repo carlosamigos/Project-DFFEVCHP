@@ -37,14 +37,6 @@ public class TSIndividual extends Individual {
 
 	private ProblemInstance problemInstance;
 	
-	//Fitness parameters
-	private double costOfPostponed = 0.0;
-	private double awardForCharging = 0.0;
-	private double awardForMeetingIdeal = 0.0;
-	private double costOfTravel = 0.0;
-	private double costOfUnmetIdeal = 0.0;
-
-	//Placeholder Weights
 
 	// Constructor used exlusively for testing
 	public TSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
@@ -60,9 +52,9 @@ public class TSIndividual extends Individual {
 		initateCapacities();
 		initiateDeviations();
 		addCarMovesToOperators();
-
-		// -----------------------------
 		calculateFitness();
+		// -----------------------------
+		
 	}
 
 	//================================================================================
@@ -442,6 +434,7 @@ public class TSIndividual extends Individual {
 		// 1/3 interswaps
 
 		for (int i = 0; i < neighborhoodSize/3*1; i++) {
+			
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = (int)Math.floor(Math.random() * operators.size());
