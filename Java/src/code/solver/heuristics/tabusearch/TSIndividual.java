@@ -260,7 +260,7 @@ public class TSIndividual extends Individual {
 		return totalFitness;
 	}
 
-	private void calculateFitness(){
+	public void calculateFitness(){
 		double totalFitness = 0;
 		for(Object operator : operators){
 			totalFitness += ((Operator) operator).getFitness();
@@ -350,7 +350,7 @@ public class TSIndividual extends Individual {
 		for(Object operator1 : operators){
 			((Operator) operator1).setChargingCapacityUsedIndividual(oldChargingCapacityUsed);
 		}
-		capacities = oldChargingCapacityUsed;
+		capacitiesUsed = oldChargingCapacityUsed;
 
 		return deltaFitness;
 	}
@@ -394,7 +394,7 @@ public class TSIndividual extends Individual {
 		int insertIndex = intraMove.getInsertIndex();
 		CarMove carMove = operator.removeCarMove(removeIndex);
 		operator.addCarMove(insertIndex, carMove);
-
+		operator.calculateFitness();
 	}
 
 
@@ -437,9 +437,9 @@ public class TSIndividual extends Individual {
 	public String toString() {
 		String s = "";
 		for(Object i : this.getRepresentation()) {
-			s += i.toString() + " ";
+			s += i.toString() + "\n";
 		}
-		return s + "\n";
+		return s;
 	}
 
 

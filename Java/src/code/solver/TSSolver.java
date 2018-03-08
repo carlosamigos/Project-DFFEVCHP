@@ -23,8 +23,8 @@ public class TSSolver extends Solver {
 	private final int neighborhoodSize;
 	private final int tabuSize;
 	
-	private HashMap<Integer, Command> mutationToDelta;
-	private HashMap<Integer, Command> mutationToPerform;
+	private HashMap<Integer, DeltaFitness> mutationToDelta;
+	private HashMap<Integer, Perform> mutationToPerform;
 	
 	private final HashMap<Car, ArrayList<CarMove>> carToCarMoves;
 	
@@ -37,6 +37,8 @@ public class TSSolver extends Solver {
 		this.carToCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.iterations = iterations;
 		this.individual =  new TSIndividual(problemInstance);
+		individual.calculateFitness();
+			
 		this.neighborhoodSize = neighborhoodSize;
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();
@@ -61,12 +63,12 @@ public class TSSolver extends Solver {
 	private void setMutationToPerform() {
 		this.mutationToPerform = new HashMap<>();
 		this.mutationToPerform.put(IntraMove.id, (Mutation mutation) -> {
-			IntraMove swap = (IntraMove) mutation;
-			return this.individual.deltaFitness(swap);
+			IntraMove move = (IntraMove) mutation;
+			this.individual.performMutation(move);
 		});
 		this.mutationToPerform.put(InterMove.id, (Mutation mutation) -> {
 			InterMove swap = (InterMove) mutation;
-			return this.individual.deltaFitness(swap);
+			this.individual.deltaFitness(swap);
 		});
 	}
 	
@@ -76,6 +78,7 @@ public class TSSolver extends Solver {
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
 			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
+			//System.out.println(this.individual);
 			ArrayList<Mutation> neighborhood = getNeighbors();
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
@@ -121,7 +124,11 @@ public class TSSolver extends Solver {
 		return "Tabu search";
 	}
 	
-	private interface Command {
+	private interface DeltaFitness {
 		double runCommand(Mutation mutation);
+	}
+	
+	private interface Perform {
+		void runCommand(Mutation mutation);
 	}
 }

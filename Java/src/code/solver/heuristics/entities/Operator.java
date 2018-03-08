@@ -221,4 +221,12 @@ public class Operator {
 		return Math.abs(currTimeContribution - newTimeContribution);
 	}
 	*/
+	@Override
+	public String toString() {
+		String s = "";
+		for(CarMove carMove : carMoves) {
+			s += carMove + ", ";
+		}
+		return s.substring(0, s.length()-2);
+	}
 }
