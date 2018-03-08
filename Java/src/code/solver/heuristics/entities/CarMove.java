@@ -4,6 +4,7 @@ import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
+import constants.Constants;
 
 public class CarMove {
 
@@ -49,11 +50,10 @@ public class CarMove {
 
     @Override
     public String toString() {
+    		if(Constants.DETAILED_PRINTOUTS) {
+    			return "[CarID: " + car.getCarId() + ", FromNode: " + this.fromNode.getNodeId() 
+        		+ ", ToNode: " + this.toNode.getNodeId() + ", Duration: " + this.getTravelTime() + "]";
+    		}
         return "" + car.getCarId() + "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
-    }
-    
-    public String detailedToString() {
-    		return "[CarID: " + car.getCarId() + ", FromNode: " + this.fromNode.getNodeId() 
-    		+ ", ToNode: " + this.toNode.getNodeId() + ", Duration: " + this.getTravelTime() + "]";
     }
 }
