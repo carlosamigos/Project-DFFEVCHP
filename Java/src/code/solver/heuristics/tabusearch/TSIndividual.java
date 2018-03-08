@@ -153,9 +153,9 @@ public class TSIndividual extends Individual {
 				distance = distanceCandidate;
 				for(CarMove carMove: carMovesCopy.get(car)){
 					double fitNessCancidate = rateCarMove(carMove, distance + carMove.getTravelTime());
-					if(carMove.isToCharging()){
-						System.out.println(fitNessCancidate);
-						System.out.println(carMove);
+					if(fitNessCancidate < fitNess){
+						cMove = carMove;
+						fitNess = fitNessCancidate;
 					}
 					
 				}
