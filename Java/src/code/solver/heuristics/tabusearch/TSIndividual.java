@@ -44,6 +44,10 @@ public class TSIndividual extends Individual {
 
 	//Placeholder Weights
 
+	// Constructor used exlusively for testing
+	public TSIndividual() {
+		this(null);
+	}
 
 	public TSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;

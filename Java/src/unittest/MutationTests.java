@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,18 +18,19 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
+import code.solver.heuristics.mutators.IntraMove;
+import code.solver.heuristics.mutators.Mutation;
 import constants.HeuristicsConstants;
 
-class FitnessTest {
+class MutationTests {
 
-	
 	private static Operator operator;
 	private static ParkingNode pNode1 = new ParkingNode(1);
 	private static ParkingNode pNode2 = new ParkingNode(2);
 	private static ChargingNode cNode = new ChargingNode(3);
 	private static HashMap<ChargingNode, Integer> capacities = new HashMap<>();
-	
 	private static double startTime = 0.0;
+	private static double endTime = 6.0;
 	
 	@SuppressWarnings("serial")
 	private static ArrayList<ArrayList<Double>> travelTimes = new ArrayList<ArrayList<Double>>() {{
@@ -43,41 +45,42 @@ class FitnessTest {
 		}});
 	}};
 	
+	
 	@BeforeEach
 	void setUp() throws Exception {
-		cNode.setNumberOfAvailableChargingSpotsNextPeriod(1);
-	}
-	
-	@DisplayName("Fitness calculation: Operator")
-	@ParameterizedTest(name = "{0}")
-	@MethodSource(value = { "testOperatorFitness" })
-	void testOperatorFitness(String testName, ArrayList<CarMove> carMoves, double expectedFitness, double endTime) {
-		capacities.put(cNode, 0);
 		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0);
+	}
+
+	@DisplayName("Mutation tests")
+	@ParameterizedTest(name = "foo")
+	@MethodSource(value = { "testOperatorFitness" })
+	void testOperatorFitness(String testName, ArrayList<CarMove> carMoves, IntraMove intraMove) {
+		
 		operator.setChargingCapacityUsedIndividual(capacities);
 		operator.addCarMoves(carMoves);
 		operator.calculateFitness();
-		assertEquals(expectedFitness, operator.getFitness());
+		assertEquals(0.0, operator.getFitness());
 	}
 	
 	@SuppressWarnings({ "unused", "serial" })
 	private static List<Arguments> testOperatorFitness() {
-		
-		ArrayList<CarMove> carMoves1 = new ArrayList<CarMove>() {{
+		ArrayList<CarMove> carMoves =  new ArrayList<CarMove>() {{
 			add(new CarMove(pNode1, pNode2, null, 1, 0));
 			add(new CarMove(pNode2, cNode, null, 2, 0));
 			add(new CarMove(pNode2, pNode1, null, 1, 0));
 			add(new CarMove(pNode1, cNode, null, 1, 0));
+			add(new CarMove(pNode1, pNode2, null, 1, 0));
 		}};
-		double endTime1 = 6.0;
-		double fitness1 = - HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * (endTime1 - 3.0);
 		
-		double endTime2 = 10.0;
-		double fitness2 = (- HeuristicsConstants.TABU_CHARGING_UNIT_REWARD 
-				* ((endTime2 - 3.0) + (endTime2 - 7.0)))
-				+ HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+		Mutation mutation1 = new IntraMove(operator, 0, 4);
+		Mutation mutation2 = new IntraMove(operator, 4, 0);
+		Mutation mutation3 = new IntraMove(operator, 1, 3);
+		
+		
 		return Arrays.asList(
-				Arguments.of("Normal case", carMoves1, fitness1, endTime1),
-				Arguments.of("Capacity broken", carMoves1, fitness2, endTime2));
+				Arguments.of("First to last", carMoves, mutation1),
+				Arguments.of("Last to first", carMoves, mutation2),
+				Arguments.of("Middle to middle", carMoves, mutation3));
 	}
+
 }
