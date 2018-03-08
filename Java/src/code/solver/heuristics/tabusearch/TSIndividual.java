@@ -279,10 +279,10 @@ public class TSIndividual extends Individual {
 	// All mutations/performers for moves that are ejected
 	//================================================================================
 
-	public double deltaFitness(EjectionReplaceMutation ejectionMove){
-		Operator operator = ejectionMove.getOperator();
-		CarMove carMoveInsert = ejectionMove.getCarMoveReplace();
-		int removeIndex = ejectionMove.getCarMoveIndex();
+	public double deltaFitness(EjectionReplaceMutation ejectionReplaceMutation){
+		Operator operator = ejectionReplaceMutation.getOperator();
+		CarMove carMoveInsert = ejectionReplaceMutation.getCarMoveReplace();
+		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
 
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
@@ -297,9 +297,7 @@ public class TSIndividual extends Individual {
 		operator.setCarMoves(oldCarMoves);
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
-		for(Object operator1 : operators){
-			((Operator) operator1).setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
-		}
+		operator.setChanged(false);
 		capacitiesUsed = oldChargingCapacityUsed;
 		return deltaFitness;
 	}
@@ -310,6 +308,8 @@ public class TSIndividual extends Individual {
 		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
 		operator.removeCarMove(removeIndex);
 		operator.addCarMove(removeIndex, ejectionReplaceMutation.getCarMoveReplace());
+		operator.getFitness();
+		operator.cleanCarMovesNotDone();
 
 
 	}
