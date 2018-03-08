@@ -381,6 +381,8 @@ public class TSIndividual extends Individual {
 		operatorInsert.setChargingCapacityUsedByOperator(oldChargingCapacityUsedInsertOperator);
 		operatorRemove.setFitness(oldFitnessRemove);
 		operatorInsert.setFitness(oldFitnessInsert);
+		operatorRemove.setChanged(false);
+		operatorInsert.setChanged(false);
 		capacitiesUsed = oldChargingCapacityUsed;
 
 		return deltaFitness;
@@ -419,7 +421,7 @@ public class TSIndividual extends Individual {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		// 2/3 intra swaps
-		for (int i = 0; i < neighborhoodSize; i++) {
+		for (int i = 0; i < neighborhoodSize/3*2; i++) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoveListSize());
@@ -428,18 +430,17 @@ public class TSIndividual extends Individual {
 			neighbors.add(intraMove);
 		}
 		// 1/3 interswaps
-		/*
+
 		for (int i = 0; i < neighborhoodSize/3*1; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator insertOperator = (Operator) operators.get(insertOperatorIndex);
-			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoves().size());
-			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoves().size());
+			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			neighbors.add(interMove);
-
-		}*/
+		}
 		return neighbors;
 	}
 
