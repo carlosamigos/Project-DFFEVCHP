@@ -8,9 +8,7 @@ import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
-import code.solver.heuristics.mutators.EjectionReplaceMutation;
-import code.solver.heuristics.mutators.InterMove;
-import code.solver.heuristics.mutators.Mutation;
+import code.solver.heuristics.mutators.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -19,7 +17,6 @@ import code.problem.nodes.Node;
 import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
 import code.solver.heuristics.entities.Operator;
-import code.solver.heuristics.mutators.IntraMove;
 import utils.MathHelper;
 
 public class TSIndividual extends Individual {
@@ -109,6 +106,7 @@ public class TSIndividual extends Individual {
 		boolean operatorAvailable = true;
 		//HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
+		System.out.println(carMovesCopy);
 		while(operatorAvailable){
 			operatorAvailable = false;
 			for (Object obop: this.operators) {
@@ -146,15 +144,15 @@ public class TSIndividual extends Individual {
 						Math.max(carMovesCopy.get(car).get(0).getEarliestDepartureTime() - (startTime + problemInstance.getTravelTimeBike(node, fromNode)), 0);
 				distance = distanceCandidate;
 				for(CarMove carMove: carMovesCopy.get(car)){
-					double fitNessCancidate = rateCarMove(carMove, distance);
+					double fitNessCancidate = rateCarMove(carMove, distance + carMove.getTravelTime());
 					if(fitNessCancidate < fitNess){
 						cMove = carMove;
 						fitNess = fitNessCancidate;
 					}
+					
 				}
 			}
 		}
-
 		return cMove;
 	}
 
@@ -168,7 +166,7 @@ public class TSIndividual extends Individual {
 				fitNess += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 			}
 			// Capacity is positive
-			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_REWARD * capacities.get(carMove.getToNode());
+			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_INITIAL_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
 				fitNess += HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
@@ -281,16 +279,16 @@ public class TSIndividual extends Individual {
 	// All mutations/performers for moves that are ejected
 	//================================================================================
 
-	public double deltaFitness(EjectionReplaceMutation ejectionMove){
-		Operator operator = ejectionMove.getOperator();
-		CarMove carMoveInsert = ejectionMove.getCarMoveReplace();
-		int removeIndex = ejectionMove.getCarMoveIndex();
+	public double deltaFitness(EjectionReplaceMutation ejectionReplaceMutation){
+		Operator operator = ejectionReplaceMutation.getOperator();
+		CarMove carMoveInsert = ejectionReplaceMutation.getCarMoveReplace();
+		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
 
 		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
 		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
 		double oldFitness = operator.getFitness();
 
-		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.removeCarMove(removeIndex);
 		operator.addCarMove(removeIndex, carMoveInsert);
 		operator.getFitness(); // updates fitness
 
@@ -299,24 +297,53 @@ public class TSIndividual extends Individual {
 		operator.setCarMoves(oldCarMoves);
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
-
-		/*
-		 * 1. Fetch a random move for the same car
-		 * 2. Remove: Create a remove mutation based on the incoming carmove
-		 * 3. Insert: Create a insert mutation based on the new carmove
-		 * 4. Return: Deltafitness calculated - I may have to create what it is to be replaced by seperately
-		 */
+		operator.setChanged(false);
+		capacitiesUsed = oldChargingCapacityUsed;
 		return deltaFitness;
 	}
 
-	public void performeMutation(EjectionReplaceMutation ejectionMove){
+	public double deltaFitness(EjectionInsertMutation ejectionInsertMutation){
+		Operator operator = ejectionInsertMutation.getOperator();
+		CarMove carMoveInsert = ejectionInsertMutation.getCarMoveReplace();
+		int removeIndex = ejectionInsertMutation.getCarMoveIndex();
 
-		/*
-		 * 1. Remove the car move for operator at the given index
-		 * 2. Inject the new carmove at the same position
-		 * 3. Calculate new fitness
-		 */
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsed = new HashMap<>(capacitiesUsed);
+		ArrayList<CarMove> oldCarMoves = operator.getCarMoveCopy();
+		double oldFitness = operator.getFitness();
 
+		operator.addCarMove(removeIndex, carMoveInsert);
+		operator.getFitness();
+
+		double deltaFitness = operator.getFitness() - oldFitness;
+		operator.setCarMoves(oldCarMoves);
+		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
+		operator.setFitness(oldFitness);
+		operator.setChanged(false);
+		capacitiesUsed = oldChargingCapacityUsed;
+		return deltaFitness;
+
+	}
+
+	public void performeMutation(EjectionReplaceMutation ejectionReplaceMutation){
+		Operator operator = ejectionReplaceMutation.getOperator();
+		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
+		CarMove carMoveRemoved = operator.removeCarMove(removeIndex);
+		operator.addCarMove(removeIndex, ejectionReplaceMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(carMoveRemoved.getCar()).remove(ejectionReplaceMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(carMoveRemoved.getCar()).add(carMoveRemoved);
+		operator.getFitness();
+		operator.cleanCarMovesNotDone();
+
+		//Update list accordingly
+	}
+
+	public void performMutation(EjectionInsertMutation ejectionInsertMutation){
+		Operator operator = ejectionInsertMutation.getOperator();
+		int addIndex = ejectionInsertMutation.getCarMoveIndex();
+		operator.addCarMove(addIndex, ejectionInsertMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(ejectionInsertMutation).remove(ejectionInsertMutation.getCarMoveReplace());
+		operator.getFitness();
+		operator.cleanCarMovesNotDone();
 	}
 
 	// -------------------------------------------------------------------------------
@@ -444,6 +471,22 @@ public class TSIndividual extends Individual {
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			neighbors.add(interMove);
 		}
+
+		// ejectionReplace
+		/*
+		for (int i = 0; i < neighborhoodSize/3; i++) {
+			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
+			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
+			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
+			//neighbors.add(ejectionReplaceMutation);
+
+
+		}
+		*/
+
 		return neighbors;
 	}
 
