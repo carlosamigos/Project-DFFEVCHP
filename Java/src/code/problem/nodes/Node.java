@@ -1,6 +1,9 @@
 package code.problem.nodes;
 
-public abstract class Node {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public abstract class Node implements Serializable {
 
     private final int nodeId;
     private int xCord;

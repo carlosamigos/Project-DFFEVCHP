@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
-import code.problem.entities.Car;
-import code.solver.heuristics.entities.CarMove;
-import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.InterMove;
 import code.solver.heuristics.mutators.IntraMove;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
 import constants.HeuristicsConstants;
-import utils.ChromosomeGenerator;
+import utils.DeepCopy;
 
 public class TSSolver extends Solver {
 	
 	private TSIndividual individual;
+	private TSIndividual best;
 	private TabuList tabuList;
 	private final int iterations;
 	private final int neighborhoodSize;
@@ -26,19 +24,16 @@ public class TSSolver extends Solver {
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
 	
-	private final HashMap<Car, ArrayList<CarMove>> carToCarMoves;
-	
 	public TSSolver(ProblemInstance problemInstance) {
 		this(HeuristicsConstants.TABU_ITERATIONS, 
 				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE, HeuristicsConstants.TABU_SIZE, problemInstance);
 	}
 	
 	public TSSolver(int iterations, int neighborhoodSize, int tabuSize, ProblemInstance problemInstance) {
-		this.carToCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.iterations = iterations;
 		this.individual =  new TSIndividual(problemInstance);
-		individual.calculateFitness();
-			
+		this.best = (TSIndividual) DeepCopy.copy(this.individual);
+		this.best.calculateFitness();
 		this.neighborhoodSize = neighborhoodSize;
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();
@@ -77,22 +72,31 @@ public class TSSolver extends Solver {
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
-			System.out.println("Iteration: " + iteration + " Best fitness: " + this.individual.getFitness());
+			System.out.println("Iteration: " + iteration + " Best fitness: " + this.best.getFitness() + ", Current fitness:" + this.individual.getFitness());
 			System.out.println(individual);
 			ArrayList<Mutation> neighborhood = getNeighbors();
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
+			if(candidateDelta + individual.getFitness() < -74.3) {
+				 this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
+			}
 			for(Mutation newCandidate : neighborhood) {
 				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 				if (newCandidateDelta < candidateDelta) {
 					candidate = newCandidate;
 					candidateDelta = newCandidateDelta;
+					if(candidateDelta + individual.getFitness() < -74.3) {
+						 this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
+					}
 				}
 			}
 			
-			if(candidateDelta < 0) {
-				this.individual.addToFitness(candidateDelta);
-				this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+			this.individual.addToFitness(candidateDelta);
+			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+			
+			if(this.individual.getFitness() < this.best.getFitness()) {
+				this.best = (TSIndividual) DeepCopy.copy(this.individual);
+				this.best.setFitness(this.individual.getFitness());
 			}
 			
 			tabuList.add(candidate);
@@ -105,7 +109,7 @@ public class TSSolver extends Solver {
 	}
 	
 	public TSIndividual getBest() {
-		return this.individual;
+		return this.best;
 	}
 	
 	private boolean done(int iteration) {
@@ -114,7 +118,7 @@ public class TSSolver extends Solver {
 	
 	// Get neighbors that are not in the tabuList
 	private ArrayList<Mutation> getNeighbors() {
-		return individual.getNeighbors(this.neighborhoodSize);
+		return individual.getNeighbors(this.neighborhoodSize, this.tabuList);
 	}
 
 	@Override

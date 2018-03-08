@@ -1,9 +1,9 @@
 package code.solver.heuristics.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
@@ -11,7 +11,8 @@ import code.solver.heuristics.tabusearch.TSIndividual;
 import constants.Constants;
 import constants.HeuristicsConstants;
 
-public class Operator {
+@SuppressWarnings("serial")
+public class Operator implements Serializable {
 
 	public final int id;
 
@@ -132,11 +133,13 @@ public class Operator {
 		// ToDo: Need to take start time for the car move into account
 		this.chargingNodesVisited.clear();
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
-			this.individual.getPrevCapacitiesUsed().put(chargingNode, 
-					this.individual.getCapacitiesUsed().get(chargingNode));
-			this.individual.getCapacitiesUsed().put(chargingNode,
-					this.individual.getCapacitiesUsed().get(chargingNode)
-					- this.chargingCapacityUsedOperator.get(chargingNode));
+			int used = this.individual.getCapacitiesUsed().get(chargingNode);
+			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
+			int delta = used - usedByOperator;
+			if(delta < 0) {
+				System.out.println(this.id + ":" + used + ":" + usedByOperator);
+			}
+			this.individual.getCapacitiesUsed().put(chargingNode, delta);
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
 		
@@ -165,10 +168,11 @@ public class Operator {
 					this.chargingCapacityUsedOperator.put(chargingNode, 0);
 				}
 				
-				this.chargingCapacityUsedOperator.put(chargingNode, 
-						this.chargingCapacityUsedOperator.get(chargingNode)+1);
-
-				this.individual.getCapacitiesUsed().put(chargingNode, this.individual.getCapacitiesUsed().get(chargingNode)+1);
+				int newValue = this.chargingCapacityUsedOperator.get(chargingNode) + 1;
+				this.chargingCapacityUsedOperator.put(chargingNode, newValue);
+				
+				newValue = this.individual.getCapacitiesUsed().get(chargingNode) + 1;
+				this.individual.getCapacitiesUsed().put(chargingNode, newValue);
 			}
 		}
 		
@@ -283,7 +287,12 @@ public class Operator {
 		for(CarMove carMove : carMoves) {
 			s += carMove + ", ";
 		}
-		return s.substring(0, s.length()-2);
+		
+		return s.substring(0, (s.length() > 0) ? s.length()-2 : 0);
+	}
+
+	public boolean getChanged() {
+		return this.changed;
 	}
 	
 }

@@ -13,7 +13,8 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
 
-public class ProblemInstance {
+@SuppressWarnings("serial")
+public class ProblemInstance implements Serializable{
 
 	private String filePath;
     private String fileName;
