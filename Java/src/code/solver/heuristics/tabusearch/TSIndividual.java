@@ -263,8 +263,41 @@ public class TSIndividual extends Individual implements Serializable {
 			totalFitness += ((Operator) operator).getFitness();
 			((Operator) operator).cleanCarMovesNotDone();
 		}
+		totalFitness += calculateCapacityFitness();
 		this.fitness = totalFitness;
 		//System.out.println(totalFitness);
+	}
+
+	public double calculateCapacityFitness(){
+		double newPenalty = 0.0;
+		double oldPenalty = 0.0;
+
+		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
+			int usedNow = this.capacitiesUsed.get(chargingNode);
+			int usedBefore = 0;
+			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+
+			newPenalty += Math.max(0, usedNow - capacity);
+			oldPenalty += Math.max(0, usedBefore - capacity);
+		}
+
+		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+	}
+
+	public double calculateDeltaCapacityFitness(){
+		double newPenalty = 0.0;
+		double oldPenalty = 0.0;
+
+		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
+			int usedNow = this.capacitiesUsed.get(chargingNode);
+			int usedBefore = this.getPrevCapacitiesUsed().get(chargingNode);
+			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+
+			newPenalty += Math.max(0, usedNow - capacity);
+			oldPenalty += Math.max(0, usedBefore - capacity);
+		}
+
+		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 	}
 
 
@@ -299,6 +332,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
+		deltaFitness += calculateDeltaCapacityFitness();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 	}
@@ -320,6 +354,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
+		deltaFitness += calculateDeltaCapacityFitness();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 
@@ -375,6 +410,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
+		deltaFitness += calculateDeltaCapacityFitness();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 	}

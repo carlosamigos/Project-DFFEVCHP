@@ -181,7 +181,7 @@ public class Operator implements Serializable {
 			}
 		}
 		
-		this.fitness += getCapacityPenalty();
+		//this.fitness += getCapacityPenalty();
 	}
 	
 	/*
@@ -202,6 +202,7 @@ public class Operator implements Serializable {
 		return getTravelTimeBike(previous, move.getFromNode()) 
 				+ move.getTravelTime();
 	}
+
 	
 	private double getCapacityPenalty() {
 		double newPenalty = 0.0;
@@ -209,7 +210,8 @@ public class Operator implements Serializable {
 		
 		for(ChargingNode chargingNode : this.chargingNodesVisited) {
 			int usedNow = this.individual.getCapacitiesUsed().get(chargingNode);
-			int usedBefore = this.individual.getPrevCapacitiesUsed().get(chargingNode); 
+			int usedBefore = chargingNode.getNumberOfTotalChargingSlots();
+			//int usedBefore = this.individual.getPrevCapacitiesUsed().get(chargingNode);
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 
 			newPenalty += Math.max(0, usedNow - capacity);
