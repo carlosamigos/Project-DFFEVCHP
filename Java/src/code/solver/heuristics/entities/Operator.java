@@ -206,7 +206,8 @@ public class Operator implements Serializable {
 			int usedNow = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedBefore = this.individual.getPrevCapacitiesUsed().get(chargingNode); 
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
-			
+
+			//TODO: Should't this be min?
 			newPenalty += Math.max(0, usedNow - capacity);
 			oldPenalty += Math.max(0, usedBefore - capacity);
 		}
