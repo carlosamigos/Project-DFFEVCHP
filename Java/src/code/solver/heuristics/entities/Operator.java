@@ -154,7 +154,6 @@ public class Operator implements Serializable {
 
 			if(currentTime > this.timeLimit) {
 				this.freeTime = (this.timeLimit - currentTime);
-				this.fitness += getCapacityPenalty();
 				return;
 			}
 			
@@ -181,7 +180,6 @@ public class Operator implements Serializable {
 			}
 		}
 		
-		//this.fitness += getCapacityPenalty();
 	}
 	
 	/*

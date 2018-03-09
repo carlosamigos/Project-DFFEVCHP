@@ -73,12 +73,6 @@ public class TSSolver extends Solver {
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
-			System.out.println("NEW LINE");
-			System.out.println(individual.getCapacitiesUsed());
-			Operator operator = (Operator) individual.getOperators().get(0);
-			Operator operator2 = (Operator) individual.getOperators().get(1);
-			System.out.println(operator.getChargingCapacityUsedOperator());
-			System.out.println(operator2.getChargingCapacityUsedOperator());
 			System.out.println("Iteration: " + iteration + " Best fitness: " + this.best.getFitness() + ", Current fitness:" + this.individual.getFitness());
 			System.out.println(individual);
 			ArrayList<Mutation> neighborhood = getNeighbors();
