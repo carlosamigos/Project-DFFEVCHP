@@ -7,6 +7,7 @@ import code.problem.ProblemInstance;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.EjectionReplaceMutation;
 import code.solver.heuristics.mutators.InterMove;
+import code.solver.heuristics.mutators.InterSwap2;
 import code.solver.heuristics.mutators.IntraMove;
 import code.solver.heuristics.mutators.Mutation;
 import code.solver.heuristics.tabusearch.TSIndividual;
@@ -59,6 +60,10 @@ public class TSSolver extends Solver {
 			EjectionReplaceMutation ejectionReplaceMutation = (EjectionReplaceMutation) mutation;
 			return this.individual.deltaFitness(ejectionReplaceMutation);
 		});
+		this.mutationToDelta.put(InterSwap2.id, (Mutation mutation) -> {
+			InterSwap2 interSwap2 = (InterSwap2) mutation;
+			return this.individual.deltaFitness(interSwap2);
+		});
 	}
 	
 	private void setMutationToPerform() {
@@ -74,6 +79,10 @@ public class TSSolver extends Solver {
 		this.mutationToPerform.put(EjectionReplaceMutation.id, (Mutation mutation) -> {
 			EjectionReplaceMutation ejectionReplaceMutation = (EjectionReplaceMutation) mutation;
 			this.individual.performMutation(ejectionReplaceMutation);
+		});
+		this.mutationToPerform.put(InterSwap2.id, (Mutation mutation) -> {
+			InterSwap2 interSwap2 = (InterSwap2) mutation;
+			this.individual.performMutation(interSwap2);
 		});
 	}
 	

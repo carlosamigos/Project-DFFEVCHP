@@ -4,13 +4,13 @@ import code.solver.heuristics.entities.Operator;
 
 public class InterSwap2 extends Mutation{
 
-	public final static int id = 2;
+	public final static int id = 4;
 	
 	private final int index1;
 	private final int index2;
 	private final Operator operator1;
 	private final Operator operator2;
-	private final int hashType = 2;
+	private final int hashType = 4;
 	private final int hashCode;
 
 	public InterSwap2(int index1, int index2, Operator operator1, Operator operator2) {

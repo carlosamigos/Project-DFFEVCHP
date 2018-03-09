@@ -543,7 +543,7 @@ public class TSIndividual extends Individual implements Serializable {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		// 2/3 intra swaps
-		while(neighbors.size() < neighborhoodSize/3*2) {
+		while(neighbors.size() < neighborhoodSize/2) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			if(operator.getCarMoveListSize() <= 1) {
@@ -558,7 +558,7 @@ public class TSIndividual extends Individual implements Serializable {
 		}
 		// 1/3 interswaps
 		
-		while(neighbors.size() < neighborhoodSize) {
+		while(neighbors.size() < neighborhoodSize/3*2) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = MathHelper.getRandomIntNotEqual(removeOperatorIndex, operators.size());
@@ -573,7 +573,7 @@ public class TSIndividual extends Individual implements Serializable {
 				neighbors.add(interMove);
 			}
 		}
-		/*
+		
 		while(neighbors.size() < neighborhoodSize) {
 			int operator1Index = (int) Math.floor(Math.random() * operators.size());
 			int operator2Index = MathHelper.getRandomIntNotEqual(operator1Index, operators.size());
@@ -589,7 +589,7 @@ public class TSIndividual extends Individual implements Serializable {
 				neighbors.add(interSwap2);
 			}
 		}
-		*/
+		
 		// ejectionReplace
 
 		for (int i = 0; i < neighborhoodSize/3; i++) {
