@@ -434,13 +434,12 @@ public class TSIndividual extends Individual implements Serializable {
 
 		// Do change
 		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
-		operatorRemove.getFitness();
-		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		operatorInsert.addCarMove(insertIndex, carMove);
-		operatorInsert.getFitness();
-		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		double deltaFitness = (operatorInsert.getFitness() + operatorRemove.getFitness())
 				- (oldFitnessInsert + oldFitnessRemove);
+		deltaFitness += calculateDeltaCapacityFitness();
+		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
+		
 
 		// Revert
 		operatorRemove.setCarMoves(oldCarMovesRemove);
@@ -472,7 +471,6 @@ public class TSIndividual extends Individual implements Serializable {
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 	}
 
-
 	public void performMutation(InterMove interMove){
 		Operator operatorRemove = interMove.getOperatorRemove();
 		Operator operatorInsert = interMove.getOperatorInsert();
@@ -492,7 +490,7 @@ public class TSIndividual extends Individual implements Serializable {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		// 2/3 intra swaps
-		while(neighbors.size() < neighborhoodSize) {
+		while(neighbors.size() < neighborhoodSize/2*3) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			if(operator.getCarMoveListSize() <= 1) {
@@ -507,7 +505,7 @@ public class TSIndividual extends Individual implements Serializable {
 		}
 		// 1/3 interswaps
 
-		/*while(neighbors.size() < neighborhoodSize) {
+		while(neighbors.size() < neighborhoodSize) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = MathHelper.getRandomIntNotEqual(removeOperatorIndex, operators.size());
@@ -521,7 +519,7 @@ public class TSIndividual extends Individual implements Serializable {
 			if(!tabuList.isTabu(interMove)) {
 				neighbors.add(interMove);
 			}
-		}*/
+		}
 
 		// ejectionReplace
 		/*
