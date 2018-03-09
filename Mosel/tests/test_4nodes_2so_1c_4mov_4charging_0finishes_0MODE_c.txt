@@ -1,14 +1,14 @@
-numVisits: 6
+numVisits: 5
 numPNodes: 4
 numCNodes: 1
 numROperators: 2
 numAOperators: 0
 
-hNodes : 3
-wNodes : 4
+hNodes : 2
+wNodes : 2
 nodeSubsetIndexes: [1 2 3 4] 
 
-startNodeROperator: [4 2] 
+startNodeROperator: [3 1] 
 originNodeROperator: [6 7] 
 destinationNodeROperator: [8 9] 
 cToP: [1] 
@@ -24,17 +24,17 @@ costOfExtraTime : 0.5
 costOfTravel: 0.05
 costOfTravelH: 0.4
 
-travelTimeVehicle: [0.0 36.4 23.1 23.1 1.0 
-		36.4 0.0 16.3 48.9 36.4 
-		23.1 16.3 0.0 32.6 23.1 
-		23.1 48.9 32.6 0.0 23.1 
-		1.0 36.4 23.1 23.1 0.0 ]
+travelTimeVehicle: [0.0 16.3 16.3 23.1 1.0 
+		16.3 0.0 23.1 16.3 16.3 
+		16.3 23.1 0.0 16.3 16.3 
+		23.1 16.3 16.3 0.0 23.1 
+		1.0 16.3 16.3 23.1 0.0 ]
 
-travelTimeBike: [0.0 72.8 46.2 46.2 1.0 
-		72.8 0.0 32.6 97.8 72.8 
-		46.2 32.6 0.0 65.2 46.2 
-		46.2 97.8 65.2 0.0 46.2 
-		1.0 72.8 46.2 46.2 0.0 ]
+travelTimeBike: [0.0 32.6 32.6 46.2 1.0 
+		32.6 0.0 46.2 32.6 32.6 
+		32.6 46.2 0.0 32.6 32.6 
+		46.2 32.6 32.6 0.0 46.2 
+		1.0 32.6 32.6 46.2 0.0 ]
 
 handlingTimeP: 4
 handlingTimeC: 5
@@ -45,30 +45,30 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [0 0] 
-initialRegularInP: [2 1 3 2] 
-initialInNeedP: [1 1 1 1] 
+initialRegularInP: [3 3 2 0] 
+initialInNeedP: [0 0 2 2] 
 finishedDuringC: [0] 
-idealStateP: [0 5 1 2] 
+idealStateP: [1 1 3 3] 
 
 demandP: [0 0 0 0] 
 
 mode: 2
 sequenceBigM: 10
-visitList: [3 6 3 2 2 1 1 1 1] 
+visitList: [2 2 4 5 2 1 1 1 1] 
 
-numCarMovesP : 4
+numCarMovesP : 8
 numCarMovesC : 4
 numCars : 8
-numTasks : 5
-numDeficitNodes : 1
+numTasks : 4
+numDeficitNodes : 2
 
-deficitTranslate : [2] 
-deficitCarsInNode : [4] 
-carMoveCars : [1 2 3 4 5 6 7 8] 
-carMoveOrigin : [1 1 3 3 1 2 3 4] 
-carMoveDestination : [2 2 2 2 5 5 5 5] 
-carMoveHandlingTime : [36.4 36.4 16.3 16.3 1.0 36.4 23.1 23.1] 
-carMoveStartingTime : [0 0 0 0 0 0 0 0] 
-numCarsInCNeedNodes : 4
-carsInNeedCTranslate : [1 2 3 4] 
-carsInNeedNodes : [1 1 1 1] 
+deficitTranslate : [3 4] 
+deficitCarsInNode : [1 3] 
+carMoveCars : [1 1 2 2 3 3 4 4 5 6 7 8] 
+carMoveOrigin : [1 1 1 1 2 2 2 2 3 3 4 4] 
+carMoveDestination : [3 4 3 4 3 4 3 4 5 5 5 5] 
+carMoveHandlingTime : [16.3 23.1 16.3 23.1 23.1 16.3 23.1 16.3 16.3 16.3 23.1 23.1] 
+carMoveStartingTime : [0 0 0 0 0 0 0 0 0 0 0 0] 
+numCarsInCNeedNodes : 2
+carsInNeedCTranslate : [3 4] 
+carsInNeedNodes : [2 2] 

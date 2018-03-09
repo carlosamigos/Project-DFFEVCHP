@@ -167,12 +167,17 @@ public class Operator implements Serializable {
 				if(!this.chargingCapacityUsedOperator.containsKey(chargingNode)) {
 					this.chargingCapacityUsedOperator.put(chargingNode, 0);
 				}
-				
+
+				//this.chargingCapacityUsedOperator.put(chargingNode, this.chargingCapacityUsedOperator.get(chargingNode) +1);
+				//this.individual.getCapacitiesUsed().put(chargingNode, this.individual.getCapacitiesUsed().get(chargingNode) +1);
+
 				int newValue = this.chargingCapacityUsedOperator.get(chargingNode) + 1;
 				this.chargingCapacityUsedOperator.put(chargingNode, newValue);
 				
 				newValue = this.individual.getCapacitiesUsed().get(chargingNode) + 1;
 				this.individual.getCapacitiesUsed().put(chargingNode, newValue);
+
+				
 			}
 		}
 		
@@ -207,7 +212,6 @@ public class Operator implements Serializable {
 			int usedBefore = this.individual.getPrevCapacitiesUsed().get(chargingNode); 
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 
-			//TODO: Should't this be min?
 			newPenalty += Math.max(0, usedNow - capacity);
 			oldPenalty += Math.max(0, usedBefore - capacity);
 		}
