@@ -267,9 +267,15 @@ public class Operator implements Serializable {
 	*/
 
 	public void cleanCarMovesNotDone(){
+		Node previousNode = this.startNode;
+		CarMove currentMove;
+
+	}
+	/*
+	public void cleanCarMovesNotDone(){
 		// Todo: make smarter by using the remembered start index
-		// Todo: need to take starttime for the car move into account
-		/*Node previousNode = this.startNode;
+		// Todo: need to take starttime for the car move into acc
+		Node previousNode = this.startNode;
 		CarMove currentMove;
 		double currentTime = this.startTime;
 		for (int j = 0; j < this.carMoves.size(); j++) {
@@ -281,8 +287,9 @@ public class Operator implements Serializable {
 				individual.getUnusedCarMoves().get(carMoveToRemove.getCar()).add(carMoveToRemove);
 			}
 
-		}*/
+		}
 	}
+	*/
 
 	public void setChanged(boolean change){
 		this.changed = change;
