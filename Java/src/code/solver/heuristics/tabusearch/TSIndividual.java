@@ -450,10 +450,47 @@ public class TSIndividual extends Individual implements Serializable {
 		operatorInsert.setFitness(oldFitnessInsert);
 		operatorRemove.setChanged(false);
 		operatorInsert.setChanged(false);
-		
 
 		return deltaFitness;
 
+	}
+	
+	public double deltaFitness(InterSwap2 interSwap2) {
+		Operator operator1 = interSwap2.getOperator1();
+		Operator operator2 = interSwap2.getOperator2();
+		int index1 = interSwap2.getIndex1();
+		int index2 = interSwap2.getIndex2();
+		
+		// Save old state
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator1 = 
+				new HashMap<>(operator1.getChargingCapacityUsedOperator());
+		HashMap<ChargingNode, Integer> oldChargingCapacityUsedOperator2 = 
+				new HashMap<>(operator2.getChargingCapacityUsedOperator());
+		ArrayList<CarMove> oldCarMoves1 = operator1.getCarMoveCopy();
+		ArrayList<CarMove> oldCarMoves2 = operator2.getCarMoveCopy();
+		double oldFitness1 = operator1.getFitness();
+		double oldFitness2 = operator2.getFitness();
+		
+		CarMove carMove1 = operator1.removeCarMove(index1);
+		CarMove carMove2 = operator2.removeCarMove(index2);
+		operator1.addCarMove(index1, carMove2);
+		operator2.addCarMove(index2, carMove1);
+		double deltaFitness = (operator1.getFitness() + operator2.getFitness()) 
+				- (oldFitness1 + oldFitness2);
+		deltaFitness += calculateDeltaCapacityFitness();
+		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
+		
+		// Revert
+		operator1.setCarMoves(oldCarMoves1);
+		operator2.setCarMoves(oldCarMoves2);
+		operator1.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator1);
+		operator2.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator2);
+		operator1.setFitness(oldFitness1);
+		operator2.setFitness(oldFitness2);
+		operator1.setChanged(false);
+		operator2.setChanged(false);
+		
+		return deltaFitness;
 	}
 
 
@@ -477,12 +514,27 @@ public class TSIndividual extends Individual implements Serializable {
 		int removeIndex 	    = interMove.getInsertIndex();
 		int insertIndex 		= interMove.getInsertIndex();
 		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
-		operatorRemove.getFitness();
-		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
-		operatorRemove.cleanCarMovesNotDone();
 		operatorInsert.addCarMove(insertIndex, carMove);
+		operatorRemove.getFitness();
 		operatorInsert.getFitness();
+		operatorRemove.cleanCarMovesNotDone();
 		operatorInsert.cleanCarMovesNotDone();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+	}
+	
+	public void performMutation(InterSwap2 interSwap2) {
+		Operator operator1 = interSwap2.getOperator1();
+		Operator operator2 = interSwap2.getOperator2();
+		int index1         = interSwap2.getIndex1();
+		int index2         = interSwap2.getIndex2();
+		CarMove carMove1   = operator1.removeCarMove(index1);
+		CarMove carMove2   = operator2.removeCarMove(index2);
+		operator1.addCarMove(index1, carMove2);
+		operator2.addCarMove(index2, carMove1);
+		operator1.getFitness();
+		operator2.getFitness();
+		operator1.cleanCarMovesNotDone();
+		operator2.cleanCarMovesNotDone();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 	}
 
@@ -490,7 +542,7 @@ public class TSIndividual extends Individual implements Serializable {
 		ArrayList<Mutation> neighbors = new ArrayList<>();
 		// TODO: make smarter
 		// 2/3 intra swaps
-		while(neighbors.size() < neighborhoodSize/2*3) {
+		while(neighbors.size() < neighborhoodSize/3*2) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			if(operator.getCarMoveListSize() <= 1) {
@@ -504,7 +556,7 @@ public class TSIndividual extends Individual implements Serializable {
 			}
 		}
 		// 1/3 interswaps
-
+		
 		while(neighbors.size() < neighborhoodSize) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
@@ -520,7 +572,23 @@ public class TSIndividual extends Individual implements Serializable {
 				neighbors.add(interMove);
 			}
 		}
-
+		/*
+		while(neighbors.size() < neighborhoodSize) {
+			int operator1Index = (int) Math.floor(Math.random() * operators.size());
+			int operator2Index = MathHelper.getRandomIntNotEqual(operator1Index, operators.size());
+			Operator operator1 = (Operator) operators.get(operator1Index);
+			Operator operator2 = (Operator) operators.get(operator2Index);
+			if(operator1.getCarMoveListSize() == 0 || operator2.getCarMoveListSize() == 0) {
+				continue;
+			}
+			int index1 = (int)Math.floor(Math.random() * operator1.getCarMoveListSize());
+			int index2 = (int)Math.floor(Math.random() * operator2.getCarMoveListSize());
+			InterSwap2 interSwap2 = new InterSwap2(index1, index2, operator1, operator2);
+			if(!tabuList.isTabu(interSwap2)) {
+				neighbors.add(interSwap2);
+			}
+		}
+		*/
 		// ejectionReplace
 		/*
 		for (int i = 0; i < neighborhoodSize/3; i++) {

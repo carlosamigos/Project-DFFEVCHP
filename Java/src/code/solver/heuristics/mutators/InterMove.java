@@ -58,5 +58,11 @@ public class InterMove extends Mutation {
     public int hashCode() {
         return hashCode;
     }
+    
+    @Override
+    public String toString() {
+    		return "[(Remove Operator: " + operatorRemove.id + ", Index: " + removeIndex + "), "
+    				+ "(Insert Operator: " + operatorInsert.id + ", Index: " + insertIndex + ")]";
+    }
 
 }
