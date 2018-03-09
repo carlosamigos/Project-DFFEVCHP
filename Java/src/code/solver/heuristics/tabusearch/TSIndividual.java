@@ -327,12 +327,12 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.getFitness(); // updates fitness
 
 		double deltaFitness = operator.getFitness() - oldFitness;
+		deltaFitness += calculateDeltaCapacityFitness();
 
 		operator.setCarMoves(oldCarMoves);
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsed);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
-		deltaFitness += calculateDeltaCapacityFitness();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 	}
@@ -350,11 +350,12 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.getFitness();
 
 		double deltaFitness = operator.getFitness() - oldFitness;
+		deltaFitness += calculateDeltaCapacityFitness();
+
 		operator.setCarMoves(oldCarMoves);
 		operator.setChargingCapacityUsedByOperator(oldChargingCapacityUsedOperator);
 		operator.setFitness(oldFitness);
 		operator.setChanged(false);
-		deltaFitness += calculateDeltaCapacityFitness();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
 		return deltaFitness;
 
