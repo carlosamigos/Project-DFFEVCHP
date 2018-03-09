@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import code.problem.ProblemInstance;
 import code.solver.heuristics.entities.Operator;
+import code.solver.heuristics.mutators.EjectionReplaceMutation;
 import code.solver.heuristics.mutators.InterMove;
 import code.solver.heuristics.mutators.IntraMove;
 import code.solver.heuristics.mutators.Mutation;
@@ -54,6 +55,10 @@ public class TSSolver extends Solver {
 			InterMove interMove = (InterMove) mutation;
 			return this.individual.deltaFitness(interMove);
 		});
+		this.mutationToDelta.put(EjectionReplaceMutation.id, (Mutation mutation) -> {
+			EjectionReplaceMutation ejectionReplaceMutation = (EjectionReplaceMutation) mutation;
+			return this.individual.deltaFitness(ejectionReplaceMutation);
+		});
 	}
 	
 	private void setMutationToPerform() {
@@ -65,6 +70,10 @@ public class TSSolver extends Solver {
 		this.mutationToPerform.put(InterMove.id, (Mutation mutation) -> {
 			InterMove interMove = (InterMove) mutation;
 			this.individual.performMutation(interMove);
+		});
+		this.mutationToPerform.put(EjectionReplaceMutation.id, (Mutation mutation) -> {
+			EjectionReplaceMutation ejectionReplaceMutation = (EjectionReplaceMutation) mutation;
+			this.individual.performMutation(ejectionReplaceMutation);
 		});
 	}
 	

@@ -361,7 +361,7 @@ public class TSIndividual extends Individual implements Serializable {
 
 	}
 
-	public void performeMutation(EjectionReplaceMutation ejectionReplaceMutation){
+	public void performMutation(EjectionReplaceMutation ejectionReplaceMutation){
 		Operator operator = ejectionReplaceMutation.getOperator();
 		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
 		CarMove carMoveRemoved = operator.removeCarMove(removeIndex);
@@ -591,19 +591,25 @@ public class TSIndividual extends Individual implements Serializable {
 		}
 		*/
 		// ejectionReplace
-		/*
+
 		for (int i = 0; i < neighborhoodSize/3; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+			if(removeOperator.getCarMoveListSize() == 0){
+				continue;
+			}
 			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			if(this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size() == 0){
+				continue;
+			}
 			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
 			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
 			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
-			//neighbors.add(ejectionReplaceMutation);
+			neighbors.add(ejectionReplaceMutation);
 
 
 		}
-		*/
+
 
 		return neighbors;
 	}
