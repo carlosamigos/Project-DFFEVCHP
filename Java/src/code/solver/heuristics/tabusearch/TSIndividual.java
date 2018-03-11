@@ -180,13 +180,13 @@ public class TSIndividual extends Individual implements Serializable {
 		fitNess += (distance)* HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION;
 		if(carMove.getToNode() instanceof ChargingNode){
 			if(capacities.get(carMove.getToNode()) <= 0){
-				fitNess += HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+				fitNess += HeuristicsConstants.TABU_INITIAL_BREAK_CHARGING_CAPACITY;
 			}
 			// Capacity is positive
 			fitNess += -HeuristicsConstants.TABU_CHARGING_UNIT_INITIAL_REWARD * capacities.get(carMove.getToNode());
 		}if(carMove.getToNode() instanceof ParkingNode){
 			if(deviationFromIdealState.get(carMove.getToNode()) >= 0){
-				fitNess += HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
+				fitNess += HeuristicsConstants.TABU_INITIAL_SURPLUS_IDEAL_STATE_COST;
 			}
 			// Deviation is negative if deficit node
 			fitNess += HeuristicsConstants.TABU_IDEAL_STATE_INITIAL_REWARD * deviationFromIdealState.get(carMove.getToNode());
