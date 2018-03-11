@@ -56,7 +56,7 @@ class FitnessTest {
 	@MethodSource(value = { "testOperatorFitness" })
 	void testOperatorFitness(String testName, ArrayList<CarMove> carMoves, double expectedFitness, double endTime) {
 		capacities.put(cNode, 0);
-		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0, individual);
+		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0, individual, null, null);
 		operator.addCarMoves(carMoves);
 		operator.getFitness();
 		assertEquals(expectedFitness, operator.getFitness());

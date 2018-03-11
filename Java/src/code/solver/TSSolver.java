@@ -47,7 +47,7 @@ public class TSSolver extends Solver {
 			System.out.println("Iteration: " + iteration + " Best fitness: " 
 					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:" 
 					+ String.format("%.1f", this.individual.getFitness()));
-			//System.out.println(individual);
+			System.out.println(individual);
 			ArrayList<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList);
 			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
@@ -59,6 +59,7 @@ public class TSSolver extends Solver {
 				}
 			}
 			
+			System.out.println(candidateDelta);
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 			

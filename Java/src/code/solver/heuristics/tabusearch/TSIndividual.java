@@ -28,14 +28,16 @@ public class TSIndividual extends Individual implements Serializable {
 	private HashMap<ChargingNode, Integer> capacitiesUsed;
 	private HashMap<ChargingNode, Integer> prevCapacitiesUsed;
 	private HashMap<ChargingNode, Integer> capacities;
+	
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
+	private HashMap<ParkingNode, Integer> prevDeviationFromIdealState;
+	private HashMap<ParkingNode, Integer> initialDeviationFromIdealState;
 
 	//Keep track of all car moves not in use
 	private HashMap<Car, ArrayList<CarMove>> unusedCarMoves;
 
 	private ProblemInstance problemInstance;
 	
-	// Constructor used exlusively for testing
 	public TSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
 		this.capacitiesUsed = capacitiesUsed;
 	}
@@ -51,6 +53,7 @@ public class TSIndividual extends Individual implements Serializable {
 		addCarMovesToOperators();
 		calculateFitness();
 		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		// -----------------------------
 	}
 
@@ -64,10 +67,12 @@ public class TSIndividual extends Individual implements Serializable {
 
 	//Initiate operators
 	private void createOperators(){
-		this.operators = new ArrayList<>();
+		operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
-			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), Constants.TIME_LIMIT_STATIC_PROBLEM,
-					problemInstance.getOperators().get(i).getNextOrCurrentNode(), problemInstance.getTravelTimesBike(), problemInstance.getOperators().get(i).getId(), this);
+			Operator op = new Operator(problemInstance.getOperators().get(i).getTimeRemainingToCurrentNextNode(), 
+					Constants.TIME_LIMIT_STATIC_PROBLEM, problemInstance.getOperators().get(i).getNextOrCurrentNode(), 
+					problemInstance.getTravelTimesBike(), problemInstance.getOperators().get(i).getId(), this, 
+					problemInstance.getChargingNodes(), problemInstance.getParkingNodes());
 			operators.add(op);
 		}
 	}
@@ -90,11 +95,13 @@ public class TSIndividual extends Individual implements Serializable {
 
 	//Initiate deviation from ideal states
 	private void initiateDeviations(){
-		this.deviationFromIdealState = new HashMap<>();
+		deviationFromIdealState = new HashMap<>();
+		initialDeviationFromIdealState =  new HashMap<>();
 		for (int i = 0; i < problemInstance.getParkingNodes().size(); i++) {
 			int deviation = problemInstance.getParkingNodes().get(i).getCarsRegular().size() + problemInstance.getParkingNodes().get(i).getCarsArrivingThisPeriod()
 					- problemInstance.getParkingNodes().get(i).getIdealNumberOfAvailableCars();
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
+			initialDeviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 		}
 	}
 
@@ -124,7 +131,7 @@ public class TSIndividual extends Individual implements Serializable {
 					if(chosen.getToNode() instanceof ChargingNode){
 						updateCapacity((ChargingNode) chosen.getToNode());
 					}else{
-						updateDeviation((ParkingNode) chosen.getToNode());
+						updateDeviation(chosen);
 					}
 				}
 			}
@@ -182,9 +189,11 @@ public class TSIndividual extends Individual implements Serializable {
 	// -------------------------------------------------------------------------------
 
 	// Update deviation from ideal state as car moves are chosen
-	private void updateDeviation(ParkingNode parkingNode){
-		//TODO: Update starting node as well
-		deviationFromIdealState.put(parkingNode, deviationFromIdealState.get(parkingNode) +1);
+	private void updateDeviation(CarMove carMove){
+		ParkingNode fromNode = (ParkingNode) carMove.getFromNode();
+		ParkingNode toNode = (ParkingNode) carMove.getToNode();
+		deviationFromIdealState.put(toNode, deviationFromIdealState.get(toNode) + 1);
+		deviationFromIdealState.put(fromNode, deviationFromIdealState.get(fromNode) - 1);
 	}
 
 	// Update charging station capacities as car moves are chosen
@@ -260,19 +269,34 @@ public class TSIndividual extends Individual implements Serializable {
 		double totalFitness = 0;
 		for(Object operator : operators){
 			totalFitness += ((Operator) operator).getFitness();
-			((Operator) operator).cleanCarMovesNotDone();
+//			((Operator) operator).cleanCarMovesNotDone();
 		}
 		totalFitness += calculateCapacityFitness();
+
+		
+		totalFitness += calculateIdealStateFitness();
 		this.fitness = totalFitness;
 	}
 
-	public double calculateCapacityFitness(){
+	private double calculateCapacityFitness(){
+		double penalty = 0.0;
+		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
+			int usedNow = this.capacitiesUsed.get(chargingNode);
+			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+
+			penalty += Math.max(0, usedNow - capacity);
+		}
+
+		return penalty * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+	}
+
+	private double calculateDeltaCapacityFitness(){
 		double newPenalty = 0.0;
 		double oldPenalty = 0.0;
 
 		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
 			int usedNow = this.capacitiesUsed.get(chargingNode);
-			int usedBefore = 0;
+			int usedBefore = this.prevCapacitiesUsed.get(chargingNode);
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 
 			newPenalty += Math.max(0, usedNow - capacity);
@@ -281,21 +305,32 @@ public class TSIndividual extends Individual implements Serializable {
 
 		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 	}
-
-	public double calculateDeltaCapacityFitness(){
-		double newPenalty = 0.0;
-		double oldPenalty = 0.0;
-
-		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
-			int usedNow = this.capacitiesUsed.get(chargingNode);
-			int usedBefore = this.getPrevCapacitiesUsed().get(chargingNode);
-			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
-
-			newPenalty += Math.max(0, usedNow - capacity);
-			oldPenalty += Math.max(0, usedBefore - capacity);
+	
+	private double calculateIdealStateFitness() {
+		double deviationNow = 0;
+		double initialDeviation = 0;
+		
+		
+		for(ParkingNode parkingNode : this.deviationFromIdealState.keySet()) {
+			deviationNow += Math.min(0, this.deviationFromIdealState.get(parkingNode));
+			initialDeviation += Math.min(0, this.initialDeviationFromIdealState.get(parkingNode));
 		}
-
-		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+		
+		// If the difference is positive we have better met ideal state than before
+		return - (deviationNow - initialDeviation) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
+	}
+	
+	private double calculateDeltaIdealStateFitness() {
+		double deviationNow = 0;
+		double deviationBefore = 0;
+		
+		for(ParkingNode parkingNode : this.deviationFromIdealState.keySet()) {
+			deviationNow += Math.min(0, this.deviationFromIdealState.get(parkingNode));
+			deviationBefore += Math.min(0, this.prevDeviationFromIdealState.get(parkingNode));
+		}
+		
+		// If the difference is positive we have better met ideal state than before
+		return - (deviationNow - deviationBefore) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
 	}
 
 
@@ -481,6 +516,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.addCarMove(insertIndex, carMove);
 		operator.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
 
 	public void performMutation(InterMove interMove){
@@ -494,6 +530,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operatorRemove.getFitness();
 		operatorInsert.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
 	
 	public void performMutation(InterSwap2 interSwap2) {
@@ -509,6 +546,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator1.getFitness();
 		operator2.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -569,23 +607,23 @@ public class TSIndividual extends Individual implements Serializable {
 		}
 		
 		// EjectionReplace
-		while(neighbors.size() < HeuristicsConstants.TABU_EJECTION_REPLACE_SIZE) {
-			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
-			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			if(removeOperator.getCarMoveListSize() == 0){
-				continue;
-			}
-			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			if(this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size() == 0){
-				continue;
-			}
-			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
-			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
-			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
-			if(!tabuList.isTabu(ejectionReplaceMutation)) {
-				neighbors.add(ejectionReplaceMutation);
-			}
-		}
+//		while(neighbors.size() < HeuristicsConstants.TABU_EJECTION_REPLACE_SIZE) {
+//			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+//			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+//			if(removeOperator.getCarMoveListSize() == 0){
+//				continue;
+//			}
+//			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+//			if(this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size() == 0){
+//				continue;
+//			}
+//			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
+//			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
+//			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
+//			if(!tabuList.isTabu(ejectionReplaceMutation)) {
+//				neighbors.add(ejectionReplaceMutation);
+//			}
+//		}
 
 		return neighbors;
 	}
@@ -612,7 +650,11 @@ public class TSIndividual extends Individual implements Serializable {
 	public HashMap<Car, ArrayList<CarMove>> getUnusedCarMoves() {
 		return unusedCarMoves;
 	}
-
+	
+	public HashMap<ParkingNode, Integer> getDeviationIdealState() {
+		return this.deviationFromIdealState;
+	}
+	
 	@Override
 	public int compareTo(Object o) {
 		// TODO Auto-generated method stub
@@ -646,7 +688,7 @@ public class TSIndividual extends Individual implements Serializable {
 			this.operator = operator;
 			this.oldChargingCapacityUsedOperator = new HashMap<>(operator.getChargingCapacityUsedOperator());
 			this.oldCarMoves = operator.getCarMoveCopy();
-			this.oldFitness = operator.getFitness();
+			this.oldFitness = operator.getFitness(); 
 		}
 		
 		void resetState() {
@@ -662,11 +704,13 @@ public class TSIndividual extends Individual implements Serializable {
 			operatorState.resetState();
 		}
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
+		this.deviationFromIdealState = new HashMap<>(this.prevDeviationFromIdealState);
 	}
 	
 	private void resetOperator(OperatorState operatorState) {
 		operatorState.resetState();
 		this.capacitiesUsed = new HashMap<>(this.prevCapacitiesUsed);
+		this.deviationFromIdealState = new HashMap<>(this.prevDeviationFromIdealState);
 	}
 	
 	private ArrayList<OperatorState> setOperatorStates(ArrayList<Operator> operators) {
@@ -688,11 +732,12 @@ public class TSIndividual extends Individual implements Serializable {
 			delta += operators.get(i).getFitness() - operatorStates.get(i).oldFitness;
 		}
 		
-		return delta + calculateDeltaCapacityFitness();
+		return delta + calculateDeltaCapacityFitness() + calculateDeltaIdealStateFitness();
 	}
 	
 	private double calculateDeltaFitness(Operator operator, OperatorState operatorState) {
-		return operator.getFitness() - operatorState.oldFitness + calculateCapacityFitness();
+		return operator.getFitness() - operatorState.oldFitness + calculateDeltaCapacityFitness() 
+			+ calculateDeltaIdealStateFitness();
 	}
 	
 	

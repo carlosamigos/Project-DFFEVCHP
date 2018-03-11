@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
+import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import constants.Constants;
 import constants.HeuristicsConstants;
@@ -19,7 +20,7 @@ public class Operator implements Serializable {
 	private TSIndividual individual;
 	private ArrayList<ArrayList<Double>> travelTimesBike;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsedOperator;
-	private HashSet<ChargingNode> chargingNodesVisited;
+	private HashMap<ParkingNode, Integer> movesToParkingNodeByOperator;
 
 	private ArrayList<CarMove> carMoves; // only car moves that are performed
 	private final Node startNode;
@@ -30,25 +31,40 @@ public class Operator implements Serializable {
 	private boolean changed;
 	
 	public Operator(double startTime, double timeLimit, Node startNode, 
-			ArrayList<ArrayList<Double>> travelTimesBike, int id, TSIndividual individual) {
+			ArrayList<ArrayList<Double>> travelTimesBike, int id, TSIndividual individual,
+			ArrayList<ChargingNode> chargingNodes, ArrayList<ParkingNode> parkingNodes) {
 		this.individual = individual;
 		this.carMoves = new ArrayList<>();
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		this.startNode = startNode;
 		this.travelTimesBike = travelTimesBike;
-		this.chargingCapacityUsedOperator = new HashMap<>();
-		this.chargingNodesVisited = new HashSet<>();
+		initializeChargingCapacityUsedByOperator(chargingNodes);
+		initializeMovesToParkingNodeByOperator(parkingNodes);
 		this.id = id;
-		changed = false;
+		this.changed = false;
+	}
+	
+	private void initializeChargingCapacityUsedByOperator(ArrayList<ChargingNode> chargingNodes) {
+		this.chargingCapacityUsedOperator = new HashMap<>();
+		for(ChargingNode chargingNode : chargingNodes) {
+			this.chargingCapacityUsedOperator.put(chargingNode, 0);
+		}
+	}
+	
+	private void initializeMovesToParkingNodeByOperator(ArrayList<ParkingNode> parkingNodes) {
+		this.movesToParkingNodeByOperator = new HashMap<>();
+		for(ParkingNode parkingNode : parkingNodes) {
+			this.movesToParkingNodeByOperator.put(parkingNode, 0);
+		}
 	}
 	
 	public CarMove getCarMove(int index) {
-		return carMoves.get(index);
+		return this.carMoves.get(index);
 	}
 
 	public double getTimeLimit(){
-		return timeLimit;
+		return this.timeLimit;
 	}
 
 	public void addCarMove(CarMove carMove) {
@@ -130,7 +146,6 @@ public class Operator implements Serializable {
 	 */
 	private void calculateFitness() {
 		// ToDo: Need to take start time for the car move into account
-		this.chargingNodesVisited.clear();
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			int used = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
@@ -139,14 +154,22 @@ public class Operator implements Serializable {
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
 		
+		for(ParkingNode parkingNode : this.movesToParkingNodeByOperator.keySet()) {
+			int idealState = this.individual.getDeviationIdealState().get(parkingNode);
+			int idealStateMetByOperator = this.movesToParkingNodeByOperator.get(parkingNode);
+			int delta = idealState - idealStateMetByOperator;
+			this.individual.getDeviationIdealState().put(parkingNode, delta);
+			this.movesToParkingNodeByOperator.put(parkingNode, 0);
+		}
+		
 		double currentTime = this.startTime;
 		Node previousNode = this.startNode;
-		CarMove currentMove;
 		this.fitness = 0.0;
 		for(int i = 0; i < this.carMoves.size(); i++) {
-			currentMove = this.carMoves.get(i);
+			CarMove currentMove = this.carMoves.get(i);
 			currentTime += getTravelTime(previousNode, currentMove);
 			previousNode = currentMove.getToNode();
+			this.fitness += currentTime * HeuristicsConstants.TABU_TRAVEL_COST;
 
 			if(currentTime > this.timeLimit) {
 				return;
@@ -154,24 +177,20 @@ public class Operator implements Serializable {
 			
 			if(currentMove.isToCharging()) {
 				ChargingNode chargingNode = (ChargingNode) currentMove.getToNode();
-				this.chargingNodesVisited.add(chargingNode);
 				this.fitness -= getChargingReward(currentTime);
 				
-				
-				if(!this.chargingCapacityUsedOperator.containsKey(chargingNode)) {
-					this.chargingCapacityUsedOperator.put(chargingNode, 0);
-				}
-
-				int newValue = this.chargingCapacityUsedOperator.get(chargingNode) + 1;
-				this.chargingCapacityUsedOperator.put(chargingNode, newValue);
-				
-				newValue = this.individual.getCapacitiesUsed().get(chargingNode) + 1;
-				this.individual.getCapacitiesUsed().put(chargingNode, newValue);
-
-				
+				this.chargingCapacityUsedOperator.put(chargingNode, 
+						this.chargingCapacityUsedOperator.get(chargingNode) + 1);
+				this.individual.getCapacitiesUsed().put(chargingNode, 
+						this.individual.getCapacitiesUsed().get(chargingNode) + 1);
+			} else {
+				ParkingNode parkingNode = (ParkingNode) currentMove.getToNode();
+				this.movesToParkingNodeByOperator.put(parkingNode, 
+						this.movesToParkingNodeByOperator.get(parkingNode) + 1);
+				this.individual.getDeviationIdealState().put(parkingNode, 
+						this.individual.getDeviationIdealState().get(parkingNode) + 1);
 			}
 		}
-		
 	}
 	
 	private double getTravelTime(Node previous, CarMove move) {

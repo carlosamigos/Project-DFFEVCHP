@@ -48,7 +48,7 @@ class MutationTests {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0, null);
+		operator = new Operator(startTime, endTime, pNode1, travelTimes, 0, null, null, null);
 	}
 
 	@DisplayName("Mutation tests: Perform Intra")
