@@ -53,9 +53,12 @@ public class TSIndividual extends Individual implements Serializable {
 		initateCapacities();
 		initiateDeviations();
 		addCarMovesToOperators();
-		calculateFitness();
+		initiateDeviations();
 		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+		calculateFitness();
+		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+		
 		// -----------------------------
 	}
 
@@ -282,7 +285,6 @@ public class TSIndividual extends Individual implements Serializable {
 //			((Operator) operator).cleanCarMovesNotDone();
 		}
 		totalFitness += calculateCapacityFitness();
-
 		
 		totalFitness += calculateIdealStateFitness();
 		this.fitness = totalFitness;
@@ -317,8 +319,8 @@ public class TSIndividual extends Individual implements Serializable {
 	}
 	
 	private double calculateIdealStateFitness() {
-		double deviationNow = 0;
-		double initialDeviation = 0;
+		int deviationNow = 0;
+		int initialDeviation = 0;
 		
 		
 		for(ParkingNode parkingNode : this.deviationFromIdealState.keySet()) {
@@ -331,13 +333,14 @@ public class TSIndividual extends Individual implements Serializable {
 	}
 	
 	private double calculateDeltaIdealStateFitness() {
-		double deviationNow = 0;
-		double deviationBefore = 0;
+		int deviationNow = 0;
+		int deviationBefore = 0;
 		
 		for(ParkingNode parkingNode : this.deviationFromIdealState.keySet()) {
 			deviationNow += Math.min(0, this.deviationFromIdealState.get(parkingNode));
 			deviationBefore += Math.min(0, this.prevDeviationFromIdealState.get(parkingNode));
 		}
+		
 		
 		// If the difference is positive we have better met ideal state than before
 		return - (deviationNow - deviationBefore) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
@@ -622,73 +625,73 @@ public class TSIndividual extends Individual implements Serializable {
 			}
 		}
 		
-		// InterSwap2
-		while(neighbors.size() < HeuristicsConstants.TABU_INTER_2_SWAP_SIZE) {
-			int operator1Index = (int) Math.floor(Math.random() * operators.size());
-			int operator2Index = MathHelper.getRandomIntNotEqual(operator1Index, operators.size());
-			Operator operator1 = (Operator) operators.get(operator1Index);
-			Operator operator2 = (Operator) operators.get(operator2Index);
-			if(operator1.getCarMoveListSize() == 0 || operator2.getCarMoveListSize() == 0) {
-				continue;
-			}
-			int index1 = (int)Math.floor(Math.random() * operator1.getCarMoveListSize());
-			int index2 = (int)Math.floor(Math.random() * operator2.getCarMoveListSize());
-			InterSwap2 interSwap2 = new InterSwap2(index1, index2, operator1, operator2);
-			if(!tabuList.isTabu(interSwap2)) {
-				neighbors.add(interSwap2);
-			}
-		}
-		
-		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_REPLACE_SIZE; i++) {
-			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
-			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			if(removeOperator.getCarMoveListSize() == 0){
-				continue;
-			}
-			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			if(this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size() == 0){
-				continue;
-			}
-			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
-			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
-			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
-			if(!tabuList.isTabu(ejectionReplaceMutation)) {
-				neighbors.add(ejectionReplaceMutation);
-			}
-		}
-		// EjectionRemove
-		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_REMOVE_SIZE; i++) {
-			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
-			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			if(removeOperator.getCarMoveListSize() == 0){
-				continue;
-			}
-			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex);
-			if(!tabuList.isTabu(ejectionRemoveMutation)) {
-				neighbors.add(ejectionRemoveMutation);
-			}
-		}
-
-		// EjectionInsert
-		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_INSERT_SIZE; i++) {
-			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
-			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-
-			int insertIndexCar = (int)Math.floor(Math.random() * this.unusedCarMoves.keySet().size());
-			ArrayList<Car> keysAsArray = new ArrayList<Car>(unusedCarMoves.keySet());
-			Car car = keysAsArray.get(insertIndexCar);
-			if(unusedCarMoves.get(car).size() != carMovesCounter.get(car)){
-				continue;
-			}
-			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(car).size());
-			CarMove insertCarMove = this.unusedCarMoves.get(car).get(swapIndex);
-			EjectionInsertMutation ejectionInsertMutation = new EjectionInsertMutation(removeOperator, insertIndex, insertCarMove);
-			if(!tabuList.isTabu(ejectionInsertMutation)) {
-				neighbors.add(ejectionInsertMutation);
-			}
-		}
+//		// InterSwap2
+//		while(neighbors.size() < HeuristicsConstants.TABU_INTER_2_SWAP_SIZE) {
+//			int operator1Index = (int) Math.floor(Math.random() * operators.size());
+//			int operator2Index = MathHelper.getRandomIntNotEqual(operator1Index, operators.size());
+//			Operator operator1 = (Operator) operators.get(operator1Index);
+//			Operator operator2 = (Operator) operators.get(operator2Index);
+//			if(operator1.getCarMoveListSize() == 0 || operator2.getCarMoveListSize() == 0) {
+//				continue;
+//			}
+//			int index1 = (int)Math.floor(Math.random() * operator1.getCarMoveListSize());
+//			int index2 = (int)Math.floor(Math.random() * operator2.getCarMoveListSize());
+//			InterSwap2 interSwap2 = new InterSwap2(index1, index2, operator1, operator2);
+//			if(!tabuList.isTabu(interSwap2)) {
+//				neighbors.add(interSwap2);
+//			}
+//		}
+//		
+//		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_REPLACE_SIZE; i++) {
+//			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+//			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+//			if(removeOperator.getCarMoveListSize() == 0){
+//				continue;
+//			}
+//			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+//			if(this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size() == 0){
+//				continue;
+//			}
+//			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
+//			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
+//			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
+//			if(!tabuList.isTabu(ejectionReplaceMutation)) {
+//				neighbors.add(ejectionReplaceMutation);
+//			}
+//		}
+//		// EjectionRemove
+//		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_REMOVE_SIZE; i++) {
+//			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+//			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+//			if(removeOperator.getCarMoveListSize() == 0){
+//				continue;
+//			}
+//			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+//			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex);
+//			if(!tabuList.isTabu(ejectionRemoveMutation)) {
+//				neighbors.add(ejectionRemoveMutation);
+//			}
+//		}
+//
+//		// EjectionInsert
+//		for(int i = 0; i < HeuristicsConstants.TABU_EJECTION_INSERT_SIZE; i++) {
+//			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
+//			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
+//			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+//
+//			int insertIndexCar = (int)Math.floor(Math.random() * this.unusedCarMoves.keySet().size());
+//			ArrayList<Car> keysAsArray = new ArrayList<Car>(unusedCarMoves.keySet());
+//			Car car = keysAsArray.get(insertIndexCar);
+//			if(unusedCarMoves.get(car).size() != carMovesCounter.get(car)){
+//				continue;
+//			}
+//			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(car).size());
+//			CarMove insertCarMove = this.unusedCarMoves.get(car).get(swapIndex);
+//			EjectionInsertMutation ejectionInsertMutation = new EjectionInsertMutation(removeOperator, insertIndex, insertCarMove);
+//			if(!tabuList.isTabu(ejectionInsertMutation)) {
+//				neighbors.add(ejectionInsertMutation);
+//			}
+//		}
 
 		return neighbors;
 	}

@@ -3,7 +3,6 @@ package code.solver.heuristics.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
@@ -154,6 +153,9 @@ public class Operator implements Serializable {
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
 		
+//		System.out.println("#####\nOperator: " + id + "\n######");
+//		System.out.println(individual.getDeviationIdealState());
+//		System.out.println("Before: " + movesToParkingNodeByOperator);
 		for(ParkingNode parkingNode : this.movesToParkingNodeByOperator.keySet()) {
 			int idealState = this.individual.getDeviationIdealState().get(parkingNode);
 			int idealStateMetByOperator = this.movesToParkingNodeByOperator.get(parkingNode);
@@ -192,6 +194,8 @@ public class Operator implements Serializable {
 						this.individual.getDeviationIdealState().get(parkingNode) + 1);
 			}
 		}
+//		System.out.println("After: " + movesToParkingNodeByOperator);
+//		System.out.println(this.individual.getDeviationIdealState());
 	}
 	
 	private double getTravelTime(Node previous, CarMove move, double currentTime) {

@@ -55,7 +55,7 @@ public class TSSolver extends Solver {
 				}
 			}
 			
-			System.out.println(candidateDelta);
+			//System.out.println(candidateDelta);
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 			
