@@ -6,10 +6,10 @@ public class HeuristicsConstants {
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
-    public final static int TABU_NEIGHBORHOOD_SIZE = 50;
+    public final static int TABU_NEIGHBORHOOD_SIZE = 30;
     public final static int TABU_SIZE = 10;
     public final static int TABU_ITERATIONS = 100;
-    public final static double TABU_CHARGING_UNIT_REWARD = 0.0;
+    public final static double TABU_CHARGING_UNIT_REWARD = 2.0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_IDEAL_STATE_REWARD = 0.5;
     public final static double TABU_SURPLUS_IDEAL_STATE_COST = 100;
