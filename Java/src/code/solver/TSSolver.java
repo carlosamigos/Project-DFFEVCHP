@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.problem.ProblemInstance;
-import code.solver.heuristics.mutators.EjectionReplaceMutation;
-import code.solver.heuristics.mutators.InterMove;
-import code.solver.heuristics.mutators.InterSwap2;
-import code.solver.heuristics.mutators.IntraMove;
-import code.solver.heuristics.mutators.Mutation;
+import code.solver.heuristics.mutators.*;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
 import constants.HeuristicsConstants;
@@ -111,6 +107,14 @@ public class TSSolver extends Solver {
 			InterSwap2 interSwap2 = (InterSwap2) mutation;
 			return this.individual.deltaFitness(interSwap2);
 		});
+		this.mutationToDelta.put(EjectionInsertMutation.id, (Mutation mutation) -> {
+			EjectionInsertMutation ejectionInsertMutation = (EjectionInsertMutation) mutation;
+			return this.individual.deltaFitness(ejectionInsertMutation);
+		});
+		this.mutationToDelta.put(EjectionRemoveMutation.id, (Mutation mutation) -> {
+			EjectionRemoveMutation ejectionRemoveMutation = (EjectionRemoveMutation) mutation;
+			return this.individual.deltaFitness(ejectionRemoveMutation);
+		});
 	}
 	
 	private void setMutationToPerform() {
@@ -130,6 +134,14 @@ public class TSSolver extends Solver {
 		this.mutationToPerform.put(InterSwap2.id, (Mutation mutation) -> {
 			InterSwap2 interSwap2 = (InterSwap2) mutation;
 			this.individual.performMutation(interSwap2);
+		});
+		this.mutationToPerform.put(EjectionInsertMutation.id, (Mutation mutation) -> {
+			EjectionInsertMutation ejectionInsertMutation = (EjectionInsertMutation) mutation;
+			this.individual.performMutation(ejectionInsertMutation);
+		});
+		this.mutationToPerform.put(EjectionRemoveMutation.id, (Mutation mutation) -> {
+			EjectionRemoveMutation ejectionRemoveMutation = (EjectionRemoveMutation) mutation;
+			this.individual.performMutation(ejectionRemoveMutation);
 		});
 	}
 	
