@@ -144,7 +144,6 @@ public class Operator implements Serializable {
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateFitness() {
-		// ToDo: Need to take start time for the car move into account
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			int used = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
