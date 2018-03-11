@@ -21,7 +21,7 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
 
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_40nodes_4so_3c_12mov_3charging_0finishes_0MODE_c");
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_100nodes_7so_5c_18mov_10charging_0finishes_0MODE_a");
     	TSSolver solver = new TSSolver(problemInstance);
     	solver.solve(problemInstance);
 

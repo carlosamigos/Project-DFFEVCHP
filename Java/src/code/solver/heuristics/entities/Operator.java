@@ -145,10 +145,11 @@ public class Operator implements Serializable {
 		this.fitness = 0.0;
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			currentMove = this.carMoves.get(i);
-			currentTime += getTravelTime(previousNode, currentMove);
+			currentTime += getTravelTime(previousNode, currentMove, currentTime);
 			previousNode = currentMove.getToNode();
 
 			if(currentTime > this.timeLimit) {
+				this.fitness += (this.carMoves.size() - (i+1)) * HeuristicsConstants.TABU_SIZE_OF_OPERATOR_LIST;
 				return;
 			}
 			
@@ -174,8 +175,9 @@ public class Operator implements Serializable {
 		
 	}
 	
-	private double getTravelTime(Node previous, CarMove move) {
-		return getTravelTimeBike(previous, move.getFromNode()) 
+	private double getTravelTime(Node previous, CarMove move, double currentTime) {
+		double travelTimeBike = getTravelTimeBike(previous, move.getFromNode());
+		return travelTimeBike + Math.max(0, move.getEarliestDepartureTime() - (currentTime + travelTimeBike) )
 				+ move.getTravelTime();
 	}
 	
