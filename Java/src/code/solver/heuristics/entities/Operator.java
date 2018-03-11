@@ -19,7 +19,7 @@ public class Operator implements Serializable {
 	private TSIndividual individual;
 	private ArrayList<ArrayList<Double>> travelTimesBike;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsedOperator;
-	private HashMap<ParkingNode, Integer> movesToParkingNodeByOperator;
+	public HashMap<ParkingNode, Integer> movesToParkingNodeByOperator;
 
 	private ArrayList<CarMove> carMoves; // only car moves that are performed
 	private final Node startNode;
@@ -137,6 +137,10 @@ public class Operator implements Serializable {
 	public void setChargingCapacityUsedByOperator(HashMap<ChargingNode, Integer> capacityUsedByOperator) {
 		this.chargingCapacityUsedOperator = capacityUsedByOperator;
 	}
+	
+	public void setMovesToParkingNodeByOperator(HashMap<ParkingNode, Integer> movesToParkingNodeByOperator) {
+		this.movesToParkingNodeByOperator = movesToParkingNodeByOperator;
+	}
 
 	/*
 	 * Calculates the initial fitness of an operator. Could also be used if one wants to calculate fitness
@@ -152,9 +156,6 @@ public class Operator implements Serializable {
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
 		
-//		System.out.println("#####\nOperator: " + id + "\n######");
-//		System.out.println(individual.getDeviationIdealState());
-//		System.out.println("Before: " + movesToParkingNodeByOperator);
 		for(ParkingNode parkingNode : this.movesToParkingNodeByOperator.keySet()) {
 			int idealState = this.individual.getDeviationIdealState().get(parkingNode);
 			int idealStateMetByOperator = this.movesToParkingNodeByOperator.get(parkingNode);
@@ -193,8 +194,6 @@ public class Operator implements Serializable {
 						this.individual.getDeviationIdealState().get(parkingNode) + 1);
 			}
 		}
-//		System.out.println("After: " + movesToParkingNodeByOperator);
-//		System.out.println(this.individual.getDeviationIdealState());
 	}
 	
 	private double getTravelTime(Node previous, CarMove move, double currentTime) {
@@ -215,6 +214,10 @@ public class Operator implements Serializable {
 
 	public HashMap<ChargingNode, Integer> getChargingCapacityUsedOperator() {
 		return chargingCapacityUsedOperator;
+	}
+	
+	public HashMap<ParkingNode, Integer> getMovesToParkingNodeByOperator() {
+		return movesToParkingNodeByOperator;
 	}
 
 	public void cleanCarMovesNotDone(){
@@ -239,6 +242,8 @@ public class Operator implements Serializable {
 		
 		return s.substring(0, (s.length() > 0) ? s.length()-2 : 0);
 	}
+
+
 
 	
 	

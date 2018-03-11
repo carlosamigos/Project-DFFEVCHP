@@ -29,7 +29,7 @@ public class TSSolver extends Solver {
 		this.iterations = iterations;
 		this.individual =  new TSIndividual(problemInstance);
 		this.best = (TSIndividual) DeepCopy.copy(this.individual);
-		this.best.calculateFitness();
+		this.best.setFitness(this.individual.getFitness());
 		this.tabuSize = tabuSize;
 		this.setMutationToDelta();
 		this.setMutationToPerform();
