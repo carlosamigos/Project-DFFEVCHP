@@ -105,7 +105,6 @@ public class TSIndividual extends Individual implements Serializable {
 	// * Adds car moves until no car moves remaining
 	private void addCarMovesToOperators() {
 		boolean operatorAvailable = true;
-		//HashMap<Car, ArrayList<CarMove>> carMovesCopy = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
 		while(operatorAvailable){
 			operatorAvailable = false;
