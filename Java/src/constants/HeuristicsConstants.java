@@ -19,6 +19,11 @@ public class HeuristicsConstants {
 
     public final static double TABU_TRAVEL_COST = 0.1;
     
+    public final static double TABU_INTRA_MOVE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_INTER_MOVE_SIZE = 0.65*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_INTER_2_SWAP_SIZE = 0.95*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_EJECTION_REPLACE_SIZE = 1.0*TABU_NEIGHBORHOOD_SIZE;
+    
     // Genetic Algorithm
 
     // Adaptive Large Neighborhood Search

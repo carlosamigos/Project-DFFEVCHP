@@ -25,7 +25,6 @@ public class Operator implements Serializable {
 	private final Node startNode;
 	private final double startTime;
 	private final double timeLimit;
-	private double freeTime = 0;
 	private double travelTime;
 	private double fitness;
 	private boolean changed;
@@ -136,9 +135,6 @@ public class Operator implements Serializable {
 			int used = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
 			int delta = used - usedByOperator;
-			if(delta < 0) {
-				System.out.println(this.id + ":" + used + ":" + usedByOperator);
-			}
 			this.individual.getCapacitiesUsed().put(chargingNode, delta);
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
@@ -153,7 +149,6 @@ public class Operator implements Serializable {
 			previousNode = currentMove.getToNode();
 
 			if(currentTime > this.timeLimit) {
-				this.freeTime = (this.timeLimit - currentTime);
 				return;
 			}
 			
@@ -167,9 +162,6 @@ public class Operator implements Serializable {
 					this.chargingCapacityUsedOperator.put(chargingNode, 0);
 				}
 
-				//this.chargingCapacityUsedOperator.put(chargingNode, this.chargingCapacityUsedOperator.get(chargingNode) +1);
-				//this.individual.getCapacitiesUsed().put(chargingNode, this.individual.getCapacitiesUsed().get(chargingNode) +1);
-
 				int newValue = this.chargingCapacityUsedOperator.get(chargingNode) + 1;
 				this.chargingCapacityUsedOperator.put(chargingNode, newValue);
 				
@@ -182,41 +174,9 @@ public class Operator implements Serializable {
 		
 	}
 	
-	/*
-	private double getChangeInCapacityFitness(ChargingNode node, boolean isAdding, HashMap<ChargingNode, Integer> capacityChanged) {
-		if(capacityChanged.get(node) == null){
-			capacityChanged.put(node, 0);
-		}
-		
-		double capacityDelta = getCapacityPenalty(node, isAdding, capacityChanged.get(node));
-		int capacityChange = isAdding ? 1 : -1;
-		capacityChanged.put(node, capacityChanged.get(node) + capacityChange);
-		return capacityDelta;
-	}
-	*/
-	
-	
 	private double getTravelTime(Node previous, CarMove move) {
 		return getTravelTimeBike(previous, move.getFromNode()) 
 				+ move.getTravelTime();
-	}
-
-	
-	private double getCapacityPenalty() {
-		double newPenalty = 0.0;
-		double oldPenalty = 0.0;
-		
-		for(ChargingNode chargingNode : this.chargingNodesVisited) {
-			int usedNow = this.individual.getCapacitiesUsed().get(chargingNode);
-			int usedBefore = chargingNode.getNumberOfTotalChargingSlots();
-			//int usedBefore = this.individual.getPrevCapacitiesUsed().get(chargingNode);
-			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
-
-			newPenalty += Math.max(0, usedNow - capacity);
-			oldPenalty += Math.max(0, usedBefore - capacity);
-		}
-		
-		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
 	}
 	
 	private double getTravelTimeBike(Node n1, Node n2) {
@@ -225,27 +185,6 @@ public class Operator implements Serializable {
 				.get(n2.getNodeId() - Constants.START_INDEX);
 	}
 
-	
-	/*
-	 * Calculates the penalty of charging an extra car at a charging node.
-	 * The penalty is zero as long as the capacity is not broken.
-	 *
-	private double getCapacityPenalty(ChargingNode arrivalNode, boolean isAddingCarMove, int alreadyAdjusted) {
-		int currentUsed = this.individual.getCapacitiesUsed().get(arrivalNode) + alreadyAdjusted;
-		int available = arrivalNode.getNumberOfAvailableChargingSpotsNextPeriod();
-		if(isAddingCarMove){
-			if(currentUsed >= available){
-				return HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
-			}
-		}else {
-			if(currentUsed > available){
-				return -HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
-			}
-		}
-		return 0;
-	}
-	*/
-	
 	public double getChargingReward(double time) {
 		return (Math.max(this.timeLimit - time,0) * HeuristicsConstants.TABU_CHARGING_UNIT_REWARD);
 	}
@@ -254,43 +193,17 @@ public class Operator implements Serializable {
 		return chargingCapacityUsedOperator;
 	}
 
-	/*
-	private double getAbsDeltaTime(Node prev, CarMove curr, Node next){
-		double currTimeContribution = getTravelTimeBike(prev, curr.getFromNode())
-				+ curr.getTravelTime()
-				+ ((next != null) ? getTravelTimeBike(curr.getToNode(), next) : 0);
-		double newTimeContribution  = (next != null) ? getTravelTimeBike(prev, next) : 0;
-		return Math.abs(currTimeContribution - newTimeContribution);
-	}
-	*/
-
 	public void cleanCarMovesNotDone(){
-		Node previousNode = this.startNode;
-		CarMove currentMove;
-
+//		Node previousNode = this.startNode;
+//		CarMove currentMove;
 	}
-	/*
-	public void cleanCarMovesNotDone(){
-		// Todo: make smarter by using the remembered start index
-		// Todo: need to take starttime for the car move into acc
-		Node previousNode = this.startNode;
-		CarMove currentMove;
-		double currentTime = this.startTime;
-		for (int j = 0; j < this.carMoves.size(); j++) {
-			currentMove = this.carMoves.get(j);
-			currentTime += getTravelTime(previousNode, currentMove);
-			previousNode = currentMove.getToNode();
-			if(currentTime > timeLimit){
-				CarMove carMoveToRemove = this.carMoves.remove(j);
-				individual.getUnusedCarMoves().get(carMoveToRemove.getCar()).add(carMoveToRemove);
-			}
-
-		}
-	}
-	*/
-
+	
 	public void setChanged(boolean change){
 		this.changed = change;
+	}
+	
+	public boolean getChanged() {
+		return this.changed;
 	}
 
 	@Override
@@ -303,8 +216,6 @@ public class Operator implements Serializable {
 		return s.substring(0, (s.length() > 0) ? s.length()-2 : 0);
 	}
 
-	public boolean getChanged() {
-		return this.changed;
-	}
+	
 	
 }
