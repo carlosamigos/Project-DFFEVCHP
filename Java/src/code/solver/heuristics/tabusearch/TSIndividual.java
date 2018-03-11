@@ -182,7 +182,7 @@ public class TSIndividual extends Individual implements Serializable {
 				fitNess += HeuristicsConstants.TABU_SURPLUS_IDEAL_STATE_COST;
 			}
 			// Deviation is negative if deficit node
-			fitNess += HeuristicsConstants.TABU_IDEAL_STATE_REWARD * deviationFromIdealState.get(carMove.getToNode());
+			fitNess += HeuristicsConstants.TABU_IDEAL_STATE_INITIAL_REWARD * deviationFromIdealState.get(carMove.getToNode());
 		}
 		return fitNess;
 
