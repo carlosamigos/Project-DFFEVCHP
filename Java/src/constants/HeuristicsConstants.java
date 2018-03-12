@@ -19,10 +19,13 @@ public class HeuristicsConstants {
     public final static double TABU_SIZE_OF_OPERATOR_LIST = 0;
     //------
 
+    // Mosel Cost Parameters
+    public final static double COST_OF_POSTPONED_CHARGING = 40;
+
     
     //Initial solution
     public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.2;
-    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 0;
+    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 10;
     public final static double TABU_IDEAL_STATE_INITIAL_REWARD = 10;
     public final static double TABU_INITIAL_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_INITIAL_SURPLUS_IDEAL_STATE_COST = 100;
