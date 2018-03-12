@@ -836,7 +836,7 @@ public class TSIndividual extends Individual implements Serializable {
 		for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
 			numberOfCarsToCharge += parkingNode.getCarsInNeed().size();
 		}
-		int numberPostponed = (numberOfCarsToCharge - numberOfChargedCars);
+		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
 		System.out.println("Number of postponed: " + numberPostponed);
 
 		
