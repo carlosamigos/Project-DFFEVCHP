@@ -54,9 +54,10 @@ public class TSIndividual extends Individual implements Serializable {
 		initiateDeviations();
 		addCarMovesToOperators();
 		initiateDeviations();
-		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+		
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		calculateFitness();
+		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		
 		// -----------------------------
@@ -478,10 +479,9 @@ public class TSIndividual extends Individual implements Serializable {
 		
 		// Calculate fitness
 		double deltaFitness = calculateDeltaFitness(operator, operatorState);
-
+		
 		// Revert
 		resetOperator(operatorState);
-		
 		return deltaFitness;
 	}
 
@@ -822,27 +822,33 @@ public class TSIndividual extends Individual implements Serializable {
 
 	
 	public void calculateMoselFitness(){
+		
+		System.out.println(deviationFromIdealState);
+		System.out.println(initialDeviationFromIdealState);
+		
 		int devIdeal = 0;
 		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
-			devIdeal += deviationFromIdealState.get(parkingNode) ;
+			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;
 		}
 		System.out.println("Deviation from ideal: "+ devIdeal);
 
 		int numberOfChargedCars = 0;
 		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
-			numberOfChargedCars += Math.max(capacitiesUsed.get(chargingNode), chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
+			if(capacitiesUsed.get(chargingNode) > chargingNode.getNumberOfAvailableChargingSpotsNextPeriod()) {
+				numberOfChargedCars += chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+			} else {
+				numberOfChargedCars += capacitiesUsed.get(chargingNode);
+			}
 		}
 		int numberOfCarsToCharge = 0;
 		for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
 			numberOfCarsToCharge += parkingNode.getCarsInNeed().size();
 		}
-		int numberPostponed = (numberOfCarsToCharge - numberOfChargedCars);
+		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
 		System.out.println("Number of postponed: " + numberPostponed);
-
-		
-
 	}
-	
-	
 
+	public ProblemInstance getProblemInstance() {
+		return problemInstance;
+	}
 }
