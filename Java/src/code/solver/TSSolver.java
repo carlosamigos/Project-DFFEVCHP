@@ -76,6 +76,7 @@ public class TSSolver extends Solver {
 			tabuList.add(candidate);
 			iteration++;
 		}
+		individual.calculateMoselFitness();
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {

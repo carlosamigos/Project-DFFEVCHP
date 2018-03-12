@@ -197,7 +197,7 @@ public class Operator implements Serializable {
 		this.fitness += currentTime * HeuristicsConstants.TABU_TRAVEL_COST;
 	}
 	
-	private double getTravelTime(Node previous, CarMove move, double currentTime) {
+	public double getTravelTime(Node previous, CarMove move, double currentTime) {
 		double travelTimeBike = getTravelTimeBike(previous, move.getFromNode());
 		return travelTimeBike + Math.max(0, move.getEarliestDepartureTime() - (currentTime + travelTimeBike) )
 				+ move.getTravelTime();
