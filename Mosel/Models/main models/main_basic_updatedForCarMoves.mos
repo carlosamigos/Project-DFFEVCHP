@@ -6,13 +6,13 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a.txt';
+	DataFile = 'test_40nodes_4so_3c_12mov_3charging_0finishes_0MODE_c.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 600;
+	MaxSolveTimeSeconds = 60;
 end-parameters
 
 
@@ -379,20 +379,21 @@ if printResults then
 		currTask := 1;
 		foundX := true;
 		write('Route of operator ', pp, ': ');
-		write('(', currNode, ', 1) -> ');
+		write('(', currNode, ') -> ');
+		write('(t:', travelTimeToOriginR(pp), ')');
 		while(foundX) do
 			foundX := false;
 			forall(rr in carMoves) do
 				if getsol(x(pp, rr, currTask)) >= 0.5 then
 					if (carMoveOrigin(rr) <> currNode) then
-						write(' ');
-						write('(T)');
 						write('(', currNode, ', ', carMoveOrigin(rr),') -> ');
 					end-if
 					write(' ');
 					write('(H)');
 					write('(t:', getsol(t(pp, currTask)), ')')
 					write('(', carMoveOrigin(rr), ', ', carMoveDestination(rr),') -> ');
+					write('(T)');
+					write('(t:', getsol(t(pp, currTask) + carMoveHandlingTime(rr)), ')')
 					foundX := true;
 					currNode := carMoveDestination(rr);
 					currTask := currTask +1;
