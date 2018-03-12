@@ -45,10 +45,10 @@ public class TSSolver extends Solver {
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
-			System.out.println("Iteration: " + iteration + " Best fitness: " 
-					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:" 
-					+ String.format("%.1f", this.individual.getFitness()));
-			//System.out.println(individual);
+//			System.out.println("Iteration: " + iteration + " Best fitness: " 
+//					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:" 
+//					+ String.format("%.1f", this.individual.getFitness()));
+//			//System.out.println(individual);
 			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
@@ -179,6 +179,7 @@ public class TSSolver extends Solver {
 				currentTime += best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
 				prevNode = carMove.getToNode();
+				
 				if (currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM) {
 					break;
 				} else {
