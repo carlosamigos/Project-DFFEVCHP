@@ -27,7 +27,7 @@ public class TSIndividual extends Individual implements Serializable {
 	// These tracks how good the proposed solution is.
 	private HashMap<ChargingNode, Integer> capacitiesUsed;
 	private HashMap<ChargingNode, Integer> prevCapacitiesUsed;
-	private HashMap<ChargingNode, Integer> capacities;
+	private HashMap<ChargingNode, Integer> capacities; // Only for initialization
 	
 	private HashMap<ParkingNode, Integer> deviationFromIdealState;
 	private HashMap<ParkingNode, Integer> prevDeviationFromIdealState;
@@ -821,7 +821,27 @@ public class TSIndividual extends Individual implements Serializable {
 	}
 
 	
-	
+	public void calculateMoselFitness(){
+		int devIdeal = 0;
+		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
+			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;
+		}
+		System.out.println("Deviation from ideal: "+ devIdeal);
+
+		int numberOfChargedCars = 0;
+		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
+			numberOfChargedCars += Math.max(capacitiesUsed.get(chargingNode), chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
+		}
+		int numberOfCarsToCharge = 0;
+		for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+			numberOfCarsToCharge += parkingNode.getCarsInNeed().size();
+		}
+		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
+		System.out.println("Number of postponed: " + numberPostponed);
+
+		
+
+	}
 	
 	
 
