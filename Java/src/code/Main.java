@@ -22,7 +22,7 @@ public class Main {
     	createTestingFolders();
 
     	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_12nodes_3so_2c_6mov_6charging_0finishes_0MODE_a");
-    	for(int i = 0; i < 20; i++) {
+    	for(int i = 0; i < 1; i++) {
     		TSSolver solver = new TSSolver(problemInstance);
         	solver.solve(problemInstance);
         	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));

@@ -2,6 +2,7 @@ package code.solver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 import code.problem.ProblemInstance;
@@ -44,11 +45,12 @@ public class TSSolver extends Solver {
 	public void solve(ProblemInstance problemInstance) {
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
+		double counter = 0; // counts number of rounds with 0 delta
 		while(!done(iteration)) {
-//			System.out.println("Iteration: " + iteration + " Best fitness: " 
-//					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:" 
-//					+ String.format("%.1f", this.individual.getFitness()));
-//			//System.out.println(individual);
+			System.out.println("Iteration: " + iteration + " Best fitness: "
+					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
+					+ String.format("%.1f", this.individual.getFitness()));
+			//System.out.println(individual);
 			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
@@ -59,19 +61,33 @@ public class TSSolver extends Solver {
 			if(candidate == null) {
 				continue;
 			}
-			
-			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
-			for(Mutation newCandidate : neighborhood) {
-				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
-				if (newCandidateDelta < candidateDelta) {
-					candidate = newCandidate;
-					candidateDelta = newCandidateDelta;
+			double candidateDelta;
+			if(counter >= HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS){
+				// Scramble if stuck
+				counter = 0;
+				Mutation newCandidate = getRandomMutation(neighborhood);
+				candidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
+				candidate = newCandidate;
+			} else {
+				candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
+				for(Mutation newCandidate : neighborhood) {
+					double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
+					if (newCandidateDelta < candidateDelta ) {
+						candidate = newCandidate;
+						candidateDelta = newCandidateDelta;
+					}
 				}
 			}
 
+
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
-			
+			if(candidateDelta == 0){
+				counter ++;
+			}
+
+
+			// Update best individual
 			if(this.individual.getFitness() < this.best.getFitness()) {
 				this.best = (TSIndividual) DeepCopy.copy(this.individual);
 				this.best.setFitness(this.individual.getFitness());
@@ -188,5 +204,18 @@ public class TSSolver extends Solver {
 			}
 			operator.setCarMoves(newCarMoveList);
 		}
+	}
+
+	private Mutation getRandomMutation(Set<Mutation> neighborhood){
+		int size = neighborhood.size();
+		int item = new Random().nextInt(size);
+		int i = 0;
+		for(Mutation mutation : neighborhood)
+		{
+			if (i == item)
+				return mutation;
+			i++;
+		}
+		return neighborhood.iterator().next();
 	}
 }
