@@ -432,8 +432,8 @@ public class TSIndividual extends Individual implements Serializable {
 		this.unusedCarMoves.get(carMoveRemoved.getCar()).remove(ejectionReplaceMutation.getCarMoveReplace());
 		this.unusedCarMoves.get(carMoveRemoved.getCar()).add(carMoveRemoved);
 		operator.getFitness();
-		//operator.cleanCarMovesNotDone();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
 
 	public void performMutation(EjectionInsertMutation ejectionInsertMutation){
@@ -442,8 +442,8 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.addCarMove(addIndex, ejectionInsertMutation.getCarMoveReplace());
 		this.unusedCarMoves.get(ejectionInsertMutation.getCarMoveReplace().getCar()).remove(ejectionInsertMutation.getCarMoveReplace());
 		operator.getFitness();
-		//operator.cleanCarMovesNotDone();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
 
 	public void performMutation(EjectionRemoveMutation ejectionRemoveMutation){
@@ -453,6 +453,7 @@ public class TSIndividual extends Individual implements Serializable {
 		this.unusedCarMoves.get(carMove.getCar()).add(carMove);
 		operator.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 
 	}
 
@@ -590,11 +591,11 @@ public class TSIndividual extends Individual implements Serializable {
 	//-----------  Generate Neighborhood  --------------
 	
 	
-	public ArrayList<Mutation> getNeighbors(TabuList tabuList){
-		ArrayList<Mutation> neighbors = new ArrayList<>();
+	public HashMap<Mutation, Integer> getNeighbors(TabuList tabuList){
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
 		
 		// IntraMove
-		while(neighbors.size() < HeuristicsConstants.TABU_INTRA_MOVE_SIZE) {
+		for(int i = 0; i < HeuristicsConstants.TABU_INTRA_MOVE_SIZE; i++) {
 			int randomOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator operator = (Operator) operators.get(randomOperatorIndex);
 			if(operator.getCarMoveListSize() <= 1) {
@@ -604,12 +605,12 @@ public class TSIndividual extends Individual implements Serializable {
 			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operator.getCarMoveListSize());
 			IntraMove intraMove = new IntraMove(operator,removeIndex, insertIndex);
 			if(!tabuList.isTabu(intraMove)) {
-				neighbors.add(intraMove);
+				neighbors.put(intraMove,1);
 			}
 		}
 		
 		// InterMove
-		while(neighbors.size() < HeuristicsConstants.TABU_INTER_MOVE_SIZE) {
+		for(int i = 0; i < HeuristicsConstants.TABU_INTER_MOVE_SIZE; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
 			int insertOperatorIndex = MathHelper.getRandomIntNotEqual(removeOperatorIndex, operators.size());
@@ -621,12 +622,12 @@ public class TSIndividual extends Individual implements Serializable {
 			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			if(!tabuList.isTabu(interMove)) {
-				neighbors.add(interMove);
+				neighbors.put(interMove, 1);
 			}
 		}
 		
 		// InterSwap2
-		while(neighbors.size() < HeuristicsConstants.TABU_INTER_2_SWAP_SIZE) {
+		for(int i = 0; i < HeuristicsConstants.TABU_INTER_2_SWAP_SIZE; i++) {
 			int operator1Index = (int) Math.floor(Math.random() * operators.size());
 			int operator2Index = MathHelper.getRandomIntNotEqual(operator1Index, operators.size());
 			Operator operator1 = (Operator) operators.get(operator1Index);
@@ -638,7 +639,7 @@ public class TSIndividual extends Individual implements Serializable {
 			int index2 = (int)Math.floor(Math.random() * operator2.getCarMoveListSize());
 			InterSwap2 interSwap2 = new InterSwap2(index1, index2, operator1, operator2);
 			if(!tabuList.isTabu(interSwap2)) {
-				neighbors.add(interSwap2);
+				neighbors.put(interSwap2, 1);
 			}
 		}
 		
@@ -656,7 +657,7 @@ public class TSIndividual extends Individual implements Serializable {
 			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
 			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
 			if(!tabuList.isTabu(ejectionReplaceMutation)) {
-				neighbors.add(ejectionReplaceMutation);
+				neighbors.put(ejectionReplaceMutation, 1);
 			}
 		}
 		// EjectionRemove
@@ -669,7 +670,7 @@ public class TSIndividual extends Individual implements Serializable {
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
 			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex);
 			if(!tabuList.isTabu(ejectionRemoveMutation)) {
-				neighbors.add(ejectionRemoveMutation);
+				neighbors.put(ejectionRemoveMutation, 1);
 			}
 		}
 
@@ -689,7 +690,7 @@ public class TSIndividual extends Individual implements Serializable {
 			CarMove insertCarMove = this.unusedCarMoves.get(car).get(swapIndex);
 			EjectionInsertMutation ejectionInsertMutation = new EjectionInsertMutation(removeOperator, insertIndex, insertCarMove);
 			if(!tabuList.isTabu(ejectionInsertMutation)) {
-				neighbors.add(ejectionInsertMutation);
+				neighbors.put(ejectionInsertMutation, 1);
 			}
 		}
 
