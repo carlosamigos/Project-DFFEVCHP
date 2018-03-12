@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.Set;
 
 import code.problem.ProblemInstance;
+import code.problem.nodes.Node;
+import code.solver.heuristics.entities.CarMove;
+import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.*;
 import code.solver.heuristics.tabusearch.TSIndividual;
 import code.solver.heuristics.tabusearch.TabuList;
+import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.DeepCopy;
 
@@ -76,6 +80,7 @@ public class TSSolver extends Solver {
 			tabuList.add(candidate);
 			iteration++;
 		}
+		cleanBest();
 		best.calculateMoselFitness();
 	}
 	
@@ -161,5 +166,26 @@ public class TSSolver extends Solver {
 	
 	private interface Perform {
 		void runCommand(Mutation mutation);
+	}
+
+	private void cleanBest(){
+		for(Object object : best.getOperators()){
+			Operator operator = (Operator) object;
+			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
+			double currentTime = operator.getStartTime();
+			Node prevNode = operator.getStartNode();
+			for(CarMove carMove : operator.getCarMoveCopy()) {
+				//Need to take earliest start time of the move into account
+				currentTime += best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode());
+				currentTime += carMove.getTravelTime();
+				prevNode = carMove.getToNode();
+				if (currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM) {
+					break;
+				} else {
+					newCarMoveList.add(carMove);
+				}
+			}
+			operator.setCarMoves(newCarMoveList);
+		}
 	}
 }

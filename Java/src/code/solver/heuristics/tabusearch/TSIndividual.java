@@ -843,7 +843,8 @@ public class TSIndividual extends Individual implements Serializable {
 		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
 		System.out.println("Number of postponed: " + numberPostponed);
 	}
-	
-	
 
+	public ProblemInstance getProblemInstance() {
+		return problemInstance;
+	}
 }
