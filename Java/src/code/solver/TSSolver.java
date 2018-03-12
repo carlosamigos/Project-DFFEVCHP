@@ -2,6 +2,7 @@ package code.solver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import code.problem.ProblemInstance;
 import code.solver.heuristics.mutators.*;
@@ -40,12 +41,21 @@ public class TSSolver extends Solver {
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		while(!done(iteration)) {
-			System.out.println("Iteration: " + iteration + " Best fitness: " 
+			/*System.out.println("Iteration: " + iteration + " Best fitness: " 
 					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:" 
 					+ String.format("%.1f", this.individual.getFitness()));
-			System.out.println(individual);
-			ArrayList<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList);
-			Mutation candidate = neighborhood.remove(neighborhood.size()-1);
+			System.out.println(individual);*/
+			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
+			Mutation candidate = null;
+			for(Mutation mutation : neighborhood) {
+				candidate = mutation;
+				break;
+			}
+			
+			if(candidate == null) {
+				continue;
+			}
+			
 			double candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 			for(Mutation newCandidate : neighborhood) {
 				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
@@ -66,6 +76,7 @@ public class TSSolver extends Solver {
 			tabuList.add(candidate);
 			iteration++;
 		}
+		individual.calculateMoselFitness();
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {
