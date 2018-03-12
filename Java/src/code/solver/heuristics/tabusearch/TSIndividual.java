@@ -58,7 +58,6 @@ public class TSIndividual extends Individual implements Serializable {
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		calculateFitness();
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
-		System.out.println(initialDeviationFromIdealState);
 		
 		// -----------------------------
 	}

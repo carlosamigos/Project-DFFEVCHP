@@ -24,7 +24,7 @@ public class Main {
     	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_40nodes_4so_3c_12mov_3charging_0finishes_0MODE_c");
     	TSSolver solver = new TSSolver(problemInstance);
     	solver.solve(problemInstance);
-    	System.out.println("Fitness: " + solver.getBest().getFitness() + "\n Result: " + solver.getBest());
+    	System.out.println("Fitness: " + solver.getBest().getFitness() + "\nResult: " + solver.getBest());
 
     	if(!testing) {
 	    	TestSuite testSuite;
