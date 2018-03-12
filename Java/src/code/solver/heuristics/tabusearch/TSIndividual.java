@@ -117,7 +117,18 @@ public class TSIndividual extends Individual implements Serializable {
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 			initialDeviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 		}
+		System.out.println("NEW RUN");
+		for(ParkingNode p: deviationFromIdealState.keySet()){
+			if(deviationFromIdealState.get(p) < 0){
+				System.out.println("----");
+				System.out.println(p.getNodeId());
+				System.out.println(deviationFromIdealState.get(p));
+
+			}
+		}
 	}
+
+
 
 	//  IDENTIFY CAR MOVES FOR INITIAL SOLUTION
 	// -------------------------------------------------------------------------------
