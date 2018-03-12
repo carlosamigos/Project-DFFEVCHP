@@ -700,6 +700,7 @@ public class ProblemInstance implements Serializable{
 
     }
 
+
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;
     }
