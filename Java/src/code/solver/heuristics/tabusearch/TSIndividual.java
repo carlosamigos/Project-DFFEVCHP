@@ -824,7 +824,7 @@ public class TSIndividual extends Individual implements Serializable {
 	public void calculateMoselFitness(){
 		int devIdeal = 0;
 		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
-			devIdeal += deviationFromIdealState.get(parkingNode) ;
+			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;
 		}
 		System.out.println("Deviation from ideal: "+ devIdeal);
 
