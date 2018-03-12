@@ -54,9 +54,10 @@ public class TSIndividual extends Individual implements Serializable {
 		initiateDeviations();
 		addCarMovesToOperators();
 		initiateDeviations();
-		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+		
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		calculateFitness();
+		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		
 		// -----------------------------
@@ -478,10 +479,9 @@ public class TSIndividual extends Individual implements Serializable {
 		
 		// Calculate fitness
 		double deltaFitness = calculateDeltaFitness(operator, operatorState);
-
+		
 		// Revert
 		resetOperator(operatorState);
-		
 		return deltaFitness;
 	}
 
@@ -830,7 +830,11 @@ public class TSIndividual extends Individual implements Serializable {
 
 		int numberOfChargedCars = 0;
 		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
-			numberOfChargedCars += Math.max(capacitiesUsed.get(chargingNode), chargingNode.getNumberOfAvailableChargingSpotsNextPeriod());
+			if(capacitiesUsed.get(chargingNode) > chargingNode.getNumberOfAvailableChargingSpotsNextPeriod()) {
+				numberOfChargedCars += chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
+			} else {
+				numberOfChargedCars += capacitiesUsed.get(chargingNode);
+			}
 		}
 		int numberOfCarsToCharge = 0;
 		for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
