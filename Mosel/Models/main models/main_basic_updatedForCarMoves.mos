@@ -6,7 +6,7 @@ model DVFFEVRP
 uses "mmxprs";
 
 parameters
-	DataFile = 'test_20nodes_4so_3c_10mov_3charging_0finishes_0MODE_c.txt';
+	DataFile = 'test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -367,7 +367,11 @@ declarations
 	currNode       : integer;
 	endTime        : real;
 	foundX         : boolean;
+	devIdeal	   : real;
+	numPostPoned   : real;
 end-declarations
+
+
 
 if printResults then
 	forall(pp in rOperators) do
@@ -410,5 +414,22 @@ if printResults then
 	writeln('');
 	end-do
 end-if
+
+if printResults then 
+	writeln("")
+	devIdeal := 0;
+	forall(ii in deficitNodes) do
+		devIdeal := getsol(s_minus(ii)) + devIdeal
+	end-do
+	numPostPoned := 0;
+	forall(ii in carsInCNeedNodes) do
+		numPostPoned := getsol(s_c(ii)) + numPostPoned;
+	end-do
+	
+	writeln("Deviation from ideal state: ", devIdeal);
+	writeln("Number postponed: ", numPostPoned);
+end-if
+
+
 
 end-model
