@@ -233,7 +233,7 @@ public class Operator implements Serializable {
 	public boolean getChanged() {
 		return this.changed;
 	}
-
+	
 	@Override
 	public String toString() {
 		String s = "";
