@@ -1,11 +1,15 @@
 package code.solver.heuristics.entities;
 
+import java.io.Serializable;
+
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
+import constants.Constants;
 
-public class CarMove {
+@SuppressWarnings("serial")
+public class CarMove implements Serializable {
 
     private ParkingNode fromNode;
     private Node toNode; //either ParkingNode or ChargingNode
@@ -49,6 +53,10 @@ public class CarMove {
 
     @Override
     public String toString() {
-        return "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
+    		if(Constants.DETAILED_PRINTOUTS) {
+    			return "[CarID: " + car.getCarId() + ", FromNode: " + this.fromNode.getNodeId() 
+        		+ ", ToNode: " + this.toNode.getNodeId() + ", Duration: " + this.getTravelTime() + "]";
+    		}
+        return "" + car.getCarId() + "(" + this.fromNode.getNodeId() + "->" + this.toNode.getNodeId() + ")";
     }
 }

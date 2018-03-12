@@ -4,7 +4,7 @@ import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 
-public class EjectionMutation extends Mutation {
+public class EjectionReplaceMutation extends Mutation {
 
     public final static int id = 9;
     private final Operator operator;
@@ -14,13 +14,13 @@ public class EjectionMutation extends Mutation {
 
 
 
-    public EjectionMutation(Operator op, int index, CarMove carMoveReplace){
+    public EjectionReplaceMutation(Operator op, int index, CarMove carMoveReplace){
         this.operator = op;
         this.carMoveIndex = index;
         this.carMoveReplace = carMoveReplace;
         // * A possible approach is to construct the hashcode to only include cars, to make sure the newly injected move
         // * Is not ejected.
-        String hashString = "" + id + "" + carMoveReplace.getCar().getCarId() + "" + carMoveReplace.getToNode();
+        String hashString = "" + id + "" + carMoveReplace.getCar().getCarId() + "" + carMoveReplace.getToNode().getNodeId();
         this.hashCode = Integer.parseInt(hashString);
     }
 
@@ -44,7 +44,7 @@ public class EjectionMutation extends Mutation {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof  Insert){
+        if(o instanceof  EjectionReplaceMutation){
             return o.hashCode() == this.hashCode;
         } return false;
     }

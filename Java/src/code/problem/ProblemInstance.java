@@ -13,7 +13,8 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
 
-public class ProblemInstance {
+@SuppressWarnings("serial")
+public class ProblemInstance implements Serializable{
 
 	private String filePath;
     private String fileName;
@@ -353,6 +354,10 @@ public class ProblemInstance {
     public double getTravelTimeBike(Node n1, Node n2) {
     		return this.travelTimesBike.get(n1.getNodeId()-Constants.START_INDEX).get(n2.getNodeId()-Constants.START_INDEX);
     }
+    
+    public double getTravelTimeCar(Node n1, Node n2) {
+		return this.travelTimesCar.get(n1.getNodeId()-Constants.START_INDEX).get(n2.getNodeId()-Constants.START_INDEX);
+}
 
     public ArrayList<ArrayList<Double>> getTravelTimesCar() {
         return travelTimesCar;
@@ -694,6 +699,7 @@ public class ProblemInstance {
         }
 
     }
+
 
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;

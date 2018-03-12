@@ -2,11 +2,13 @@ package code.problem.nodes;
 
 import constants.SimulationConstants;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import code.problem.entities.Car;
 
-public class ParkingNode extends Node{
+@SuppressWarnings("serial")
+public class ParkingNode extends Node implements Serializable {
 
     private ArrayList<Car> carsInNeed;
     private ArrayList<Car> carsRegular;

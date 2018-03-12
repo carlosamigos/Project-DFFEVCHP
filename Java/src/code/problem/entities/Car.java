@@ -1,8 +1,11 @@
 package code.problem.entities;
 
+import java.io.Serializable;
+
 import code.problem.nodes.Node;
 
-public class Car implements Comparable<Object> {
+@SuppressWarnings("serial")
+public class Car implements Comparable<Object>, Serializable {
 
     private final int carId;
     private double batteryLevel;

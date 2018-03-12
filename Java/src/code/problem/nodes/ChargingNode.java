@@ -2,11 +2,13 @@ package code.problem.nodes;
 
 import constants.Constants;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 import code.problem.entities.Car;
 
-public class ChargingNode extends Node{
+@SuppressWarnings("serial")
+public class ChargingNode extends Node implements Serializable {
 
     private int numberOfTotalChargingSlots = 0;
     private HashSet<Car> carsCurrentlyCharging;

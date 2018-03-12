@@ -1,9 +1,12 @@
 package code.problem.entities;
 
+import java.io.Serializable;
+
 import code.problem.nodes.Node;
 import constants.Constants;
 
-public class Operator {
+@SuppressWarnings("serial")
+public class Operator implements Serializable {
 
     private final int id;
     private Node nextOrCurrentNode = null;
