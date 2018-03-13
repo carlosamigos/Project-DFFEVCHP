@@ -8,7 +8,7 @@ hNodes : 3
 wNodes : 2
 nodeSubsetIndexes: [1 2 3 4 5 6] 
 
-startNodeROperator: [3 3 4] 
+startNodeROperator: [5 4 3] 
 originNodeROperator: [8 9 10] 
 destinationNodeROperator: [11 12 13] 
 cToP: [1] 
@@ -49,31 +49,31 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [0 0 0] 
-initialRegularInP: [1 0 1 1 2 0] 
+initialRegularInP: [1 0 3 1 0 3] 
 initialInNeedP: [1 1 0 1 0 0] 
 finishedDuringC: [0] 
-idealStateP: [0 1 2 1 0 1] 
+idealStateP: [1 2 2 2 0 1] 
 
 demandP: [0 0 0 0 0 0] 
 
 mode: 2
 sequenceBigM: 10
-visitList: [2 2 3 2 2 2 3 1 1 1 1 1 1] 
+visitList: [2 3 2 3 2 2 3 1 1 1 1 1 1] 
 
-numCarMovesP : 9
+numCarMovesP : 6
 numCarMovesC : 3
 numCars : 6
 numTasks : 5
-numDeficitNodes : 3
+numDeficitNodes : 2
 
-deficitTranslate : [2 3 6] 
-deficitCarsInNode : [1 1 1] 
-carMoveCars : [1 1 1 2 2 2 3 3 3 4 5 6] 
-carMoveOrigin : [1 1 1 5 5 5 5 5 5 1 2 4] 
-carMoveDestination : [2 3 6 2 3 6 2 3 6 7 7 7] 
-carMoveHandlingTime : [10.3 10.3 23.0 23.0 10.3 10.3 23.0 10.3 10.3 1.0 10.3 14.6] 
-carMoveStartingTime : [0 0 0 0 0 0 0 0 0 0 0 0] 
+deficitTranslate : [2 4] 
+deficitCarsInNode : [2 1] 
+carMoveCars : [1 1 2 2 3 3 4 5 6] 
+carMoveOrigin : [3 3 6 6 6 6 1 2 4] 
+carMoveDestination : [2 4 2 4 2 4 7 7 7] 
+carMoveHandlingTime : [14.6 10.3 20.6 10.3 20.6 10.3 1.0 10.3 14.6] 
+carMoveStartingTime : [0 0 0 0 0 0 0 0 0] 
 numCarsInCNeedNodes : 3
 carsInNeedCTranslate : [1 2 4] 
 carsInNeedNodes : [1 1 1] 
-bigMCars : [35.7 35.7 35.7 39.2 29.9 25.6]
+bigMCars : [10.3 10.3 10.3 0.0 0.0 0.0]
