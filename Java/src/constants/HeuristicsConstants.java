@@ -7,9 +7,9 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
 
-    public final static int TABU_NEIGHBORHOOD_SIZE = 400;
-    public final static int TABU_SIZE = 25;
-    public final static int TABU_ITERATIONS = 7000;
+    public final static int TABU_NEIGHBORHOOD_SIZE = 125;
+    public final static int TABU_SIZE = 10;
+    public final static int TABU_ITERATIONS = 100;
 
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 10;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;

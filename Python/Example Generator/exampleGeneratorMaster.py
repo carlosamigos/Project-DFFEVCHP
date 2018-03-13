@@ -19,31 +19,33 @@ DISTANCESCALE = 3
 EXAMPLES = 3
 
 #BOARD SIZE - DONT CHANGE
-XSIZE = 20
-YSIZE = 20
+XSIZE = 3
+YSIZE = 3
 
 #ALLOWED MOVES
-MOVES = 60
-CARSCHARGING = 20
+MOVES = 8
+CARSCHARGING = 3
 
 #PARKING NODES USED
-MAXNODES = 400
+MAXNODES = 9
 
 #CHARGING NODES
-NUMCHARGING = 7
-PARKINGC = [1, 50, 120, 200, 300, 350, 400]
-CAPACITY = [4, 3, 2, 3, 3, 3, 2]
-TOTALCAPACITY = [4, 3, 2, 3, 3, 3, 2]
+NUMCHARGING = 1
+PARKINGC = [1]
+CAPACITY = [4]
+TOTALCAPACITY = [4]
 
 #OPERATORS
-NUMOPERATORS = 10
-STARTETIMEOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-HANDLINGOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-NUMTASKS = 6
+NUMOPERATORS = 3
+STARTETIMEOP = [0, 0, 0]
+HANDLINGOP = [0, 0, 0]
+NUMTASKS = 5
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
 CLUSTER = True
+WRITETOFILE = True
+PRINT = False
 
 # OUTPUT - the lists are run in a foor loop #
 # First parameter: Mode - 2 equals the normal one, and 4 equals the one that tries to reduce time when visiting charging nodes
@@ -92,6 +94,7 @@ class World:
         self.cNodes = []
         self.distancesB = []
         self.distancesC = []
+        self.bigM = []
         self.visitList = []
         self.surp = []
         self.deficit = []
@@ -215,6 +218,38 @@ class World:
                 travelMatrixHandling.append(float(format(travelMatrixCar[i][j]/60, '.1f')))
         self.distancesC = travelMatrixHandling
         self.distancesB = travelMatrixNotHandling
+
+    def calculateBigM(self):
+        for i in range(len(self.cars)):
+            min = 60
+            max = 0
+            minHandling = 60
+            for j in range(len(self.cars[i].destinations)):
+                for k in range(len(self.cars[i].destinations)):
+                    for x in range(len(self.pNodes)):
+                        if((self.pNodes[x].surplus > 0 or self.pNodes[x].cState > 0)):
+                            distances1 = self.distancesB[(len(self.pNodes) + len(self.cNodes)) * (self.cars[i].destinations[j] -1) + x]
+                            distances2 = self.distancesB[(len(self.pNodes) + len(self.cNodes)) * (self.cars[i].destinations[k] - 1) + x]
+                            handlingTime1 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode -1) + self.cars[i].destinations[j] -1]
+                            handlingTime2 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode - 1) + self.cars[i].destinations[k] - 1]
+                            if(distances1 < min):
+                                min = distances1
+                            if(distances1 > max):
+                                max = distances1
+                            if (distances2 < min):
+                                min = distances2
+                            if (distances2 > max):
+                                max = distances2
+                            if(handlingTime1 < minHandling):
+                                minHandling = handlingTime1
+                            if (handlingTime2 < minHandling):
+                                minHandling = handlingTime2
+            print("New run")
+            print(min)
+            print(max)
+            print(minHandling)
+            bigM = float(format((max - min) - minHandling, '.1f'))
+            self.bigM.append(bigM)
 
     ## CALCULATE VISITS ##
 
@@ -699,9 +734,16 @@ class World:
             if (i < len(carsInNeedCNodes) - 1):
                 string += " "
         string += "] \n"
+        string += "bigMCars : ["
+        for i in range(len(self.bigM)):
+            string += str(self.bigM[i])
+            if(i < len(self.bigM) -1):
+                string += " "
+        string += "]"
 
         f.write(string)
-        print(string)
+        if(PRINT):
+            print(string)
 
 class pNode:
 
@@ -879,12 +921,15 @@ def buildWorld():
     maxVisit = max(world.visitList)
     createCars(world)
     world.calculateNodeDiff()
+    world.calculateBigM()
+    print(world.bigM)
     for i in range(len(MODES_RUN2)):
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
         moves = world.calculateMovesToIDeal()
         filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(i) + "MODE"
-        world.writeToFile(filepath)
+        if(WRITETOFILE):
+            world.writeToFile(filepath)
 
 
 
