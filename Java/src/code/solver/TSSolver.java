@@ -98,6 +98,7 @@ public class TSSolver extends Solver {
 		}
 		cleanBest();
 		best.calculateMoselFitness();
+		System.out.println(best);
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {
