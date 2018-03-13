@@ -397,14 +397,16 @@ if printResults then
 			forall(rr in carMoves) do
 				if getsol(x(pp, rr, currTask)) >= 0.5 then
 					if (carMoveOrigin(rr) <> currNode) then
+						if currTask > 1 then
+							write('(T)');                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         	
+							write('(t:', getsol(t(pp, currTask)) - travelTimeBike(currNode, carMoveOrigin(rr)), ')')
+						end-if 
 						write('(', currNode, ', ', carMoveOrigin(rr),') -> ');
 					end-if
 					write(' ');
 					write('(H)');
 					write('(t:', getsol(t(pp, currTask)), ')')
 					write('(', carMoveOrigin(rr), ', ', carMoveDestination(rr),') -> ');
-					write('(T)');
-					write('(t:', getsol(t(pp, currTask) + carMoveHandlingTime(rr)), ')')
 					foundX := true;
 					currNode := carMoveDestination(rr);
 					currTask := currTask +1;
