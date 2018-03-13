@@ -21,7 +21,7 @@ public class EjectionRemoveMutation extends Mutation{
 
     @Override
     public int getId() {
-        return this.id;
+        return id;
     }
 
     @Override

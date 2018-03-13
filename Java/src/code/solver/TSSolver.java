@@ -58,6 +58,7 @@ public class TSSolver extends Solver {
 				break;
 			}
 			
+			// Checks if the neighborhood is empty, if so jump to the next iteration.
 			if(candidate == null) {
 				continue;
 			}
