@@ -75,5 +75,5 @@ carMoveHandlingTime : [20.6 23.0 20.6 23.0 10.3 14.6 1.0 10.3 14.6]
 carMoveStartingTime : [0 0 0 0 0 0 0 0 0] 
 numCarsInCNeedNodes : 3
 carsInNeedCTranslate : [1 3 4] 
-carsInNeedNodes : [1 1 1] 
+carsInNeedNodes : [1 1 1]
 bigMCars : [0.0 0.0 0.0 0.0 0.0 0.0]

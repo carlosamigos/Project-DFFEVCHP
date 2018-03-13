@@ -7,7 +7,7 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_6nodes_3so_1c_3mov_3charging_0finishes_0MODE_a.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_6nodes_3so_1c_3mov_3charging_0finishes_0MODE_c.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
