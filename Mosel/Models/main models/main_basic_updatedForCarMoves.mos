@@ -7,7 +7,7 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_9nodes_3so_1c_8mov_3charging_0finishes_0MODE_b.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_6nodes_3so_1c_3mov_3charging_0finishes_0MODE_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -251,7 +251,8 @@ end-declarations
 Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
 			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
 			  0.01 * sum(pp in rOperators) t_plus(pp) + 
-			  0.01  * sum(pp in rOperators, rr in carMoves, mm in tasks) travelTimeVehicle(carMoveOrigin(rr), carMoveDestination(rr)) * x(pp,rr,mm);
+			  0.01  * sum(pp in rOperators, rr in carMoves, mm in tasks) travelTimeVehicle(carMoveOrigin(rr), carMoveDestination(rr)) * x(pp,rr,mm) + 
+			  0.001 * sum(pp in rOperators, mm in tasks) t(pp, mm);
 
 ! ### End of declaration of objective ### !	
 
@@ -320,8 +321,8 @@ declarations
 end-declarations 
 
 forall(pp in rOperators, rr in carMoves, mm in tasks | mm <> numTasks) do
-	travelTime(pp, rr, mm) := t(pp,mm) + carMoveHandlingTime(rr) * x(pp, rr, mm) + sum(r2 in carMoves) travelTimeBike(carMoveDestination(rr), carMoveOrigin(r2))* x(pp, r2, mm + 1) -
-	60 * (1 -x(pp, rr, mm))  <= t(pp, mm+1);
+	travelTime(pp, rr, mm) := t(pp,mm) + carMoveHandlingTime(rr) * x(pp, rr, mm) + sum(r2 in carMoves) travelTimeBike(carMoveDestination(rr), carMoveOrigin(r2))* x(pp, r2, mm + 1) - 
+	bigMCars(carMoveCars(rr)) * (1 -x(pp, rr, mm)) <= t(pp, mm+1);
 end-do
 
 forall(pp in rOperators, mm in tasks | mm <> numTasks) do
