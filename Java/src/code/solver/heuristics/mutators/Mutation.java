@@ -1,7 +1,5 @@
 package code.solver.heuristics.mutators;
 
-import code.solver.heuristics.Individual;
-
 public abstract class Mutation {
 	public abstract int getId();
 	public abstract boolean equals(Object o);

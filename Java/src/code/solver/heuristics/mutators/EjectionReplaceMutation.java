@@ -1,6 +1,5 @@
 package code.solver.heuristics.mutators;
 
-import code.problem.entities.Car;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 
