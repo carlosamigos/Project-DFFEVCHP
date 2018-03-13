@@ -222,33 +222,39 @@ class World:
     def calculateBigM(self):
         for i in range(len(self.cars)):
             min = 60
-            max = 0
+            max1 = 0
             minHandling = 60
+            maxDiff = 0
             for j in range(len(self.cars[i].destinations)):
                 for k in range(len(self.cars[i].destinations)):
                     for x in range(len(self.pNodes)):
-                        if((self.pNodes[x].surplus > 0 or self.pNodes[x].cState > 0)):
-                            distances1 = self.distancesB[(len(self.pNodes) + len(self.cNodes)) * (self.cars[i].destinations[j] -1) + x]
-                            distances2 = self.distancesB[(len(self.pNodes) + len(self.cNodes)) * (self.cars[i].destinations[k] - 1) + x]
+                        if((self.pNodes[x].surplus > 0 or self.pNodes[x].cState > 0) and k != j):
+                            distances1 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[j] -1)) + x]
+                            distances2 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[k] - 1)) + x]
                             handlingTime1 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode -1) + self.cars[i].destinations[j] -1]
                             handlingTime2 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode - 1) + self.cars[i].destinations[k] - 1]
+                            diff = abs(distances1 - distances2)
+                            if(diff > maxDiff):
+                                maxDiff = diff
                             if(distances1 < min):
                                 min = distances1
-                            if(distances1 > max):
-                                max = distances1
+                            if(distances1 > max1):
+                                max1 = distances1
                             if (distances2 < min):
                                 min = distances2
-                            if (distances2 > max):
-                                max = distances2
+                            if (distances2 > max1):
+                                max1 = distances2
                             if(handlingTime1 < minHandling):
                                 minHandling = handlingTime1
                             if (handlingTime2 < minHandling):
                                 minHandling = handlingTime2
             print("New run")
             print(min)
-            print(max)
+            print(max1)
             print(minHandling)
-            bigM = float(format((max - min) - minHandling, '.1f'))
+            print(maxDiff)
+            bigMdiff = max(maxDiff - minHandling, 0)
+            bigM = float(format(bigMdiff, '.1f'))
             self.bigM.append(bigM)
 
     ## CALCULATE VISITS ##
