@@ -54,13 +54,10 @@ public class TSIndividual extends Individual implements Serializable {
 		initiateDeviations();
 		addCarMovesToOperators();
 		initiateDeviations();
-		
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 		calculateFitness();
 		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
-		
-		// -----------------------------
 	}
 
 	//================================================================================
@@ -118,15 +115,7 @@ public class TSIndividual extends Individual implements Serializable {
 			deviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 			initialDeviationFromIdealState.put(problemInstance.getParkingNodes().get(i), deviation);
 		}
-		System.out.println("NEW RUN");
-		for(ParkingNode p: deviationFromIdealState.keySet()){
-			if(deviationFromIdealState.get(p) < 0){
-				System.out.println("----");
-				System.out.println(p.getNodeId());
-				System.out.println(deviationFromIdealState.get(p));
 
-			}
-		}
 	}
 
 
@@ -245,7 +234,6 @@ public class TSIndividual extends Individual implements Serializable {
 						+ carMove.getTravelTime();
 	}
 
-	// -------------------------------------------------------------------------------
 
 	//================================================================================
 	// Fitness calculation
@@ -353,27 +341,94 @@ public class TSIndividual extends Individual implements Serializable {
 			deviationBefore += Math.min(0, this.prevDeviationFromIdealState.get(parkingNode));
 		}
 		
-		
 		// If the difference is positive we have better met ideal state than before
 		return - (deviationNow - deviationBefore) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
 	}
 
 
-	@Override
-	public ArrayList<Object> getRepresentation() {
-		return this.operators;
+	
+
+
+	//================================================================================
+	// Delta fitness
+	//================================================================================
+
+	public double deltaFitness(IntraMove intraMove) {
+		Operator operator = intraMove.getOperator();
+		int removeIndex = intraMove.getRemoveIndex();
+		int insertIndex = intraMove.getInsertIndex();
+
+		// Save old state
+		OperatorState operatorState = setOperatorState(operator);
+
+		// Do mutation
+		CarMove carMove = operator.removeCarMove(removeIndex);
+		operator.addCarMove(insertIndex, carMove);
+		
+		// Calculate fitness
+		double deltaFitness = calculateDeltaFitness(operator, operatorState);
+		
+		// Revert
+		resetOperator(operatorState);
+		
+		return deltaFitness;
 	}
 
+	public double deltaFitness(InterMove interMove){
+		Operator operatorRemove = interMove.getOperatorRemove();
+		Operator operatorInsert = interMove.getOperatorInsert();
+		int removeIndex 	    = interMove.getInsertIndex();
+		int insertIndex 		= interMove.getInsertIndex();
+		
+		// Save old state
+		ArrayList<Operator> operatorsToChange = new ArrayList<Operator>() {{
+			add(operatorRemove);
+			add(operatorInsert);
+		}};
+		ArrayList<OperatorState> operatorStates = setOperatorStates(operatorsToChange);
+		
+		// Do mutation
+		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
+		operatorInsert.addCarMove(insertIndex, carMove);
+		
+		// Calculate fitness
+		double deltaFitness = calculateDeltaFitness(operatorsToChange, operatorStates);
+		
+		//Revert
+		resetOperators(operatorStates);
 
-	// -------------------------------------------------------------------------------
+		return deltaFitness;
 
-	//================================================================================
-	// All mutations/performers for moves that are ejected
-	//================================================================================
-
-
-	// DeltaFitness
-
+	}
+	
+	public double deltaFitness(InterSwap2 interSwap2) {
+		Operator operator1 = interSwap2.getOperator1();
+		Operator operator2 = interSwap2.getOperator2();
+		int index1 = interSwap2.getIndex1();
+		int index2 = interSwap2.getIndex2();
+		
+		// Save old state
+		ArrayList<Operator> operatorsToChange = new ArrayList<Operator>() {{
+			add(operator1);
+			add(operator2);
+		}};
+		ArrayList<OperatorState> operatorStates = setOperatorStates(operatorsToChange);
+		
+		// Do mutation
+		CarMove carMove1 = operator1.removeCarMove(index1);
+		CarMove carMove2 = operator2.removeCarMove(index2);
+		operator1.addCarMove(index1, carMove2);
+		operator2.addCarMove(index2, carMove1);
+		
+		// Calculate fitness
+		double deltaFitness = calculateDeltaFitness(operatorsToChange, operatorStates);
+				
+		//Revert
+		resetOperators(operatorStates);
+		
+		return deltaFitness;
+	}
+	
 	public double deltaFitness(EjectionReplaceMutation ejectionReplaceMutation){
 		Operator operator = ejectionReplaceMutation.getOperator();
 		CarMove carMoveInsert = ejectionReplaceMutation.getCarMoveReplace();
@@ -434,125 +489,10 @@ public class TSIndividual extends Individual implements Serializable {
 		return deltaFitness;
 	}
 
-	// PerformMutation
 
-	public void performMutation(EjectionReplaceMutation ejectionReplaceMutation){
-		Operator operator = ejectionReplaceMutation.getOperator();
-		int removeIndex = ejectionReplaceMutation.getCarMoveIndex();
-		CarMove carMoveRemoved = operator.removeCarMove(removeIndex);
-		operator.addCarMove(removeIndex, ejectionReplaceMutation.getCarMoveReplace());
-		this.unusedCarMoves.get(carMoveRemoved.getCar()).remove(ejectionReplaceMutation.getCarMoveReplace());
-		this.unusedCarMoves.get(carMoveRemoved.getCar()).add(carMoveRemoved);
-		operator.getFitness();
-		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
-		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
-	}
-
-	public void performMutation(EjectionInsertMutation ejectionInsertMutation){
-		Operator operator = ejectionInsertMutation.getOperator();
-		int addIndex = ejectionInsertMutation.getCarMoveIndex();
-		operator.addCarMove(addIndex, ejectionInsertMutation.getCarMoveReplace());
-		this.unusedCarMoves.get(ejectionInsertMutation.getCarMoveReplace().getCar()).remove(ejectionInsertMutation.getCarMoveReplace());
-		operator.getFitness();
-		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
-		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
-	}
-
-	public void performMutation(EjectionRemoveMutation ejectionRemoveMutation){
-		Operator operator = ejectionRemoveMutation.getOperator();
-		int removeIndex = ejectionRemoveMutation.getCarMoveIndex();
-		CarMove carMove = operator.removeCarMove(removeIndex);
-		this.unusedCarMoves.get(carMove.getCar()).add(carMove);
-		operator.getFitness();
-		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
-		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
-
-	}
-
-
-	// -------------------------------------------------------------------------------
-
-
-
-	//-----------  Delta Fitness  --------------
-
-	public double deltaFitness(IntraMove intraMove) {
-		Operator operator = intraMove.getOperator();
-		int removeIndex = intraMove.getRemoveIndex();
-		int insertIndex = intraMove.getInsertIndex();
-
-		// Save old state
-		OperatorState operatorState = setOperatorState(operator);
-
-		// Do mutation
-		CarMove carMove = operator.removeCarMove(removeIndex);
-		operator.addCarMove(insertIndex, carMove);
-		
-		// Calculate fitness
-		double deltaFitness = calculateDeltaFitness(operator, operatorState);
-		
-		// Revert
-		resetOperator(operatorState);
-		return deltaFitness;
-	}
-
-	public double deltaFitness(InterMove interMove){
-		Operator operatorRemove = interMove.getOperatorRemove();
-		Operator operatorInsert = interMove.getOperatorInsert();
-		int removeIndex 	    = interMove.getInsertIndex();
-		int insertIndex 		= interMove.getInsertIndex();
-		
-		// Save old state
-		ArrayList<Operator> operatorsToChange = new ArrayList<Operator>() {{
-			add(operatorRemove);
-			add(operatorInsert);
-		}};
-		ArrayList<OperatorState> operatorStates = setOperatorStates(operatorsToChange);
-		
-		// Do mutation
-		CarMove carMove = operatorRemove.removeCarMove(removeIndex);
-		operatorInsert.addCarMove(insertIndex, carMove);
-		
-		// Calculate fitness
-		double deltaFitness = calculateDeltaFitness(operatorsToChange, operatorStates);
-		
-		//Revert
-		resetOperators(operatorStates);
-
-		return deltaFitness;
-
-	}
-	
-	public double deltaFitness(InterSwap2 interSwap2) {
-		Operator operator1 = interSwap2.getOperator1();
-		Operator operator2 = interSwap2.getOperator2();
-		int index1 = interSwap2.getIndex1();
-		int index2 = interSwap2.getIndex2();
-		
-		// Save old state
-		ArrayList<Operator> operatorsToChange = new ArrayList<Operator>() {{
-			add(operator1);
-			add(operator2);
-		}};
-		ArrayList<OperatorState> operatorStates = setOperatorStates(operatorsToChange);
-		
-		// Do mutation
-		CarMove carMove1 = operator1.removeCarMove(index1);
-		CarMove carMove2 = operator2.removeCarMove(index2);
-		operator1.addCarMove(index1, carMove2);
-		operator2.addCarMove(index2, carMove1);
-		
-		// Calculate fitness
-		double deltaFitness = calculateDeltaFitness(operatorsToChange, operatorStates);
-				
-		//Revert
-		resetOperators(operatorStates);
-		
-		return deltaFitness;
-	}
-
-
-	//-----------  Perform Mutations --------------
+	//================================================================================
+	// Perform mutation
+	//================================================================================
 
 
 	public void performMutation(IntraMove intraMove) {
@@ -596,10 +536,46 @@ public class TSIndividual extends Individual implements Serializable {
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
 	}
-
-	// -------------------------------------------------------------------------------
 	
-	//-----------  Generate Neighborhood  --------------
+	public void performMutation(EjectionReplaceMutation ejectionReplaceMutation){
+		Operator operator      = ejectionReplaceMutation.getOperator();
+		int removeIndex        = ejectionReplaceMutation.getCarMoveIndex();
+		
+		CarMove carMoveRemoved = operator.removeCarMove(removeIndex);
+		operator.addCarMove(removeIndex, ejectionReplaceMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(carMoveRemoved.getCar()).remove(ejectionReplaceMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(carMoveRemoved.getCar()).add(carMoveRemoved);
+		operator.getFitness();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+	}
+
+	public void performMutation(EjectionInsertMutation ejectionInsertMutation){
+		Operator operator = ejectionInsertMutation.getOperator();
+		int addIndex      = ejectionInsertMutation.getCarMoveIndex();
+		
+		operator.addCarMove(addIndex, ejectionInsertMutation.getCarMoveReplace());
+		this.unusedCarMoves.get(ejectionInsertMutation.getCarMoveReplace().getCar()).remove(ejectionInsertMutation.getCarMoveReplace());
+		operator.getFitness();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+	}
+
+	public void performMutation(EjectionRemoveMutation ejectionRemoveMutation){
+		Operator operator = ejectionRemoveMutation.getOperator();
+		int removeIndex   = ejectionRemoveMutation.getCarMoveIndex();
+		
+		CarMove carMove = operator.removeCarMove(removeIndex);
+		this.unusedCarMoves.get(carMove.getCar()).add(carMove);
+		operator.getFitness();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+
+	}
+
+	//================================================================================
+	// Generate neighborhood
+	//================================================================================
 	
 	
 	public HashMap<Mutation, Integer> getNeighbors(TabuList tabuList){
@@ -707,16 +683,18 @@ public class TSIndividual extends Individual implements Serializable {
 
 		return neighbors;
 	}
-	
-	// -------------------------------------------------------------------------------
 
+	//================================================================================
+	// Getters and setters
+	//================================================================================	
+
+	@Override
+	public ArrayList<Object> getRepresentation() {
+		return this.operators;
+	}
 
 	public ArrayList<Object> getOperators() {
 		return operators;
-	}
-
-	public void addToFitness(double delta) {
-		this.fitness += delta;
 	}
 
 	public HashMap<ChargingNode, Integer> getCapacitiesUsed() {
@@ -743,14 +721,18 @@ public class TSIndividual extends Individual implements Serializable {
 		return this.prevDeviationFromIdealState;
 	}
 	
+	public void addToFitness(double delta) {
+		this.fitness += delta;
+	}
+	
+	public void setFitness(double fitness) {
+		this.fitness = fitness;
+	}
+	
 	@Override
 	public int compareTo(Object o) {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-	
-	public double optimalInsertionValue() {
-		return 0.0;
 	}
 	
 	@Override
@@ -762,9 +744,7 @@ public class TSIndividual extends Individual implements Serializable {
 		return s;
 	}
 
-	public void setFitness(double fitness) {
-		this.fitness = fitness;
-	}
+	
 	
 	private class OperatorState {
 		Operator operator;
@@ -833,10 +813,6 @@ public class TSIndividual extends Individual implements Serializable {
 
 	
 	public void calculateMoselFitness(){
-		
-		System.out.println(deviationFromIdealState);
-		System.out.println(initialDeviationFromIdealState);
-		
 		int devIdeal = 0;
 		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
 			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;

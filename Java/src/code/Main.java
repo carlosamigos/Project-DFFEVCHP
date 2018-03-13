@@ -21,10 +21,14 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
 
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_100nodes_7so_5c_18mov_10charging_0finishes_0MODE_a");
-    	TSSolver solver = new TSSolver(problemInstance);
-    	solver.solve(problemInstance);
-    	System.out.println("Fitness: " + solver.getBest().getFitness() + "\nResult: " + solver.getBest());
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_400nodes_10so_7c_60mov_20charging_0finishes_0MODE_a");
+    	for(int i = 0; i < 1; i++) {
+    		TSSolver solver = new TSSolver(problemInstance);
+        	solver.solve(problemInstance);
+        	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));
+        	//System.out.println("Result: " + solver.getBest());
+    	}
+    	
 
     	if(!testing) {
 	    	TestSuite testSuite;
