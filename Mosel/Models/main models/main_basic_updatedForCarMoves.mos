@@ -7,13 +7,13 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_9nodes_3so_1c_8mov_3charging_0finishes_0MODE_b.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 20;
+	MaxSolveTimeSeconds = 100;
 end-parameters
 
 
@@ -122,6 +122,7 @@ declarations
 	carMoveCars               : array(carMoves) of integer;
 	carMoveOrigin             : array(carMoves) of integer;
 	carMoveDestination        : array(carMoves) of integer;
+	bigMCars				  : array(cars) of real;
 	 
 	! Costs !
 	costOfDeviation           : real; 
@@ -171,6 +172,7 @@ initializations from DataFile
 	initialInNeedP;
 	carsInNeedCTranslate;
 	carsInNeedNodes;
+	bigMCars;
 end-initializations
 ! ### End of initialization of Parameters ### !
 
