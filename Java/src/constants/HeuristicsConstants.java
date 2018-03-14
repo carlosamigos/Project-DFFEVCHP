@@ -19,12 +19,13 @@ public class HeuristicsConstants {
     //Punishes the size of operator list, relative to the travel time
     public final static double TABU_SIZE_OF_OPERATOR_LIST = 2;
 
-    public final static double TABU_INTRA_MOVE_SIZE = 0.6*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_INTER_MOVE_SIZE = 0.1*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_INTRA_MOVE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_INTER_MOVE_SIZE = 0.2*TABU_NEIGHBORHOOD_SIZE;
     public final static double TABU_INTER_2_SWAP_SIZE = 0.3*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_REPLACE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_REMOVE_SIZE = 0.1*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_INSERT_SIZE = 0.2*TABU_NEIGHBORHOOD_SIZE;
+
+    public final static double TABU_EJECTION_REPLACE_SIZE = 0.3*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_EJECTION_REMOVE_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_EJECTION_INSERT_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
     
     //Initial solution
     public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0;

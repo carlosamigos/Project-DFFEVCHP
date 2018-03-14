@@ -87,4 +87,5 @@ carMoveHandlingTime : [12.8 9.1 14.3 12.8 9.1 14.3 14.3 6.4 9.1 6.4 6.4 9.1 19.2
 carMoveStartingTime : [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
 numCarsInCNeedNodes : 4
 carsInNeedCTranslate : [4 8 11 12] 
-carsInNeedNodes : [1 1 1 1] 
+carsInNeedNodes:[1 1 1 1] 
+
