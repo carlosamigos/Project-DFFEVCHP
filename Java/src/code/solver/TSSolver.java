@@ -43,6 +43,7 @@ public class TSSolver extends Solver {
 	
 	@Override
 	public void solve(ProblemInstance problemInstance) {
+		best.calculateMoselFitness();
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		double counter = 0; // counts number of rounds with 0 delta
@@ -53,7 +54,6 @@ public class TSSolver extends Solver {
 			//System.out.println(individual);
 			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
 			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
-			//System.out.println(neighborhood.size());
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
 				candidate = mutation;
@@ -86,6 +86,8 @@ public class TSSolver extends Solver {
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 			if(candidateDelta == 0){
 				counter ++;
+			} else {
+				counter = 0;
 			}
 
 
@@ -187,10 +189,11 @@ public class TSSolver extends Solver {
 	}
 
 	private void cleanBest(){
+		double currentTime = 0.0;
 		for(Object object : best.getOperators()){
 			Operator operator = (Operator) object;
 			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
-			double currentTime = operator.getStartTime();
+			currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoveCopy()) {
 				//Need to take earliest start time of the move into account
@@ -199,12 +202,15 @@ public class TSSolver extends Solver {
 				prevNode = carMove.getToNode();
 				
 				if (currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM) {
+					currentTime += - best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode()) - carMove.getTravelTime();
 					break;
 				} else {
 					newCarMoveList.add(carMove);
 				}
 			}
+			System.out.println("Operator: " + operator.id + " Time: " + currentTime);
 			operator.setCarMoves(newCarMoveList);
+			
 		}
 	}
 

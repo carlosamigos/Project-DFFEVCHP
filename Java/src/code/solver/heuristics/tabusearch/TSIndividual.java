@@ -566,6 +566,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+		carsNotInUse.remove(ejectionInsertMutation.getCarMoveReplace().getCar());
 	}
 
 	public void performMutation(EjectionRemoveMutation ejectionRemoveMutation){
@@ -694,7 +695,6 @@ public class TSIndividual extends Individual implements Serializable {
 	
 	public HashMap<Mutation, Integer> generateFullNeighborhood(TabuList tabuList) {
 		HashMap<Mutation, Integer> neighborhood = new HashMap<>();
-		
 		
 		for(int o = 0; o < operators.size(); o++) {
 			Operator operator = (Operator) operators.get(o);

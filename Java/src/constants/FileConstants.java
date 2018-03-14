@@ -12,7 +12,7 @@ public class FileConstants {
     
     // Testing files and folders
     public final static String TEST_FOLDER = "../Testing/";
-    public final static String DEFAULT_STATIC_TEST_FOLDER = "tabuTesting/";
+    public final static String DEFAULT_STATIC_TEST_FOLDER = "Default/";
     public final static String DEFAULT_DYNAMIC_TEST_FOLDER = "Default/";
     
     public final static String TEST_INPUT_FOLDER = TEST_FOLDER + "Input/";
