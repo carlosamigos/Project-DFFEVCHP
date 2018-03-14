@@ -8,7 +8,7 @@ public class HeuristicsConstants {
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 100;
     public final static int TABU_SIZE = 100;
-    public final static int TABU_ITERATIONS = 10000;
+    public final static int TABU_ITERATIONS = 20000;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
@@ -17,7 +17,7 @@ public class HeuristicsConstants {
     public final static double TABU_TRAVEL_COST = 0;
 
     //Punishes the size of operator list, relative to the travel time
-    public final static double TABU_SIZE_OF_OPERATOR_LIST = 2;
+    public final static double TABU_SIZE_OF_OPERATOR_LIST = 1;
 
     public final static double TABU_INTRA_MOVE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
     public final static double TABU_INTER_MOVE_SIZE = 0.2*TABU_NEIGHBORHOOD_SIZE;
@@ -35,7 +35,7 @@ public class HeuristicsConstants {
     public final static double TABU_INITIAL_SURPLUS_IDEAL_STATE_COST = 0;
 
     
-    // Genetic Algorithm
-
     // Adaptive Large Neighborhood Search
+
+
 }
