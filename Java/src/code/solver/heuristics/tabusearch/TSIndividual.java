@@ -3,6 +3,10 @@ package code.solver.heuristics.tabusearch;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.sun.org.apache.xml.internal.security.algorithms.implementations.IntegrityHmac.IntegrityHmacSHA512;
 
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
@@ -36,6 +40,7 @@ public class TSIndividual extends Individual implements Serializable {
 	//Keep track of all car moves not in use
 	private HashMap<Car, ArrayList<CarMove>> unusedCarMoves;
 	private HashMap<Car, Integer> carMovesCounter;
+	private Set<Car> carsNotInUse;
 
 	private ProblemInstance problemInstance;
 	
@@ -47,6 +52,7 @@ public class TSIndividual extends Individual implements Serializable {
 		this.problemInstance = problemInstance;
 		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.carMovesCounter = countCarMoves();
+		this.carsNotInUse = new HashSet<Car>();
 
 		// Constructing initial solution
 		createOperators();
@@ -58,6 +64,7 @@ public class TSIndividual extends Individual implements Serializable {
 		calculateFitness();
 		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
 		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+		
 	}
 
 	//================================================================================
@@ -570,6 +577,7 @@ public class TSIndividual extends Individual implements Serializable {
 		operator.getFitness();
 		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
 		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+		carsNotInUse.add(carMove.getCar());
 
 	}
 
@@ -589,7 +597,7 @@ public class TSIndividual extends Individual implements Serializable {
 				continue;
 			}
 			int removeIndex = (int)Math.floor(Math.random() * operator.getCarMoveListSize());
-			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operator.getCarMoveListSize());
+			int insertIndex = MathHelper.getRandomIntNotEqual(removeIndex, operator.getCarMoveListSize()+1);
 			IntraMove intraMove = new IntraMove(operator,removeIndex, insertIndex);
 			if(!tabuList.isTabu(intraMove)) {
 				neighbors.put(intraMove,1);
@@ -682,6 +690,80 @@ public class TSIndividual extends Individual implements Serializable {
 		}
 
 		return neighbors;
+	}
+	
+	public HashMap<Mutation, Integer> generateFullNeighborhood(TabuList tabuList) {
+		HashMap<Mutation, Integer> neighborhood = new HashMap<>();
+		
+		
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			// IntraMove && EjectionRemove
+			for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+				for(int j = 0; j < operator.getCarMoveListSize()+1; j++) {
+					if(i == j) {
+						continue;
+					}
+					IntraMove intraMove = new IntraMove(operator, i, j);
+					if(!tabuList.isTabu(intraMove)) {
+						neighborhood.put(intraMove, 1);
+					}
+				}
+				
+				EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(operator, i);
+				if(!tabuList.isTabu(ejectionRemoveMutation)) {
+					neighborhood.put(ejectionRemoveMutation, 1);
+				}
+				
+				for(Car car : carsNotInUse) {
+					for(CarMove carMove:  unusedCarMoves.get(car)) {
+						EjectionInsertMutation ejectionInsertMutation =  new EjectionInsertMutation(operator, i, carMove);
+						if(!tabuList.isTabu(ejectionInsertMutation)) {
+							neighborhood.put(ejectionInsertMutation, 1);
+						}
+					}
+				}
+				
+				CarMove carMove = operator.getCarMove(i);
+				for(CarMove replaceCarMove : unusedCarMoves.get(carMove.getCar())) {
+					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, replaceCarMove);
+					if(!tabuList.isTabu(ejectionReplaceMutation)) {
+						neighborhood.put(ejectionReplaceMutation, 1);
+					}
+				}
+			}
+
+			// InterMove
+			for(int p = 0; p < operators.size(); p++) {
+				if(p == o) {
+					continue;
+				}
+				Operator operator2 = (Operator) operators.get(p);
+				for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+					for(int j = 0; j < operator2.getCarMoveListSize(); j++) {
+						InterMove interMove =  new InterMove(operator, i, operator2, j);
+						if(!tabuList.isTabu(interMove)) {
+							neighborhood.put(interMove, 1);
+						}
+					}
+				}
+			}
+			
+			//  InterSwap2
+			for(int p = o+1; p < this.operators.size(); p++) {
+				Operator operator2 = (Operator) operators.get(p);
+				for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+					for(int j = 0; j < operator2.getCarMoveListSize(); j++) {
+						InterSwap2 interSwap2 = new InterSwap2(i, j, operator, operator2);
+						if(!tabuList.isTabu(interSwap2)) {
+							neighborhood.put(interSwap2, 1);
+						}
+					}
+				}
+			}
+		}
+		
+		return neighborhood;
 	}
 
 	//================================================================================

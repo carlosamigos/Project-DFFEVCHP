@@ -52,6 +52,8 @@ public class TSSolver extends Solver {
 					+ String.format("%.1f", this.individual.getFitness()));
 			//System.out.println(individual);
 			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
+			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
+			//System.out.println(neighborhood.size());
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
 				candidate = mutation;
@@ -79,7 +81,6 @@ public class TSSolver extends Solver {
 					}
 				}
 			}
-
 
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);

@@ -26,7 +26,7 @@ public class Main {
     		TSSolver solver = new TSSolver(problemInstance);
         	solver.solve(problemInstance);
         	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));
-        	//System.out.println("Result: " + solver.getBest());
+        System.out.println("Result: " + solver.getBest());
     	}
     	
 
