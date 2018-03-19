@@ -10,7 +10,6 @@ public class InterSwap2 extends Mutation{
 	private final int index2;
 	private final Operator operator1;
 	private final Operator operator2;
-	private final int hashType = 4;
 	private final int hashCode;
 
 	public InterSwap2(int index1, int index2, Operator operator1, Operator operator2) {
@@ -18,7 +17,7 @@ public class InterSwap2 extends Mutation{
 		this.index2 = index2;
 		this.operator1 = operator1;
 		this.operator2 = operator2;
-		String hashString = hashType + ((index1 <= index2) ? ("" + index1 + index2) : ("" + index2 + index1));
+		String hashString = id + ((index1 <= index2) ? ("" + index1 + index2) : ("" + index2 + index1)) + "444";
 		hashCode = Integer.parseInt(hashString);
 
 	}
