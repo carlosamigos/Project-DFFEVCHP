@@ -43,15 +43,20 @@ public class TSSolver extends Solver {
 	
 	@Override
 	public void solve(ProblemInstance problemInstance) {
+		best.calculateMoselFitness();
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
 		double counter = 0; // counts number of rounds with 0 delta
 		while(!done(iteration)) {
-			System.out.println("Iteration: " + iteration + " Best fitness: "
-					+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
-					+ String.format("%.1f", this.individual.getFitness()));
-			//System.out.println(individual);
+			if(iteration % 100 == 0){
+				System.out.println("Iteration: " + iteration + " Best fitness: "
+						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
+						+ String.format("%.1f", this.individual.getFitness()));
+				//System.out.println(individual);
+			}
+
 			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
+			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
 				candidate = mutation;
@@ -80,11 +85,12 @@ public class TSSolver extends Solver {
 				}
 			}
 
-
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 			if(candidateDelta == 0){
 				counter ++;
+			} else {
+				counter = 0;
 			}
 
 
@@ -99,7 +105,6 @@ public class TSSolver extends Solver {
 		}
 		cleanBest();
 		best.calculateMoselFitness();
-		System.out.println(best);
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {
@@ -187,24 +192,27 @@ public class TSSolver extends Solver {
 	}
 
 	private void cleanBest(){
+		double currentTime;
 		for(Object object : best.getOperators()){
 			Operator operator = (Operator) object;
 			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
-			double currentTime = operator.getStartTime();
+			currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoveCopy()) {
 				//Need to take earliest start time of the move into account
 				currentTime += best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
-				prevNode = carMove.getToNode();
-				
 				if (currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM) {
+					currentTime += - best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode()) - carMove.getTravelTime();
 					break;
 				} else {
 					newCarMoveList.add(carMove);
 				}
+				prevNode = carMove.getToNode();
 			}
+			System.out.println("Operator: " + operator.id + " Time: " + currentTime);
 			operator.setCarMoves(newCarMoveList);
+			
 		}
 	}
 

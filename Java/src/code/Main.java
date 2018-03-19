@@ -21,12 +21,12 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
 
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a");
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_100nodes_6so_6c_30mov_10charging_0finishes_0MODE_c");
     	for(int i = 0; i < 1; i++) {
     		TSSolver solver = new TSSolver(problemInstance);
         	solver.solve(problemInstance);
         	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));
-        	//System.out.println("Result: " + solver.getBest());
+        System.out.println("Result: " + solver.getBest());
     	}
     	
 
