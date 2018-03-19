@@ -7,7 +7,7 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_3so_2c_8mov_3charging_0finishes_0MODE_a.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_3so_2c_7mov_3charging_0finishes_0MODE_a (1).txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -128,7 +128,7 @@ declarations
 	carMoveCars               : array(carMoves) of integer;
 	carMoveOrigin             : array(carMoves) of integer;
 	carMoveDestination        : array(carMoves) of integer;
-	bigMCars				  : array(cars) of real;
+	bigMCars				  : array(carMoves) of real;
 	originCarMoveOperator     : array(rOperators) of integer;
 	destinationCarMoveOperator: array(rOperators) of integer; 
 	carMoveOriginA            : array(carMovesAll) of integer;
@@ -271,8 +271,9 @@ end-declarations
 
 Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
 			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
-			  0.01 * sum(rr in carMovesA) t_plus(rr) +
-			  0.001 * sum(rr in carMovesAll) t(rr);
+			  0.001 * sum(rr in carMovesAll) t(rr) +
+			  0.01 * sum(rr in carMovesA) t_plus(rr);
+			  
 
 ! ### End of declaration of objective ### !	
 
@@ -298,7 +299,7 @@ forall(rr in carMoves, pp in rOperators) do
 end-do
 
 forall(pp in rOperators) do
-	flowFromOrigin(pp) := sum(rr in carMoves) x(originCarMoveOperator(pp), rr, pp) + x(originCarMoveOperator(pp), destinationCarMoveOperator(pp), pp) = 1;
+	flowFromOrigin(pp) := sum(rr in carMoves + {destinationCarMoveOperator(pp)}) x(originCarMoveOperator(pp), rr, pp) = 1;
 end-do 
 
 forall(rr in carMoves) do
@@ -307,7 +308,7 @@ end-do
 
 
 forall(pp in rOperators) do
-	flowToDestination(pp) := sum(rr in carMoves) x(rr, destinationCarMoveOperator(pp), pp) + x(originCarMoveOperator(pp), destinationCarMoveOperator(pp), pp) = 1;
+	flowToDestination(pp) := sum(rr in carMoves + {originCarMoveOperator(pp)}) x(rr, destinationCarMoveOperator(pp), pp) = 1;
 end-do
 
 ! ### End of declaration of routing constraints ### !	
