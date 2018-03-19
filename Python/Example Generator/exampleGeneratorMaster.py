@@ -16,36 +16,36 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 3
+EXAMPLES = 1
 
 #BOARD SIZE - DONT CHANGE
-XSIZE = 2
-YSIZE = 3
+XSIZE = 3
+YSIZE = 10
 
 #ALLOWED MOVES
-MOVES = 3
-CARSCHARGING = 3
+MOVES = 10
+CARSCHARGING = 5
 
 #PARKING NODES USED
-MAXNODES = 6
+MAXNODES = 30
 
 #CHARGING NODES
-NUMCHARGING = 1
-PARKINGC = [1]
-CAPACITY = [4]
-TOTALCAPACITY = [4]
+NUMCHARGING = 3
+PARKINGC = [1, 12, 24]
+CAPACITY = [3, 3, 3]
+TOTALCAPACITY = [3, 3, 3]
 
 #OPERATORS
-NUMOPERATORS = 3
-STARTETIMEOP = [0, 0, 0]
-HANDLINGOP = [0, 0, 0]
-NUMTASKS = 5
+NUMOPERATORS = 4
+STARTETIMEOP = [0, 0, 0, 0]
+HANDLINGOP = [0, 0, 0, 0]
+NUMTASKS = 6
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
 CLUSTER = True
 WRITETOFILE = True
-PRINT = False
+PRINT = True
 
 # OUTPUT - the lists are run in a foor loop #
 # First parameter: Mode - 2 equals the normal one, and 4 equals the one that tries to reduce time when visiting charging nodes
@@ -226,36 +226,39 @@ class World:
             minHandling = 60
             maxDiff = 0
             for j in range(len(self.cars[i].destinations)):
-                for k in range(len(self.cars[i].destinations)):
-                    for x in range(len(self.pNodes)):
-                        if((self.pNodes[x].surplus > 0 or self.pNodes[x].cState > 0) and k != j):
-                            distances1 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[j] -1)) + x]
-                            distances2 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[k] - 1)) + x]
-                            handlingTime1 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode -1) + self.cars[i].destinations[j] -1]
-                            handlingTime2 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode - 1) + self.cars[i].destinations[k] - 1]
-                            diff = abs(distances1 - distances2)
-                            if(diff > maxDiff):
-                                maxDiff = diff
-                            if(distances1 < min):
-                                min = distances1
-                            if(distances1 > max1):
-                                max1 = distances1
-                            if (distances2 < min):
-                                min = distances2
-                            if (distances2 > max1):
-                                max1 = distances2
-                            if(handlingTime1 < minHandling):
-                                minHandling = handlingTime1
-                            if (handlingTime2 < minHandling):
-                                minHandling = handlingTime2
-            print("New run")
-            print(min)
-            print(max1)
-            print(minHandling)
-            print(maxDiff)
-            bigMdiff = max(maxDiff - minHandling, 0)
-            bigM = float(format(bigMdiff, '.1f'))
-            self.bigM.append(bigM)
+                maxDiff = 0
+                for l in range(len(self.cars)):
+                    for k in range(len(self.cars[l].destinations)):
+                        for x in range(len(self.pNodes)):
+                            if((self.pNodes[x].surplus > 0 or self.pNodes[x].cState > 0)):
+                                distances1 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[j] -1)) + x]
+                                distances2 = self.distancesB[(len(self.nodes) * (self.cars[l].destinations[k] - 1)) + x]
+                                #handlingTime1 = self.distancesC[len(self.nodes) * (self.cars[i].parkingNode -1) + self.cars[i].destinations[j] -1]
+                                handlingTime2 = self.distancesC[len(self.nodes) * (self.cars[l].parkingNode - 1) + self.cars[l].destinations[k] - 1]
+                                diff = distances1 - (distances2 + handlingTime2)
+                                if(diff > maxDiff):
+                                    maxDiff = diff
+                                #if(distances1 < min):
+                                #    min = distances1
+                                #if(distances1 > max1):
+                                #    max1 = distances1
+                                #if (distances2 < min):
+                                #    min = distances2
+                                #if (distances2 > max1):
+                                #    max1 = distances2
+                                #if(handlingTime1 < minHandling):
+                                #    minHandling = handlingTime1
+                                #if (handlingTime2 < minHandling):
+                                #    minHandling = handlingTime2
+                #print("New run")
+                #print(min)
+                #print(max1)
+                #print(minHandling)
+                #print(maxDiff)
+                #bigMdiff = max(maxDiff - minHandling, 0)
+                bigMdiff = maxDiff
+                bigM = float(format(bigMdiff, '.1f'))
+                self.bigM.append(bigM)
 
     ## CALCULATE VISITS ##
 
@@ -733,20 +736,95 @@ class World:
             string += str(carsInNeedCNodes[i] + 1)
             if (i < len(carsInNeedCNodes) - 1):
                 string += " "
-        string += "] \n"
+        string += "]\n"
         string += "carsInNeedNodes : ["
         for i in range(len(carsInNeedCNodes)):
             string += str(self.pNodes[carsInNeedCNodes[i]].cState)
             if (i < len(carsInNeedCNodes) - 1):
                 string += " "
-        string += "] \n"
+        string += "]\n"
         string += "bigMCars : ["
         for i in range(len(self.bigM)):
             string += str(self.bigM[i])
             if(i < len(self.bigM) -1):
                 string += " "
         string += "]"
-
+        string += "\n"
+        string += "\n"
+        string += "originCarMoveOperator : ["
+        count = 0
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                count +=1
+        for i in range(len(self.operators)):
+            string += str(count + i + 1)
+            if(i < len(self.operators) -1):
+                string += " "
+        string += "] \n"
+        string += "destinationCarMoveOperator : ["
+        for i in range(len(self.operators)):
+            string += str(len(self.operators) + count + 1 + i)
+            if(i < len(self.operators) -1):
+                string += " "
+        string += "] \n"
+        string += "numCarMovesA : " + str(len(self.operators) * 2) + "\n"
+        string += "carMoveOriginA : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.cars[i].parkingNode)
+                if (i <= len(self.cars) - 1):
+                    string += " "
+                else:
+                    if(j <= len(self.cars[i].destinations) -1):
+                        string += " "
+        for i in range(len(self.operators)):
+            string += str(self.operators[i].startNode)
+            if (i < len(self.operators) - 1):
+                string += " "
+        string += " "
+        for i in range(len(self.operators)):
+            string += str(i + len(self.nodes) + len(self.operators) + 1)
+            if (i < len(self.operators) - 1):
+                string += " "
+        string += "] \n"
+        string += "carMoveDestinationA : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.cars[i].destinations[j])
+                if (i <= len(self.cars) - 1):
+                    string += " "
+                else:
+                    if (j <= len(self.cars[i].destinations) - 1):
+                        string += " "
+        for i in range(len(self.operators)):
+            string += str(self.operators[i].startNode)
+            if (i < len(self.operators) - 1):
+                string += " "
+        string += " "
+        for i in range(len(self.operators)):
+            string += str(i + len(self.nodes) + len(self.operators) + 1)
+            if (i < len(self.operators) - 1):
+                    string += " "
+        string += "] \n"
+        string += "carMoveHandlingTimeA : ["
+        for i in range(len(self.cars)):
+            for j in range(len(self.cars[i].destinations)):
+                string += str(self.distancesC[
+                                  (self.cars[i].parkingNode - 1) * len(self.nodes) + self.cars[i].destinations[j] - 1])
+                if (i < len(self.cars) - 1):
+                    string += " "
+                else:
+                    if (j <= len(self.cars[i].destinations) - 1):
+                        string += " "
+        for i in range(len(self.operators)):
+            string += str(0)
+            if(i <= len(self.operators) - 1):
+                string += " "
+        for i in range(len(self.operators)):
+            string += str(0)
+            if(i < len(self.operators) - 1):
+                string += " "
+        string += "] \n"
         f.write(string)
         if(PRINT):
             print(string)
