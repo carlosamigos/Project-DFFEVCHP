@@ -45,6 +45,7 @@ public class TSSolver extends Solver {
 		this.initializeMutationWeights();
 		this.setMutationToDelta();
 		this.setMutationToPerform();
+		this.setMutationToGenerateNeighborhood();
 		this.solutionsSeen.put(this.individual.toString(), 1);
 	}
 	
@@ -80,7 +81,7 @@ public class TSSolver extends Solver {
 				//System.out.println(individual);
 			}
 
-			Set<Mutation> neighborhood = this.individual.getNeighbors(this.tabuList).keySet();
+			Set<Mutation> neighborhood = this.getNeighborhood().keySet();
 			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
@@ -157,6 +158,18 @@ public class TSSolver extends Solver {
 		return iteration >= iterations;
 	}
 	
+	private HashMap<Mutation, Integer> getNeighborhood() {
+		double accumulated = 0.0;
+		double p = Math.random();
+		for(int id : this.mutationToWeight.keySet()) {
+			accumulated += this.mutationToWeight.get(id);
+			if(p <= accumulated) {
+				return this.mutationToNeighborhood.get(id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+			}
+		}
+		return this.mutationToNeighborhood.get(IntraMove.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+	}
+	
 	/*
 	 * Maps available mutation IDs to delta fitness functions. The IDs are defined in the mutation subclasses.
 	 */
@@ -219,22 +232,22 @@ public class TSSolver extends Solver {
 	private void setMutationToGenerateNeighborhood() {
 		this.mutationToNeighborhood = new HashMap<>();
 		this.mutationToNeighborhood.put(IntraMove.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 		this.mutationToNeighborhood.put(InterMove.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 		this.mutationToNeighborhood.put(InterSwap2.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 		this.mutationToNeighborhood.put(EjectionInsertMutation.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 		this.mutationToNeighborhood.put(EjectionRemoveMutation.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 		this.mutationToNeighborhood.put(EjectionReplaceMutation.id, (int tabuSize) -> {
-			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+			return this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
 		});
 	}
 	
@@ -247,7 +260,7 @@ public class TSSolver extends Solver {
 	}
 	
 	private interface GenerateNeighborhood {
-		void runCommand(int size);
+		HashMap<Mutation, Integer> runCommand(int size);
 	}
 
 	private void cleanBest(){
