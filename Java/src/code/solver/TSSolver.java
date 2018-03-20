@@ -27,6 +27,8 @@ public class TSSolver extends Solver {
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
 	
+	private HashMap<String, Integer> solutionsSeen;
+	
 	public TSSolver(ProblemInstance problemInstance) {
 		this(HeuristicsConstants.TABU_ITERATIONS, HeuristicsConstants.TABU_SIZE, problemInstance);
 	}
@@ -37,8 +39,10 @@ public class TSSolver extends Solver {
 		this.best = (TSIndividual) DeepCopy.copy(this.individual);
 		this.best.setFitness(this.individual.getFitness());
 		this.tabuSize = tabuSize;
+		this.solutionsSeen = new HashMap<>();
 		this.setMutationToDelta();
 		this.setMutationToPerform();
+		this.solutionsSeen.put(this.individual.toString(), 1);
 	}
 	
 	@Override
@@ -91,6 +95,14 @@ public class TSSolver extends Solver {
 				counter ++;
 			} else {
 				counter = 0;
+			}
+			
+			// Check if the solution is seen before, and store the current solution
+			String individualString = this.individual.toString();
+			if(this.solutionsSeen.containsKey(individualString)) {
+				this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString));
+			} else {
+				this.solutionsSeen.put(individualString, 1);
 			}
 
 
