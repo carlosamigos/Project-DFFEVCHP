@@ -7,7 +7,7 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_3so_2c_7mov_3charging_0finishes_0MODE_a (1).txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_3so_2c_6mov_3charging_0finishes_0MODE_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
@@ -251,7 +251,8 @@ end-declarations
 Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
 			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
 			  0.01 * sum(pp in rOperators) t_plus(pp) + 
-			  0.001 * sum(pp in rOperators, mm in tasks) t(pp, mm);
+			  0.02 * sum(pp in rOperators, rr in carMoves, mm in tasks) carMoveHandlingTime(rr) * x(pp, rr, mm);
+			 (! 0.001 * sum(pp in rOperators, mm in tasks) t(pp, mm); !)
 			  !0.02 * sum(pp in rOperators, rr in carMoves, mm in tasks) travelTimeVehicle(carMoveOrigin(rr), carMoveDestination(rr)) * x(pp, rr, mm) +
 			  
 

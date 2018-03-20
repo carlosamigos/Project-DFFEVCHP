@@ -7,13 +7,13 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_3so_2c_7mov_3charging_0finishes_0MODE_a (1).txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_10nodes_3so_2c_5mov_3charging_0finishes_0MODE_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 1200;
+	MaxSolveTimeSeconds = 100;
 end-parameters
 
 
@@ -270,9 +270,11 @@ declarations
 end-declarations
 
 Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
-			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
-			  0.001 * sum(rr in carMovesAll) t(rr) +
+			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) +
+			   0.02 * sum(pp in rOperators, rr in carMovesAll, rr2 in carMovesAll) carMoveHandlingTimeA(rr) * x(rr, rr2, pp) + 
 			  0.01 * sum(rr in carMovesA) t_plus(rr);
+			  (! 0.001 * sum(rr in carMovesAll) t(rr) + !) 
+			 
 			  
 
 ! ### End of declaration of objective ### !	
@@ -365,7 +367,7 @@ forall(pp in rOperators, rr in carMoves + {originCarMoveOperator(pp)}) do
 	travelTimeEnd(pp, rr) := t(rr) + carMoveHandlingTimeA(rr) * x(rr, destinationCarMoveOperator(pp), pp) - 
 	(timeLimit + timeLimitLastVisit) * (1 - x(rr, destinationCarMoveOperator(pp), pp)) <= t(destinationCarMoveOperator(pp));
 end-do
-!)
+
 forall(rr in carMoves) do
 	startMoving(rr) := carMoveStartingTime(rr) <= t(rr);
 end-do
