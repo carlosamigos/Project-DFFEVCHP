@@ -22,11 +22,13 @@ public class TSSolver extends Solver {
 	private TSIndividual best;
 	private TabuList tabuList;
 	private final int iterations;
-	private final int tabuSize;
+	private int tabuSize;
 	
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
+	private HashMap<Integer, GenerateNeighborhood> mutationToNeighborhood;
 	
+	private HashMap<Integer, Double> mutationToWeight;
 	private HashMap<String, Integer> solutionsSeen;
 	
 	public TSSolver(ProblemInstance problemInstance) {
@@ -40,10 +42,29 @@ public class TSSolver extends Solver {
 		this.best.setFitness(this.individual.getFitness());
 		this.tabuSize = tabuSize;
 		this.solutionsSeen = new HashMap<>();
+		this.initializeMutationWeights();
 		this.setMutationToDelta();
 		this.setMutationToPerform();
 		this.solutionsSeen.put(this.individual.toString(), 1);
 	}
+	
+	private void initializeMutationWeights() {
+		this.mutationToWeight = new HashMap<>();
+		int[] mutationIds = {
+				EjectionInsertMutation.id,
+				EjectionRemoveMutation.id,
+				EjectionReplaceMutation.id,
+				InterMove.id,
+				InterSwap2.id,
+				IntraMove.id
+			};
+		double initialWeight = 1 / ((double) mutationIds.length);
+		
+		for(int id : mutationIds) {
+			this.mutationToWeight.put(id, initialWeight);
+		}
+	}
+
 	
 	@Override
 	public void solve(ProblemInstance problemInstance) {
@@ -195,12 +216,38 @@ public class TSSolver extends Solver {
 		});
 	}
 	
+	private void setMutationToGenerateNeighborhood() {
+		this.mutationToNeighborhood = new HashMap<>();
+		this.mutationToNeighborhood.put(IntraMove.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(InterMove.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(InterSwap2.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(EjectionInsertMutation.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(EjectionRemoveMutation.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(EjectionReplaceMutation.id, (int tabuSize) -> {
+			this.individual.getNeighborhoodIntraMove(this.tabuList, tabuSize);
+		});
+	}
+	
 	private interface DeltaFitness {
 		double runCommand(Mutation mutation);
 	}
 	
 	private interface Perform {
 		void runCommand(Mutation mutation);
+	}
+	
+	private interface GenerateNeighborhood {
+		void runCommand(int size);
 	}
 
 	private void cleanBest(){
