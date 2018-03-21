@@ -7,7 +7,7 @@ import java.util.HashMap;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
-import code.solver.heuristics.tabusearch.TSIndividual;
+import code.solver.heuristics.alns.ALNSIndividual;
 import constants.Constants;
 import constants.HeuristicsConstants;
 
@@ -16,7 +16,7 @@ public class Operator implements Serializable {
 
 	public final int id;
 
-	private TSIndividual individual;
+	private ALNSIndividual individual;
 	private ArrayList<ArrayList<Double>> travelTimesBike;
 	private HashMap<ChargingNode, Integer> chargingCapacityUsedOperator;
 	public HashMap<ParkingNode, Integer> movesToParkingNodeByOperator;
@@ -30,7 +30,7 @@ public class Operator implements Serializable {
 	private boolean changed;
 	
 	public Operator(double startTime, double timeLimit, Node startNode, 
-			ArrayList<ArrayList<Double>> travelTimesBike, int id, TSIndividual individual,
+			ArrayList<ArrayList<Double>> travelTimesBike, int id, ALNSIndividual individual,
 			ArrayList<ChargingNode> chargingNodes, ArrayList<ParkingNode> parkingNodes) {
 		this.individual = individual;
 		this.carMoves = new ArrayList<>();
