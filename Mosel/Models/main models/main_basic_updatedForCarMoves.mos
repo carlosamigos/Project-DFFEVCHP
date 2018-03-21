@@ -13,7 +13,7 @@ parameters
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 600;
+	MaxSolveTimeSeconds = 30;
 end-parameters
 
 
@@ -111,6 +111,9 @@ end-if
 declarations
 	! Operator !
 	startNodeROperator        : array(rOperators) of integer; ! Actual start node for real operators
+	originNodeROperator       : array(rOperators) of integer; ! Origin Nodes for all real operators
+	destinationNodeROperator  : array(rOperators) of integer; ! Destination Nodes for all real operators
+	initialHandling           : array(rOperators) of integer; ! Initital Handling
 	
 	! Node references:  !
 	deficitTranslate          : array(deficitNodes) of integer;
@@ -150,6 +153,9 @@ end-declarations
 
 initializations from DataFile
 	startNodeROperator;
+	originNodeROperator;
+	destinationNodeROperator;
+	initialHandling;
 	deficitTranslate;
 	deficitCarsInNode;
 	carMoveCars;
@@ -356,9 +362,23 @@ end-do
 
 ! ### End of declaration of time constraints ### !	
 
+declarations
+	startTimeMosel : real;
+	endTimeMosel   : real;
+end-declarations
 
 setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
+
+declarations
+	currNode       : integer;
+	endTime        : real;
+	foundX         : boolean;
+	devIdeal	   : real;
+	numPostPoned   : real;
+	deviationRel   : integer;
+    deviationCharg : integer;
+end-declarations
 
 writeln(" ");
 writeln("Operators:");
@@ -379,13 +399,7 @@ end-do
 writeln(' ');
 
 ! ### Variables used for printing ### !
-declarations
-	currNode       : integer;
-	endTime        : real;
-	foundX         : boolean;
-	devIdeal	   : real;
-	numPostPoned   : real;
-end-declarations
+
 
 
 
@@ -447,6 +461,63 @@ if printResults then
 	
 	writeln("Deviation from ideal state: ", devIdeal);
 	writeln("Number postponed: ", numPostPoned);
+end-if
+
+if writeToFile then 
+	fopen(OutputPathRegular, F_OUTPUT);
+	forall(pp in rOperators) do
+		currNode := originNodeROperator(pp);
+		currVisit := 1;
+		currTask := 1;
+		foundX := true;
+		write(pp, ': ');
+		write('(', currNode, ',1,0,0),');
+		while(foundX) do
+			foundX := false;
+			forall(rr in carMoves) do
+				if getsol(x(pp, rr, currTask)) >= 0.5 then
+					if (carMoveOrigin(rr) <> currNode) then
+						if (currTask = 1 and initialHandling(pp) = 1) then
+							write('(', carMoveOrigin(rr), ',1,1,', getsol(t(pp, currTask)),')');
+						end-if
+						write('(', carMoveOrigin(rr), ',1,0,', getsol(t(pp, currTask)),')');
+					end-if 
+					write('(', carMoveDestination(rr), ',1,1,', getsol(t(pp, currTask)) + carMoveHandlingTime(rr),')')
+					foundX := true;
+					currNode := carMoveDestination(rr);
+					currTask := currTask +1;
+				end-if
+			end-do
+			if(foundX = false) then
+				if(currTask > 1) then
+					forall(rr in carMoves) do
+						if getsol(x(pp, rr, currTask -1)) >= 0.5 then
+							endTime := getsol(t(pp, currTask -1));
+							endTime := endTime + carMoveHandlingTime(rr);
+							write('(', destinationNodeROperator(pp), ',1,0,', endTime,')')
+						end-if
+					end-do
+				end-if
+			end-if
+		end-do
+		writeln('');
+	end-do
+	fclose(F_OUTPUT);
+	
+	(!
+	
+	! TIL SIMEN
+	fopen("../Mosel/runStats", F_OUTPUT);
+	writeln(getparam("XPRS_MIPOBJVAL"));
+	writeln(getparam("XPRS_BESTBOUND"));
+	writeln(endTimeMosel-startTimeMosel);
+	writeln(deviationRel);
+    writeln(deviationCharg);
+	fclose(F_OUTPUT);
+	! SLUTT TIL SIMEN
+	
+	!)
+
 end-if
 
 
