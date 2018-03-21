@@ -7,14 +7,18 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 200;
-    public final static int TABU_SIZE = 5;
+    public final static int TABU_SIZE = 2;
     public final static int TABU_ITERATIONS = 20000;
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_SURPLUS_IDEAL_STATE_COST = 100;
     public final static double TABU_IDEAL_STATE_UNIT_REWARD = 30;
     public final static double TABU_TRAVEL_COST = 0;
+    
+    // This variable decides when the tabu list is increased in size (doubled)
+    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
+   
     
     
     public final static int ALNS_SEGMENT_LENGTH = 100;

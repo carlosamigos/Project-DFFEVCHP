@@ -36,6 +36,18 @@ public class TabuList {
 	public boolean isTabu(Mutation mutation) {
 		return tabuSet.contains(mutation); 
 	}
+	
+	public void increaseSize() {
+		this.tabuSize *= 2;
+	}
+	
+	public void decreaseSize() {
+		this.tabuSize = Math.max(2, this.tabuSize/2);
+		while(tabuQueue.size() > tabuSize) {
+			Mutation pop = tabuQueue.remove(tabuSize);
+			tabuSet.remove(pop);
+		}
+	}
 
 
 	@Override

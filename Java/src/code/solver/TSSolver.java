@@ -93,7 +93,8 @@ public class TSSolver extends Solver {
 		best.calculateMoselFitness();
 		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
-		double counter = 0; // counts number of rounds with 0 delta
+		double counter = 0; // counts number of rounds with delta > 0
+		double global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
 			if(iteration != 0 && iteration % 100 == 0){
 //				System.out.println("\nIteration: " + iteration + " Best fitness: "
@@ -127,9 +128,8 @@ public class TSSolver extends Solver {
 			}
 
 			double candidateDelta;
-			if(counter >= HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS){
+			if(global_counter >= HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS){
 				// Scramble if stuck
-				counter = 0;
 				Mutation newCandidate = getRandomMutation(neighborhood);
 				candidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 				candidate = newCandidate;
@@ -146,9 +146,15 @@ public class TSSolver extends Solver {
 
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
-			if(candidateDelta == 0){
+			if(candidateDelta >= 0){
 				counter ++;
 			} else {
+				counter = 0;
+				this.tabuList.decreaseSize();
+			}
+			
+			if(counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS) {
+				this.tabuList.increaseSize();
 				counter = 0;
 			}
 			
@@ -175,6 +181,8 @@ public class TSSolver extends Solver {
 						+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
 				this.best = (TSIndividual) DeepCopy.copy(this.individual);
 				this.best.setFitness(this.individual.getFitness());
+			} else {
+				global_counter++;
 			}
 			
 			tabuList.add(candidate);
