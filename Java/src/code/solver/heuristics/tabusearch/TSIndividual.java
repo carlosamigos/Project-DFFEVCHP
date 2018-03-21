@@ -1025,7 +1025,7 @@ public class TSIndividual extends Individual implements Serializable {
 		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
 			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;
 		}
-		System.out.println("Deviation from ideal: "+ devIdeal);
+		System.out.println("\nDeviation from ideal: "+ devIdeal);
 
 		int numberOfChargedCars = 0;
 		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
