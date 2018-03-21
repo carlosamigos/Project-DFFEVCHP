@@ -19,21 +19,21 @@ DISTANCESCALE = 3
 EXAMPLES = 3 
 
 #BOARD SIZE - DONT CHANGE
-XSIZE = 4
-YSIZE = 4
+XSIZE = 3
+YSIZE = 3
 
 #ALLOWED MOVES
-MOVES = 7
+MOVES = 8
 CARSCHARGING = 3
 
 #PARKING NODES USED
-MAXNODES = 16
+MAXNODES = 9
 
 #CHARGING NODES
-NUMCHARGING = 3
-PARKINGC = [1, 10, 16]
-CAPACITY = [3, 3, 3]
-TOTALCAPACITY = [3, 3, 3]
+NUMCHARGING = 2
+PARKINGC = [1, 9]
+CAPACITY = [3, 3]
+TOTALCAPACITY = [3, 3]
 
 #OPERATORS
 NUMOPERATORS = 3 
@@ -1011,7 +1011,11 @@ def buildWorld():
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
         moves = world.calculateMovesToIDeal()
-        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(i) + "MODE"
+        totalMoves = 0
+        for j in range(len(world.cars)):
+            totalMoves += len(world.cars[j].destinations)
+        filepath = "test_" + str(len(world.pNodes)) + "nodes_" + str(len(world.operators)) + "so_" + str(len(world.cNodes)) + "c_" + str(moves) + "mov_" + str(CARSCHARGING) + "charging_" + str(len(world.fCCars)) + "finishes_" + str(totalMoves) + "CM"
+        print(filepath)
         if(WRITETOFILE):
             world.writeToFile(filepath)
 
