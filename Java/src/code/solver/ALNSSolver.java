@@ -7,19 +7,19 @@ import java.util.Set;
 
 import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
+import code.solver.heuristics.alns.ALNSIndividual;
+import code.solver.heuristics.alns.TabuList;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.*;
-import code.solver.heuristics.tabusearch.TSIndividual;
-import code.solver.heuristics.tabusearch.TabuList;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.DeepCopy;
 
-public class TSSolver extends Solver {
+public class ALNSSolver extends Solver {
 	
-	private TSIndividual individual;
-	private TSIndividual best;
+	private ALNSIndividual individual;
+	private ALNSIndividual best;
 	private TabuList tabuList;
 	private final int iterations;
 	private int tabuSize;
@@ -35,16 +35,14 @@ public class TSSolver extends Solver {
 	private HashMap<Integer, String> mutationIdToDescription;
 	private double weightSum = 0.0;
 	
-	private int chosen;
-	
-	public TSSolver(ProblemInstance problemInstance) {
+	public ALNSSolver(ProblemInstance problemInstance) {
 		this(HeuristicsConstants.TABU_ITERATIONS, HeuristicsConstants.TABU_SIZE, problemInstance);
 	}
 	
-	public TSSolver(int iterations, int tabuSize, ProblemInstance problemInstance) {
+	public ALNSSolver(int iterations, int tabuSize, ProblemInstance problemInstance) {
 		this.iterations = iterations;
-		this.individual =  new TSIndividual(problemInstance);
-		this.best = (TSIndividual) DeepCopy.copy(this.individual);
+		this.individual =  new ALNSIndividual(problemInstance);
+		this.best = (ALNSIndividual) DeepCopy.copy(this.individual);
 		this.best.setFitness(this.individual.getFitness());
 		this.tabuSize = tabuSize;
 		this.solutionsSeen = new HashMap<>();
@@ -91,36 +89,25 @@ public class TSSolver extends Solver {
 	@Override
 	public void solve(ProblemInstance problemInstance) {
 		best.calculateMoselFitness();
-		int iteration = 0;
 		this.tabuList = new TabuList(this.tabuSize);
-		double counter = 0; // counts number of rounds with delta > 0
-		double global_counter = 0; // counts number of iterations since new global best
+		int iteration = 0;
+		int counter = 0;        // counts number of rounds with delta > 0
+		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
 			if(iteration != 0 && iteration % 100 == 0){
-//				System.out.println("\nIteration: " + iteration + " Best fitness: "
-//						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
-//						+ String.format("%.1f", this.individual.getFitness()));
+				System.out.println("\nIteration: " + iteration + " Best fitness: "
+						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
+						+ String.format("%.1f", this.individual.getFitness()));
 				//System.out.println(individual);
-//				System.out.println("Before update: ");
-//				System.out.println(mutationToAttempts);
-//				System.out.println(mutationToWeight);
-//				System.out.println(mutationScores);
-//				System.out.println("Performing... \n");
 				this.updateWeights();
-//				System.out.println("After update: ");
-//				System.out.println(mutationToAttempts);
-//				System.out.println(mutationToWeight);
-//				System.out.println(mutationScores);
+
 			}
 
 			Set<Mutation> neighborhood = this.getNeighborhood().keySet();
 			if(neighborhood.isEmpty()) {
-				System.out.println("Individual: " + this.individual);
-				System.out.println(this.mutationIdToDescription.get(this.chosen));
 				iteration++;
 				continue;
 			}
-			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
 			Mutation candidate = null;
 			for(Mutation mutation : neighborhood) {
 				candidate = mutation;
@@ -129,7 +116,6 @@ public class TSSolver extends Solver {
 
 			double candidateDelta;
 			if(global_counter >= HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS){
-				// Scramble if stuck
 				Mutation newCandidate = getRandomMutation(neighborhood);
 				candidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 				candidate = newCandidate;
@@ -179,7 +165,7 @@ public class TSSolver extends Solver {
 			if(this.individual.getFitness() < this.best.getFitness()) {
 				this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId()) 
 						+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
-				this.best = (TSIndividual) DeepCopy.copy(this.individual);
+				this.best = (ALNSIndividual) DeepCopy.copy(this.individual);
 				this.best.setFitness(this.individual.getFitness());
 			} else {
 				global_counter++;
@@ -196,7 +182,7 @@ public class TSSolver extends Solver {
 		
 	}
 	
-	public TSIndividual getBest() {
+	public ALNSIndividual getBest() {
 		return this.best;
 	}
 	
@@ -209,13 +195,15 @@ public class TSSolver extends Solver {
 		return iteration >= iterations;
 	}
 	
+	/*
+	 * Selects what mutation type to use to create a neighborhood by using accumulated probability
+	 */
 	private HashMap<Mutation, Integer> getNeighborhood() {
 		double accumulated = 0.0;
 		double p = Math.random();
 		for(int id : this.mutationToWeight.keySet()) {
 			accumulated += this.mutationToWeight.get(id) / this.weightSum;
 			if(p <= accumulated) {
-				this.chosen = id;
 				this.mutationToAttempts.put(id, this.mutationToAttempts.get(id)+1);
 				return this.mutationToNeighborhood.get(id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 			}
@@ -223,6 +211,10 @@ public class TSSolver extends Solver {
 		return this.mutationToNeighborhood.get(IntraMove.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 	}
 	
+	/*
+	 * Updates the weights for each mutation based on how well each mutation have performed in the last
+	 * segment.
+	 */
 	private void updateWeights() {
 		this.weightSum = 0.0;
 		for(int id: this.mutationToWeight.keySet()) {
@@ -269,6 +261,9 @@ public class TSSolver extends Solver {
 		});
 	}
 	
+	/*
+	 * Maps available mutation IDs to perform functions. The IDs are defined in the mutation subclasses.
+	 */
 	private void setMutationToPerform() {
 		this.mutationToPerform = new HashMap<>();
 		this.mutationToPerform.put(IntraMove.id, (Mutation mutation) -> {
@@ -297,6 +292,9 @@ public class TSSolver extends Solver {
 		});
 	}
 	
+	/*
+	 * Maps available mutation IDs to generate neighborhood functions. The IDs are defined in the mutation subclasses.
+	 */
 	private void setMutationToGenerateNeighborhood() {
 		this.mutationToNeighborhood = new HashMap<>();
 		this.mutationToNeighborhood.put(IntraMove.id, (int tabuSize) -> {

@@ -1,4 +1,4 @@
-package code.solver.heuristics.tabusearch;
+package code.solver.heuristics.alns;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import code.solver.heuristics.entities.Operator;
 import utils.MathHelper;
 
 @SuppressWarnings("serial")
-public class TSIndividual extends Individual implements Serializable {
+public class ALNSIndividual extends Individual implements Serializable {
 	
 	private ArrayList<Object> operators;
 
@@ -44,11 +44,11 @@ public class TSIndividual extends Individual implements Serializable {
 
 	private ProblemInstance problemInstance;
 	
-	public TSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
+	public ALNSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
 		this.capacitiesUsed = capacitiesUsed;
 	}
 
-	public TSIndividual(ProblemInstance problemInstance) {
+	public ALNSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
 		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
 		this.carMovesCounter = countCarMoves();

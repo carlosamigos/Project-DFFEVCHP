@@ -1,4 +1,4 @@
-package code.solver.heuristics.tabusearch;
+package code.solver.heuristics.alns;
 
 import java.util.ArrayList;
 import java.util.HashSet;

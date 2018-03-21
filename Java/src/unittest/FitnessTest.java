@@ -15,9 +15,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
+import code.solver.heuristics.alns.ALNSIndividual;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
-import code.solver.heuristics.tabusearch.TSIndividual;
 import constants.HeuristicsConstants;
 
 class FitnessTest {
@@ -28,7 +28,7 @@ class FitnessTest {
 	private static ParkingNode pNode2 = new ParkingNode(2);
 	private static ChargingNode cNode = new ChargingNode(3);
 	private static HashMap<ChargingNode, Integer> capacities = new HashMap<>();
-	private static TSIndividual individual =  new TSIndividual(capacities);
+	private static ALNSIndividual individual =  new ALNSIndividual(capacities);
 	
 	private static double startTime = 0.0;
 	
