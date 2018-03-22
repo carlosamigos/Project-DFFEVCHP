@@ -41,7 +41,7 @@ public class ChromosomeGenerator {
 
 
     // Return diff from ideal to current number of cars
-    private static Integer findNumberOfCarsToMoveIn(ParkingNode parkingNode, ProblemInstance problemInstance){
+    public static Integer findNumberOfCarsToMoveIn(ParkingNode parkingNode, ProblemInstance problemInstance){
         return parkingNode.getCarsRegular().size() - parkingNode.getIdealNumberOfAvailableCars();
     }
 
@@ -98,7 +98,7 @@ public class ChromosomeGenerator {
             for(Car car : parkingNode.getCarsInNeed()){
                 carMoves.put(car, new ArrayList<>());
                 for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
-                		double travelTime = problemInstance.getTravelTimeCar(parkingNode, problemInstance.getChargingToParkingNode().get(chargingNode));
+                		double travelTime = problemInstance.getTravelTimeCar(parkingNode, chargingNode);
                 		carMoves.get(car).add(new CarMove(parkingNode, chargingNode, car, travelTime, 0.0));
                 }
             }
