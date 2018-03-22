@@ -1,6 +1,8 @@
 package utils;
 
-import java.util.Random;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 
 public class MathHelper {
 
@@ -18,16 +20,16 @@ public class MathHelper {
         return second;
     }
 
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
 
-    public static void main(String[] args) {
-        System.out.println(getRandomIntNotEqual(1, 2));
-        System.out.println(getRandomIntNotEqual(1, 2));
-        System.out.println(getRandomIntNotEqual(1, 2));
-        System.out.println(getRandomIntNotEqual(1, 2));
-        System.out.println(getRandomIntNotEqual(1, 2));
-
-
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
+
+
+
 
 
 }

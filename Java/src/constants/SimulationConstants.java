@@ -1,5 +1,6 @@
 package constants;
 
+
 public class SimulationConstants {
 	
 	public final static double CUSTOMER_CONSTANT_TIME_USED = 10;
@@ -26,4 +27,6 @@ public class SimulationConstants {
         NEUTRAL,
         MIDDAY_RUSH;
     }
+
+
 }
