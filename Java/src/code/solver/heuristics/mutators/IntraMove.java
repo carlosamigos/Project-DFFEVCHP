@@ -17,7 +17,7 @@ public class IntraMove extends Mutation {
 		this.removeIndex = removeIndex;
 		this.insertIndex = insertIndex;
 		String hashString = id + "" + operator.id
-				+((removeIndex <= insertIndex) ? (removeIndex +"" + insertIndex) : ( insertIndex +"" + removeIndex)) + "111";
+				+((removeIndex <= insertIndex) ? (removeIndex +"" + insertIndex) : ( insertIndex +"" + removeIndex)) ;
 		this.hashCode = Integer.parseInt(hashString);
 	}
 
