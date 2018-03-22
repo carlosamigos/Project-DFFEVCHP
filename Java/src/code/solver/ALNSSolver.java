@@ -91,7 +91,7 @@ public class ALNSSolver extends Solver {
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
-			if(iteration != 0 && iteration % 5 == 0){
+			if(iteration != 0 && iteration % 100 == 0){
 				System.out.println("\nIteration: " + iteration + " Best fitness: "
 						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
 						+ String.format("%.1f", this.individual.getFitness()));
@@ -161,7 +161,9 @@ public class ALNSSolver extends Solver {
 				destroyAndRepair();
 				global_counter = 0;
 				counter = 0;
+				individual.calculateFitness();
 			}
+
 		}
 		cleanBest();
 		best.calculateMoselFitness();

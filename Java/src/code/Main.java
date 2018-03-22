@@ -21,7 +21,7 @@ public class Main {
     	setConstants(args);
     	createTestingFolders();
 
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_12nodes_3so_2c_9mov_3charging_0finishes_51CM_a");
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_400nodes_10so_7c_60mov_20charging_0finishes_0MODE_a");
     	for(int i = 0; i < 1; i++) {
     		ALNSSolver solver = new ALNSSolver(problemInstance);
         	solver.solve(problemInstance);
