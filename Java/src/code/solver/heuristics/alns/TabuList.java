@@ -49,6 +49,12 @@ public class TabuList {
 		}
 	}
 
+	public void clearTabu(){
+		this.tabuSet = new HashSet<>();
+		this.tabuQueue = new ArrayList<>();
+		this.tabuSize = 2;
+	}
+
 
 	@Override
 	public String toString() {

@@ -56,8 +56,8 @@ public class ALNSSolver extends Solver {
 		this.mutationScores = new HashMap<>();
 		this.mutationToAttempts = new HashMap<>();
 		int[] mutationIds = {
-				EjectionInsertMutation.id,
-				EjectionRemoveMutation.id,
+				//EjectionInsertMutation.id,
+				//EjectionRemoveMutation.id,
 				EjectionReplaceMutation.id,
 				InterMove.id,
 				InterSwap2.id,
@@ -91,15 +91,15 @@ public class ALNSSolver extends Solver {
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
-			if(iteration != 0 && iteration % 100 == 0){
+			if(iteration != 0 && iteration % 5 == 0){
 				System.out.println("\nIteration: " + iteration + " Best fitness: "
 						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
 						+ String.format("%.1f", this.individual.getFitness()));
 				//System.out.println(individual);
 				this.updateWeights();
-
 			}
 
+			// Basic checks
 			Set<Mutation> neighborhood = this.getNeighborhood().keySet();
 			if(neighborhood.isEmpty()) {
 				iteration++;
@@ -111,6 +111,7 @@ public class ALNSSolver extends Solver {
 				break;
 			}
 
+			// Test neighborhood
 			double candidateDelta;
 			if(global_counter >= HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS){
 				Mutation newCandidate = getRandomMutation(neighborhood);
@@ -127,49 +128,40 @@ public class ALNSSolver extends Solver {
 				}
 			}
 
+			// Perform mutations
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+
+			// Update counters and tabulist Size
 			if(candidateDelta >= 0){
 				counter ++;
 			} else {
 				counter = 0;
 				this.tabuList.decreaseSize();
 			}
-			
 			if(counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS) {
 				this.tabuList.increaseSize();
 				counter = 0;
 			}
-			
-			// Check if the solution is seen before, and store the current solution
-			String individualString = this.individual.toString();
-			if(this.solutionsSeen.containsKey(individualString)) {
-				this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString));
-			} else {
-				this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId()) 
-						+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
-				this.solutionsSeen.put(individualString, 1);
-			}
-			
-			// Give reward to mutation type if new solution is better than the current one (locally, not globally)
-			if(candidateDelta < 0) {
-				this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId()) 
-						+ HeuristicsConstants.ALNS_FOUND_NEW_BEST_REWARD);
-			}
 
-
-			// Update best individual and score the mutation used accordingly
+			// Update best individual
+			boolean bestFound = false;
 			if(this.individual.getFitness() < this.best.getFitness()) {
-				this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId()) 
-						+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
+				bestFound = true;
 				this.best = (ALNSIndividual) DeepCopy.copy(this.individual);
 				this.best.setFitness(this.individual.getFitness());
 			} else {
 				global_counter++;
 			}
-			
+
+			updateMutationScores(candidate, candidateDelta, bestFound);
 			tabuList.add(candidate);
 			iteration++;
+			if(global_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
+				destroyAndRepair();
+				global_counter = 0;
+				counter = 0;
+			}
 		}
 		cleanBest();
 		best.calculateMoselFitness();
@@ -179,7 +171,13 @@ public class ALNSSolver extends Solver {
 		
 	}
 
-	public void updateMutationScores(Mutation candidate, double candidateDelta){
+	/*
+		* Updates mutation scores
+
+	 */
+
+	public void updateMutationScores(Mutation candidate, double candidateDelta, boolean bestFound){
+		// Check if the solution is seen before, and store the current solution
 		String individualString = this.individual.toString();
 		if(this.solutionsSeen.containsKey(individualString)) {
 			this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString));
@@ -193,7 +191,10 @@ public class ALNSSolver extends Solver {
 			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
 					+ HeuristicsConstants.ALNS_FOUND_NEW_BEST_REWARD);
 		}
-
+		if(bestFound){
+			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
+					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
+		}
 	}
 
 	/*
@@ -205,6 +206,8 @@ public class ALNSSolver extends Solver {
 		int numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
 		destroy(numberToHandle);
 		repair(numberToHandle);
+		this.tabuList.clearTabu();
+		initializeMutationWeights();
 	}
 
 	private void destroy(int numberToDestroy){

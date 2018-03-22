@@ -18,6 +18,9 @@ public class HeuristicsConstants {
     
     // This variable decides when the tabu list is increased in size (doubled)
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
+
+    // This variable decides when to destroy the current solution
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 25000;
    
     
     
