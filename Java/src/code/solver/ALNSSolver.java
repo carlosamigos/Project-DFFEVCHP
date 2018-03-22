@@ -56,8 +56,8 @@ public class ALNSSolver extends Solver {
 		this.mutationScores = new HashMap<>();
 		this.mutationToAttempts = new HashMap<>();
 		int[] mutationIds = {
-				//EjectionInsertMutation.id,
-				//EjectionRemoveMutation.id,
+				EjectionInsertMutation.id,
+				EjectionRemoveMutation.id,
 				EjectionReplaceMutation.id,
 				InterMove.id,
 				InterSwap2.id,
