@@ -350,7 +350,6 @@ public class ALNSSolver extends Solver {
 			}
 			System.out.println("Operator: " + operator.id + " Time: " + currentTime);
 			operator.setCarMoves(newCarMoveList);
-			
 		}
 	}
 

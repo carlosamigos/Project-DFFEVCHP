@@ -1,17 +1,21 @@
 package code.problem;
 
+import code.solver.heuristics.entities.CarMove;
 import constants.Constants;
 import constants.FileConstants;
 import constants.SimulationConstants;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import code.problem.entities.Car;
 import code.problem.entities.Operator;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
+import utils.ChromosomeGenerator;
+import utils.MathHelper;
 
 @SuppressWarnings("serial")
 public class ProblemInstance implements Serializable{
@@ -598,14 +602,140 @@ public class ProblemInstance implements Serializable{
             writer.println("costOfPostponedCharging : "+ Constants.COST_POSTPONED);
             writer.println("costOfDeviation : "+ Constants.COST_DEVIATION);
 
+
+
+            // Add Parameters for car moves mosel solver ----------------------
+            // Num car moves p først
+            HashMap<Car, ArrayList<CarMove>> carMoves = ChromosomeGenerator.generateCarMovesFrom(this);
+            int numCarMovesP = 0;
+            int numCarMovesC = 0;
+            int numCars = carMoves.keySet().size();
+            int numTasks = (int) Constants.TIME_LIMIT_STATIC_PROBLEM / 10;
+            int numDeficitNodes = 0;
+            ArrayList<Integer> deficitTranslate = new ArrayList<>();
+            ArrayList<Integer> deficitCarsInNode = new ArrayList<>();
+            ArrayList<Integer> carMoveCarsP = new ArrayList<>();
+            ArrayList<Integer> carMoveOriginP = new ArrayList<>();
+            ArrayList<Integer> carMoveDestinationP = new ArrayList<>();
+            ArrayList<Double> carMoveHandlingTimeP = new ArrayList<>();
+            ArrayList<Double> carMoveStartingTimeP = new ArrayList<>();
+            ArrayList<Integer> carMoveCarsC = new ArrayList<>();
+            ArrayList<Integer> carMoveOriginC = new ArrayList<>();
+            ArrayList<Integer> carMoveDestinationC = new ArrayList<>();
+            ArrayList<Double> carMoveHandlingTimeC = new ArrayList<>();
+            ArrayList<Double> carMoveStartingTimeC = new ArrayList<>();
+            int numCarsInCNeedNodes = 0; // Det er antall noder med biler som må lades
+            ArrayList<Integer> carsInNeedCTranslate = new ArrayList<>();
+            ArrayList<Integer> carsInNeedNodes = new ArrayList<>();
+            ArrayList<Double> bigMP = new ArrayList<>();
+            ArrayList<Double> bigMC = new ArrayList<>();
+
+
+            // find num deficit nodes:
+            HashSet<ParkingNode> deficitNodes = new HashSet<>();
+            HashSet<ParkingNode> nodesWithCarsInNeed = new HashSet<>();
+            for(ParkingNode parkingNode : parkingNodes){
+                if(ChromosomeGenerator.findNumberOfCarsToMoveIn(parkingNode, this) <  0){
+                    deficitNodes.add(parkingNode);
+                    deficitTranslate.add(parkingNode.getNodeId());
+                    deficitCarsInNode.add(-1 * ChromosomeGenerator.findNumberOfCarsToMoveIn(parkingNode, this) );
+                }if(parkingNode.getCarsInNeed().size() > 0){
+                    nodesWithCarsInNeed.add(parkingNode);
+                    carsInNeedCTranslate.add(parkingNode.getNodeId());
+                    carsInNeedNodes.add(parkingNode.getCarsInNeed().size());
+                }
+            }
+            numCarsInCNeedNodes = nodesWithCarsInNeed.size();
+            numDeficitNodes = deficitNodes.size();
+
+            ArrayList<Car> cars = new ArrayList<>(carMoves.keySet());
+            for(Car car : cars){
+                for(CarMove carMove : carMoves.get(car)){
+                    double bigM = -1;
+                    for(Car car2 : cars){
+                        for(CarMove carMove2 : carMoves.get(car2)){
+                            for(ParkingNode parkingNode : parkingNodes){
+                                if(ChromosomeGenerator.findNumberOfCarsToMoveIn(parkingNode, this) > 0
+                                        || parkingNode.getCarsInNeed().size() > 0){
+                                    bigM = Math.max(getTravelTimeBike(carMove.getToNode(), parkingNode)
+                                            - (getTravelTimeBike(carMove2.getToNode(), parkingNode)
+                                            + carMove2.getTravelTime()), bigM);
+                                }
+                            }
+                        }
+                    }
+                    bigM = MathHelper.round(bigM, 2);
+                    if(carMove.isToCharging()){
+                        numCarMovesC ++;
+                        carMoveCarsC.add(car.getCarId());
+                        carMoveOriginC.add(carMove.getFromNode().getNodeId());
+                        carMoveDestinationC.add(carMove.getToNode().getNodeId());
+                        carMoveHandlingTimeC.add(carMove.getTravelTime()); // only travel time?
+                        carMoveStartingTimeC.add(carMove.getEarliestDepartureTime());
+                        bigMC.add(bigM);
+                    } else {
+                        numCarMovesP ++;
+                        carMoveCarsP.add(car.getCarId());
+                        carMoveOriginP.add(carMove.getFromNode().getNodeId());
+                        carMoveDestinationP.add(carMove.getToNode().getNodeId());
+                        carMoveHandlingTimeP.add(carMove.getTravelTime()); // only travel time?
+                        carMoveStartingTimeP.add(carMove.getEarliestDepartureTime());
+                        bigMP.add(bigM);
+                    }
+
+
+                }
+            }
+
+            ArrayList<Integer> carMoveCars = new ArrayList<>(carMoveCarsP);
+            carMoveCars.addAll(carMoveCarsC);
+            ArrayList<Integer> carMoveOrigin = new ArrayList<>(carMoveOriginP);
+            carMoveOrigin.addAll(carMoveOriginC);
+            ArrayList<Integer> carMoveDestination = new ArrayList<>(carMoveDestinationP);
+            carMoveDestination.addAll(carMoveDestinationC);
+            ArrayList<Double> carMoveHandlingTime = new ArrayList<>(carMoveHandlingTimeP);
+            carMoveHandlingTime.addAll(carMoveHandlingTimeC);
+            ArrayList<Double> carMoveStartingTime = new ArrayList<>(carMoveStartingTimeP);
+            carMoveStartingTime.addAll(carMoveStartingTimeC);
+            ArrayList<Double> bigMCars = new ArrayList<>(bigMP);
+            bigMCars.addAll(bigMC);
+
+            writer.println();
+            writer.println("numCarMovesP : " + numCarMovesP);
+            writer.println("numCarMovesC : " + numCarMovesC);
+            writer.println("numCars : " + numCars);
+            writer.println("numTasks : " + numTasks);
+            writer.println("numDeficitNodes : " + numDeficitNodes);
+            writer.println();
+            writer.println("deficitTranslate : " + integerArrayListToString(deficitTranslate, " "));
+            writer.println("deficitCarsInNode : " + integerArrayListToString(deficitCarsInNode, " "));
+            writer.println("carMoveCars : " + integerArrayListToString(carMoveCars, " "));
+            writer.println("carMoveOrigin : " + integerArrayListToString(carMoveOrigin, " "));
+            writer.println("carMoveDestination : " + integerArrayListToString(carMoveDestination, " "));
+            writer.println("carMoveHandlingTime : " + doubleArrayListToString(carMoveHandlingTime, " "));
+            writer.println("carMoveStartingTime : " + doubleArrayListToString(carMoveStartingTime, " "));
+            writer.println("numCarsInCNeedNodes : " + numCarsInCNeedNodes);
+            writer.println("carsInNeedCTranslate : " + integerArrayListToString(carsInNeedCTranslate, " "));
+            writer.println("carsInNeedNodes : " + integerArrayListToString(carsInNeedNodes, " "));
+            writer.println("bigMCars : " + doubleArrayListToString(bigMCars, " "));
+
+
             writer.close();
         } catch (FileNotFoundException e){
             System.out.println(e.getMessage());
         } catch (UnsupportedEncodingException e){
             System.out.println(e.getMessage());
         }
-        //System.out.println("Written to file.");
+    }
 
+    private String integerArrayListToString(ArrayList<Integer> arrayList, String delimiter){
+        return "[" + arrayList.stream().map(Object::toString)
+                .collect(Collectors.joining(delimiter)) + "]";
+    }
+
+    private String doubleArrayListToString(ArrayList<Double> arrayList, String delimiter){
+        return "[" + arrayList.stream().map(Object::toString)
+                .collect(Collectors.joining(delimiter)) + "]";
     }
 
     private void addToHashNodeIntMap(HashMap<Node,Integer> map, Node node, Integer elem ){
@@ -700,7 +830,6 @@ public class ProblemInstance implements Serializable{
 
     }
 
-
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;
     }
@@ -775,4 +904,7 @@ public class ProblemInstance implements Serializable{
                 "\n\t  carsTakenByCustomers      = " + numberOfCarsTakenByCustomers +
                 "\n\t  totalCarsInSystem         = " + totalCarsInSystem;
     }
+
+
+
 }
