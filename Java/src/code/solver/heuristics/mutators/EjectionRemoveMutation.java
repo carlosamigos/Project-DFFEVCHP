@@ -1,4 +1,5 @@
 package code.solver.heuristics.mutators;
+import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 
 public class EjectionRemoveMutation extends Mutation{
@@ -9,12 +10,12 @@ public class EjectionRemoveMutation extends Mutation{
     private final int hashCode;
 
 
-    public EjectionRemoveMutation(Operator op, int carMoveIndex){
+    public EjectionRemoveMutation(Operator op, int carMoveIndex, CarMove carMove){
         this.operator = op;
         this.carRemoveIndex = carMoveIndex;
         // * A possible approach is to construct the hashcode to only include cars, to make sure the newly injected move
         // * Is not ejected.
-        String hashString = "" + id + "" + op.id + "" + carRemoveIndex + "777" ;
+        String hashString = "-" + op.id + "" + carMove.getCar().getCarId() + "" + carRemoveIndex ;
         this.hashCode = Integer.parseInt(hashString);
     }
 
