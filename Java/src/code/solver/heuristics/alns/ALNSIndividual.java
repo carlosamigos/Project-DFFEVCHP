@@ -353,8 +353,6 @@ public class ALNSIndividual extends Individual implements Serializable {
 	}
 
 
-	
-
 
 	//================================================================================
 	// Delta fitness
@@ -892,6 +890,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 		return neighbors;
 	}
 
+
 	//================================================================================
 	// Getters and setters
 	//================================================================================	
@@ -935,6 +934,15 @@ public class ALNSIndividual extends Individual implements Serializable {
 	
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
+	}
+
+	public int getTotalNumberOfCarMoves(){
+		int numberOfMoves = 0;
+		for(Object op: this.operators){
+			Operator operator = (Operator) op;
+			numberOfMoves += operator.getCarMoveListSize();
+		}
+		return numberOfMoves;
 	}
 	
 	@Override

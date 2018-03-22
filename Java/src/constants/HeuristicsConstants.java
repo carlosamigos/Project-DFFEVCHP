@@ -26,6 +26,7 @@ public class HeuristicsConstants {
     public final static double ALNS_FOUND_NEW_BEST_REWARD = 2.0;
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 10.0;
     public final static double ALNS_UPDATE_FACTOR = 0.5;
+    public final static double ALNS_DESTROY_FACTOR = 0.2;
     
 
     //Punishes the size of operator list, relative to the travel time

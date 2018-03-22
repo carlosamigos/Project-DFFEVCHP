@@ -1,9 +1,6 @@
 package code.solver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
@@ -59,8 +56,8 @@ public class ALNSSolver extends Solver {
 		this.mutationScores = new HashMap<>();
 		this.mutationToAttempts = new HashMap<>();
 		int[] mutationIds = {
-				//EjectionInsertMutation.id,
-				//EjectionRemoveMutation.id,
+				EjectionInsertMutation.id,
+				EjectionRemoveMutation.id,
 				EjectionReplaceMutation.id,
 				InterMove.id,
 				InterSwap2.id,
@@ -181,6 +178,77 @@ public class ALNSSolver extends Solver {
 	public void solveParallel(ProblemInstance problemInstance) {
 		
 	}
+
+	public void updateMutationScores(Mutation candidate, double candidateDelta){
+		String individualString = this.individual.toString();
+		if(this.solutionsSeen.containsKey(individualString)) {
+			this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString));
+		} else {
+			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
+					+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
+			this.solutionsSeen.put(individualString, 1);
+		}
+		// Give reward to mutation type if new solution is better than the current one (locally, not globally)
+		if(candidateDelta < 0) {
+			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
+					+ HeuristicsConstants.ALNS_FOUND_NEW_BEST_REWARD);
+		}
+
+	}
+
+	/*
+		* Destroy and repair
+		* Destroy by removing a % proportion of the current solution, at random.
+	 */
+
+	private void destroyAndRepair(){
+		int numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
+		destroy(numberToHandle);
+		repair(numberToHandle);
+	}
+
+	private void destroy(int numberToDestroy){
+		for (int i = 0; i < numberToDestroy; i++) {
+			Set<Mutation> neighborhood  = getNeighborhoodRemove().keySet();
+			Mutation candidate;
+			if(neighborhood.size() < 1){
+				break;
+			}
+			Random rand = new Random();
+			int index = rand.nextInt(neighborhood.size());
+			Iterator<Mutation> iter = neighborhood.iterator();
+			for (int j = 0; i < index; i++) {
+				iter.next();
+			}
+			candidate = iter.next();
+			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+		}
+	}
+
+	private void repair(int numberToRepair){
+		for (int i = 0; i < numberToRepair; i++) {
+			Set<Mutation> neighborhood  = getNeighborhoodInsert().keySet();
+			Mutation candidate = null;
+			if(neighborhood.size() < 1){
+				break;
+			}
+			for(Mutation mutation : neighborhood) {
+				candidate = mutation;
+				break;
+			}
+			double candidateDelta;
+			candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
+			for(Mutation newCandidate : neighborhood) {
+				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
+				if (newCandidateDelta < candidateDelta ) {
+					candidate = newCandidate;
+					candidateDelta = newCandidateDelta;
+				}
+			}
+			this.individual.addToFitness(candidateDelta);
+			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+		}
+	}
 	
 	public ALNSIndividual getBest() {
 		return this.best;
@@ -189,6 +257,14 @@ public class ALNSSolver extends Solver {
 	@Override
 	public String getInfo() {
 		return "Tabu search";
+	}
+
+	private HashMap<Mutation, Integer> getNeighborhoodRemove(){
+		return this.mutationToNeighborhood.get(EjectionRemoveMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+	}
+
+	private HashMap<Mutation, Integer> getNeighborhoodInsert(){
+		return this.mutationToNeighborhood.get(EjectionInsertMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 	}
 	
 	private boolean done(int iteration) {
