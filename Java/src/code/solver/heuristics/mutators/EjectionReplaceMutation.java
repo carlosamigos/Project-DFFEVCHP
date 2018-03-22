@@ -13,13 +13,15 @@ public class EjectionReplaceMutation extends Mutation {
 
 
 
-    public EjectionReplaceMutation(Operator op, int index, CarMove carMoveReplace){
+    public EjectionReplaceMutation(Operator op, int index, CarMove carMoveReplace, CarMove toBeReplaced){
         this.operator = op;
         this.carMoveIndex = index;
         this.carMoveReplace = carMoveReplace;
         // * A possible approach is to construct the hashcode to only include cars, to make sure the newly injected move
         // * Is not ejected.
-        String hashString = "" + id + "" + carMoveReplace.getCar().getCarId() + carMoveReplace.getToNode().getNodeId() + "9";
+        int smallestDest = Math.min(carMoveReplace.getToNode().getNodeId(), toBeReplaced.getToNode().getNodeId());
+        int largestDest = Math.max(carMoveReplace.getToNode().getNodeId(), toBeReplaced.getToNode().getNodeId());
+        String hashString = "-" + carMoveReplace.getCar().getCarId() + "" + smallestDest + "" + largestDest;
         this.hashCode = Integer.parseInt(hashString);
     }
 

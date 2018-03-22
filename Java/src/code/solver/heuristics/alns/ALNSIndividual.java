@@ -649,7 +649,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 			}
 			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
 			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
-			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
+			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove,removeOperator.getCarMove(insertIndex));
 			if(!tabuList.isTabu(ejectionReplaceMutation)) {
 				neighbors.put(ejectionReplaceMutation, 1);
 			}
@@ -662,7 +662,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 				continue;
 			}
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex);
+			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex, removeOperator.getCarMove(removeIndex));
 			if(!tabuList.isTabu(ejectionRemoveMutation)) {
 				neighbors.put(ejectionRemoveMutation, 1);
 			}
@@ -708,7 +708,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 					}
 				}
 				
-				EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(operator, i);
+				EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(operator, i, operator.getCarMove(i));
 				if(!tabuList.isTabu(ejectionRemoveMutation)) {
 					neighborhood.put(ejectionRemoveMutation, 1);
 				}
@@ -724,7 +724,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 				
 				CarMove carMove = operator.getCarMove(i);
 				for(CarMove replaceCarMove : unusedCarMoves.get(carMove.getCar())) {
-					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, replaceCarMove);
+					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, replaceCarMove, carMove);
 					if(!tabuList.isTabu(ejectionReplaceMutation)) {
 						neighborhood.put(ejectionReplaceMutation, 1);
 					}
@@ -858,7 +858,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 				continue;
 			}
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex);
+			EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(removeOperator, removeIndex, removeOperator.getCarMove(removeIndex));
 			if(!tabuList.isTabu(ejectionRemoveMutation)) {
 				neighbors.put(ejectionRemoveMutation, 1);
 			}
@@ -881,7 +881,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 			}
 			int swapIndex = (int)Math.floor(Math.random() * this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).size());
 			CarMove swapCarMove = this.unusedCarMoves.get(removeOperator.getCarMove(insertIndex).getCar()).get(swapIndex);
-			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove);
+			EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(removeOperator, insertIndex, swapCarMove, removeOperator.getCarMove(insertIndex));
 			if(!tabuList.isTabu(ejectionReplaceMutation)) {
 				neighbors.put(ejectionReplaceMutation, 1);
 			}
