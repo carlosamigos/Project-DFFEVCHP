@@ -4,6 +4,7 @@ import java.util.*;
 
 import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
+import code.solver.heuristics.Individual;
 import code.solver.heuristics.alns.ALNSIndividual;
 import code.solver.heuristics.alns.TabuList;
 import code.solver.heuristics.entities.CarMove;
@@ -85,7 +86,7 @@ public class ALNSSolver extends Solver {
 
 	
 	@Override
-	public void solve(ProblemInstance problemInstance) {
+	public Individual solve(ProblemInstance problemInstance) {
 		best.calculateMoselFitness();
 		this.tabuList = new TabuList(this.tabuSize);
 		int iteration = 0;
@@ -168,7 +169,7 @@ public class ALNSSolver extends Solver {
 		}
 		cleanBest();
 		best.calculateMoselFitness();
-        SolutionFileMaker.writeSolutionToFile(best);
+		return best;
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {

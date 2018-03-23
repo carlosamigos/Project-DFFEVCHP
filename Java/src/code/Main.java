@@ -8,11 +8,13 @@ import java.util.HashMap;
 
 import code.problem.ProblemInstance;
 import code.solver.ALNSSolver;
+import code.solver.heuristics.alns.ALNSIndividual;
 import constants.Constants;
 import constants.FileConstants;
 import tests.DynamicTestSuite;
 import tests.StaticTestSuite;
 import tests.TestSuite;
+import utils.SolutionFileMaker;
 
 public class Main {
 
@@ -20,11 +22,12 @@ public class Main {
 		boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
-
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + "test_100nodes_6so_6c_30mov_10charging_0finishes_0MODE_c");
+		String fileName = "test_100nodes_6so_6c_30mov_10charging_0finishes_0MODE_c";
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
     	for(int i = 0; i < 1; i++) {
     		ALNSSolver solver = new ALNSSolver(problemInstance);
-        	solver.solve(problemInstance);
+        	ALNSIndividual best = (ALNSIndividual) solver.solve(problemInstance);
+			SolutionFileMaker.writeSolutionToFile(best, fileName + ".txt");
         	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));
         System.out.println("Result: " + solver.getBest());
     	}

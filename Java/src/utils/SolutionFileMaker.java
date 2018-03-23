@@ -4,6 +4,7 @@ import code.problem.nodes.Node;
 import code.solver.heuristics.alns.ALNSIndividual;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
+import constants.FileConstants;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class SolutionFileMaker {
 
 
 
-    public static void writeSolutionToFile(ALNSIndividual individual){
+    public static void writeSolutionToFile(ALNSIndividual individual, String fileName){
         ArrayList<Object> operators = individual.getOperators();
         // Format: operator id: (node number, visitNumber - not important, isHandling, arrival time in node)
         String writeString = "";
@@ -30,7 +31,9 @@ public class SolutionFileMaker {
                 double travelTimeFromPrevNodeToFirstNodeInCarMove = individual.getProblemInstance()
                         .getTravelTimeBike(previousNode,carMove.getFromNode());
                 double timeOfArrival = currentTime + travelTimeFromPrevNodeToFirstNodeInCarMove;
-                operatorString += "(" +carMove.getFromNode().getNodeId() + ",0,0," + MathHelper.round(timeOfArrival,2) + "),";
+                if(!previousNode.equals(carMove.getFromNode())){
+                    operatorString += "(" +carMove.getFromNode().getNodeId() + ",0,0," + MathHelper.round(timeOfArrival,2) + "),";
+                }
                 currentTime += operator.getTravelTime(previousNode, carMove, currentTime);
                 previousNode = carMove.getToNode();
                 operatorString += "(" + carMove.getToNode().getNodeId() + ",0,1," + MathHelper.round(currentTime,2) + "),";
@@ -38,7 +41,8 @@ public class SolutionFileMaker {
             operatorString = operatorString.substring(0, operatorString.length() - 1) + "\n";
             writeString += operatorString;
         }
-        System.out.println(writeString);
+        FileHandler fileHandler = new FileHandler(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER + fileName, false);
+        fileHandler.writeFile(writeString);
     }
 
 }
