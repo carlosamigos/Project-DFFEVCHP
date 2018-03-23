@@ -20,7 +20,7 @@ public class GASolver extends Solver {
 	}
 
 	@Override
-	public void solve(ProblemInstance problemInstance) {
+	public Individual solve(ProblemInstance problemInstance) {
 		this.population = initializePopulation();
 		int iteration = 0;
 		int iterationsSinceBestUpdated = 0;
@@ -35,6 +35,7 @@ public class GASolver extends Solver {
 				diversifyPopulation(this.population);
 			}
 		}
+		return null;
 		
 	}
 

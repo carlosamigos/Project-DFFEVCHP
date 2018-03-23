@@ -1,6 +1,7 @@
 package code.solver;
 
 import code.problem.ProblemInstance;
+import code.solver.heuristics.Individual;
 import constants.Constants;
 import constants.FileConstants;
 
@@ -20,7 +21,7 @@ public class MoselSolver extends Solver {
 	}
 
 	@Override
-	public void solve(ProblemInstance problemInstance) {
+	public Individual solve(ProblemInstance problemInstance) {
 		compile();
 		fixParameters(problemInstance.getFileName());
 		fixDataFile(problemInstance.getFilePath());
@@ -28,6 +29,7 @@ public class MoselSolver extends Solver {
 		System.out.print("Solving " + problemInstance.getFilePath() + " ");
 		//this.model.run();
 		//this.model.reset();
+		return null;
 	}
 
 	private void fixDataFile(String dataFile) {

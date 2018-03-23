@@ -8,7 +8,7 @@ public class HeuristicsConstants {
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 200;
     public final static int TABU_SIZE = 2;
-    public final static int TABU_ITERATIONS = 20000;
+    public final static int TABU_ITERATIONS = 2000;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
@@ -20,7 +20,7 @@ public class HeuristicsConstants {
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
 
     // This variable decides when to destroy the current solution
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 2000;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 5000;
    
     
     
@@ -29,7 +29,7 @@ public class HeuristicsConstants {
     public final static double ALNS_FOUND_NEW_BEST_REWARD = 2.0;
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 10.0;
     public final static double ALNS_UPDATE_FACTOR = 0.5;
-    public final static double ALNS_DESTROY_FACTOR = 0.3;
+    public final static double ALNS_DESTROY_FACTOR = 0.5;
     
 
     //Punishes the size of operator list, relative to the travel time

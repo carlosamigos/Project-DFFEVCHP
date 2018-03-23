@@ -4,6 +4,7 @@ import java.util.*;
 
 import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
+import code.solver.heuristics.Individual;
 import code.solver.heuristics.alns.ALNSIndividual;
 import code.solver.heuristics.alns.TabuList;
 import code.solver.heuristics.entities.CarMove;
@@ -12,6 +13,7 @@ import code.solver.heuristics.mutators.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.DeepCopy;
+import utils.SolutionFileMaker;
 
 public class ALNSSolver extends Solver {
 	
@@ -84,7 +86,7 @@ public class ALNSSolver extends Solver {
 
 	
 	@Override
-	public void solve(ProblemInstance problemInstance) {
+	public Individual solve(ProblemInstance problemInstance) {
 		best.calculateMoselFitness();
 		this.tabuList = new TabuList(this.tabuSize);
 		int iteration = 0;
@@ -167,6 +169,7 @@ public class ALNSSolver extends Solver {
 		}
 		cleanBest();
 		best.calculateMoselFitness();
+		return best;
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {
@@ -205,6 +208,7 @@ public class ALNSSolver extends Solver {
 	 */
 
 	private void destroyAndRepair(){
+		System.out.println("\n Destroys and repairs!");
 		int numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
 		destroy(numberToHandle);
 		repair(numberToHandle);
