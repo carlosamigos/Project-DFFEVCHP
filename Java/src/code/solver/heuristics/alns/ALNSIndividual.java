@@ -1051,6 +1051,8 @@ public class ALNSIndividual extends Individual implements Serializable {
 		System.out.println("Number of postponed: " + numberPostponed);
 	}
 
+
+
 	public ProblemInstance getProblemInstance() {
 		return problemInstance;
 	}
