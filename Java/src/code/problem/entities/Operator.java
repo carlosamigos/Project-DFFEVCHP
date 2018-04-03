@@ -16,6 +16,7 @@ public class Operator implements Serializable {
     private double totalIdleTime = 0.0;
     private double arrivalTimeToNextOrCurrentNode = Constants.START_TIME;
     private boolean wasHandlingToNextCurrentNode = false;
+    private Car car = null;
 
 
     public Operator(int id) {
@@ -83,6 +84,14 @@ public class Operator implements Serializable {
 
     public void setWasHandlingToNextCurrentNode(boolean wasHandlingToNextCurrentNode) {
         this.wasHandlingToNextCurrentNode = wasHandlingToNextCurrentNode;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
     }
 
     @Override

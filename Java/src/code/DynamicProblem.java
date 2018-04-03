@@ -131,6 +131,7 @@ public class DynamicProblem {
                 operator.setPreviousNode(arrivalNode);
                 operator.setTimeRemainingToCurrentNextNode(0);
                 operator.setHandling(false);
+                operator.setCar(null);
                 Car car = nextOperatorTravelArrival.getCar();
                 if(Constants.PRINT_OUT_ACTIONS) {
                     System.out.println("Operator " + operator + " arrives with car " + car);
@@ -214,6 +215,7 @@ public class DynamicProblem {
                             if(((ParkingNode) departureNode).getCarsRegular().size()==0){
                                 // car taken by customer, make operator inactive
                                 operatorDepartures.put(operator,new ArrayList<>());
+                                operator.setCar(null);
                             } else {
                                 if(arrivalNode instanceof ParkingNode){
                                     //take regular car
@@ -228,6 +230,7 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
+                                        operator.setCar(car);
                                         if(Constants.PRINT_OUT_ACTIONS){
                                             System.out.println("Operator travel made: "+ travel+ ", toNode="+travel.getArrivalNode());
                                         }
@@ -235,6 +238,7 @@ public class DynamicProblem {
                                     } else {
                                         operator.setPreviousNode(departureNode);
                                         operator.setNextOrCurrentNode(departureNode);
+                                        operator.setCar(null);
                                         if(Constants.PRINT_OUT_ACTIONS){
                                             System.out.println("Car missed by operator... operator will wait.");
                                         }
@@ -255,6 +259,7 @@ public class DynamicProblem {
                                         operator.setNextOrCurrentNode(travel.getArrivalNode());
                                         operator.setPreviousNode(travel.getPickupNode());
                                         operator.setHandling(true);
+                                        operator.setCar(car);
                                         if(Constants.PRINT_OUT_ACTIONS){
                                             System.out.println("Operator travel made: "+ travel + ", toNode="+travel.getArrivalNode());
                                         }
@@ -305,6 +310,7 @@ public class DynamicProblem {
                     operator.setPreviousNode(arrivalNode);
                     operator.setTimeRemainingToCurrentNextNode(0);
                     operator.setHandling(false);
+                    operator.setCar(null);
                     if(travel != null){
                         updateIdleTimesOperator(operator,time,previousTime);
                         operator.setArrivalTimeToNextOrCurrentNode(travel.getArrivalTime());
@@ -413,8 +419,6 @@ public class DynamicProblem {
             }
         }
     }
-
-
 
     private void updateIdleTimesOperator(Operator operator,double time, double previousTime){
         if(operator.getNextOrCurrentNode().equals(operator.getPreviousNode())){
@@ -666,7 +670,7 @@ public class DynamicProblem {
         HashMap<Operator,ArrayList<OperatorArrival>> arrivals = new HashMap<>();
 
         try {
-            FileReader fileReader = new FileReader(FileConstants.MOSEL_OUTPUT_REAL + fileName + ".txt");
+            FileReader fileReader = new FileReader(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER + fileName + ".txt");
             BufferedReader br = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
