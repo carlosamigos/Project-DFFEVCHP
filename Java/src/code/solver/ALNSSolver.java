@@ -225,7 +225,7 @@ public class ALNSSolver extends Solver {
 			Random rand = new Random();
 			int index = rand.nextInt(neighborhood.size());
 			Iterator<Mutation> iter = neighborhood.iterator();
-			for (int j = 0; i < index; i++) {
+			for (int j = 0; j < index; j++) {
 				iter.next();
 			}
 			candidate = iter.next();
