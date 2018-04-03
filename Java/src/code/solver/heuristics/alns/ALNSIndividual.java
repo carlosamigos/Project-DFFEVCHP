@@ -1035,6 +1035,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 		}
 		System.out.println("\nDeviation from ideal: "+ devIdeal);
 
+
 		int numberOfChargedCars = 0;
 		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
 			if(capacitiesUsed.get(chargingNode) > chargingNode.getNumberOfAvailableChargingSpotsNextPeriod()) {

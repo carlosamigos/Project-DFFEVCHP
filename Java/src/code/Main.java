@@ -22,7 +22,7 @@ public class Main {
 		boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
-		String fileName = "test_100nodes_6so_6c_30mov_10charging_0finishes_0MODE_c";
+		String fileName = "test_400nodes_10so_7c_60mov_20charging_0finishes_0MODE_a";
     	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
     	for(int i = 0; i < 1; i++) {
     		ALNSSolver solver = new ALNSSolver(problemInstance);

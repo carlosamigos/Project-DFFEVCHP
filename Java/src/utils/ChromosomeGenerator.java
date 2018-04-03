@@ -82,7 +82,7 @@ public class ChromosomeGenerator {
                 HashMap<Car,Double> remainingTravelTime) throws NullPointerException{
 
         double carMoveTimeThreshold = HeuristicsConstants.MAX_THRESHOLD_CARMOVE_DISTANCE;
-        double travelTime;
+        double handlingTime;
         for(ParkingNode senderNode : senderNodes){
             int incomingCars = (incomingCarsToParkingNodes.get(senderNode) == null)
                     ? 0 : incomingCarsToParkingNodes.get(senderNode).size();
@@ -94,9 +94,9 @@ public class ChromosomeGenerator {
             for(Car carInCarMove : senderNode.getCarsRegular().subList(0, numberOfCarsToMove - incomingCars)){
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
-                    travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode);
-                    if(travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
-                        carMoves.get(carInCarMove).add( new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0));
+                    handlingTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
+                    if(handlingTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
+                        carMoves.get(carInCarMove).add( new CarMove(senderNode, receiverNode, carInCarMove, handlingTime, 0.0));
                     }
                 }
                 carsAdded += 1;
@@ -108,9 +108,9 @@ public class ChromosomeGenerator {
                 for (Car car : incomingCarsToParkingNodes.get(senderNode)) {
                     carMoves.put(car, new ArrayList<>());
                     for (ParkingNode receiverNode : receiverNodes) {
-                        travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode);
-                        if (travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
-                            carMoves.get(car).add(new CarMove(senderNode, receiverNode, car, travelTime, remainingTravelTime.get(car)));
+                        handlingTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
+                        if (handlingTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
+                            carMoves.get(car).add(new CarMove(senderNode, receiverNode, car, handlingTime, remainingTravelTime.get(car)));
                         }
                     }
                     carsAdded += 1;
@@ -152,8 +152,8 @@ public class ChromosomeGenerator {
             for(Car car : parkingNode.getCarsInNeed()){
                 carMoves.put(car, new ArrayList<>());
                 for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
-                		double travelTime = problemInstance.getTravelTimeCar(parkingNode, chargingNode);
-                		carMoves.get(car).add(new CarMove(parkingNode, chargingNode, car, travelTime, 0.0));
+                		double handlingTime = problemInstance.getTravelTimeCar(parkingNode, chargingNode) + problemInstance.getHandlingTimeC();
+                		carMoves.get(car).add(new CarMove(parkingNode, chargingNode, car, handlingTime, 0.0));
                 }
             }
         }
@@ -168,9 +168,9 @@ public class ChromosomeGenerator {
                     carMoves.put(car, new ArrayList<>());
                     ParkingNode fromNode = problemInstance.getChargingToParkingNode().get(chargingNode);
                     for(ParkingNode toNode : receiverNodes){
-                        double travelTime = problemInstance.getTravelTimeCar(fromNode, toNode);
+                        double handlingTime = problemInstance.getTravelTimeCar(fromNode, toNode) + problemInstance.getHandlingTimeP();
                         double startTime = car.getRemainingChargingTime();
-                        carMoves.get(car).add(new CarMove(fromNode, toNode, car, travelTime, startTime));
+                        carMoves.get(car).add(new CarMove(fromNode, toNode, car, handlingTime, startTime));
                     }
                 }
             }
