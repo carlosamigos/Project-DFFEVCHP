@@ -22,6 +22,9 @@ public class ALNSSolver extends Solver {
 	private final int iterations;
 	private int tabuSize;
 	
+	private long startTime;
+	private long endTime;
+	
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
 	private HashMap<Integer, GenerateNeighborhood> mutationToNeighborhood;
@@ -85,6 +88,8 @@ public class ALNSSolver extends Solver {
 	
 	@Override
 	public Individual solve(ProblemInstance problemInstance) {
+		this.startTime = System.currentTimeMillis();
+		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
 		this.tabuList = new TabuList(this.tabuSize);
 		int iteration = 0;
 		int counter = 0;        // counts number of rounds with delta > 0
@@ -265,7 +270,7 @@ public class ALNSSolver extends Solver {
 	}
 	
 	private boolean done(int iteration) {
-		return iteration >= iterations;
+		return iteration >= iterations || System.currentTimeMillis() > this.endTime;
 	}
 	
 	/*
