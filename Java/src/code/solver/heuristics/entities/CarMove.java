@@ -1,15 +1,12 @@
 package code.solver.heuristics.entities;
 
-import java.io.Serializable;
-
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.Node;
 import code.problem.nodes.ParkingNode;
 import constants.Constants;
 
-@SuppressWarnings("serial")
-public class CarMove implements Serializable {
+public class CarMove {
 
     private ParkingNode fromNode;
     private Node toNode; //either ParkingNode or ChargingNode

@@ -19,17 +19,18 @@ import utils.SolutionFileMaker;
 public class Main {
 
     public static void main(String[] args) {
-		boolean testing = true;
+	boolean testing = false;
     	setConstants(args);
     	createTestingFolders();
-		String fileName = "test_400nodes_10so_7c_60mov_20charging_0finishes_0MODE_a";
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
-    	for(int i = 0; i < 1; i++) {
-    		ALNSSolver solver = new ALNSSolver(problemInstance);
-        BestIndividual best = (BestIndividual) solver.solve(problemInstance);
-		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
-        System.out.println(best);
-    	}
+//	String fileName = "test_12nodes_2so_1c_4mov_4charging_0finishes_0MODE_a";
+//    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
+//    	for(int i = 0; i < 1; i++) {
+//    		ALNSSolver solver = new ALNSSolver(problemInstance);
+//        BestIndividual best = (BestIndividual) solver.solve(problemInstance);
+//		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
+//        System.out.println(best);
+//    	}
+
     	
 
     	if(!testing) {
@@ -79,8 +80,8 @@ public class Main {
     			String solver = input.get(key);
     			if (solver == "mosel") {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
-    			} else if (solver == "ga") {
-    				Constants.SOLVER_TYPE = Constants.SolverType.GA;
+    			} else if (solver == "alns") {
+    				Constants.SOLVER_TYPE = Constants.SolverType.ALNS;
     			} else {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
     			}

@@ -27,7 +27,7 @@ public class SolutionFileMaker {
             int numberOfNodes = problemInstance.getNodeMap().keySet().size();
             int artificialNodeNumber = numberOfNodes + i + 1;
             // Add artificial node:
-            operatorString = "" + i + ": (" + artificialNodeNumber + ",1,0,0),";
+            operatorString = "" + (i + Constants.START_INDEX) + ": (" + artificialNodeNumber + ",1,0,0),";
             // Add operator's start node
             operatorString += "(" + previousNode.getNodeId() + ",0,0," + currentTime + "),";
             for(CarMove carMove : operators.get(i)){
