@@ -103,7 +103,7 @@ public class ALNSSolver extends Solver {
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
 			if(iteration != 0 && iteration % 100 == 0){
-				if(Constants.PRINT_OUT_ACTIONS) {
+				if(HeuristicsConstants.PRINT_OUT_PROGRESS) {
 					System.out.println("\nIteration: " + iteration + " Best fitness: "
 							+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"
 							+ String.format("%.1f", this.individual.getFitness()));

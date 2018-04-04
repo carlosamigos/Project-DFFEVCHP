@@ -1,6 +1,8 @@
 package constants;
 
 public class HeuristicsConstants {
+
+    public final static boolean PRINT_OUT_PROGRESS = false;
     
     // Chromosome Generator
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
@@ -9,7 +11,7 @@ public class HeuristicsConstants {
     public final static int TABU_NEIGHBORHOOD_SIZE = 200;
     public final static int TABU_SIZE = 2;
     public final static int TABU_ITERATIONS = 20000;
-    public final static int ALNS_MAX_TIME_SECONDS = 2;
+    public final static int ALNS_MAX_TIME_SECONDS = 15;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 1;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
