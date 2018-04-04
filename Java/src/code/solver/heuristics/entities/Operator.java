@@ -235,6 +235,29 @@ public class Operator {
 	public boolean getChanged() {
 		return this.changed;
 	}
+
+	public double calculateTotalTravelTime(){
+		double currentTime = this.startTime;
+		Node previousNode = this.startNode;
+		for(int i = 0; i < this.carMoves.size(); i++) {
+			CarMove currentMove = this.carMoves.get(i);
+			currentTime += getTravelTime(previousNode, currentMove, currentTime);
+			previousNode = currentMove.getToNode();
+		}
+		return currentTime;
+	}
+
+	public void resetOperator(){
+		for(ChargingNode chargingNode : chargingCapacityUsedOperator.keySet()) {
+			this.chargingCapacityUsedOperator.put(chargingNode, 0);
+		}
+		for(ParkingNode parkingNode : movesToParkingNodeByOperator.keySet()) {
+			this.movesToParkingNodeByOperator.put(parkingNode, 0);
+		}
+		this.changed = true;
+		this.fitness = 0;
+
+	}
 	
 	@Override
 	public String toString() {

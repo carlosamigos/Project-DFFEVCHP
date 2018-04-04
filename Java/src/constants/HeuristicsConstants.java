@@ -21,7 +21,7 @@ public class HeuristicsConstants {
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
 
     // This variable decides when to destroy the current solution
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 5000;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 12000;
    
     
     
@@ -45,11 +45,12 @@ public class HeuristicsConstants {
     public final static double TABU_EJECTION_INSERT_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
     
     //Initial solution
-    public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0;
-    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 1;
-    public final static double TABU_IDEAL_STATE_INITIAL_REWARD = 5;
+    public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.02;
+    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 5;
+    public final static double TABU_IDEAL_STATE_INITIAL_REWARD = 2;
     public final static double TABU_INITIAL_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_INITIAL_SURPLUS_IDEAL_STATE_COST = 0;
+    public final static boolean ALNS_INITIAL_GREEDY_BUILD = true;
 
     
     

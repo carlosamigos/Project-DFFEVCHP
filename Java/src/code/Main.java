@@ -30,6 +30,7 @@ public class Main {
 //		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
 //        System.out.println(best);
 //    	}
+
     	
 
     	if(!testing) {

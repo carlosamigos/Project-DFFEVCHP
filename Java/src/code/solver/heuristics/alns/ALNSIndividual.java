@@ -50,16 +50,33 @@ public class ALNSIndividual extends Individual {
 		this.carMovesCounter = countCarMoves();
 		this.carsNotInUse = new HashSet<Car>();
 
-		// Constructing initial solution
+		// Set up the general construct
 		createOperators();
 		initateCapacities();
 		initiateDeviations();
-		addCarMovesToOperators();
-		initiateDeviations();
-		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
-		calculateFitness();
-		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
-		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+
+		// Build the initial solution
+		if(HeuristicsConstants.ALNS_INITIAL_GREEDY_BUILD){
+			addCarMovesToOperators();
+			initiateDeviations();
+			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			calculateFitness();
+			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+		}
+		else{
+			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			calculateFitness();
+			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			addCarMovesToOperatorAlt();
+			initiateDeviations();
+			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			calculateFitness();
+			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+		}
+
 	}
 
 	//================================================================================
@@ -70,7 +87,7 @@ public class ALNSIndividual extends Individual {
 	// INITIATORS
 	// -------------------------------------------------------------------------------
 
-	//Inititiate carMovesCopy
+	// * Initiate carMovesCopy
 	private HashMap<Car, Integer> countCarMoves(){
 		HashMap<Car, Integer> carMovesCounter = new HashMap<>();
 		for (Car car: unusedCarMoves.keySet()) {
@@ -79,7 +96,7 @@ public class ALNSIndividual extends Individual {
 		return carMovesCounter;
 	}
 
-	//Initiate operators
+	// * Initiate operators
 	private void createOperators(){
 		operators = new ArrayList<>();
 		for (int i = 0; i < problemInstance.getOperators().size(); i++) {
@@ -91,6 +108,7 @@ public class ALNSIndividual extends Individual {
 		}
 	}
 
+	// * Initiate capacities
 	private void initateCapacities(){
 		capacities = new HashMap<>();
 		capacitiesUsed = new HashMap<>();
@@ -106,8 +124,7 @@ public class ALNSIndividual extends Individual {
 		this.capacitiesUsed = capacitiesUsed;
 	}
 
-
-	//Initiate deviation from ideal states
+	// * Initiate deviation from ideal states
 	private void initiateDeviations(){
 		deviationFromIdealState = new HashMap<>();
 		initialDeviationFromIdealState =  new HashMap<>();
@@ -125,8 +142,93 @@ public class ALNSIndividual extends Individual {
 	//  IDENTIFY CAR MOVES FOR INITIAL SOLUTION
 	// -------------------------------------------------------------------------------
 
-	// Overall algorithm
-	// * Adds car moves until no car moves remaining
+	// * Approach 1: Calculates based on regret value
+	private void addCarMovesToOperatorAlt(){
+		boolean operatorAvailable = true;
+		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
+		while(operatorAvailable){
+			operatorAvailable = false;
+			CarMove carMove = null;
+			Operator op = null;
+			int indexRegret = 0;
+			double regret = Double.MAX_VALUE;
+			for (Car car: carMovesCopy.keySet()) {
+				for (CarMove carM: carMovesCopy.get(car)) {
+					int index = 0;
+					double[] operatorFitness = new double[this.operators.size()];
+					int[] operatorIndex = new int[this.operators.size()];
+					for (Object operat: this.operators){
+						Operator operator = (Operator) operat;
+						double fitnessBest = Double.MAX_VALUE;
+						int insertIndexCandidate = 0;
+						for (int i = 0; i <= operator.getCarMoveListSize(); i++) {
+							double fitnessDelta = rateCarMoveAlt(operator, carM, i);
+							if (fitnessDelta < fitnessBest) {
+								fitnessBest = fitnessDelta;
+								insertIndexCandidate = i;
+								operatorAvailable = true;
+							}
+						}
+						operatorFitness[index] = fitnessBest;
+						operatorIndex[index] = insertIndexCandidate;
+						index++;
+					}
+					double regretCandidate = findRegret(operatorFitness);
+					if(regretCandidate < regret){
+						regret = regretCandidate;
+						int candidateIndex = findLargestIndex(operatorFitness);
+						op = (Operator) this.operators.get(candidateIndex);
+						carMove = carM;
+						indexRegret = operatorIndex[candidateIndex];
+					}
+				}
+			}
+			if(operatorAvailable) {
+				System.out.println("Removed a car");
+				op.addCarMove(indexRegret, carMove);
+				carMovesCopy.remove(carMove.getCar());
+				op.getFitness();
+				this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+				this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+				this.unusedCarMoves.get(carMove.getCar()).remove(carMove);
+			}
+		}
+		resetOperator();
+	}
+
+	private int findLargestIndex(double[] fitness) {
+		int index = 0;
+		double largest = Double.MAX_VALUE;
+		for (int i = 0; i < fitness.length; i++) {
+			if (fitness[i] < largest) {
+				largest = fitness[i];
+				index = i;
+			}
+		}
+		return index;
+	}
+
+	private double findRegret(double[] fitness){
+		double largest = Double.MAX_VALUE;
+		double second = Double.MAX_VALUE;
+		for (int i = 0; i < fitness.length; i++) {
+			if(fitness[i] < largest){
+				largest = fitness[i];
+			}else if(fitness[i] < second){
+				second = fitness[i];
+			}
+		}
+		return largest - second;
+	}
+
+	private void resetOperator(){
+		for(Object op: this.operators){
+			Operator operator = (Operator) op;
+			operator.resetOperator();
+		}
+	}
+
+	// * Approach 2: Add car moves sequentially
 	private void addCarMovesToOperators() {
 		boolean operatorAvailable = true;
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
@@ -198,6 +300,21 @@ public class ALNSIndividual extends Individual {
 			fitNess += HeuristicsConstants.TABU_IDEAL_STATE_INITIAL_REWARD * deviationFromIdealState.get(carMove.getToNode());
 		}
 		return fitNess;
+
+	}
+
+	private double rateCarMoveAlt(Operator op, CarMove carMove, int index){
+		OperatorState operatorState = setOperatorState(op);
+		op.addCarMove(index, carMove);
+
+		// Calculate fitness
+		double deltaFitness = calculateDeltaFitness(op, operatorState);
+		deltaFitness += HeuristicsConstants.TABU_TRAVEL_COST_INITIAL_CONSTRUCTION * op.calculateTotalTravelTime();
+
+		// Revert
+		resetOperator(operatorState);
+
+		return deltaFitness;
 
 	}
 
