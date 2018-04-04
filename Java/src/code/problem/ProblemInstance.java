@@ -59,6 +59,7 @@ public class ProblemInstance implements Serializable{
 
     public ProblemInstance(String filePath) {
     	this.filePath = filePath;
+    	System.out.println(filePath);
     	String[] split = filePath.split("/");
         this.fileName = split[split.length-1];
         this.parkingNodes = new ArrayList<>();
@@ -722,8 +723,10 @@ public class ProblemInstance implements Serializable{
 
             writer.close();
         } catch (FileNotFoundException e){
+        		System.out.println("FOo");
             System.out.println(e.getMessage());
         } catch (UnsupportedEncodingException e){
+        		System.out.println("FOo");
             System.out.println(e.getMessage());
         }
     }

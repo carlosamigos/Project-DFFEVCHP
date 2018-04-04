@@ -1,5 +1,6 @@
 package code.solver;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import code.problem.ProblemInstance;
@@ -19,11 +20,12 @@ public class ALNSSolver extends Solver {
 	private ALNSIndividual individual;
 	private BestIndividual bestIndividual;
 	private TabuList tabuList;
-	private final int iterations;
+	private int iterations;
 	private int tabuSize;
 	
 	private long startTime;
 	private long endTime;
+	private double timeUsed;
 	
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
@@ -36,15 +38,17 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, String> mutationIdToDescription;
 	private double weightSum = 0.0;
 	
+	public ALNSSolver() {}
+	
 	public ALNSSolver(ProblemInstance problemInstance) {
-		this(HeuristicsConstants.TABU_ITERATIONS, HeuristicsConstants.TABU_SIZE, problemInstance);
+		setVariables(problemInstance);
 	}
 	
-	public ALNSSolver(int iterations, int tabuSize, ProblemInstance problemInstance) {
-		this.iterations = iterations;
+	private void setVariables(ProblemInstance problemInstance) {
+		this.iterations = HeuristicsConstants.TABU_ITERATIONS;
 		this.individual =  new ALNSIndividual(problemInstance);
 		setBest();
-		this.tabuSize = tabuSize;
+		this.tabuSize = HeuristicsConstants.TABU_SIZE;
 		this.solutionsSeen = new HashMap<>();
 		this.initializeMutationIdToDescription();
 		this.initializeMutationWeights();
@@ -88,6 +92,8 @@ public class ALNSSolver extends Solver {
 	
 	@Override
 	public Individual solve(ProblemInstance problemInstance) {
+		setVariables(problemInstance);
+//		System.out.println(bestIndividual);
 		this.startTime = System.currentTimeMillis();
 		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
 		this.tabuList = new TabuList(this.tabuSize);
@@ -96,9 +102,11 @@ public class ALNSSolver extends Solver {
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
 			if(iteration != 0 && iteration % 100 == 0){
-				System.out.println("\nIteration: " + iteration + " Best fitness: "
-						+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"
-						+ String.format("%.1f", this.individual.getFitness()));
+				if(Constants.PRINT_OUT_ACTIONS) {
+					System.out.println("\nIteration: " + iteration + " Best fitness: "
+							+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"
+							+ String.format("%.1f", this.individual.getFitness()));
+				}
 				this.updateWeights();
 			}
 
@@ -167,6 +175,7 @@ public class ALNSSolver extends Solver {
 			}
 
 		}
+		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
 		return bestIndividual;
 	}
 	
@@ -258,7 +267,7 @@ public class ALNSSolver extends Solver {
 	
 	@Override
 	public String getInfo() {
-		return "Tabu search";
+		return "ALNS search";
 	}
 
 	private HashMap<Mutation, Integer> getNeighborhoodRemove(){
@@ -446,5 +455,23 @@ public class ALNSSolver extends Solver {
 			i++;
 		}
 		return neighborhood.iterator().next();
+	}
+
+	@Override
+	public ArrayList<String> getResults() {
+		DecimalFormat df = 	new DecimalFormat("#.##");
+		String bestSolution = df.format(-bestIndividual.getFitness());
+		String timeUsed = df.format(this.timeUsed);
+		String deviation = "" + bestIndividual.getDeviationFromIdeal();
+		String uncharged = "" + bestIndividual.getNumberOfUnchargedCars();
+		
+		return new ArrayList<String>(){{
+			add(bestSolution);
+			add("N/A");
+			add("N/A");
+			add(timeUsed);
+			add(deviation);
+			add(uncharged);
+		}};
 	}
 }

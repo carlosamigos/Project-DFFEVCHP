@@ -4,7 +4,7 @@ public class Constants {
 
 
 	// General Parameters
-	public final static boolean PRINT_OUT_ACTIONS = true;
+	public final static boolean PRINT_OUT_ACTIONS = false;
 	public final static boolean DETAILED_PRINTOUTS = false;
 	
 	// Cost Parameters
@@ -12,7 +12,7 @@ public class Constants {
     public final static double COST_DEVIATION = 10;
 
     // Test Parameters
-    public static SolverType SOLVER_TYPE = SolverType.MOSEL;
+    public static SolverType SOLVER_TYPE = SolverType.ALNS;
     public static TestType TEST_TYPE = TestType.DYNAMIC;
     public final static int NUMBER_OF_DAYS_TO_TEST = 4;
     public final static int START_TIME = 60*8; // Minutes from midnight
@@ -30,7 +30,7 @@ public class Constants {
 
     public enum SolverType {
     	MOSEL,
-    	GA;
+    	ALNS;
     }
     
     public enum TestType {

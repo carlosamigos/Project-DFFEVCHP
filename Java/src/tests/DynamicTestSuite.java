@@ -14,6 +14,7 @@ import code.solver.Solver;
 import constants.Constants;
 import constants.Constants.SolverType;
 import constants.FileConstants;
+import constants.HeuristicsConstants;
 import utils.FileHandler;
 import utils.StringUtils;
 
@@ -29,7 +30,7 @@ public class DynamicTestSuite extends TestSuite{
 
 	
 	public void runTestSuite() {
-		System.out.println("Starting dynamic test suite...");
+		System.out.println("Starting dynamic test suite... (folder: " + FileConstants.TEST_DYNAMIC_INITIAL_FOLDER + ")");
 		System.out.println("Number of test files, days, and models: " + testFileNames.size() + ", " + this.days + ", " + this.solvers.size() + "\n");
 		int runsLeft = testFileNames.size() * days * this.solvers.size();
 		double timePerRun = calcTimePerRun();
@@ -39,7 +40,7 @@ public class DynamicTestSuite extends TestSuite{
 		for(String test : testFileNames) {
 			
 			System.out.println("Solving " + test);
-			ProblemInstance cleanProblemInstance = new ProblemInstance(test);
+			ProblemInstance cleanProblemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER + test);
 			this.writeTestHeader(test);
 			this.kpiTrackers =  new HashMap<>();
 			
@@ -54,7 +55,7 @@ public class DynamicTestSuite extends TestSuite{
 				for(Solver solver : this.solvers) {
 					System.out.println("Using " + solver.getInfo() + " on day " + day);
 					// Read clean demand requests
-					ProblemInstance problemInstance = new ProblemInstance(test);
+					ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER + test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
 					solverSimulationModel.readSimulationModelFromFile(); // Burde vaert i konstruktoren til SimulationModel?
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);
@@ -200,9 +201,21 @@ public class DynamicTestSuite extends TestSuite{
 	
 	@Override
 	protected double calcTimePerRun() {
+		int maxTime;
+		switch(this.solverType) {
+		case MOSEL:
+			maxTime = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
+			break;
+		case ALNS:
+			maxTime = HeuristicsConstants.ALNS_MAX_TIME_SECONDS;
+			break;
+		default:
+			maxTime = Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
+		}
+		
 		double numberOfSubProblems = ((Constants.END_TIME - 2*Constants.TIME_LIMIT_STATIC_PROBLEM + Constants.TIME_INCREMENTS)
 				- Constants.START_TIME)/Constants.TIME_INCREMENTS;
-		double timePerRun = numberOfSubProblems * Constants.MAX_SOLVE_TIME_MOSEL_SECONDS;
+		double timePerRun = numberOfSubProblems * maxTime;
 		return timePerRun;
 	}
 	

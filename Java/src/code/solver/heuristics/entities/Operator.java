@@ -1,6 +1,5 @@
 package code.solver.heuristics.entities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,8 +10,7 @@ import code.solver.heuristics.alns.ALNSIndividual;
 import constants.Constants;
 import constants.HeuristicsConstants;
 
-@SuppressWarnings("serial")
-public class Operator implements Serializable {
+public class Operator {
 
 	public final int id;
 

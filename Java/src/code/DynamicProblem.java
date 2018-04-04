@@ -62,15 +62,14 @@ public class DynamicProblem {
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("State before solving mosel: "+problemInstance + "\n");
             }
-            KPITrackerStatic tracker = new KPITrackerStatic();
+            KPITrackerStatic tracker = new KPITrackerStatic(problemInstance.getFileName());
             this.solver.solve(problemInstance);
             doPeriodActions(time, time + Constants.TIME_INCREMENTS, customerTravels,operatorTravels,subproblemNo);
             subproblemNo++;
-            tracker.setResults(problemInstance.getFilePath());
+            tracker.setResults(solver);
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
-
-
         }
+        
         kpiTrackerDyanmic.updateIdleTimeForOperators();
         if(Constants.PRINT_OUT_ACTIONS){
             System.out.println(kpiTrackerDyanmic);

@@ -1,5 +1,12 @@
 package code.solver;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import code.problem.ProblemInstance;
 import code.solver.heuristics.Individual;
 import constants.Constants;
@@ -65,6 +72,38 @@ public class MoselSolver extends Solver {
 	@Override
 	public String getInfo() {
 		return this.moselFileName;
+	}
+
+	@Override
+	public ArrayList<String> getResults() {
+		 ArrayList<String> currResults = new ArrayList<String>();
+        try (Stream<String> stream = Files.lines(Paths.get(FileConstants.STATIC_RUN_STATS))) {
+            stream.forEach(result -> currResults.add(result));
+        } catch (IOException e) {
+            System.out.println("Could not find stats file from static run");
+        }
+
+        DecimalFormat df = 	new DecimalFormat("#.##");
+        String gapString;
+        String bestSolution;
+        if(currResults.get(0).contains("e")) {
+            gapString = "N/A";
+            bestSolution = "N/A";
+        } else {
+            double gap = (Double.parseDouble(currResults.get(0)) - Double.parseDouble(currResults.get(1)))/
+                    Double.parseDouble(currResults.get(0)) *100;
+            gapString = df.format(gap) + "%";
+            bestSolution = df.format(Double.parseDouble(currResults.get(0)));
+        }
+        
+        return new ArrayList<String>(){{
+			add(bestSolution);
+			add(currResults.get(1));
+			add(gapString);
+			add(df.format(Double.parseDouble(currResults.get(2))));
+			add(df.format(Double.parseDouble(currResults.get(3))));
+			add(df.format(Double.parseDouble(currResults.get(4))));
+		}};
 	}
 
 }
