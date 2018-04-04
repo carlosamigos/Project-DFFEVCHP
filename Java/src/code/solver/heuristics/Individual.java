@@ -2,7 +2,7 @@ package code.solver.heuristics;
 
 import java.util.ArrayList;
 
-public abstract class Individual implements Comparable<Object> {
+public abstract class Individual {
 
 	protected double fitness;
 	protected int numberOfUnchargedCars;

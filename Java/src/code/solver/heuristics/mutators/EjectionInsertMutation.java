@@ -22,8 +22,6 @@ public class EjectionInsertMutation extends Mutation {
         this.hashCode = Integer.parseInt(hashString);
     }
 
-
-
     @Override
     public int getId() {
         return id;

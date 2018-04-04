@@ -46,6 +46,7 @@ public class FileHandler {
 
 			if (!file.exists()) {
 				file.createNewFile();
+				this.cleared = true;
 			} else if(this.clear && !this.cleared) {
 				fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);

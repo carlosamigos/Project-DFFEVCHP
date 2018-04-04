@@ -30,12 +30,6 @@ public class BestIndividual extends Individual {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public ArrayList<Object> getRepresentation() {
 		// TODO Auto-generated method stub
 		return null;

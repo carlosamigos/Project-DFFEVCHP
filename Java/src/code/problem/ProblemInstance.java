@@ -393,8 +393,6 @@ public class ProblemInstance implements Serializable{
     }
 
     public void writeProblemInstanceToFile(){
-        //System.out.println("Writing state to file...");
-        // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
             PrintWriter writer = new PrintWriter(FileConstants.TEST_DYNAMIC_FOLDER + fileName +".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {

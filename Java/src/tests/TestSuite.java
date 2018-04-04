@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import code.solver.ALNSSolver;
 import code.solver.MoselSolver;
 import code.solver.Solver;
 import constants.Constants.SolverType;
@@ -34,7 +35,6 @@ public abstract class TestSuite {
 				        return name.endsWith(".txt") && pathname.isFile();
 				    }
 		});
-		System.out.println(testFolder);
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
@@ -44,9 +44,13 @@ public abstract class TestSuite {
 	}
 	
 	protected void instantiateSolvers() {
+		this.solvers = new ArrayList<Solver>();
 		switch(this.solverType) {
 		case MOSEL:
 			instantiateMoselSolvers();
+			break;
+		case ALNS:
+			instantiateALNSSolvers();
 			break;
 		default:
 			instantiateMoselSolvers();
@@ -54,7 +58,6 @@ public abstract class TestSuite {
 	}
 	
 	protected void instantiateMoselSolvers() {
-		this.solvers = new ArrayList<Solver>();
 		File[] moselFiles = (new File(FileConstants.MOSEL_TEST_FILES_FOLDER)).listFiles();
 		ArrayList<String> moselFileNames =  new ArrayList<String>();
 		for(File file : moselFiles) {
@@ -66,6 +69,10 @@ public abstract class TestSuite {
 		for(String moselFileName : moselFileNames) {
 			solvers.add(new MoselSolver(FileConstants.MOSEL_TEST_FILES_FOLDER + moselFileName));
 		}
+	}
+	
+	protected void instantiateALNSSolvers() {
+		solvers.add(new ALNSSolver());
 	}
 	
 	protected void printEstimatedTimeLeft(Double timePerRun, int runsLeft){
