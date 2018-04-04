@@ -56,7 +56,7 @@ re2='[1-9][0-9]*'
 while true; do
     echo "Available static solvers: "
     echo "1. Mosel"
-    echo "2. GA"
+    echo "2. ALNS"
     echo -n "Please choose one (1 or 2): "
     read CHOSEN
     if [[ $CHOSEN =~ $re ]] ; then
@@ -96,7 +96,7 @@ if [ $CHOSEN == 1 ] ; then
         echo " "
     done 
 else
-    SOLVER="ga"
+    SOLVER="alns"
 fi
 echo "################"
 echo " "
