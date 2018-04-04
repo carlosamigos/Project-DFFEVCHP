@@ -27,7 +27,7 @@ public class Main {
     	for(int i = 0; i < 1; i++) {
     		ALNSSolver solver = new ALNSSolver(problemInstance);
         	ALNSIndividual best = (ALNSIndividual) solver.solve(problemInstance);
-			SolutionFileMaker.writeSolutionToFile(best, fileName + ".txt");
+			//SolutionFileMaker.writeSolutionToFile(best, fileName + ".txt");
         	System.out.println("Fitness: " + String.format("%.1f", solver.getBest().getFitness()));
         System.out.println("Result: " + solver.getBest());
     	}

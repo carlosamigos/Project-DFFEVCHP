@@ -93,12 +93,18 @@ public class ALNSSolver extends Solver {
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
-			if(iteration != 0 && iteration % 100 == 0){
+			if(iteration % 100 == 0){
 				System.out.println("\nIteration: " + iteration + " Best fitness: "
 						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
 						+ String.format("%.1f", this.individual.getFitness()));
+				System.out.println(mutationToWeight);
+				System.out.println(this.mutationScores);
+				System.out.println(mutationToAttempts);
 				//System.out.println(individual);
-				this.updateWeights();
+				System.out.println(this.weightSum);
+				if(iteration != 0){
+					this.updateWeights();
+				}
 			}
 
 			// Basic checks
@@ -306,7 +312,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
 			double attempts = this.mutationToAttempts.get(id);
-			double newWeight = oldWeight * (1 - r) + r * (score / attempts);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
