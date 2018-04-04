@@ -188,6 +188,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 				}
 			}
 			if(operatorAvailable) {
+				System.out.println("Removed a car");
 				op.addCarMove(indexRegret, carMove);
 				carMovesCopy.remove(carMove.getCar());
 				op.getFitness();
@@ -1010,12 +1011,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 	// Getters and setters
 	//================================================================================	
 
-	@Override
 	public ArrayList<Object> getRepresentation() {
-		return this.operators;
-	}
-
-	public ArrayList<Object> getOperators() {
 		return operators;
 	}
 
@@ -1148,7 +1144,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 		for(ParkingNode parkingNode : deviationFromIdealState.keySet()){
 			devIdeal += -Math.min(deviationFromIdealState.get(parkingNode),0) ;
 		}
-		System.out.println("\nDeviation from ideal: "+ devIdeal);
+		this.deviationFromIdeal = devIdeal;
 
 		int numberOfChargedCars = 0;
 		for(ChargingNode chargingNode : capacitiesUsed.keySet()){
@@ -1158,12 +1154,14 @@ public class ALNSIndividual extends Individual implements Serializable {
 				numberOfChargedCars += capacitiesUsed.get(chargingNode);
 			}
 		}
+		
 		int numberOfCarsToCharge = 0;
 		for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
 			numberOfCarsToCharge += parkingNode.getCarsInNeed().size();
 		}
+		
 		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
-		System.out.println("Number of postponed: " + numberPostponed);
+		this.numberOfUnchargedCars = numberPostponed;
 	}
 
 

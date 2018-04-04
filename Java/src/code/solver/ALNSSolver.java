@@ -6,22 +6,24 @@ import code.problem.ProblemInstance;
 import code.problem.nodes.Node;
 import code.solver.heuristics.Individual;
 import code.solver.heuristics.alns.ALNSIndividual;
+import code.solver.heuristics.alns.BestIndividual;
 import code.solver.heuristics.alns.TabuList;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
-import utils.DeepCopy;
-import utils.SolutionFileMaker;
 
 public class ALNSSolver extends Solver {
 	
 	private ALNSIndividual individual;
-	private ALNSIndividual best;
+	private BestIndividual bestIndividual;
 	private TabuList tabuList;
 	private final int iterations;
 	private int tabuSize;
+	
+	private long startTime;
+	private long endTime;
 	
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
@@ -41,8 +43,7 @@ public class ALNSSolver extends Solver {
 	public ALNSSolver(int iterations, int tabuSize, ProblemInstance problemInstance) {
 		this.iterations = iterations;
 		this.individual =  new ALNSIndividual(problemInstance);
-		this.best = (ALNSIndividual) DeepCopy.copy(this.individual);
-		this.best.setFitness(this.individual.getFitness());
+		setBest();
 		this.tabuSize = tabuSize;
 		this.solutionsSeen = new HashMap<>();
 		this.initializeMutationIdToDescription();
@@ -87,24 +88,18 @@ public class ALNSSolver extends Solver {
 	
 	@Override
 	public Individual solve(ProblemInstance problemInstance) {
-		best.calculateMoselFitness();
+		this.startTime = System.currentTimeMillis();
+		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
 		this.tabuList = new TabuList(this.tabuSize);
 		int iteration = 0;
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		while(!done(iteration)) {
-			if(iteration % 100 == 0){
+			if(iteration != 0 && iteration % 100 == 0){
 				System.out.println("\nIteration: " + iteration + " Best fitness: "
-						+ String.format("%.1f", this.best.getFitness()) + ", Current fitness:"
+						+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"
 						+ String.format("%.1f", this.individual.getFitness()));
-				System.out.println(mutationToWeight);
-				System.out.println(this.mutationScores);
-				System.out.println(mutationToAttempts);
-				//System.out.println(individual);
-				System.out.println(this.weightSum);
-				if(iteration != 0){
-					this.updateWeights();
-				}
+				this.updateWeights();
 			}
 
 			// Basic checks
@@ -154,10 +149,9 @@ public class ALNSSolver extends Solver {
 
 			// Update best individual
 			boolean bestFound = false;
-			if(this.individual.getFitness() < this.best.getFitness()) {
+			if(this.individual.getFitness() < this.bestIndividual.getFitness()) {
 				bestFound = true;
-				this.best = (ALNSIndividual) DeepCopy.copy(this.individual);
-				this.best.setFitness(this.individual.getFitness());
+				setBest();
 			} else {
 				global_counter++;
 			}
@@ -173,9 +167,7 @@ public class ALNSSolver extends Solver {
 			}
 
 		}
-		cleanBest();
-		best.calculateMoselFitness();
-		return best;
+		return bestIndividual;
 	}
 	
 	public void solveParallel(ProblemInstance problemInstance) {
@@ -264,10 +256,6 @@ public class ALNSSolver extends Solver {
 		}
 	}
 	
-	public ALNSIndividual getBest() {
-		return this.best;
-	}
-	
 	@Override
 	public String getInfo() {
 		return "Tabu search";
@@ -282,7 +270,7 @@ public class ALNSSolver extends Solver {
 	}
 	
 	private boolean done(int iteration) {
-		return iteration >= iterations;
+		return iteration >= iterations || System.currentTimeMillis() > this.endTime;
 	}
 	
 	/*
@@ -418,31 +406,35 @@ public class ALNSSolver extends Solver {
 	private interface GenerateNeighborhood {
 		HashMap<Mutation, Integer> runCommand(int size);
 	}
-
-	private void cleanBest(){
+	
+	private void setBest(){
 		double currentTime;
-		for(Object object : best.getOperators()){
+		ArrayList<ArrayList<CarMove>> newOperators = new ArrayList<>();
+		for(Object object : individual.getRepresentation()){
 			Operator operator = (Operator) object;
 			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
 			currentTime = operator.getStartTime();
 			Node prevNode = operator.getStartNode();
 			for(CarMove carMove : operator.getCarMoveCopy()) {
 				//Need to take earliest start time of the move into account
-				currentTime += best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode());
+				currentTime += individual.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode());
 				currentTime += carMove.getTravelTime();
 				if (currentTime > Constants.TIME_LIMIT_STATIC_PROBLEM) {
-					currentTime += - best.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode()) - carMove.getTravelTime();
+					currentTime += - individual.getProblemInstance().getTravelTimeBike(prevNode, carMove.getFromNode()) - carMove.getTravelTime();
 					break;
 				} else {
 					newCarMoveList.add(carMove);
 				}
 				prevNode = carMove.getToNode();
 			}
-			System.out.println("Operator: " + operator.id + " Time: " + currentTime);
-			operator.setCarMoves(newCarMoveList);
+			newOperators.add(newCarMoveList);
 		}
+		this.individual.calculateMoselFitness();
+		this.bestIndividual = new BestIndividual(newOperators, individual.getFitness(), 
+				individual.getNumberOfUnchargedCars(), individual.getDeviationFromIdeal());
 	}
-
+	
+	
 	private Mutation getRandomMutation(Set<Mutation> neighborhood){
 		int size = neighborhood.size();
 		int item = new Random().nextInt(size);

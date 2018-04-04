@@ -1,9 +1,12 @@
 package utils;
 
+import code.problem.ProblemInstance;
+import code.problem.entities.Operator;
 import code.problem.nodes.Node;
 import code.solver.heuristics.alns.ALNSIndividual;
+import code.solver.heuristics.alns.BestIndividual;
 import code.solver.heuristics.entities.CarMove;
-import code.solver.heuristics.entities.Operator;
+import constants.Constants;
 import constants.FileConstants;
 
 import java.util.ArrayList;
@@ -12,29 +15,29 @@ public class SolutionFileMaker {
 
 
 
-    public static void writeSolutionToFile(ALNSIndividual individual, String fileName){
-        ArrayList<Object> operators = individual.getOperators();
+    public static void writeSolutionToFile(BestIndividual individual, ProblemInstance problemInstance, String fileName){
+        ArrayList<ArrayList<CarMove>> operators = individual.getOperators();
         // Format: operator id: (node number, visitNumber - not important, isHandling, arrival time in node)
         String writeString = "";
         String operatorString;
-        for(Object obj : operators){
-            Operator operator = (Operator) obj;
-            double currentTime = operator.getStartTime();
-            Node previousNode = operator.getStartNode();
-            int numberOfNodes = individual.getProblemInstance().getNodeMap().keySet().size();
-            int artificialNodeNumber = numberOfNodes + operator.id + 1;
+        for(int i = 0; i < problemInstance.getNumROperators(); i++){
+            Operator operator = problemInstance.getOperators().get(i);
+            double currentTime = operator.getTimeRemainingToCurrentNextNode();
+            Node previousNode = operator.getNextOrCurrentNode();
+            int numberOfNodes = problemInstance.getNodeMap().keySet().size();
+            int artificialNodeNumber = numberOfNodes + i + 1;
             // Add artificial node:
-            operatorString = "" + operator.id + ": (" + artificialNodeNumber + ",1,0,0),";
+            operatorString = "" + i + ": (" + artificialNodeNumber + ",1,0,0),";
             // Add operator's start node
-            operatorString += "(" + operator.getStartNode().getNodeId() + ",0,0," + operator.getStartTime() + "),";
-            for(CarMove carMove : operator.getCarMoveCopy()){
-                double travelTimeFromPrevNodeToFirstNodeInCarMove = individual.getProblemInstance()
+            operatorString += "(" + previousNode.getNodeId() + ",0,0," + currentTime + "),";
+            for(CarMove carMove : operators.get(i)){
+                double travelTimeFromPrevNodeToFirstNodeInCarMove = problemInstance
                         .getTravelTimeBike(previousNode,carMove.getFromNode());
                 double timeOfArrival = currentTime + travelTimeFromPrevNodeToFirstNodeInCarMove;
                 if(!previousNode.equals(carMove.getFromNode())){
                     operatorString += "(" +carMove.getFromNode().getNodeId() + ",0,0," + MathHelper.round(timeOfArrival,2) + "),";
                 }
-                currentTime += operator.getTravelTime(previousNode, carMove, currentTime);
+                currentTime += getTravelTime(previousNode, carMove, currentTime, problemInstance);
                 previousNode = carMove.getToNode();
                 operatorString += "(" + carMove.getToNode().getNodeId() + ",0,1," + MathHelper.round(currentTime,2) + "),";
             }
@@ -44,5 +47,15 @@ public class SolutionFileMaker {
         FileHandler fileHandler = new FileHandler(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER + fileName, false);
         fileHandler.writeFile(writeString);
     }
+    
+    public static double getTravelTime(Node previous, CarMove move, double currentTime, ProblemInstance problemInstance) {
+		double travelTimeBike = getTravelTimeBike(previous, move.getFromNode(), problemInstance);
+		return travelTimeBike + Math.max(0, move.getEarliestDepartureTime() - (currentTime + travelTimeBike) )
+				+ move.getTravelTime();
+	}
+	
+	private static double getTravelTimeBike(Node n1, Node n2, ProblemInstance problemInstance) {
+		return problemInstance.getTravelTimeBike(n1, n2);
+	}
 
 }
