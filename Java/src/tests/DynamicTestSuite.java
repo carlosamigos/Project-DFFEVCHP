@@ -55,7 +55,7 @@ public class DynamicTestSuite extends TestSuite{
 				for(Solver solver : this.solvers) {
 					System.out.println("Using " + solver.getInfo() + " on day " + day);
 					// Read clean demand requests
-					ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER + test);
+					ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER  + test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
 					solverSimulationModel.readSimulationModelFromFile(); // Burde vaert i konstruktoren til SimulationModel?
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);

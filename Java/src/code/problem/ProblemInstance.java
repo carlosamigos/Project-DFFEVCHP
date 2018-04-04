@@ -59,7 +59,6 @@ public class ProblemInstance implements Serializable{
 
     public ProblemInstance(String filePath) {
     	this.filePath = filePath;
-    	System.out.println(filePath);
     	String[] split = filePath.split("/");
         this.fileName = split[split.length-1];
         this.parkingNodes = new ArrayList<>();
@@ -394,8 +393,6 @@ public class ProblemInstance implements Serializable{
     }
 
     public void writeProblemInstanceToFile(){
-        //System.out.println("Writing state to file...");
-        // ASSUMING ALL STATES ARE CONSISTENT. WRITING AS IS.
         try{
             PrintWriter writer = new PrintWriter(FileConstants.TEST_DYNAMIC_FOLDER + fileName +".txt", "UTF-8");
             for (String key :inputFileMap.keySet()) {
@@ -723,10 +720,8 @@ public class ProblemInstance implements Serializable{
 
             writer.close();
         } catch (FileNotFoundException e){
-        		System.out.println("FOo");
             System.out.println(e.getMessage());
         } catch (UnsupportedEncodingException e){
-        		System.out.println("FOo");
             System.out.println(e.getMessage());
         }
     }

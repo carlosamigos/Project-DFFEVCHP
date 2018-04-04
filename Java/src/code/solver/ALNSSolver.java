@@ -14,6 +14,7 @@ import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
+import utils.SolutionFileMaker;
 
 public class ALNSSolver extends Solver {
 	
@@ -176,6 +177,7 @@ public class ALNSSolver extends Solver {
 
 		}
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
+		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
 		return bestIndividual;
 	}
 	
