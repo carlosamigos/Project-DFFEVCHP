@@ -1,6 +1,5 @@
 package code.solver.heuristics.alns;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,8 +20,7 @@ import code.solver.heuristics.Individual;
 import code.solver.heuristics.entities.Operator;
 import utils.MathHelper;
 
-@SuppressWarnings("serial")
-public class ALNSIndividual extends Individual implements Serializable {
+public class ALNSIndividual extends Individual {
 	
 	private ArrayList<Object> operators;
 
@@ -1052,12 +1050,6 @@ public class ALNSIndividual extends Individual implements Serializable {
 			numberOfMoves += operator.getCarMoveListSize();
 		}
 		return numberOfMoves;
-	}
-	
-	@Override
-	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 	
 	@Override
