@@ -99,6 +99,7 @@ public class ALNSSolver extends Solver {
 				System.out.println("\nIteration: " + iteration + " Best fitness: "
 						+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"
 						+ String.format("%.1f", this.individual.getFitness()));
+				System.out.println(this.mutationToWeight);
 				this.updateWeights();
 			}
 
@@ -161,6 +162,8 @@ public class ALNSSolver extends Solver {
 			iteration++;
 			if(global_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
 				destroyAndRepair();
+				System.out.println("Destroy!!!!");
+				System.out.println(individual);
 				global_counter = 0;
 				counter = 0;
 				individual.calculateFitness();
@@ -210,7 +213,7 @@ public class ALNSSolver extends Solver {
 		destroy(numberToHandle);
 		repair(numberToHandle);
 		this.tabuList.clearTabu();
-		initializeMutationWeights();
+		//initializeMutationWeights();
 	}
 
 	private void destroy(int numberToDestroy){

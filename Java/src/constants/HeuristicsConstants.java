@@ -21,7 +21,7 @@ public class HeuristicsConstants {
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
 
     // This variable decides when to destroy the current solution
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 12000;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 5000;
    
     
     

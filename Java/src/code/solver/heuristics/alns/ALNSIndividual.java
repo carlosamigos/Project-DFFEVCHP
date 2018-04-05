@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sun.org.apache.xml.internal.security.algorithms.implementations.IntegrityHmac.IntegrityHmacSHA512;
-
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
@@ -65,20 +63,17 @@ public class ALNSIndividual extends Individual implements Serializable {
 			initiateDeviations();
 			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 			calculateFitness();
-			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
-			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			inititatePrevMaps();
 		}
 		else{
 			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 			calculateFitness();
-			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
-			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
-			addCarMovesToOperatorAlt();
+			inititatePrevMaps();
+			addCarMovesToOperatorsRegret();
 			initiateDeviations();
 			//prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
 			calculateFitness();
-			prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
-			prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+			inititatePrevMaps();
 		}
 
 	}
@@ -141,98 +136,15 @@ public class ALNSIndividual extends Individual implements Serializable {
 
 	}
 
-
+	private void inititatePrevMaps(){
+		prevCapacitiesUsed = new HashMap<>(capacitiesUsed);
+		prevDeviationFromIdealState = new HashMap<>(deviationFromIdealState);
+	}
 
 	//  IDENTIFY CAR MOVES FOR INITIAL SOLUTION
 	// -------------------------------------------------------------------------------
 
-	// * Approach 1: Calculates based on regret value
-	private void addCarMovesToOperatorAlt(){
-		boolean operatorAvailable = true;
-		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
-		while(operatorAvailable){
-			operatorAvailable = false;
-			CarMove carMove = null;
-			Operator op = null;
-			int indexRegret = 0;
-			double regret = Double.MAX_VALUE;
-			for (Car car: carMovesCopy.keySet()) {
-				for (CarMove carM: carMovesCopy.get(car)) {
-					int index = 0;
-					double[] operatorFitness = new double[this.operators.size()];
-					int[] operatorIndex = new int[this.operators.size()];
-					for (Object operat: this.operators){
-						Operator operator = (Operator) operat;
-						double fitnessBest = Double.MAX_VALUE;
-						int insertIndexCandidate = 0;
-						for (int i = 0; i <= operator.getCarMoveListSize(); i++) {
-							double fitnessDelta = rateCarMoveAlt(operator, carM, i);
-							if (fitnessDelta < fitnessBest) {
-								fitnessBest = fitnessDelta;
-								insertIndexCandidate = i;
-								operatorAvailable = true;
-							}
-						}
-						operatorFitness[index] = fitnessBest;
-						operatorIndex[index] = insertIndexCandidate;
-						index++;
-					}
-					double regretCandidate = findRegret(operatorFitness);
-					if(regretCandidate < regret){
-						regret = regretCandidate;
-						int candidateIndex = findLargestIndex(operatorFitness);
-						op = (Operator) this.operators.get(candidateIndex);
-						carMove = carM;
-						indexRegret = operatorIndex[candidateIndex];
-					}
-				}
-			}
-			if(operatorAvailable) {
-				System.out.println("Removed a car");
-				op.addCarMove(indexRegret, carMove);
-				carMovesCopy.remove(carMove.getCar());
-				op.getFitness();
-				this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
-				this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
-				this.unusedCarMoves.get(carMove.getCar()).remove(carMove);
-			}
-		}
-		resetOperator();
-	}
-
-	private int findLargestIndex(double[] fitness) {
-		int index = 0;
-		double largest = Double.MAX_VALUE;
-		for (int i = 0; i < fitness.length; i++) {
-			if (fitness[i] < largest) {
-				largest = fitness[i];
-				index = i;
-			}
-		}
-		return index;
-	}
-
-	private double findRegret(double[] fitness){
-		double largest = Double.MAX_VALUE;
-		double second = Double.MAX_VALUE;
-		for (int i = 0; i < fitness.length; i++) {
-			if(fitness[i] < largest){
-				largest = fitness[i];
-			}else if(fitness[i] < second){
-				second = fitness[i];
-			}
-		}
-		return largest - second;
-	}
-
-	private void resetOperator(){
-		for(Object op: this.operators){
-			Operator operator = (Operator) op;
-			operator.resetOperator();
-		}
-	}
-
-	// * Approach 2: Add car moves sequentially
+	// * Approach 1: Add car moves sequentially
 	private void addCarMovesToOperators() {
 		boolean operatorAvailable = true;
 		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
@@ -259,8 +171,61 @@ public class ALNSIndividual extends Individual implements Serializable {
 			}
 		}
 	}
+	// * Approach 2: Calculates based on regret value
+	private void addCarMovesToOperatorsRegret(){
+		boolean operatorAvailable = true;
+		HashMap<Car, ArrayList<CarMove>> carMovesCopy = new HashMap<>(this.unusedCarMoves);
+		while(operatorAvailable){
+			operatorAvailable = false;
+			CarMove carMove = null;
+			Operator op = null;
+			int indexRegret = 0;
+			double regret = Double.MAX_VALUE;
+			for (Car car: carMovesCopy.keySet()) {
+				for (CarMove carM: carMovesCopy.get(car)) {
+					int index = 0;
+					double[] operatorFitness = new double[this.operators.size()];
+					int[] operatorIndex = new int[this.operators.size()];
+					for (Object operat: this.operators){
+						Operator operator = (Operator) operat;
+						double fitnessBest = Double.MAX_VALUE;
+						int insertIndexCandidate = 0;
+						for (int i = 0; i <= operator.getCarMoveListSize(); i++) {
+							double fitnessDelta = rateCarMoveRegret(operator, carM, i);
+							if (fitnessDelta < fitnessBest) {
+								fitnessBest = fitnessDelta;
+								insertIndexCandidate = i;
+								operatorAvailable = true;
+							}
+						}
+						operatorFitness[index] = fitnessBest;
+						operatorIndex[index] = insertIndexCandidate;
+						index++;
+					}
+					double regretCandidate = calculateRegret(operatorFitness);
+					if(regretCandidate < regret){
+						regret = regretCandidate;
+						int candidateIndex = calculateLargestIndex(operatorFitness);
+						op = (Operator) this.operators.get(candidateIndex);
+						carMove = carM;
+						indexRegret = operatorIndex[candidateIndex];
+					}
+				}
+			}
+			if(operatorAvailable) {
+				op.addCarMove(indexRegret, carMove);
+				carMovesCopy.remove(carMove.getCar());
+				op.getFitness();
+				this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+				this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+				this.unusedCarMoves.get(carMove.getCar()).remove(carMove);
+			}
+		}
+		resetOperator();
+	}
 
 	// Identify car moves to be evaluated
+
 	//* Identifies all car moves, and chooses the best each iteration
 	private CarMove findnearestCarMove(Node node, double startTime, HashMap<Car, ArrayList<CarMove>> carMovesCopy){
 		double distance = Integer.MAX_VALUE;
@@ -286,6 +251,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 	}
 
 	// Evaluate car moves based on fitness
+
 	// * Assumes that deviation from ideal state is a positive number if there is no deficit.
 	private double rateCarMove(CarMove carMove, double distance){
 		double fitNess = 0;
@@ -307,7 +273,7 @@ public class ALNSIndividual extends Individual implements Serializable {
 
 	}
 
-	private double rateCarMoveAlt(Operator op, CarMove carMove, int index){
+	private double rateCarMoveRegret(Operator op, CarMove carMove, int index){
 		OperatorState operatorState = setOperatorState(op);
 		op.addCarMove(index, carMove);
 
@@ -357,6 +323,38 @@ public class ALNSIndividual extends Individual implements Serializable {
 						+ carMove.getTravelTime();
 	}
 
+	//Calculate
+	private int calculateLargestIndex(double[] fitness) {
+		int index = 0;
+		double largest = Double.MAX_VALUE;
+		for (int i = 0; i < fitness.length; i++) {
+			if (fitness[i] < largest) {
+				largest = fitness[i];
+				index = i;
+			}
+		}
+		return index;
+	}
+
+	private double calculateRegret(double[] fitness){
+		double largest = Double.MAX_VALUE;
+		double second = Double.MAX_VALUE;
+		for (int i = 0; i < fitness.length; i++) {
+			if(fitness[i] < largest){
+				largest = fitness[i];
+			}else if(fitness[i] < second){
+				second = fitness[i];
+			}
+		}
+		return largest - second;
+	}
+
+	private void resetOperator(){
+		for(Object op: this.operators){
+			Operator operator = (Operator) op;
+			operator.resetOperator();
+		}
+	}
 
 	//================================================================================
 	// Fitness calculation
