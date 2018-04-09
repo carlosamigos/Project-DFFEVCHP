@@ -176,11 +176,14 @@ public class ProblemInstance implements Serializable{
         String[] startNodeList = startNodesString.substring(1,startNodesString.length()-1).split(" ");
         String timeRemainingString = inputFileMap.get("travelTimeToOriginR");
         String[] timeRemainingList = timeRemainingString.substring(1,timeRemainingString.length()-1).split(" ");
+        String initialHandlingString = inputFileMap.get("initialHandling");
+        String[] initialHandlingList = initialHandlingString.substring(1, initialHandlingString.length()-1).split(" ");
         for (int operatorId = Constants.START_INDEX; operatorId < startNodeList.length+Constants.START_INDEX; operatorId++) {
             int nodeId = Integer.parseInt(startNodeList[operatorId-Constants.START_INDEX]);
             Node node = nodeMap.get(nodeId);
             Operator newOperator = new Operator(operatorId);
             newOperator.setNextOrCurrentNode(node);
+            newOperator.setHandling(initialHandlingList[operatorId-Constants.START_INDEX].equals("1"));
             Double remainingTime = Double.parseDouble(timeRemainingList[operatorId-Constants.START_INDEX]);
             newOperator.setTimeRemainingToCurrentNextNode(remainingTime);
             operators.add(newOperator);
@@ -827,6 +830,8 @@ public class ProblemInstance implements Serializable{
         }
 
     }
+
+
 
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;
