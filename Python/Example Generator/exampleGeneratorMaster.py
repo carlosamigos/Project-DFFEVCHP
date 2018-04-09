@@ -12,34 +12,34 @@ from Data_Retrieval import googleTrafficInformationRetriever as gI
 
 ### CONSTANTS ####
 
-# EUCLEDEAN DISTANCE - DON'T CHANGE #
+# EUCLEDIAN DISTANCE - DON'T CHANGE #
 DISTANCESCALE = 3
 
 # NUMBER OF EXAMPLES TO CREATE #
-EXAMPLES = 3 
+EXAMPLES = 3
 
-#BOARD SIZE - DONT CHANGE
-XSIZE = 3
-YSIZE = 3
+#BOARD SIZE
+XSIZE = 20
+YSIZE = 20
 
 #ALLOWED MOVES
-MOVES = 8
-CARSCHARGING = 3
+MOVES = 50
+CARSCHARGING = 20
 
 #PARKING NODES USED
-MAXNODES = 9
+MAXNODES = XSIZE * YSIZE
 
 #CHARGING NODES
-NUMCHARGING = 2
-PARKINGC = [1, 9]
-CAPACITY = [3, 3]
-TOTALCAPACITY = [3, 3]
+NUMCHARGING = 5
+PARKINGC = [1, 20, 100, 150, 195]
+CAPACITY = [3, 3, 3, 3, 3]
+TOTALCAPACITY = [3, 3, 3, 3, 3]
 
 #OPERATORS
-NUMOPERATORS = 3 
-STARTETIMEOP = [0, 0, 0]
-HANDLINGOP = [0, 0, 0]
-NUMTASKS = 6
+NUMOPERATORS = 7
+STARTETIMEOP = [5, 0, 0, 0, 0, 0, 0]
+HANDLINGOP = [1, 0, 0, 0, 0, 0, 0]
+NUMTASKS = 8
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
@@ -47,14 +47,16 @@ CLUSTER = True
 WRITETOFILE = True
 PRINT = True
 
-# OUTPUT - the lists are run in a foor loop #
-# First parameter: Mode - 2 equals the normal one, and 4 equals the one that tries to reduce time when visiting charging nodes
-# Second paramter: Weight for not meeting ideal state
-# Thirds paramter: Weight for not setting vehicles to charging
-# Fourth paramter: Weight for traveling by service operator
-# Fifth paramter: Weight for handling by service operator
+# OUTPUT - the lists are run in a for loop #
+# * First parameter: Does not matter in this iteration
+# * Second parameter: Weight for not meeting ideal state
+# * Thirds parameter: Weight for not setting vehicles to charging
+# * Fourth parameter: Weight for traveling by service operator
+# * Fifth parameter: Weight for handling by service operator
+
 MODES_RUN2 = [[2, 10, 30, 0.05, 0.4]]
 
+## CLASSES ##
 class World:
 
     def __init__(self):
@@ -221,6 +223,7 @@ class World:
 
     def calculateBigM(self):
         for i in range(len(self.cars)):
+            print(i)
             for j in range(len(self.cars[i].destinations)):
                 maxDiff = 0
                 for l in range(len(self.cars)):
@@ -441,11 +444,11 @@ class World:
     ## FILE HANDLER ##
 
     def writeToFile(self, example):
-        fileName = "../../Mosel/tests/" + str(example) + "_a.txt"
+        fileName = "../../Testing/Input/Static/ModelTesting/" + str(example) + "_a.txt"
         if (os.path.exists(fileName)):
-            fileName = "../../Mosel/tests/" + str(example) + "_b.txt"
+            fileName = "../../Testing/Input/Static/ModelTesting/" + str(example) + "_b.txt"
             if (os.path.exists(fileName)):
-                fileName = "../../Mosel/tests/" + str(example) + "_c.txt"
+                fileName = "../../Testing/Input/Static/ModelTesting/" + str(example) + "_c.txt"
         f = open(fileName, 'w')
         string = ""
         string += "numVisits: " + str(self.VISITS) + "\n"
@@ -681,7 +684,10 @@ class World:
         string += "carMoveHandlingTime : ["
         for i in range(len(self.cars)):
             for j in range(len(self.cars[i].destinations)):
-                string += str(self.distancesC[(self.cars[i].parkingNode -1)*len(self.nodes) + self.cars[i].destinations[j] -1])
+                if(self.cars[i].destinations[j] > MAXNODES):
+                    string += str(self.distancesC[(self.cars[i].parkingNode -1)*len(self.nodes) + self.cars[i].destinations[j] -1] + self.HANDLINGTIMEC)
+                else:
+                    string += str(self.distancesC[(self.cars[i].parkingNode - 1) * len(self.nodes) + self.cars[i].destinations[j] - 1] + self.HANDLINGTIMEP)
                 if (i < len(self.cars) - 1):
                     string += " "
                 else:
@@ -786,8 +792,14 @@ class World:
         string += "carMoveHandlingTimeA : ["
         for i in range(len(self.cars)):
             for j in range(len(self.cars[i].destinations)):
-                string += str(self.distancesC[
-                                  (self.cars[i].parkingNode - 1) * len(self.nodes) + self.cars[i].destinations[j] - 1])
+                if(self.cars[i].destinations[j] > MAXNODES):
+                    string += str(self.distancesC[
+                                          (self.cars[i].parkingNode - 1) * len(self.nodes) + self.cars[i].destinations[
+                                              j] - 1] + self.HANDLINGTIMEC)
+                else:
+                    string += str(self.distancesC[
+                                      (self.cars[i].parkingNode - 1) * len(self.nodes) + self.cars[i].destinations[
+                                          j] - 1] + self.HANDLINGTIMEP)
                 if (i < len(self.cars) - 1):
                     string += " "
                 else:
@@ -828,7 +840,6 @@ class cNode:
         self.totalCapacity = totalCapacity
         self.pNode = pNode
 
-
 class operator:
 
     def __init__(self, startNode, startTime, handling):
@@ -845,7 +856,6 @@ class fCCars:
         self.parkingNode = parkingNode
         self.remainingTime = remainingTime
 
-
 class car:
     def __init__(self, startTime, parkingNode, charging):
         self.startTime = startTime
@@ -856,9 +866,9 @@ class car:
     def calculateDestinations(self, world):
         pass
 
+## - CREATORS - ##
 
-
-# PNODES
+# PARKING NODES
 def createNodes(world):
     for i in range(YSIZE):
         xCord = i
@@ -878,7 +888,7 @@ def createFCCars(world, time, cNode, pNode):
     fc = fCCars(cNode, pNode, time)
     world.addfCCars(fc)
 
-# CNODES
+# CHARGING NODES
 def createCNodes(world):
     numCNodes = NUMCHARGING
     for i in range(numCNodes):
@@ -911,9 +921,7 @@ def createOperators(world):
             op = operator(startNode, time, False)
             world.addOperator(op)
 
-
-# Cars
-
+# CARS
 def createCars(world):
     initial_theta, initial_handling, initial_lambda, initial_service = world.calculateInitialAdd()
     movesDef = []
@@ -960,7 +968,7 @@ def createCars(world):
             world.addCar(newCar)
 
 
-
+## - BUILDER -- ##
 def buildWorld():
     world = World()
     world.setCordConstants((59.952483, 10.795069), (59.904574, 10.681527))
@@ -982,6 +990,7 @@ def buildWorld():
     maxVisit = max(world.visitList)
     createCars(world)
     world.calculateNodeDiff()
+    print("Reached this point")
     world.calculateBigM()
     print(world.bigM)
     for i in range(len(MODES_RUN2)):
