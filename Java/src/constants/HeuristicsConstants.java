@@ -8,10 +8,10 @@ public class HeuristicsConstants {
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
-    public final static int TABU_NEIGHBORHOOD_SIZE = 200;
+    public final static int TABU_NEIGHBORHOOD_SIZE = 100;
     public final static int TABU_SIZE = 2;
-    public final static int TABU_ITERATIONS = 2000;
-    public final static int ALNS_MAX_TIME_SECONDS = 15;
+    public final static int TABU_ITERATIONS = 400000;
+    public final static int ALNS_MAX_TIME_SECONDS = 60;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
@@ -37,14 +37,6 @@ public class HeuristicsConstants {
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 10.0;
     public final static double ALNS_UPDATE_FACTOR = 0.5;
     public final static double ALNS_DESTROY_FACTOR = 0.5;
-
-    public final static double TABU_INTRA_MOVE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_INTER_MOVE_SIZE = 0.2*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_INTER_2_SWAP_SIZE = 0.3*TABU_NEIGHBORHOOD_SIZE;
-
-    public final static double TABU_EJECTION_REPLACE_SIZE = 0.3*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_REMOVE_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_INSERT_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
     
     //Initial solution
     public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.02;
