@@ -10,24 +10,24 @@ public class HeuristicsConstants {
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 200;
     public final static int TABU_SIZE = 2;
-    public final static int TABU_ITERATIONS = 20000;
+    public final static int TABU_ITERATIONS = 2000;
     public final static int ALNS_MAX_TIME_SECONDS = 15;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
-    public final static double TABU_TRAVEL_COST = 0;
     public final static double TABU_SIZE_OF_OPERATOR_LIST = 0;
     
     // ALNS Parameters used when comparring with Mosel
     public final static double ALNS_CHARGING_REWARD = 30;
-    public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.4;
-    public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10;  
+    public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.2;
+    public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10; 
+    public final static double ALNS_TRAVEL_COST = 0.01;
     
     // This variable decides when the tabu list is increased in size (doubled)
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
 
     // This variable decides when to destroy the current solution
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 5000;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 100;
    
     
     
@@ -44,7 +44,7 @@ public class HeuristicsConstants {
 
     public final static double TABU_EJECTION_REPLACE_SIZE = 0.3*TABU_NEIGHBORHOOD_SIZE;
     public final static double TABU_EJECTION_REMOVE_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
-    public final static double TABU_EJECTION_INSERT_SIZE = 0.05*TABU_NEIGHBORHOOD_SIZE;
+    public final static double TABU_EJECTION_INSERT_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
     
     //Initial solution
     public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.02;
@@ -53,9 +53,5 @@ public class HeuristicsConstants {
     public final static double TABU_INITIAL_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_INITIAL_SURPLUS_IDEAL_STATE_COST = 0;
     public final static boolean ALNS_INITIAL_GREEDY_BUILD = true;
-
-    
-    
-
 
 }
