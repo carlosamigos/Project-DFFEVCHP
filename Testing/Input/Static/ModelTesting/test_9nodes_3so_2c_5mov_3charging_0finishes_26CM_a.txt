@@ -1,4 +1,4 @@
-numVisits: 5
+numVisits: 3
 numPNodes: 9
 numCNodes: 2
 numROperators: 3
@@ -8,7 +8,7 @@ hNodes : 3
 wNodes : 3
 nodeSubsetIndexes: [1 2 3 4 5 6 7 8 9] 
 
-startNodeROperator: [7 7 2] 
+startNodeROperator: [6 6 7] 
 originNodeROperator: [12 13 14] 
 destinationNodeROperator: [15 16 17] 
 cToP: [1 7] 
@@ -57,38 +57,38 @@ timeLimitLastVisit: 10
 maxTravelHToC: 30
 
 initialHandling: [1 0 0] 
-initialRegularInP: [1 2 2 3 2 1 1 2 3] 
-initialInNeedP: [0 0 0 1 0 1 0 0 1] 
+initialRegularInP: [1 2 2 2 3 2 1 0 0] 
+initialInNeedP: [0 1 0 1 0 0 1 0 0] 
 finishedDuringC: [0 0] 
-idealStateP: [0 2 3 2 2 5 2 2 0] 
+idealStateP: [3 2 2 1 2 0 2 1 1] 
 
 demandP: [0 0 0 0 0 0 0 0 0] 
 
 mode: 2
 sequenceBigM: 10
-visitList: [2 2 2 2 2 5 2 2 4 3 3 1 1 1 1 1 1] 
+visitList: [2 2 2 2 2 3 3 2 2 3 3 1 1 1 1 1 1] 
 
-numCarMovesP : 10
+numCarMovesP : 20
 numCarMovesC : 6
 numCars : 8
 numTasks : 6
-numDeficitNodes : 2
+numDeficitNodes : 4
 
-deficitTranslate : [3 6] 
-deficitCarsInNode : [1 4] 
-carMoveCars : [1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8] 
-carMoveOrigin : [1 1 4 4 9 9 9 9 9 9 4 4 6 6 9 9] 
-carMoveDestination : [3 6 3 6 3 6 3 6 3 6 10 11 10 11 10 11] 
-carMoveHandlingTime : [20.2 22.1 22.1 20.2 20.2 12.1 20.2 12.1 20.2 12.1 13.1 13.1 23.1 23.1 27.9 21.2] 
-carMoveStartingTime : [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+deficitTranslate : [1 7 8 9] 
+deficitCarsInNode : [2 1 1 1] 
+carMoveCars : [1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 7 7 8 8] 
+carMoveOrigin : [4 4 4 4 5 5 5 5 6 6 6 6 6 6 6 6 6 6 6 6 2 2 4 4 7 7] 
+carMoveDestination : [1 7 8 9 1 7 8 9 1 7 8 9 1 7 8 9 1 7 8 9 10 11 10 11 10 11] 
+carMoveHandlingTime : [12.1 12.1 15.5 22.1 15.5 15.5 12.1 15.5 22.1 22.1 15.5 12.1 22.1 22.1 15.5 12.1 22.1 22.1 15.5 12.1 13.1 23.1 13.1 13.1 21.2 6.0] 
+carMoveStartingTime : [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 5 0 0 0 0 0 0] 
 numCarsInCNeedNodes : 3
-carsInNeedCTranslate : [4 6 9]
+carsInNeedCTranslate : [2 4 7]
 carsInNeedNodes : [1 1 1]
-bigMCars : [23.3 27.1 23.3 27.1 23.3 27.1 23.3 27.1 23.3 27.1 28.1 28.1 28.1 28.1 28.1 28.1]
+bigMCars : [30.4 11.9 14.2 30.4 30.4 11.9 14.2 30.4 30.4 11.9 14.2 30.4 30.4 11.9 14.2 30.4 30.4 11.9 14.2 30.4 30.4 11.9 30.4 11.9 30.4 11.9]
 
-originCarMoveOperator : [17 18 19] 
-destinationCarMoveOperator : [20 21 22] 
+originCarMoveOperator : [27 28 29] 
+destinationCarMoveOperator : [30 31 32] 
 numCarMovesA : 6
-carMoveOriginA : [1 1 4 4 9 9 9 9 9 9 4 4 6 6 9 9 7 7 2 15 16 17] 
-carMoveDestinationA : [3 6 3 6 3 6 3 6 3 6 10 11 10 11 10 11 7 7 2 15 16 17] 
-carMoveHandlingTimeA : [20.2 22.1 22.1 20.2 20.2 12.1 20.2 12.1 20.2 12.1 13.1 13.1 23.1 23.1 27.9 21.2 0 0 0 0 0 0] 
+carMoveOriginA : [4 4 4 4 5 5 5 5 6 6 6 6 6 6 6 6 6 6 6 6 2 2 4 4 7 7 6 6 7 15 16 17] 
+carMoveDestinationA : [1 7 8 9 1 7 8 9 1 7 8 9 1 7 8 9 1 7 8 9 10 11 10 11 10 11 6 6 7 15 16 17] 
+carMoveHandlingTimeA : [12.1 12.1 15.5 22.1 15.5 15.5 12.1 15.5 22.1 22.1 15.5 12.1 22.1 22.1 15.5 12.1 22.1 22.1 15.5 12.1 13.1 23.1 13.1 13.1 21.2 6.0 0 0 0 0 0 0] 
