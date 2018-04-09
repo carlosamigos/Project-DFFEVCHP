@@ -411,30 +411,38 @@ public class ALNSIndividual extends Individual {
 
 	private double calculateCapacityFitness(){
 		double penalty = 0.0;
+		double reward = 0.0;
 		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
 			int usedNow = this.capacitiesUsed.get(chargingNode);
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 
+			reward += usedNow;
 			penalty += Math.max(0, usedNow - capacity);
 		}
 
-		return penalty * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+		return (penalty * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY) 
+				- (reward * HeuristicsConstants.ALNS_CHARGING_REWARD);
 	}
 
 	private double calculateDeltaCapacityFitness(){
 		double newPenalty = 0.0;
 		double oldPenalty = 0.0;
+		double newReward = 0.0;
+		double oldReward = 0.0;
 
 		for(ChargingNode chargingNode : this.capacitiesUsed.keySet()) {
 			int usedNow = this.capacitiesUsed.get(chargingNode);
 			int usedBefore = this.prevCapacitiesUsed.get(chargingNode);
 			int capacity = chargingNode.getNumberOfAvailableChargingSpotsNextPeriod();
 
+			newReward += usedNow;
+			oldReward += usedBefore;
 			newPenalty += Math.max(0, usedNow - capacity);
 			oldPenalty += Math.max(0, usedBefore - capacity);
 		}
 
-		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY;
+		return (newPenalty - oldPenalty) * HeuristicsConstants.TABU_BREAK_CHARGING_CAPACITY
+				- (newReward - oldReward) * HeuristicsConstants.ALNS_CHARGING_REWARD;
 	}
 	
 	private double calculateIdealStateFitness() {
@@ -448,7 +456,7 @@ public class ALNSIndividual extends Individual {
 		}
 		
 		// If the difference is positive we have better met ideal state than before
-		return - (deviationNow - initialDeviation) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
+		return - (deviationNow - initialDeviation) * HeuristicsConstants.ALNS_IDEAL_STATE_UNIT_REWARD;
 	}
 	
 	private double calculateDeltaIdealStateFitness() {
@@ -461,7 +469,7 @@ public class ALNSIndividual extends Individual {
 		}
 		
 		// If the difference is positive we have better met ideal state than before
-		return - (deviationNow - deviationBefore) * HeuristicsConstants.TABU_IDEAL_STATE_UNIT_REWARD;
+		return - (deviationNow - deviationBefore) * HeuristicsConstants.ALNS_IDEAL_STATE_UNIT_REWARD;
 	}
 
 

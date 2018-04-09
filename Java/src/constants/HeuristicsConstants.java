@@ -13,11 +13,15 @@ public class HeuristicsConstants {
     public final static int TABU_ITERATIONS = 20000;
     public final static int ALNS_MAX_TIME_SECONDS = 15;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
-    public final static double TABU_CHARGING_UNIT_REWARD = 1;
+    public final static double TABU_CHARGING_UNIT_REWARD = 0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
-    public final static double TABU_SURPLUS_IDEAL_STATE_COST = 100;
-    public final static double TABU_IDEAL_STATE_UNIT_REWARD = 30;     
     public final static double TABU_TRAVEL_COST = 0;
+    public final static double TABU_SIZE_OF_OPERATOR_LIST = 0;
+    
+    // ALNS Parameters used when comparring with Mosel
+    public final static double ALNS_CHARGING_REWARD = 30;
+    public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.4;
+    public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10;  
     
     // This variable decides when the tabu list is increased in size (doubled)
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
@@ -33,10 +37,6 @@ public class HeuristicsConstants {
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 10.0;
     public final static double ALNS_UPDATE_FACTOR = 0.5;
     public final static double ALNS_DESTROY_FACTOR = 0.5;
-    
-
-    //Punishes the size of operator list, relative to the travel time
-    public final static double TABU_SIZE_OF_OPERATOR_LIST = 1;
 
     public final static double TABU_INTRA_MOVE_SIZE = 0.4*TABU_NEIGHBORHOOD_SIZE;
     public final static double TABU_INTER_MOVE_SIZE = 0.2*TABU_NEIGHBORHOOD_SIZE;
