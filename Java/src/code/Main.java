@@ -19,17 +19,17 @@ import utils.SolutionFileMaker;
 public class Main {
 
     public static void main(String[] args) {
-	boolean testing = true;
+	boolean testing = false;
     	setConstants(args);
     	createTestingFolders();
-	String fileName = "test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a";
-    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
-    	for(int i = 0; i < 1; i++) {
-    		ALNSSolver solver = new ALNSSolver(problemInstance);
-			BestIndividual best = (BestIndividual) solver.solve(problemInstance);
-		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
-        System.out.println(best);
-    	}
+//	String fileName = "test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a";
+//    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
+//    	for(int i = 0; i < 1; i++) {
+//    		ALNSSolver solver = new ALNSSolver(problemInstance);
+//			BestIndividual best = (BestIndividual) solver.solve(problemInstance);
+//		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
+//        System.out.println(best);
+//    	}
     	
 
     	if(!testing) {
