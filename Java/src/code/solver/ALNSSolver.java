@@ -147,9 +147,6 @@ public class ALNSSolver extends Solver {
 			// Perform mutations
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
-			if(this.individual.getFitness() <= -105.87) {
-				System.out.println("Found best!");
-			}
 
 			// Update counters and tabulist Size
 			if(candidateDelta >= 0){
