@@ -19,27 +19,27 @@ DISTANCESCALE = 3
 EXAMPLES = 3
 
 #BOARD SIZE
-XSIZE = 20
-YSIZE = 20
+XSIZE = 2
+YSIZE = 4
 
 #ALLOWED MOVES
-MOVES = 50
-CARSCHARGING = 20
+MOVES = 4
+CARSCHARGING = 3
 
 #PARKING NODES USED
 MAXNODES = XSIZE * YSIZE
 
 #CHARGING NODES
-NUMCHARGING = 5
-PARKINGC = [1, 20, 100, 150, 195]
-CAPACITY = [3, 3, 3, 3, 3]
-TOTALCAPACITY = [3, 3, 3, 3, 3]
+NUMCHARGING = 2
+PARKINGC = [1, 6]
+CAPACITY = [3, 3]
+TOTALCAPACITY = [3, 3]
 
 #OPERATORS
-NUMOPERATORS = 7
-STARTETIMEOP = [5, 0, 0, 0, 0, 0, 0]
-HANDLINGOP = [1, 0, 0, 0, 0, 0, 0]
-NUMTASKS = 8
+NUMOPERATORS = 3
+STARTETIMEOP = [5, 0, 0]
+HANDLINGOP = [1, 0, 0]
+NUMTASKS = 6
 
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
@@ -944,21 +944,27 @@ def createCars(world):
                 if(movesDef[x] > 0):
                     newCar.destinations.append(x + 1)
             world.addCar(newCar)
-        if(initial_lambda[i] > 0 and initial_lambda[i] > movesDef[i]):
+        if(initial_lambda[i] > 0 and (world.pNodes[i].pState + initial_lambda[i]) - (world.pNodes[i].iState + world.pNodes[i].demand) > 0):
+            count = 0
             for j in range(len(world.operators)):
                 if(world.operators[j].handling and world.operators[j].startNode - 1 == i):
-                    newCar = car(world.operators[j].startTime, i+1, False)
-                    for x in range(len(world.pNodes)):
-                        if (movesDef[x] > 0 and x != i):
-                            newCar.destinations.append(x + 1)
-                    world.addCar(newCar)
+                    if(count <= initial_lambda[i] and count <= (world.pNodes[i].pState + initial_lambda[i]) - (world.pNodes[i].iState + world.pNodes[i].demand)):
+                        newCar = car(world.operators[j].startTime, i+1, False)
+                        count += 1
+                        for x in range(len(world.pNodes)):
+                            if (movesDef[x] > 0 and x != i):
+                                newCar.destinations.append(x + 1)
+                        world.addCar(newCar)
             for j in range(len(world.fCCars)):
                 if(world.fCCars[j].parkingNode -1 == i):
-                    newCar = car(world.fCCars[j].remainingTime, i + 1, False)
-                    for x in range(len(world.pNodes)):
-                        if (movesDef[x] > 0 and x != i):
-                            newCar.destinations.append(x + 1)
-                    world.addCar(newCar)
+                    if (count <= initial_lambda[i] and count <= (world.pNodes[i].pState + initial_lambda[i]) - (
+                        world.pNodes[i].iState + world.pNodes[i].demand)):
+                        newCar = car(world.fCCars[j].remainingTime, i + 1, False)
+                        count += 1
+                        for x in range(len(world.pNodes)):
+                            if (movesDef[x] > 0 and x != i):
+                                newCar.destinations.append(x + 1)
+                        world.addCar(newCar)
     for i in range(len(world.pNodes)):
         for j in range(movesCharg[i]):
             newCar = car(0, i + 1, True)
