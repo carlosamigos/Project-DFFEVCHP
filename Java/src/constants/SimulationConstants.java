@@ -21,7 +21,7 @@ public class SimulationConstants {
     public final static double BATTERY_RANGE = 2*60; //2 hours, in minutes
     public final static double BATTERY_USED_PER_TIME_UNIT = 1.0/BATTERY_RANGE;
     public final static int LOCK_TIME_CAR_FOR_OPERATOR = 15;
-    public final static double INCOMING_CARS_CONSIDERATION_PROPORTION = 0.0;
+    public final static double INCOMING_CARS_CONSIDERATION_PROPORTION = 1.0;
     
     public enum nodeDemandGroup{
         MORNING_RUSH,

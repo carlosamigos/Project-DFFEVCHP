@@ -72,7 +72,8 @@ public class ChromosomeGenerator {
 
     // Return diff from ideal to current number of cars, not taking into account number of arriving
     public static Integer findNumberOfCarsToMoveIn(ParkingNode parkingNode, ProblemInstance problemInstance){
-        return parkingNode.getCarsRegular().size() - parkingNode.getIdealNumberOfAvailableCars();
+        int numberOfCars = parkingNode.getCarsRegular().size() - parkingNode.getIdealNumberOfAvailableCars();
+        return numberOfCars;
     }
 
     private static void createCarMovesForRegularCars(HashMap<Car, ArrayList<CarMove>> carMoves, ArrayList<ParkingNode> senderNodes,

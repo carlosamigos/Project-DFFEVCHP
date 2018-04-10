@@ -55,6 +55,7 @@ public class ProblemInstance implements Serializable{
     private String demandPString  = "";
     private String initialHandlingString = "";
     private int numberOfCarsTakenByCustomers = 0;
+    private int carIdTracker = 0;
 
 
     public ProblemInstance(String filePath) {
@@ -176,11 +177,26 @@ public class ProblemInstance implements Serializable{
         String[] startNodeList = startNodesString.substring(1,startNodesString.length()-1).split(" ");
         String timeRemainingString = inputFileMap.get("travelTimeToOriginR");
         String[] timeRemainingList = timeRemainingString.substring(1,timeRemainingString.length()-1).split(" ");
+        String initialHandlingString = inputFileMap.get("initialHandling");
+        String[] initialHandlingList = initialHandlingString.substring(1, initialHandlingString.length()-1).split(" ");
         for (int operatorId = Constants.START_INDEX; operatorId < startNodeList.length+Constants.START_INDEX; operatorId++) {
             int nodeId = Integer.parseInt(startNodeList[operatorId-Constants.START_INDEX]);
             Node node = nodeMap.get(nodeId);
             Operator newOperator = new Operator(operatorId);
             newOperator.setNextOrCurrentNode(node);
+            /* SIMEN */
+            newOperator.setHandling(initialHandlingList[operatorId-Constants.START_INDEX].equals("1"));
+            if(initialHandlingList[operatorId-Constants.START_INDEX].equals("1")){
+                Car car = new Car(carIdTracker, 1.0);
+                car.setCurrentNextNode(node);
+                car.setPreviousNode(node);
+                newOperator.setCar(car);
+                this.carIdTracker++;
+                ParkingNode pNode = (ParkingNode) node;
+                //pNode.addRegularCar(car);
+                cars.add(car);
+            }
+            /* STOP SIMEN */
             Double remainingTime = Double.parseDouble(timeRemainingList[operatorId-Constants.START_INDEX]);
             newOperator.setTimeRemainingToCurrentNextNode(remainingTime);
             operators.add(newOperator);
@@ -258,6 +274,7 @@ public class ProblemInstance implements Serializable{
                 newRegularCar.setCurrentNextNode(newParkingNode);
                 newRegularCar.setPreviousNode(newParkingNode);
                 carId++;
+                carIdTracker = carId;
                 newParkingNode.addRegularCar(newRegularCar);
                 cars.add(newRegularCar);
             }
@@ -266,6 +283,7 @@ public class ProblemInstance implements Serializable{
                 newCarInNeed.setCurrentNextNode(newParkingNode);
                 newCarInNeed.setPreviousNode(newParkingNode);
                 carId++;
+                carIdTracker = carId;
                 newParkingNode.addCarInNeed(newCarInNeed);
                 cars.add(newCarInNeed);
             }
@@ -827,6 +845,8 @@ public class ProblemInstance implements Serializable{
         }
 
     }
+
+
 
     public int getCarsInNeedOfCharging() {
         return carsInNeedOfCharging;

@@ -38,6 +38,7 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, Integer> mutationToAttempts;
 	private HashMap<Integer, String> mutationIdToDescription;
 	private double weightSum = 0.0;
+	private boolean set = false;
 	
 	public ALNSSolver() {}
 	
@@ -57,6 +58,7 @@ public class ALNSSolver extends Solver {
 		this.setMutationToPerform();
 		this.setMutationToGenerateNeighborhood();
 		this.solutionsSeen.put(this.individual.toString(), 1);
+		this.set = true;
 	}
 	
 	private void initializeMutationWeights() {
@@ -93,7 +95,9 @@ public class ALNSSolver extends Solver {
 	
 	@Override
 	public Individual solve(ProblemInstance problemInstance) {
-		setVariables(problemInstance);
+		if(!set) {
+			setVariables(problemInstance);
+		}
 //		System.out.println(bestIndividual);
 		this.startTime = System.currentTimeMillis();
 		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
@@ -221,7 +225,7 @@ public class ALNSSolver extends Solver {
 		destroy(numberToHandle);
 		repair(numberToHandle);
 		this.tabuList.clearTabu();
-		initializeMutationWeights();
+		//initializeMutationWeights();
 	}
 
 	private void destroy(int numberToDestroy){
@@ -421,6 +425,7 @@ public class ALNSSolver extends Solver {
 	private void setBest(){
 		double currentTime;
 		ArrayList<ArrayList<CarMove>> newOperators = new ArrayList<>();
+		ArrayList<Double> endTimes = new ArrayList<>();
 		for(Object object : individual.getRepresentation()){
 			Operator operator = (Operator) object;
 			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
@@ -439,9 +444,11 @@ public class ALNSSolver extends Solver {
 				prevNode = carMove.getToNode();
 			}
 			newOperators.add(newCarMoveList);
+			endTimes.add(currentTime);
 		}
+		
 		this.individual.calculateMoselFitness();
-		this.bestIndividual = new BestIndividual(newOperators, individual.getFitness(), 
+		this.bestIndividual = new BestIndividual(newOperators, individual.getFitness(), endTimes,
 				individual.getNumberOfUnchargedCars(), individual.getDeviationFromIdeal());
 	}
 	

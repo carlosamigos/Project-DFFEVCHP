@@ -167,16 +167,20 @@ public class Operator {
 		}
 		
 		double currentTime = this.startTime;
+		double travelTimeCarMove = 0.0;
 		Node previousNode = this.startNode;
 		this.fitness = 0.0;
 		for(int i = 0; i < this.carMoves.size(); i++) {
 			CarMove currentMove = this.carMoves.get(i);
-			currentTime += getTravelTime(previousNode, currentMove, currentTime);
+			travelTimeCarMove += currentMove.getTravelTime();
+			double travelTime = getTravelTime(previousNode, currentMove, currentTime);
+			currentTime += travelTime;
 			previousNode = currentMove.getToNode();
 
 			if(currentTime > this.timeLimit) {
+				this.fitness += travelTimeCarMove * HeuristicsConstants.ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY;
 				this.fitness += (this.carMoves.size() - (i+1)) * HeuristicsConstants.TABU_SIZE_OF_OPERATOR_LIST;
-				this.fitness += currentTime * HeuristicsConstants.TABU_TRAVEL_COST;
+				this.fitness += (currentTime - travelTime) * HeuristicsConstants.ALNS_TRAVEL_COST;
 				return;
 			}
 			
@@ -196,7 +200,8 @@ public class Operator {
 						this.individual.getDeviationIdealState().get(parkingNode) + 1);
 			}
 		}
-		this.fitness += currentTime * HeuristicsConstants.TABU_TRAVEL_COST;
+		this.fitness += travelTimeCarMove * HeuristicsConstants.ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY;
+		this.fitness += currentTime * HeuristicsConstants.ALNS_TRAVEL_COST;
 	}
 	
 	public double getTravelTime(Node previous, CarMove move, double currentTime) {
