@@ -59,6 +59,7 @@ public abstract class TestSuite {
 	
 	protected void instantiateMoselSolvers() {
 		File[] moselFiles = (new File(FileConstants.MOSEL_TEST_FILES_FOLDER)).listFiles();
+		System.out.println(FileConstants.MOSEL_TEST_FILES_FOLDER);
 		ArrayList<String> moselFileNames =  new ArrayList<String>();
 		for(File file : moselFiles) {
 			if(file.getName().contains(".mos")) {
