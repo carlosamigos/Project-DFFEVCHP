@@ -95,9 +95,14 @@ if [ $CHOSEN == 1 ] ; then
         echo "Must choose a legal number."
         echo " "
     done 
+    CHOSENSOLVER=$(( $CHOSENSOLVER - 1))
+    MODELFOLDER=${AVAILSOLVER[$CHOSENSOLVER]}
 else
+    MODELFOLDER=""
     SOLVER="alns"
 fi
+
+
 echo "################"
 echo " "
 echo "################"
@@ -183,11 +188,11 @@ fi
 
 echo "################"
 cd ../Java
-module load xpress/8.0.4
-module load java/jdk-9.0.4
+module load xpress/8.4.4
+module load Java/9.0.4
 ant clean
 ant build
 
 TEST_TYPE="${TYPE,,}"
 
-java -cp "./bin:/share/apps/xpress/8.0.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NAME" solver:$SOLVER
+java -cp "./bin:/share/apps/xpress/8.4.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NAME" solver:$SOLVER model_folder:$MODELFOLDER
