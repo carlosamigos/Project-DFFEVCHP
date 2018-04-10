@@ -38,6 +38,7 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, Integer> mutationToAttempts;
 	private HashMap<Integer, String> mutationIdToDescription;
 	private double weightSum = 0.0;
+	private boolean set = false;
 	
 	public ALNSSolver() {}
 	
@@ -57,6 +58,7 @@ public class ALNSSolver extends Solver {
 		this.setMutationToPerform();
 		this.setMutationToGenerateNeighborhood();
 		this.solutionsSeen.put(this.individual.toString(), 1);
+		this.set = true;
 	}
 	
 	private void initializeMutationWeights() {
@@ -67,9 +69,12 @@ public class ALNSSolver extends Solver {
 				EjectionInsertMutation.id,
 				EjectionRemoveMutation.id,
 				EjectionReplaceMutation.id,
+				EjectionSwapMutation.id,
 				InterMove.id,
 				InterSwap2.id,
 				IntraMove.id
+				//Inter2Move.id
+
 			};
 		
 		for(int id : mutationIds) {
@@ -85,15 +90,19 @@ public class ALNSSolver extends Solver {
 		this.mutationIdToDescription.put(EjectionInsertMutation.id, "Ejection Insert");
 		this.mutationIdToDescription.put(EjectionRemoveMutation.id, "Ejection Remove");
 		this.mutationIdToDescription.put(EjectionReplaceMutation.id, "Ejection Replace");
+		this.mutationIdToDescription.put(EjectionSwapMutation.id, "Ejection Swap");
 		this.mutationIdToDescription.put(InterMove.id, "Inter Move");
 		this.mutationIdToDescription.put(IntraMove.id, "Intra Move");
 		this.mutationIdToDescription.put(InterSwap2.id, "Inter Swap 2");
+		this.mutationIdToDescription.put(Inter2Move.id, "Inter Move 2");
 	}
 
 	
 	@Override
 	public Individual solve(ProblemInstance problemInstance) {
-		setVariables(problemInstance);
+		if(!set) {
+			setVariables(problemInstance);
+		}
 //		System.out.println(bestIndividual);
 		this.startTime = System.currentTimeMillis();
 		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
@@ -340,6 +349,10 @@ public class ALNSSolver extends Solver {
 			InterSwap2 interSwap2 = (InterSwap2) mutation;
 			return this.individual.deltaFitness(interSwap2);
 		});
+		this.mutationToDelta.put(Inter2Move.id, (Mutation mutation) -> {
+			Inter2Move inter2move = (Inter2Move) mutation;
+			return this.individual.deltaFitness(inter2move);
+		});
 		this.mutationToDelta.put(EjectionInsertMutation.id, (Mutation mutation) -> {
 			EjectionInsertMutation ejectionInsertMutation = (EjectionInsertMutation) mutation;
 			return this.individual.deltaFitness(ejectionInsertMutation);
@@ -347,6 +360,10 @@ public class ALNSSolver extends Solver {
 		this.mutationToDelta.put(EjectionRemoveMutation.id, (Mutation mutation) -> {
 			EjectionRemoveMutation ejectionRemoveMutation = (EjectionRemoveMutation) mutation;
 			return this.individual.deltaFitness(ejectionRemoveMutation);
+		});
+		this.mutationToDelta.put(EjectionSwapMutation.id, (Mutation mutation) -> {
+			EjectionSwapMutation ejectionSwapMutation = (EjectionSwapMutation) mutation;
+			return this.individual.deltaFitness(ejectionSwapMutation);
 		});
 	}
 	
@@ -371,6 +388,10 @@ public class ALNSSolver extends Solver {
 			InterSwap2 interSwap2 = (InterSwap2) mutation;
 			this.individual.performMutation(interSwap2);
 		});
+		this.mutationToPerform.put(Inter2Move.id, (Mutation mutation) -> {
+			Inter2Move inter2Move = (Inter2Move) mutation;
+			this.individual.performMutation(inter2Move);
+		});
 		this.mutationToPerform.put(EjectionInsertMutation.id, (Mutation mutation) -> {
 			EjectionInsertMutation ejectionInsertMutation = (EjectionInsertMutation) mutation;
 			this.individual.performMutation(ejectionInsertMutation);
@@ -378,6 +399,10 @@ public class ALNSSolver extends Solver {
 		this.mutationToPerform.put(EjectionRemoveMutation.id, (Mutation mutation) -> {
 			EjectionRemoveMutation ejectionRemoveMutation = (EjectionRemoveMutation) mutation;
 			this.individual.performMutation(ejectionRemoveMutation);
+		});
+		this.mutationToPerform.put(EjectionSwapMutation.id, (Mutation mutation) -> {
+			EjectionSwapMutation ejectionSwapMutation = (EjectionSwapMutation) mutation;
+			this.individual.performMutation(ejectionSwapMutation);
 		});
 	}
 	
@@ -395,6 +420,9 @@ public class ALNSSolver extends Solver {
 		this.mutationToNeighborhood.put(InterSwap2.id, (int tabuSize) -> {
 			return this.individual.getNeighborhoodInterSwap2(this.tabuList, tabuSize);
 		});
+		this.mutationToNeighborhood.put(Inter2Move.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodInter2Move(this.tabuList, tabuSize);
+		});
 		this.mutationToNeighborhood.put(EjectionInsertMutation.id, (int tabuSize) -> {
 			return this.individual.getNeighborhoodEjectionInsert(this.tabuList, tabuSize);
 		});
@@ -403,6 +431,9 @@ public class ALNSSolver extends Solver {
 		});
 		this.mutationToNeighborhood.put(EjectionReplaceMutation.id, (int tabuSize) -> {
 			return this.individual.getNeighborhoodEjectionReplace(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(EjectionSwapMutation.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodEjectionSwap(this.tabuList, tabuSize);
 		});
 	}
 	
@@ -421,6 +452,7 @@ public class ALNSSolver extends Solver {
 	private void setBest(){
 		double currentTime;
 		ArrayList<ArrayList<CarMove>> newOperators = new ArrayList<>();
+		ArrayList<Double> endTimes = new ArrayList<>();
 		for(Object object : individual.getRepresentation()){
 			Operator operator = (Operator) object;
 			ArrayList<CarMove> newCarMoveList = new ArrayList<>();
@@ -439,9 +471,11 @@ public class ALNSSolver extends Solver {
 				prevNode = carMove.getToNode();
 			}
 			newOperators.add(newCarMoveList);
+			endTimes.add(currentTime);
 		}
+		
 		this.individual.calculateMoselFitness();
-		this.bestIndividual = new BestIndividual(newOperators, individual.getFitness(), 
+		this.bestIndividual = new BestIndividual(newOperators, individual.getFitness(), endTimes,
 				individual.getNumberOfUnchargedCars(), individual.getDeviationFromIdeal());
 	}
 	

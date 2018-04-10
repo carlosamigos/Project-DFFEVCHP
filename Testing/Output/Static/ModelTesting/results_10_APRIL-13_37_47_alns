@@ -1,0 +1,5 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+    test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a     |   0s.    |  131.39  |   N/A    |    1     |    0     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_38CM_a     |   0s.    |  131.39  |   N/A    |    1     |    0     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a     |   0s.    |  131.53  |   N/A    |    1     |    0     

@@ -10,7 +10,7 @@ case $USER in
     "carlaj" )
         echo "Yx66!aB" | pbcopy ;;
     "simehe" )
-        echo "" | pbcopy ;;
+        echo "pW88*b2" | pbcopy ;;
 esac
 
 ssh $USER@solstorm-login.iot.ntnu.no

@@ -6,7 +6,7 @@ public class FileConstants {
     public final static String PROBLEM_FOLDER = "../Mosel/";
     public final static String MOSEL_OUTPUT_REAL= "../Mosel/output/realOperators/";
     public final static String MOSEL_OUTPUT_ARTIFICIAL= "../Mosel/output/artificialOperators/";
-    public final static String MOSEL_TEST_FILES_FOLDER = "../Mosel/Models/main models/";
+    public static String MOSEL_TEST_FILES_FOLDER = "../Mosel/Models/main models/";
     public static String STATIC_RUN_STATS = "../Mosel/runStats";
     
     // Testing files and folders
