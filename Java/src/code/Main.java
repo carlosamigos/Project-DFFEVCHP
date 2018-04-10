@@ -22,15 +22,15 @@ public class Main {
 	boolean testing = false;
     	setConstants(args);
     	createTestingFolders();
-//	String fileName = "test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a";
-//    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
-//    	for(int i = 0; i < 1; i++) {
-//    		ALNSSolver solver = new ALNSSolver(problemInstance);
-//			BestIndividual best = (BestIndividual) solver.solve(problemInstance);
-//		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
-//        System.out.println(best);
-//    	}
-    	
+	String fileName = "test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a";
+    	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
+    	for(int i = 0; i < 1; i++) {
+    		ALNSSolver solver = new ALNSSolver(problemInstance);
+			BestIndividual best = (BestIndividual) solver.solve(problemInstance);
+		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
+        System.out.println(best);
+    	}
+
 
     	if(!testing) {
 	    	TestSuite testSuite;
@@ -94,8 +94,10 @@ public class Main {
     private static void createTestingFolders() {
     	try {
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER));
-			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_OUTPUT_FOLDER));
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

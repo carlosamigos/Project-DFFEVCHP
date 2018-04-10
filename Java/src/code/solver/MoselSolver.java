@@ -18,11 +18,11 @@ public class MoselSolver extends Solver {
 	private final String bimFileName;
 	private final Constants.SolverType solverType = Constants.SolverType.MOSEL;
 
-	private XPRM mosel;
-	private XPRMModel model;
+	//private XPRM mosel;
+	//private XPRMModel model;
 
 	public MoselSolver(String moselFileName) {
-		this.mosel = new XPRM();
+		//	this.mosel = new XPRM();
 		this.moselFileName = moselFileName;
 		this.bimFileName = moselFileName.substring(0, moselFileName.length() - 3) + "bim";
 	}
@@ -34,14 +34,14 @@ public class MoselSolver extends Solver {
 		fixDataFile(problemInstance.getFilePath());
 
 		System.out.print("Solving " + problemInstance.getFilePath() + " ");
-		this.model.run();
-		this.model.reset();
+		//this.model.run();
+		//this.model.reset();
 		return null;
 	}
 
 	private void fixDataFile(String dataFile) {
 		String parameters = "DataFile=" + dataFile + ".txt";
-		this.model.execParams += parameters;
+		//this.model.execParams += parameters;
 	}
 
 	private void fixParameters(String fileName) {
@@ -50,13 +50,13 @@ public class MoselSolver extends Solver {
 				+ "," + "OutputPathArtificial=" + FileConstants.MOSEL_OUTPUT_ARTIFICIAL + fileName+ ".txt," + "OutputPathRegular=" + FileConstants.MOSEL_OUTPUT_REAL
 				+ fileName + ".txt,";
 
-		model.execParams = parameters;
+		//model.execParams = parameters;
 	}
 
 	private void compile() {
 		try {
-			this.mosel.compile(FileConstants.PROBLEM_FOLDER + this.moselFileName);
-			this.model = this.mosel.loadModel(FileConstants.PROBLEM_FOLDER + this.bimFileName);
+			//this.mosel.compile(FileConstants.PROBLEM_FOLDER + this.moselFileName);
+			//this.model = this.mosel.loadModel(FileConstants.PROBLEM_FOLDER + this.bimFileName);
 		}
 
 		catch (Exception e) {
