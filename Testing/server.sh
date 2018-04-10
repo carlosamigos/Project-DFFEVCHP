@@ -34,7 +34,7 @@ echo "################"
 echo " "
 echo "################"
 
-echo -n "If you want to the default constants please enter 'D': "
+echo -n "If you want to use the default constants please enter 'D': "
 read DEFAULT
 
 if [ "$DEFAULT" == "D" ] ; then
