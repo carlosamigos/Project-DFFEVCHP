@@ -24,7 +24,7 @@ public class MoselSolver extends Solver {
 	private XPRMModel model;
 
 	public MoselSolver(String moselFileName) {
-		//	this.mosel = new XPRM();
+		this.mosel = new XPRM();
 		this.moselFileName = moselFileName;
 		this.bimFileName = moselFileName.substring(0, moselFileName.length() - 3) + "bim";
 	}
@@ -58,14 +58,11 @@ public class MoselSolver extends Solver {
 
 	private void compile() {
 		try {
-			System.out.println(this.moselFileName + ":" + this.bimFileName);
 			this.mosel.compile(this.moselFileName);
-			System.out.println("foo");
 			this.model = this.mosel.loadModel(this.bimFileName);
 		}
 
 		catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
 			System.out.println("Could not compile mosel file");
 		}
 
