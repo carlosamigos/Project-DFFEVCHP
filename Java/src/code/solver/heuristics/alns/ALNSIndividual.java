@@ -1062,10 +1062,10 @@ public class ALNSIndividual extends Individual {
 	// Destroy
 	//================================================================================
 
-	public void destroy(RandomDestroy randomDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
-		//Have to generate a new neighborhood each iteration 
-		ArrayList<Mutation> neighborhood = new ArrayList<>(neighborhoodDestroy);
+	public void destroy(RandomDestroy randomDestroy, TabuList tabuList, int numberToHandle){
 		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 2).keySet());
 			Mutation candidate;
 			if (neighborhood.size() < 1) {
 				break;
@@ -1073,15 +1073,14 @@ public class ALNSIndividual extends Individual {
 			int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
 			candidate = neighborhood.get(removeIndex);
 			performMutation((EjectionRemoveMutation) candidate);
-			neighborhood.remove(removeIndex);
 		}
 	}
 
-	public void destroy(RelatedDestroy relatedDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
+	public void destroy(RelatedDestroy relatedDestroy, TabuList tabuList, int numberToHandle){
 
 	}
 
-	public void destroy(WorstDestroy worstDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
+	public void destroy(WorstDestroy worstDestroy,  TabuList tabuList, int numberToHandle){
 
 	}
 
@@ -1089,16 +1088,38 @@ public class ALNSIndividual extends Individual {
 	// Repair
 	//================================================================================
 
-	public void repair(BestRepair bestRepair, Set<Mutation> neighborhoodRepair, int numberToHandle){
-
+	public void repair(BestRepair bestRepair, TabuList tabuList , int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionInsert(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 2).keySet());
+			Mutation candidate = null;
+			if(neighborhood.size() < 1){
+				break;
+			}
+			for(Mutation mutation : neighborhood) {
+				candidate = mutation;
+				break;
+			}
+			double candidateDelta;
+			candidateDelta = deltaFitness((EjectionInsertMutation) candidate);
+			for(Mutation newCandidate : neighborhood) {
+				double newCandidateDelta = deltaFitness((EjectionInsertMutation) newCandidate);
+				if (newCandidateDelta < candidateDelta ) {
+					candidate = newCandidate;
+					candidateDelta = newCandidateDelta;
+				}
+			}
+			addToFitness(candidateDelta);
+			performMutation((EjectionInsertMutation) candidate);
+		}
 
 	}
 
-	public void repair(RegretRepair regretRepair, Set<Mutation> neighborhoodRepair, int numberToHandle){
+	public void repair(RegretRepair regretRepair, TabuList tabuList, int numberToHandle){
 
 	}
 
-	public void repair(RegretRepair2 regretRepair2, Set<Mutation> neighborhoodRepair, int numberToHandle){
+	public void repair(RegretRepair2 regretRepair2, TabuList tabuList, int numberToHandle){
 
 	}
 

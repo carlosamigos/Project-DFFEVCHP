@@ -10,7 +10,7 @@ public class HeuristicsConstants {
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 100;
     public final static int TABU_SIZE = 2;
-    public final static int TABU_ITERATIONS = 4000;
+    public final static int TABU_ITERATIONS = 50000;
     public final static int ALNS_MAX_TIME_SECONDS = 60;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 25000;
     public final static double TABU_CHARGING_UNIT_REWARD = 0;
@@ -36,7 +36,7 @@ public class HeuristicsConstants {
     public final static double ALNS_FOUND_NEW_BEST_REWARD = 2.0;
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 10.0;
     public final static double ALNS_UPDATE_FACTOR = 0.5;
-    public final static double ALNS_DESTROY_FACTOR = 0.7;
+    public final static double ALNS_DESTROY_FACTOR = 0.5;
     
     //Initial solution
     public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.02;
@@ -52,5 +52,10 @@ public class HeuristicsConstants {
     public final static double IS_CHARGING_WEIGHT = 0.315;
     public final static double TRAVEL_DISTANCE_WEIGHT = 0.005;
     public final static double EARLIEST_DEPARTURE_WEIGHT = 0.05;
+
+    //Large Neighborhood
+    public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 1.0;
+    public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 10.0;
+    public final static double ALNS_UPDATE_FACTOR_LNS = 0.5;
 
 }
