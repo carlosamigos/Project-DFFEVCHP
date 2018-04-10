@@ -91,7 +91,7 @@ public class Main {
     			}
     			break;
     		case "model_folder":
-    			FileConstants.MOSEL_TEST_FILES_FOLDER =  "../Mosel/Models/" + input.get(key);
+    			FileConstants.MOSEL_TEST_FILES_FOLDER =  "../Mosel/Models/" + input.get(key) + "/";
     		default:
     			break;
     		}
