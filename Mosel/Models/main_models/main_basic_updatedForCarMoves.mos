@@ -7,13 +7,13 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_12nodes_5so_3c_10mov_5charging_0finishes_55CM_a.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 30;
+	MaxSolveTimeSeconds = 300;
 end-parameters
 
 
@@ -200,7 +200,7 @@ if printParams then
 	writeln('CarMove origin:                                                          ',carMoveOrigin);
 	writeln('CarMove destination:                                                     ',carMoveDestination);
 	writeln('Cars in need of charging in nodes:                                       ',carsInNeedCTranslate);
-	writeln('Number of cars in need of charging:                                      ',carsInCNeedNodes);
+	writeln('Number of cars in need of charging:                                      ',carsInNeedNodes);
 end-if
 
 
@@ -254,10 +254,10 @@ declarations
 		Objective: linctr;
 end-declarations
 
-Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
-			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) + 
-			  costOfExtraTime * sum(pp in rOperators) t_plus(pp) + 
-			  costOfTravelH * sum(pp in rOperators, rr in carMoves, mm in tasks) carMoveHandlingTime(rr) * x(pp, rr, mm);
+Objective := -costOfDeviation * sum(ii in deficitNodes) (deficitCarsInNode(ii) - s_minus(ii)) - 
+			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) (carsInNeedNodes(ii) - s_c(ii)) + 
+			  0.2 * sum(pp in rOperators, rr in carMoves, mm in tasks) carMoveHandlingTime(rr) * x(pp, rr, mm) + 
+			  0.01 * sum(pp in rOperators) t(pp, numTasks);
 			 (! 0.001 * sum(pp in rOperators, mm in tasks) t(pp, mm); !)
 			  !0.02 * sum(pp in rOperators, rr in carMoves, mm in tasks) travelTimeVehicle(carMoveOrigin(rr), carMoveDestination(rr)) * x(pp, rr, mm) +
 			  
