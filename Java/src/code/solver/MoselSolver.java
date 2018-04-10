@@ -57,8 +57,8 @@ public class MoselSolver extends Solver {
 
 	private void compile() {
 		try {
-			this.mosel.compile(FileConstants.PROBLEM_FOLDER + this.moselFileName);
-			this.model = this.mosel.loadModel(FileConstants.PROBLEM_FOLDER + this.bimFileName);
+			this.mosel.compile(FileConstants.MOSEL_TEST_FILES_FOLDER + this.moselFileName);
+			this.model = this.mosel.loadModel(FileConstants.MOSEL_TEST_FILES_FOLDER + this.bimFileName);
 		}
 
 		catch (Exception e) {
