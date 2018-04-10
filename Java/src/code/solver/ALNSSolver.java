@@ -12,6 +12,7 @@ import code.solver.heuristics.alns.TabuList;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.entities.Operator;
 import code.solver.heuristics.mutators.*;
+import code.solver.heuristics.searches.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.SolutionFileMaker;
@@ -39,6 +40,18 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, String> mutationIdToDescription;
 	private double weightSum = 0.0;
 	private boolean set = false;
+
+
+	// LNS
+	private HashMap<Integer, Double> mutationToWeightLNSDestroy;
+	private HashMap<Integer, Double> mutationScoresLNSDestroy;
+	private HashMap<Integer, Integer> mutationToAttemptsLNSDestroy;
+	private double weightSumLNSDestroy = 0.0;
+
+	private HashMap<Integer, Double> mutationToWeightLNSRepair;
+	private HashMap<Integer, Double> mutationScoresLNSRepair;
+	private HashMap<Integer, Integer> mutationToAttemptsLNSRepair;
+	private double weightSumLNSRepair = 0.0;
 	
 	public ALNSSolver() {}
 	
@@ -83,6 +96,41 @@ public class ALNSSolver extends Solver {
 			this.mutationToAttempts.put(id, 0);
 			this.weightSum++;
 		}
+
+		// LNS
+		this.mutationToWeightLNSDestroy = new HashMap<>();
+		this.mutationScoresLNSDestroy = new HashMap<>();
+		this.mutationToAttemptsLNSDestroy = new HashMap<>();
+		int[] searchIds = {
+				RandomDestroy.id,
+				RelatedDestroy.id,
+				WorstDestroy.id
+		};
+
+		for(int id : searchIds) {
+			this.mutationToWeightLNSDestroy.put(id, 1.0);
+			this.mutationScoresLNSDestroy.put(id, 0.0);
+			this.mutationToAttemptsLNSDestroy.put(id, 0);
+			this.weightSumLNSDestroy++;
+		}
+
+		this.mutationToWeightLNSRepair = new HashMap<>();
+		this.mutationScoresLNSRepair = new HashMap<>();
+		this.mutationToAttemptsLNSRepair = new HashMap<>();
+		int[] searchIdsRepair = {
+				BestRepair.id,
+				RegretRepair.id,
+				RegretRepair2.id
+		};
+		for(int id : searchIdsRepair) {
+			this.mutationToWeightLNSRepair.put(id, 1.0);
+			this.mutationScoresLNSRepair.put(id, 0.0);
+			this.mutationToAttemptsLNSRepair.put(id, 0);
+			this.weightSumLNSRepair++;
+		}
+
+
+
 	}
 	
 	private void initializeMutationIdToDescription() {
@@ -110,6 +158,11 @@ public class ALNSSolver extends Solver {
 		int iteration = 0;
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
+
+		//LNS
+		int neighborhoodDestroyId = 0;
+		int neighborhoodRepairId = 0;
+
 		while(!done(iteration)) {
 			if(iteration != 0 && iteration % 100 == 0){
 				if(HeuristicsConstants.PRINT_OUT_PROGRESS) {
@@ -177,7 +230,18 @@ public class ALNSSolver extends Solver {
 			updateMutationScores(candidate, candidateDelta, bestFound);
 			tabuList.add(candidate);
 			iteration++;
+
+			// LNS - DESTROY AND REPAIR
+			if(neighborhoodDestroyId != 0){
+				updateMutationScoresLNSDestroy(neighborhoodDestroyId, neighborhoodRepairId, bestFound);
+			}
 			if(global_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
+				updateWeightsLNSDestroy();
+				updateWeightsLNSRepair();
+				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
+				neighborhoodRepairId = getNeighborhoodLNSRepair();
+				int numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
+
 				destroyAndRepair();
 				global_counter = 0;
 				counter = 0;
@@ -216,6 +280,22 @@ public class ALNSSolver extends Solver {
 		}
 		if(bestFound){
 			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
+					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
+		}
+	}
+
+	//LNS
+	public void updateMutationScoresLNSDestroy(int destroyId, int repairId, boolean bestFound){
+		String individualString = this.individual.toString();
+		if(! this.solutionsSeen.containsKey(individualString)) {
+			this.mutationScoresLNSDestroy.put(destroyId, this.mutationScoresLNSDestroy.get(destroyId)
+					+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
+			this.mutationScoresLNSRepair.put(repairId, this.mutationScoresLNSRepair.get(repairId)
+					+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
+		}if(bestFound){
+			this.mutationScoresLNSDestroy.put(destroyId, this.mutationScoresLNSDestroy.get(destroyId)
+					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
+			this.mutationScoresLNSRepair.put(repairId, this.mutationScoresLNSRepair.get(repairId)
 					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
 		}
 	}
@@ -282,11 +362,11 @@ public class ALNSSolver extends Solver {
 	}
 
 	private HashMap<Mutation, Integer> getNeighborhoodRemove(){
-		return this.mutationToNeighborhood.get(EjectionRemoveMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+		return this.mutationToNeighborhood.get(EjectionRemoveMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE*2);
 	}
 
 	private HashMap<Mutation, Integer> getNeighborhoodInsert(){
-		return this.mutationToNeighborhood.get(EjectionInsertMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+		return this.mutationToNeighborhood.get(EjectionInsertMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE*2);
 	}
 	
 	private boolean done(int iteration) {
@@ -308,6 +388,33 @@ public class ALNSSolver extends Solver {
 		}
 		return this.mutationToNeighborhood.get(IntraMove.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 	}
+	//LNS
+	private int getNeighborhoodLNSDestroy() {
+		double accumulated = 0.0;
+		double p = Math.random();
+		for(int id: this.mutationToWeightLNSDestroy.keySet()){
+			accumulated += this.mutationToWeightLNSDestroy.get(id) /this.weightSumLNSDestroy;
+			if(p <= accumulated){
+				this.mutationToAttemptsLNSDestroy.put(id, this.mutationToAttemptsLNSDestroy.get(id) +1);
+				return id;
+			}
+		}
+		return RandomDestroy.id;
+	}
+
+	private int getNeighborhoodLNSRepair() {
+		double accumulated = 0.0;
+		double p = Math.random();
+		for(int id: this.mutationToWeightLNSRepair.keySet()){
+			accumulated += this.mutationToWeightLNSRepair.get(id) /this.weightSumLNSRepair;
+			if(p <= accumulated){
+				this.mutationToAttemptsLNSRepair.put(id, this.mutationToAttemptsLNSRepair.get(id) +1);
+				return id;
+			}
+		}
+		return BestRepair.id;
+	}
+
 	
 	/*
 	 * Updates the weights for each mutation based on how well each mutation have performed in the last
@@ -325,6 +432,37 @@ public class ALNSSolver extends Solver {
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
 			this.mutationToAttempts.put(id, 0);
+		}
+	}
+
+	//LNS
+	private void updateWeightsLNSDestroy(){
+		this.weightSumLNSDestroy = 0.0;
+		for(int id: this.mutationToWeightLNSDestroy.keySet()){
+			double r = HeuristicsConstants.ALNS_UPDATE_FACTOR;
+			double oldWeight = this.mutationToWeightLNSDestroy.get(id);
+			double score = this.mutationScoresLNSDestroy.get(id);
+			double attempts = this.mutationToAttemptsLNSDestroy.get(id);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
+			this.weightSumLNSDestroy += newWeight;
+			this.mutationToWeightLNSDestroy.put(id, newWeight);
+			this.mutationScoresLNSDestroy.put(id, 0.0);
+			this.mutationToAttemptsLNSDestroy.put(id, 0);
+		}
+	}
+
+	private void updateWeightsLNSRepair(){
+		this.weightSumLNSDestroy = 0.0;
+		for(int id: this.mutationToWeightLNSRepair.keySet()){
+			double r = HeuristicsConstants.ALNS_UPDATE_FACTOR;
+			double oldWeight = this.mutationToWeightLNSRepair.get(id);
+			double score = this.mutationScoresLNSRepair.get(id);
+			double attempts = this.mutationToAttemptsLNSRepair.get(id);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
+			this.weightSumLNSRepair += newWeight;
+			this.mutationToWeightLNSRepair.put(id, newWeight);
+			this.mutationScoresLNSRepair.put(id, 0.0);
+			this.mutationToAttemptsLNSRepair.put(id, 0);
 		}
 	}
 	
