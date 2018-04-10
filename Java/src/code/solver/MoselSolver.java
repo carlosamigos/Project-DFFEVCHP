@@ -47,6 +47,7 @@ public class MoselSolver extends Solver {
 	}
 
 	private void fixParameters(String fileName) {
+		System.out.println(fileName);
 		String parameters = "printParams=" + Constants.PRINT_MOSEL_PARAMETERS + "," + "printResults="
 				+ Constants.PRINT_MOSEL_RESULTS + "," + "MaxSolveTimeSeconds=" + Constants.MAX_SOLVE_TIME_MOSEL_SECONDS
 				+ "," + "OutputPathArtificial=" + FileConstants.MOSEL_OUTPUT_ARTIFICIAL + fileName+ ".txt," + "OutputPathRegular=" + FileConstants.MOSEL_OUTPUT_REAL
