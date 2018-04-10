@@ -48,7 +48,7 @@
         <antcall target="build"/>
     </target>
     <target name="New_configuration">
-        <java classname="tio4500.Main" failonerror="true" fork="yes">
+        <java classname="code.Main" failonerror="true" fork="yes">
             <classpath refid="Java.classpath"/>
         </java>
     </target>
@@ -62,7 +62,7 @@
         </junit>
     </target>
     <target name="Main (1)">
-        <java classname="tio4500.Main" failonerror="true" fork="yes">
+        <java classname="code.Main" failonerror="true" fork="yes">
             <classpath refid="Java.classpath"/>
         </java>
     </target>
