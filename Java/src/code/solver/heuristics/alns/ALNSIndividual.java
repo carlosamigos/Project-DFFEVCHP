@@ -888,7 +888,7 @@ public class ALNSIndividual extends Individual {
 				continue;
 			}
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * (insertOperator.getCarMoveListSize()+1));
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			if(!tabuList.isTabu(interMove)) {
 				neighbors.put(interMove, 1);
@@ -964,7 +964,7 @@ public class ALNSIndividual extends Individual {
 		for(int i = 0; i < size; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * (removeOperator.getCarMoveListSize()+1));
 
 			if(this.carsNotInUse.size() == 0){
 				break;
@@ -1077,11 +1077,11 @@ public class ALNSIndividual extends Individual {
 	}
 
 	public void destroy(RelatedDestroy relatedDestroy, TabuList tabuList, int numberToHandle){
-
+		//TODO
 	}
 
 	public void destroy(WorstDestroy worstDestroy,  TabuList tabuList, int numberToHandle){
-
+		//TODO
 	}
 
 	//================================================================================
@@ -1116,11 +1116,11 @@ public class ALNSIndividual extends Individual {
 	}
 
 	public void repair(RegretRepair regretRepair, TabuList tabuList, int numberToHandle){
-
+		//TODO
 	}
 
 	public void repair(RegretRepair2 regretRepair2, TabuList tabuList, int numberToHandle){
-
+		//TODO
 	}
 
 	//================================================================================

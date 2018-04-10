@@ -143,10 +143,10 @@ public class ALNSSolver extends Solver {
 		this.searchToNeighborhood = new HashMap<>();
 		searchToNeighborhood.put(BestRepair.id, new BestRepair());
 		searchToNeighborhood.put(RandomDestroy.id, new RandomDestroy());
-		//searchToNeighborhood.put(RegretRepair.id, new RegretRepair());
-		//searchToNeighborhood.put(RegretRepair2.id, new RegretRepair2());
-		//searchToNeighborhood.put(RelatedDestroy.id, new RelatedDestroy());
-		//searchToNeighborhood.put(WorstDestroy.id, new WorstDestroy());
+		searchToNeighborhood.put(RegretRepair.id, new RegretRepair());
+		searchToNeighborhood.put(RegretRepair2.id, new RegretRepair2());
+		searchToNeighborhood.put(RelatedDestroy.id, new RelatedDestroy());
+		searchToNeighborhood.put(WorstDestroy.id, new WorstDestroy());
 
 	}
 	
@@ -261,10 +261,8 @@ public class ALNSSolver extends Solver {
 				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
 				//Destroy
 				this.searchToPerformDestroy.get(neighborhoodDestroyId).runCommand(searchToNeighborhood.get(neighborhoodDestroyId));
-				System.out.println(individual);
 				//Repair
 				this.searchToPerformRepair.get(neighborhoodRepairId).runCommand(searchToNeighborhood.get(neighborhoodRepairId));
-				System.out.println(individual);
 				//destroyAndRepair();
 				global_counter = 0;
 				counter = 0;
@@ -373,11 +371,6 @@ public class ALNSSolver extends Solver {
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 		}
 	}
-	
-	@Override
-	public String getInfo() {
-		return "ALNS search";
-	}
 
 	private HashMap<Mutation, Integer> getNeighborhoodRemove(){
 		return this.mutationToNeighborhood.get(EjectionRemoveMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE*3);
@@ -387,6 +380,11 @@ public class ALNSSolver extends Solver {
 		return this.mutationToNeighborhood.get(EjectionInsertMutation.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE*3);
 	}
 	
+	@Override
+	public String getInfo() {
+		return "ALNS search";
+	}
+
 	private boolean done(int iteration) {
 		return iteration >= iterations || System.currentTimeMillis() > this.endTime;
 	}
@@ -445,7 +443,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
 			double attempts = this.mutationToAttempts.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1.0);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
@@ -593,10 +591,7 @@ public class ALNSSolver extends Solver {
 		});
 	}
 
-
-
 	//LNS
-
 	private void setSearchToPerformDestroy(){
 		this.searchToPerformDestroy = new HashMap<>();
 		this.searchToPerformDestroy.put(RandomDestroy.id, (Search search) ->{
