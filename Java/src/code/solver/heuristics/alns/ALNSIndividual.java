@@ -10,6 +10,7 @@ import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.*;
+import code.solver.heuristics.searches.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -1057,6 +1058,49 @@ public class ALNSIndividual extends Individual {
 
 	}
 
+	//================================================================================
+	// Destroy
+	//================================================================================
+
+	public void destroy(RandomDestroy randomDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
+		//Have to generate a new neighborhood each iteration 
+		ArrayList<Mutation> neighborhood = new ArrayList<>(neighborhoodDestroy);
+		for (int i = 0; i < numberToHandle; i++) {
+			Mutation candidate;
+			if (neighborhood.size() < 1) {
+				break;
+			}
+			int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+			candidate = neighborhood.get(removeIndex);
+			performMutation((EjectionRemoveMutation) candidate);
+			neighborhood.remove(removeIndex);
+		}
+	}
+
+	public void destroy(RelatedDestroy relatedDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
+
+	}
+
+	public void destroy(WorstDestroy worstDestroy, Set<Mutation> neighborhoodDestroy, int numberToHandle){
+
+	}
+
+	//================================================================================
+	// Repair
+	//================================================================================
+
+	public void repair(BestRepair bestRepair, Set<Mutation> neighborhoodRepair, int numberToHandle){
+
+
+	}
+
+	public void repair(RegretRepair regretRepair, Set<Mutation> neighborhoodRepair, int numberToHandle){
+
+	}
+
+	public void repair(RegretRepair2 regretRepair2, Set<Mutation> neighborhoodRepair, int numberToHandle){
+
+	}
 
 	//================================================================================
 	// Getters and setters
