@@ -40,7 +40,7 @@ public abstract class TestSuite {
 				.collect(Collectors.toList());
 		
 		this.timeStamp = getTimestamp();
-		this.fh = new FileHandler(resultFile + this.timeStamp, true, true);
+		this.fh = new FileHandler(resultFile + this.timeStamp + "_" + this.getSolverType(), true, true);
 	}
 	
 	protected void instantiateSolvers() {
@@ -90,5 +90,16 @@ public abstract class TestSuite {
 		LocalDate date = LocalDate.now();
 		return date.getDayOfMonth() + "_" + date.getMonth() + "-" + time.getHour() + "_" + time.getMinute() +
 				"_" + time.getSecond();
+	}
+	
+	protected String getSolverType() {
+		switch(this.solverType) {
+		case MOSEL:
+			return "mosel";
+		case ALNS:
+			return "alns";
+		default:
+			return "mosel";
+		}
 	}
 }

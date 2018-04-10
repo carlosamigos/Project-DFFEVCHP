@@ -19,7 +19,7 @@ import utils.SolutionFileMaker;
 public class Main {
 
     public static void main(String[] args) {
-	boolean testing = true;
+	boolean testing = false;
     	setConstants(args);
     	createTestingFolders();
 	String fileName = "test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a";
@@ -30,7 +30,7 @@ public class Main {
 		SolutionFileMaker.writeSolutionToFile(best, problemInstance, fileName + ".txt");
         System.out.println(best);
     	}
-    	
+
 
     	if(!testing) {
 	    	TestSuite testSuite;
