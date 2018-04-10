@@ -1,0 +1,8 @@
+Solver: ../Mosel/Models/main models/main_basic_symmetry_valid_var1.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+Solver: ../Mosel/Models/main models/main_basic_symmetry_valid_var1_ch_only.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+Solver: ../Mosel/Models/main models/main_basic_updatedForCarMoves.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+Solver: ../Mosel/Models/main models/main_basic_updatedForCarMovesTraditional.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
