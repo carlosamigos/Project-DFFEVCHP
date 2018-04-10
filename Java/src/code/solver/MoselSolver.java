@@ -63,6 +63,7 @@ public class MoselSolver extends Solver {
 		}
 
 		catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
 			System.out.println("Could not compile mosel file");
 		}
 
