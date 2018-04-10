@@ -12,6 +12,8 @@ import code.solver.heuristics.Individual;
 import constants.Constants;
 import constants.FileConstants;
 
+import com.dashoptimization.*;
+
 public class MoselSolver extends Solver {
 
 	private final String moselFileName;
