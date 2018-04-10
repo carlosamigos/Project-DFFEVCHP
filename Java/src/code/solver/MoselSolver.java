@@ -60,6 +60,7 @@ public class MoselSolver extends Solver {
 		try {
 			System.out.println(this.moselFileName + ":" + this.bimFileName);
 			this.mosel.compile(this.moselFileName);
+			System.out.println("foo");
 			this.model = this.mosel.loadModel(this.bimFileName);
 		}
 
