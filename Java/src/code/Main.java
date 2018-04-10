@@ -94,8 +94,10 @@ public class Main {
     private static void createTestingFolders() {
     	try {
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER));
-			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_OUTPUT_FOLDER));
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
