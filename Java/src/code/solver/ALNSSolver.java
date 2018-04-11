@@ -114,9 +114,9 @@ public class ALNSSolver extends Solver {
 		this.mutationScoresLNSDestroy = new HashMap<>();
 		this.mutationToAttemptsLNSDestroy = new HashMap<>();
 		int[] searchIds = {
-				RandomDestroy.id
-				//RelatedDestroy.id,
-				//WorstDestroy.id
+				RandomDestroy.id,
+				RelatedDestroy.id,
+				WorstDestroy.id
 		};
 
 		for(int id : searchIds) {
@@ -130,8 +130,8 @@ public class ALNSSolver extends Solver {
 		this.mutationScoresLNSRepair = new HashMap<>();
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
-				BestRepair.id
-				//RegretRepair.id,
+				BestRepair.id,
+				RegretRepair.id
 				//RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {

@@ -8,6 +8,7 @@ import java.util.Set;
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
+import code.solver.heuristics.RelatednessMeasure;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.*;
 import code.solver.heuristics.searches.*;
@@ -1078,6 +1079,10 @@ public class ALNSIndividual extends Individual {
 	public void destroy(RelatedDestroy relatedDestroy, TabuList tabuList, int numberToHandle){
 		ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
 				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+		if(neighborhood.size() == 0){
+			return;
+		}
+		// Start with choosing one car move
 		ArrayList<CarMove> carMovesDeleted = new ArrayList<>();
 		int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
 		EjectionRemoveMutation mut = ((EjectionRemoveMutation)neighborhood.get(removeIndex));
@@ -1088,36 +1093,58 @@ public class ALNSIndividual extends Individual {
 		performMutation(mut);
 
 		CarMove carMoveChosen;
-		CarMove mostSimilar;
-		int mostSimilarIndex;
+		Operator operator1;
 		for (int i = 0; i < numberToHandle; i++) {
-			removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+			CarMove mostSimilarCarMove = null;
+			Operator mostSimilarOperator = null;
+			double lowestSimilarity = Double.MAX_VALUE;                           
+			int mostSimilarIndex = 0;                                             
+			removeIndex = (int) Math.floor(Math.random() * carMovesDeleted.size());
 			carMoveChosen = carMovesDeleted.get(removeIndex);
 
 			// Find most similar car move
-
 			for(Object obj : this.operators){
-				operator = (Operator) obj;
-				for (int j = 0; j < operator.getCarMoveListSize(); j++) {
-					CarMove checkCarMove = operator.getCarMove(j);
-
+				operator1 = (Operator) obj;
+				for (int j = 0; j < operator1.getCarMoveListSize(); j++) {
+					CarMove checkCarMove = operator1.getCarMove(j);
+					double simMeasure = RelatednessMeasure.relatedsessMeasure(carMoveChosen,checkCarMove);
+					if(simMeasure < lowestSimilarity){
+						mostSimilarIndex = j + 0;
+						mostSimilarCarMove = checkCarMove;
+						mostSimilarOperator = operator1;
+						lowestSimilarity = simMeasure + 0;
+					}
 				}
 			}
+			if(mostSimilarCarMove == null){
+				return;
+			}
+			performMutation(new EjectionRemoveMutation(mostSimilarOperator,mostSimilarIndex,mostSimilarCarMove));
+		}
+	}
 
-
+	public void destroy(WorstDestroy bestDestroy,  TabuList tabuList, int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
 			Mutation candidate;
 			if (neighborhood.size() < 1) {
 				break;
 			}
+			Mutation bestMutation = null;
+			double lowestDeltaFitness = Double.MAX_VALUE;
+			for(Mutation mutation : neighborhood){
+				double delta = deltaFitness((EjectionRemoveMutation) mutation);
+				if (delta < lowestDeltaFitness){
+					bestMutation = mutation;
+					lowestDeltaFitness = delta;
+				}
+			}
+			if(bestMutation != null){
+				performMutation((EjectionRemoveMutation) bestMutation);
+			}
 
-
-			candidate = neighborhood.get(removeIndex);
-			performMutation((EjectionRemoveMutation) candidate);
-		}
-	}
-
-	public void destroy(WorstDestroy worstDestroy,  TabuList tabuList, int numberToHandle){
-		//TODO
+		}                                                                                             	
 	}
 
 	//================================================================================
@@ -1132,10 +1159,7 @@ public class ALNSIndividual extends Individual {
 			if(neighborhood.size() < 1){
 				break;
 			}
-			for(Mutation mutation : neighborhood) {
-				candidate = mutation;
-				break;
-			}
+			candidate = neighborhood.get(0);
 			double candidateDelta;
 			candidateDelta = deltaFitness((EjectionInsertMutation) candidate);
 			for(Mutation newCandidate : neighborhood) {
@@ -1151,7 +1175,44 @@ public class ALNSIndividual extends Individual {
 	}
 
 	public void repair(RegretRepair regretRepair, TabuList tabuList, int numberToHandle){
-		//TODO
+		// Checks the sum of the best and the second best place to put the car move
+		for (int i = 0; i < numberToHandle; i++) {
+			EjectionInsertMutation bestEjectionInsert = null;
+			double bestRegretValue = 0;
+			double bestRegretsDeltaFit = 0;
+			for(Car car : carsNotInUse){
+				for(CarMove carMove : unusedCarMoves.get(car)){
+					double bestDelta = Double.MAX_VALUE/2;
+					double secondBestDelta = Double.MAX_VALUE;
+					EjectionInsertMutation candidate = null;
+					for(Object obj : operators){
+						Operator operator = (Operator)(obj);
+						for (int j = 0; j < operator.getCarMoveListSize() + 1; j++) {
+							EjectionInsertMutation insertMutation = new EjectionInsertMutation(operator, j, carMove);
+							double deltaFit = deltaFitness(insertMutation);
+							if(deltaFit < bestDelta){
+								secondBestDelta = bestDelta + 0;
+								bestDelta = deltaFit;
+								candidate = insertMutation;
+							} else if(deltaFit < secondBestDelta && deltaFit >= bestDelta){
+								secondBestDelta = deltaFit;
+							}
+						}
+					}
+					double regretValue = secondBestDelta - bestDelta;
+					if(regretValue > bestRegretValue){
+						bestEjectionInsert = candidate;
+						bestRegretsDeltaFit = bestDelta;
+					}
+				}
+			}
+
+			if(bestEjectionInsert == null){
+				return;
+			}
+			addToFitness(bestRegretsDeltaFit);
+			performMutation(bestEjectionInsert);
+		}
 	}
 
 	public void repair(RegretRepair2 regretRepair2, TabuList tabuList, int numberToHandle){
