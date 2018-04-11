@@ -1005,7 +1005,6 @@ public class ALNSIndividual extends Individual {
 				neighbors.put(ejectionRemoveMutation, 1);
 			}
 		}
-		
 		return neighbors;
 	}
 	
@@ -1065,7 +1064,7 @@ public class ALNSIndividual extends Individual {
 	public void destroy(RandomDestroy randomDestroy, TabuList tabuList, int numberToHandle){
 		for (int i = 0; i < numberToHandle; i++) {
 			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
-					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 2).keySet());
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
 			Mutation candidate;
 			if (neighborhood.size() < 1) {
 				break;
@@ -1077,7 +1076,44 @@ public class ALNSIndividual extends Individual {
 	}
 
 	public void destroy(RelatedDestroy relatedDestroy, TabuList tabuList, int numberToHandle){
-		//TODO
+		ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+		ArrayList<CarMove> carMovesDeleted = new ArrayList<>();
+		int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+		EjectionRemoveMutation mut = ((EjectionRemoveMutation)neighborhood.get(removeIndex));
+		int index = mut.getCarMoveIndex();
+		Operator operator = mut.getOperator();
+		CarMove carMoveToRemove = operator.getCarMove(index);
+		carMovesDeleted.add(carMoveToRemove);
+		performMutation(mut);
+
+		CarMove carMoveChosen;
+		CarMove mostSimilar;
+		int mostSimilarIndex;
+		for (int i = 0; i < numberToHandle; i++) {
+			removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+			carMoveChosen = carMovesDeleted.get(removeIndex);
+
+			// Find most similar car move
+
+			for(Object obj : this.operators){
+				operator = (Operator) obj;
+				for (int j = 0; j < operator.getCarMoveListSize(); j++) {
+					CarMove checkCarMove = operator.getCarMove(j);
+
+				}
+			}
+
+
+			Mutation candidate;
+			if (neighborhood.size() < 1) {
+				break;
+			}
+
+
+			candidate = neighborhood.get(removeIndex);
+			performMutation((EjectionRemoveMutation) candidate);
+		}
 	}
 
 	public void destroy(WorstDestroy worstDestroy,  TabuList tabuList, int numberToHandle){
@@ -1091,7 +1127,7 @@ public class ALNSIndividual extends Individual {
 	public void repair(BestRepair bestRepair, TabuList tabuList , int numberToHandle){
 		for (int i = 0; i < numberToHandle; i++) {
 			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionInsert(tabuList,
-					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 2).keySet());
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
 			Mutation candidate = null;
 			if(neighborhood.size() < 1){
 				break;
@@ -1112,7 +1148,6 @@ public class ALNSIndividual extends Individual {
 			addToFitness(candidateDelta);
 			performMutation((EjectionInsertMutation) candidate);
 		}
-
 	}
 
 	public void repair(RegretRepair regretRepair, TabuList tabuList, int numberToHandle){
