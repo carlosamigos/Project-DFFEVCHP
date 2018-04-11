@@ -58,8 +58,6 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, Search> searchToNeighborhood;
 
 	private int numberToHandle;
-	private Set<Mutation> neighborhoodToDestroy;
-	private Set<Mutation> neighborhoodToRepair;
 
 	
 	public ALNSSolver() {}
@@ -105,7 +103,7 @@ public class ALNSSolver extends Solver {
 		for(int id : mutationIds) {
 			this.mutationToWeight.put(id, 1.0);
 			this.mutationScores.put(id, 0.0);
-			this.mutationToAttempts.put(id, 0);
+			this.mutationToAttempts.put(id, 1);
 			this.weightSum++;
 		}
 
@@ -122,7 +120,7 @@ public class ALNSSolver extends Solver {
 		for(int id : searchIds) {
 			this.mutationToWeightLNSDestroy.put(id, 1.0);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
-			this.mutationToAttemptsLNSDestroy.put(id, 0);
+			this.mutationToAttemptsLNSDestroy.put(id, 1);
 			this.weightSumLNSDestroy++;
 		}
 
@@ -137,7 +135,7 @@ public class ALNSSolver extends Solver {
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
 			this.mutationScoresLNSRepair.put(id, 0.0);
-			this.mutationToAttemptsLNSRepair.put(id, 0);
+			this.mutationToAttemptsLNSRepair.put(id, 1);
 			this.weightSumLNSRepair++;
 		}
 		this.searchToNeighborhood = new HashMap<>();
@@ -443,11 +441,11 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
 			double attempts = this.mutationToAttempts.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1.0);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1.0);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
-			this.mutationToAttempts.put(id, 0);
+			this.mutationToAttempts.put(id, 1);
 		}
 	}
 
@@ -459,11 +457,11 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeightLNSDestroy.get(id);
 			double score = this.mutationScoresLNSDestroy.get(id);
 			double attempts = this.mutationToAttemptsLNSDestroy.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
 			this.weightSumLNSDestroy += newWeight;
 			this.mutationToWeightLNSDestroy.put(id, newWeight);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
-			this.mutationToAttemptsLNSDestroy.put(id, 0);
+			this.mutationToAttemptsLNSDestroy.put(id, 1);
 		}
 	}
 
@@ -474,11 +472,11 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeightLNSRepair.get(id);
 			double score = this.mutationScoresLNSRepair.get(id);
 			double attempts = this.mutationToAttemptsLNSRepair.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
 			this.weightSumLNSRepair += newWeight;
 			this.mutationToWeightLNSRepair.put(id, newWeight);
 			this.mutationScoresLNSRepair.put(id, 0.0);
-			this.mutationToAttemptsLNSRepair.put(id, 0);
+			this.mutationToAttemptsLNSRepair.put(id, 1);
 		}
 	}
 	
