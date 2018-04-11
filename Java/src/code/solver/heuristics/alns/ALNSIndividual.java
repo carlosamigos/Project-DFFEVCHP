@@ -1132,10 +1132,10 @@ public class ALNSIndividual extends Individual {
 				break;
 			}
 			Mutation bestMutation = null;
-			double lowestDeltaFitness = Double.MAX_VALUE;
+			double lowestDeltaFitness = Double.MIN_VALUE;
 			for(Mutation mutation : neighborhood){
 				double delta = deltaFitness((EjectionRemoveMutation) mutation);
-				if (delta < lowestDeltaFitness){
+				if (delta > lowestDeltaFitness){
 					bestMutation = mutation;
 					lowestDeltaFitness = delta;
 				}
