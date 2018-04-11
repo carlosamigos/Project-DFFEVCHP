@@ -1217,7 +1217,49 @@ public class ALNSIndividual extends Individual {
 	}
 
 	public void repair(RegretRepair2 regretRepair2, TabuList tabuList, int numberToHandle){
-		//TODO
+		for (int i = 0; i < numberToHandle; i++) {
+			EjectionInsertMutation bestEjectionInsert = null;
+			double bestRegretValue = 0;
+			double bestRegretsDeltaFit = 0;
+			for(Car car : carsNotInUse){
+				for(CarMove carMove : unusedCarMoves.get(car)){
+					double bestDelta = Double.MAX_VALUE/3;
+					double secondBestDelta = Double.MAX_VALUE/2;
+					double thirdBestDelta = Double.MAX_VALUE;
+					EjectionInsertMutation candidate = null;
+					for(Object obj : operators){
+						Operator operator = (Operator)(obj);
+						for (int j = 0; j < operator.getCarMoveListSize() + 1; j++) {
+							EjectionInsertMutation insertMutation = new EjectionInsertMutation(operator, j, carMove);
+							double deltaFit = deltaFitness(insertMutation);
+							if(deltaFit < bestDelta){
+								thirdBestDelta = secondBestDelta + 0;
+								secondBestDelta = bestDelta + 0;
+								bestDelta = deltaFit;
+								candidate = insertMutation;
+							} else if(deltaFit < secondBestDelta && deltaFit >= bestDelta){
+								thirdBestDelta = secondBestDelta + 0;
+								secondBestDelta = deltaFit;
+							} else if(deltaFit < thirdBestDelta && deltaFit >= secondBestDelta){
+								thirdBestDelta = deltaFit + 0;
+							}
+						}
+					}
+					double regretValue = thirdBestDelta + secondBestDelta - 2*bestDelta;
+					if(regretValue > bestRegretValue){
+						bestEjectionInsert = candidate;
+						bestRegretsDeltaFit = bestDelta;
+						bestRegretValue = regretValue;
+					}
+				}
+			}
+
+			if(bestEjectionInsert == null){
+				return;
+			}
+			addToFitness(bestRegretsDeltaFit);
+			performMutation(bestEjectionInsert);
+		}
 	}
 
 	//================================================================================
