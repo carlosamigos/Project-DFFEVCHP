@@ -387,25 +387,27 @@ declarations
     !deviationCharg : integer;
 end-declarations
 
-writeln(" ");
-writeln("Operators:");
-forall(pp in rOperators) do
-	writeln('Number of tasks done by operator ', pp, ': ', sum(rr in carMoves, mm in tasks)getsol(x(pp,rr,mm)));
-end-do
-writeln(' ');
-writeln("Deficit Nodes:")
-forall(ii in deficitNodes) do
-	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
-    !deviationRel  := deviationRel + getsol(s_minus(ii));
-end-do
-writeln(' ');
-writeln("Cars remaining in need of charging:")
-forall(ii in carsInCNeedNodes) do
-	writeln('Remaining cars at the end of the planning period ', carsInNeedCTranslate(ii), ': ', getsol(s_c(ii)));
-    !deviationCharg := deviationCharg + getsol(s_c(ii));
-end-do
+if printResults then
+	writeln(" ");
+	writeln("Operators:");
+	forall(pp in rOperators) do
+		writeln('Number of tasks done by operator ', pp, ': ', sum(rr in carMoves, mm in tasks)getsol(x(pp,rr,mm)));
+	end-do
+	writeln(' ');
+	writeln("Deficit Nodes:")
+	forall(ii in deficitNodes) do
+		writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
+    	!deviationRel  := deviationRel + getsol(s_minus(ii));
+	end-do
+	writeln(' ');
+	writeln("Cars remaining in need of charging:")
+	forall(ii in carsInCNeedNodes) do
+		writeln('Remaining cars at the end of the planning period ', carsInNeedCTranslate(ii), ': ', getsol(s_c(ii)));
+    	!deviationCharg := deviationCharg + getsol(s_c(ii));
+	end-do
 
-writeln(' ');
+	writeln(' ');
+end-if
 
 deviationRel := sum(ii in deficitNodes) getsol(s_minus(ii));
 deviationCharg := sum(ii in carsInCNeedNodes) getsol(s_c(ii));
@@ -518,7 +520,7 @@ if writeToFile then
 	
 	
 	! TIL SIMEN
-	fopen("../../../Mosel/runStats", F_OUTPUT);
+	fopen("../Mosel/runStats", F_OUTPUT);
 	writeln(getparam("XPRS_MIPOBJVAL"));
 	writeln(getparam("XPRS_BESTBOUND"));
 	writeln(endTimeMosel-startTimeMosel);
