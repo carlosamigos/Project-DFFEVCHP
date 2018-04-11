@@ -1178,7 +1178,7 @@ public class ALNSIndividual extends Individual {
 		// Checks the sum of the best and the second best place to put the car move
 		for (int i = 0; i < numberToHandle; i++) {
 			EjectionInsertMutation bestEjectionInsert = null;
-			double bestRegretValue = 0;
+			double bestRegretValue = -1;
 			double bestRegretsDeltaFit = 0;
 			for(Car car : carsNotInUse){
 				for(CarMove carMove : unusedCarMoves.get(car)){
