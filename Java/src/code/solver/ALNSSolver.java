@@ -443,7 +443,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
 			double attempts = this.mutationToAttempts.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1.0);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1.0);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
