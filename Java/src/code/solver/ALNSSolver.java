@@ -129,8 +129,8 @@ public class ALNSSolver extends Solver {
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
 				BestRepair.id,
-				RegretRepair.id
-				//RegretRepair2.id
+				RegretRepair.id,
+				RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
