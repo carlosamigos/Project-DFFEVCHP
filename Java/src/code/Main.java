@@ -64,6 +64,7 @@ public class Main {
     	}
     	
     	for(String key : input.keySet()) {
+    		System.out.println(key + ":" + input.get(key));
     		switch(key) {
     		case "static":
     			Constants.TEST_TYPE = Constants.TestType.STATIC;
@@ -89,6 +90,8 @@ public class Main {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
     			}
     			break;
+    		case "model_folder":
+    			FileConstants.MOSEL_TEST_FILES_FOLDER =  "../Mosel/Models/" + input.get(key) + "/";
     		default:
     			break;
     		}

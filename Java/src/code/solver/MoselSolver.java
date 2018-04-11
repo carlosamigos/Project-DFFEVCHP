@@ -12,6 +12,8 @@ import code.solver.heuristics.Individual;
 import constants.Constants;
 import constants.FileConstants;
 
+//import com.dashoptimization.*;
+
 public class MoselSolver extends Solver {
 
 	private final String moselFileName;
@@ -47,16 +49,15 @@ public class MoselSolver extends Solver {
 	private void fixParameters(String fileName) {
 		String parameters = "printParams=" + Constants.PRINT_MOSEL_PARAMETERS + "," + "printResults="
 				+ Constants.PRINT_MOSEL_RESULTS + "," + "MaxSolveTimeSeconds=" + Constants.MAX_SOLVE_TIME_MOSEL_SECONDS
-				+ "," + "OutputPathArtificial=" + FileConstants.MOSEL_OUTPUT_ARTIFICIAL + fileName+ ".txt," + "OutputPathRegular=" + FileConstants.MOSEL_OUTPUT_REAL
-				+ fileName + ".txt,";
+				+ "," + "OutputPathRegular=" + FileConstants.MOSEL_OUTPUT_REAL + fileName + ".txt,";
 
 		//model.execParams = parameters;
 	}
 
 	private void compile() {
 		try {
-			//this.mosel.compile(FileConstants.PROBLEM_FOLDER + this.moselFileName);
-			//this.model = this.mosel.loadModel(FileConstants.PROBLEM_FOLDER + this.bimFileName);
+			//this.mosel.compile(this.moselFileName);
+			//this.model = this.mosel.loadModel(this.bimFileName);
 		}
 
 		catch (Exception e) {
