@@ -58,8 +58,6 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, Search> searchToNeighborhood;
 
 	private int numberToHandle;
-	private Set<Mutation> neighborhoodToDestroy;
-	private Set<Mutation> neighborhoodToRepair;
 
 	
 	public ALNSSolver() {}
@@ -105,7 +103,7 @@ public class ALNSSolver extends Solver {
 		for(int id : mutationIds) {
 			this.mutationToWeight.put(id, 1.0);
 			this.mutationScores.put(id, 0.0);
-			this.mutationToAttempts.put(id, 0);
+			this.mutationToAttempts.put(id, 1);
 			this.weightSum++;
 		}
 
@@ -122,7 +120,7 @@ public class ALNSSolver extends Solver {
 		for(int id : searchIds) {
 			this.mutationToWeightLNSDestroy.put(id, 1.0);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
-			this.mutationToAttemptsLNSDestroy.put(id, 0);
+			this.mutationToAttemptsLNSDestroy.put(id, 1);
 			this.weightSumLNSDestroy++;
 		}
 
@@ -137,7 +135,7 @@ public class ALNSSolver extends Solver {
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
 			this.mutationScoresLNSRepair.put(id, 0.0);
-			this.mutationToAttemptsLNSRepair.put(id, 0);
+			this.mutationToAttemptsLNSRepair.put(id, 1);
 			this.weightSumLNSRepair++;
 		}
 		this.searchToNeighborhood = new HashMap<>();
@@ -447,7 +445,7 @@ public class ALNSSolver extends Solver {
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
-			this.mutationToAttempts.put(id, 0);
+			this.mutationToAttempts.put(id, 1);
 		}
 	}
 
@@ -463,7 +461,7 @@ public class ALNSSolver extends Solver {
 			this.weightSumLNSDestroy += newWeight;
 			this.mutationToWeightLNSDestroy.put(id, newWeight);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
-			this.mutationToAttemptsLNSDestroy.put(id, 0);
+			this.mutationToAttemptsLNSDestroy.put(id, 1);
 		}
 	}
 
@@ -478,7 +476,7 @@ public class ALNSSolver extends Solver {
 			this.weightSumLNSRepair += newWeight;
 			this.mutationToWeightLNSRepair.put(id, newWeight);
 			this.mutationScoresLNSRepair.put(id, 0.0);
-			this.mutationToAttemptsLNSRepair.put(id, 0);
+			this.mutationToAttemptsLNSRepair.put(id, 1);
 		}
 	}
 	

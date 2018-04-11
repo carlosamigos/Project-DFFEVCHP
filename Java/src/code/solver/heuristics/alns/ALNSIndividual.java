@@ -1203,6 +1203,7 @@ public class ALNSIndividual extends Individual {
 					if(regretValue > bestRegretValue){
 						bestEjectionInsert = candidate;
 						bestRegretsDeltaFit = bestDelta;
+						bestRegretValue = regretValue;
 					}
 				}
 			}
