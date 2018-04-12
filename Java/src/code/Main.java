@@ -64,7 +64,6 @@ public class Main {
     	}
     	
     	for(String key : input.keySet()) {
-    		System.out.println(key + ":" + input.get(key));
     		switch(key) {
     		case "static":
     			Constants.TEST_TYPE = Constants.TestType.STATIC;
