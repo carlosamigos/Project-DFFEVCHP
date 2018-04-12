@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USER="magnusnm"
+USER="simehe"
 #echo -n "Username: "
 #read USER
 

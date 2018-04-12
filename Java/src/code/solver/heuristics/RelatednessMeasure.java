@@ -9,11 +9,11 @@ public class RelatednessMeasure {
     public static double relatedsessMeasure(CarMove carMove1, CarMove carMove2){
         double relatedNess = 0;
         relatedNess += HeuristicsConstants.FROM_NODE_WEIGHT
-                * (carMove1.getFromNode().equals(carMove2.getFromNode()) ? 1 : 0);
+                * (carMove1.getFromNode().equals(carMove2.getFromNode()) ? 0 : 1);
         relatedNess += HeuristicsConstants.TO_NODE_WEIGHT
-                * (carMove1.getToNode().equals(carMove2.getToNode()) ? 1 : 0);
+                * (carMove1.getToNode().equals(carMove2.getToNode()) ? 0 : 1);
         relatedNess += HeuristicsConstants.IS_CHARGING_WEIGHT
-                * (carMove1.isToCharging() == carMove2.isToCharging() ? 1 : 0);
+                * (carMove1.isToCharging() == carMove2.isToCharging() ? 0 : 1);
         relatedNess += HeuristicsConstants.TRAVEL_DISTANCE_WEIGHT
                 * Math.abs(carMove1.getTravelTime() - carMove2.getTravelTime());
         relatedNess += HeuristicsConstants.EARLIEST_DEPARTURE_WEIGHT

@@ -8,8 +8,10 @@ import java.util.Set;
 import code.problem.entities.Car;
 import code.problem.nodes.ChargingNode;
 import code.problem.nodes.ParkingNode;
+import code.solver.heuristics.RelatednessMeasure;
 import code.solver.heuristics.entities.CarMove;
 import code.solver.heuristics.mutators.*;
+import code.solver.heuristics.searches.*;
 import constants.Constants;
 import constants.HeuristicsConstants;
 import utils.ChromosomeGenerator;
@@ -887,7 +889,7 @@ public class ALNSIndividual extends Individual {
 				continue;
 			}
 			int removeIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
-			int insertIndex = (int)Math.floor(Math.random() * insertOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * (insertOperator.getCarMoveListSize()+1));
 			InterMove interMove = new InterMove(removeOperator,removeIndex, insertOperator, insertIndex);
 			if(!tabuList.isTabu(interMove)) {
 				neighbors.put(interMove, 1);
@@ -963,7 +965,7 @@ public class ALNSIndividual extends Individual {
 		for(int i = 0; i < size; i++) {
 			int removeOperatorIndex = (int)Math.floor(Math.random() * operators.size());
 			Operator removeOperator = (Operator) operators.get(removeOperatorIndex);
-			int insertIndex = (int)Math.floor(Math.random() * removeOperator.getCarMoveListSize());
+			int insertIndex = (int)Math.floor(Math.random() * (removeOperator.getCarMoveListSize()+1));
 
 			if(this.carsNotInUse.size() == 0){
 				break;
@@ -1004,7 +1006,6 @@ public class ALNSIndividual extends Individual {
 				neighbors.put(ejectionRemoveMutation, 1);
 			}
 		}
-		
 		return neighbors;
 	}
 	
@@ -1057,6 +1058,209 @@ public class ALNSIndividual extends Individual {
 
 	}
 
+	//================================================================================
+	// Destroy
+	//================================================================================
+
+	public void destroy(RandomDestroy randomDestroy, TabuList tabuList, int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+			Mutation candidate;
+			if (neighborhood.size() < 1) {
+				break;
+			}
+			int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+			candidate = neighborhood.get(removeIndex);
+			performMutation((EjectionRemoveMutation) candidate);
+		}
+	}
+
+	public void destroy(RelatedDestroy relatedDestroy, TabuList tabuList, int numberToHandle){
+		ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+				HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+		if(neighborhood.size() == 0){
+			return;
+		}
+		// Start with choosing one car move
+		ArrayList<CarMove> carMovesDeleted = new ArrayList<>();
+		int removeIndex = (int) Math.floor(Math.random() * neighborhood.size());
+		EjectionRemoveMutation mut = ((EjectionRemoveMutation)neighborhood.get(removeIndex));
+		int index = mut.getCarMoveIndex();
+		Operator operator = mut.getOperator();
+		CarMove carMoveToRemove = operator.getCarMove(index);
+		carMovesDeleted.add(carMoveToRemove);
+		performMutation(mut);
+
+		CarMove carMoveChosen;
+		Operator operator1;
+		for (int i = 0; i < numberToHandle; i++) {
+			CarMove mostSimilarCarMove = null;
+			Operator mostSimilarOperator = null;
+			double lowestSimilarity = Double.MAX_VALUE;                           
+			int mostSimilarIndex = 0;                                             
+			removeIndex = (int) Math.floor(Math.random() * carMovesDeleted.size());
+			carMoveChosen = carMovesDeleted.get(removeIndex);
+
+			// Find most similar car move
+			for(Object obj : this.operators){
+				operator1 = (Operator) obj;
+				for (int j = 0; j < operator1.getCarMoveListSize(); j++) {
+					CarMove checkCarMove = operator1.getCarMove(j);
+					double simMeasure = RelatednessMeasure.relatedsessMeasure(carMoveChosen,checkCarMove);
+					if(simMeasure < lowestSimilarity){
+						mostSimilarIndex = j + 0;
+						mostSimilarCarMove = checkCarMove;
+						mostSimilarOperator = operator1;
+						lowestSimilarity = simMeasure + 0;
+					}
+				}
+			}
+			if(mostSimilarCarMove == null){
+				return;
+			}
+			performMutation(new EjectionRemoveMutation(mostSimilarOperator,mostSimilarIndex,mostSimilarCarMove));
+		}
+	}
+
+	public void destroy(WorstDestroy bestDestroy,  TabuList tabuList, int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+			Mutation candidate;
+			if (neighborhood.size() < 1) {
+				break;
+			}
+			Mutation bestMutation = null;
+			double lowestDeltaFitness = Double.MAX_VALUE;
+			for(Mutation mutation : neighborhood){
+				double delta = deltaFitness((EjectionRemoveMutation) mutation);
+				if (delta < lowestDeltaFitness){
+					bestMutation = mutation;
+					lowestDeltaFitness = delta;
+				}
+			}
+			if(bestMutation != null){
+				performMutation((EjectionRemoveMutation) bestMutation);
+			}
+
+		}                                                                                             	
+	}
+
+	//================================================================================
+	// Repair
+	//================================================================================
+
+	public void repair(BestRepair bestRepair, TabuList tabuList , int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionInsert(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+			Mutation candidate = null;
+			if(neighborhood.size() < 1){
+				break;
+			}
+			candidate = neighborhood.get(0);
+			double candidateDelta;
+			candidateDelta = deltaFitness((EjectionInsertMutation) candidate);
+			for(Mutation newCandidate : neighborhood) {
+				double newCandidateDelta = deltaFitness((EjectionInsertMutation) newCandidate);
+				if (newCandidateDelta < candidateDelta ) {
+					candidate = newCandidate;
+					candidateDelta = newCandidateDelta;
+				}
+			}
+			addToFitness(candidateDelta);
+			performMutation((EjectionInsertMutation) candidate);
+		}
+	}
+
+	public void repair(RegretRepair regretRepair, TabuList tabuList, int numberToHandle){
+		// Checks the sum of the best and the second best place to put the car move
+		for (int i = 0; i < numberToHandle; i++) {
+			EjectionInsertMutation bestEjectionInsert = null;
+			double bestRegretValue = 0;
+			double bestRegretsDeltaFit = 0;
+			for(Car car : carsNotInUse){
+				for(CarMove carMove : unusedCarMoves.get(car)){
+					double bestDelta = Double.MAX_VALUE/2;
+					double secondBestDelta = Double.MAX_VALUE;
+					EjectionInsertMutation candidate = null;
+					for(Object obj : operators){
+						Operator operator = (Operator)(obj);
+						for (int j = 0; j < operator.getCarMoveListSize() + 1; j++) {
+							EjectionInsertMutation insertMutation = new EjectionInsertMutation(operator, j, carMove);
+							double deltaFit = deltaFitness(insertMutation);
+							if(deltaFit < bestDelta){
+								secondBestDelta = bestDelta + 0;
+								bestDelta = deltaFit;
+								candidate = insertMutation;
+							} else if(deltaFit < secondBestDelta && deltaFit >= bestDelta){
+								secondBestDelta = deltaFit;
+							}
+						}
+					}
+					double regretValue = secondBestDelta - bestDelta;
+					if(regretValue > bestRegretValue){
+						bestEjectionInsert = candidate;
+						bestRegretsDeltaFit = bestDelta;
+						bestRegretValue = regretValue;
+					}
+				}
+			}
+
+			if(bestEjectionInsert == null){
+				return;
+			}
+			addToFitness(bestRegretsDeltaFit);
+			performMutation(bestEjectionInsert);
+		}
+	}
+
+	public void repair(RegretRepair2 regretRepair2, TabuList tabuList, int numberToHandle){
+		for (int i = 0; i < numberToHandle; i++) {
+			EjectionInsertMutation bestEjectionInsert = null;
+			double bestRegretValue = 0;
+			double bestRegretsDeltaFit = 0;
+			for(Car car : carsNotInUse){
+				for(CarMove carMove : unusedCarMoves.get(car)){
+					double bestDelta = Double.MAX_VALUE/3;
+					double secondBestDelta = Double.MAX_VALUE/2;
+					double thirdBestDelta = Double.MAX_VALUE;
+					EjectionInsertMutation candidate = null;
+					for(Object obj : operators){
+						Operator operator = (Operator)(obj);
+						for (int j = 0; j < operator.getCarMoveListSize() + 1; j++) {
+							EjectionInsertMutation insertMutation = new EjectionInsertMutation(operator, j, carMove);
+							double deltaFit = deltaFitness(insertMutation);
+							if(deltaFit < bestDelta){
+								thirdBestDelta = secondBestDelta + 0;
+								secondBestDelta = bestDelta + 0;
+								bestDelta = deltaFit;
+								candidate = insertMutation;
+							} else if(deltaFit < secondBestDelta && deltaFit >= bestDelta){
+								thirdBestDelta = secondBestDelta + 0;
+								secondBestDelta = deltaFit;
+							} else if(deltaFit < thirdBestDelta && deltaFit >= secondBestDelta){
+								thirdBestDelta = deltaFit + 0;
+							}
+						}
+					}
+					double regretValue = thirdBestDelta + secondBestDelta - 2*bestDelta;
+					if(regretValue > bestRegretValue){
+						bestEjectionInsert = candidate;
+						bestRegretsDeltaFit = bestDelta;
+						bestRegretValue = regretValue;
+					}
+				}
+			}
+
+			if(bestEjectionInsert == null){
+				return;
+			}
+			addToFitness(bestRegretsDeltaFit);
+			performMutation(bestEjectionInsert);
+		}
+	}
 
 	//================================================================================
 	// Getters and setters
