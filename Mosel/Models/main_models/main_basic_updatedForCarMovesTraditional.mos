@@ -7,13 +7,13 @@ uses "mmxprs";
 
 parameters
 
-	DataFile = '../../../Testing/Input/Static/ModelTesting/test_9nodes_3so_2c_8mov_3charging_0finishes_38CM_a.txt';
+	DataFile = '../../../Testing/Input/Static/ModelTesting/test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a.txt';
 	OutputPathRegular = "outputServiceOperatorsPath.txt";
 	OutputPathArtificial = "outputArtificialServiceOperators.txt";
 	printParams = true;
 	printResults = true;
 	writeToFile = true;
-	MaxSolveTimeSeconds = 100;
+	MaxSolveTimeSeconds = 300;
 end-parameters
 
 
@@ -269,10 +269,10 @@ declarations
 		Objective: linctr;
 end-declarations
 
-Objective := costOfDeviation * sum(ii in deficitNodes) s_minus(ii) + 
-			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) s_c(ii) +
-			   0.02 * sum(pp in rOperators, rr in carMovesAll, rr2 in carMovesAll) carMoveHandlingTimeA(rr) * x(rr, rr2, pp) + 
-			  0.01 * sum(rr in carMovesA) t_plus(rr);
+Objective := -costOfDeviation * sum(ii in deficitNodes) (deficitCarsInNode(ii) - s_minus(ii)) - 
+			  costOfPostponedCharging * sum(ii in carsInCNeedNodes) (carsInNeedNodes(ii) - s_c(ii)) +
+			   0.2 * sum(pp in rOperators, rr in carMovesAll, rr2 in carMovesAll) carMoveHandlingTimeA(rr) * x(rr, rr2, pp) + 
+			   0.01 * sum(pp in rOperators) t(destinationCarMoveOperator(pp));
 			  (! 0.001 * sum(rr in carMovesAll) t(rr) + !) 
 			 
 			  
@@ -378,8 +378,6 @@ forall(pp in rOperators) do
 end-do
 
 
-
-
 forall(pp in rOperators) do
 	timeDeviation(pp) := t(destinationCarMoveOperator(pp)) + t_minus(destinationCarMoveOperator(pp)) - t_plus(destinationCarMoveOperator(pp)) = timeLimit;
 end-do
@@ -387,33 +385,50 @@ end-do
 
 
 forall(pp in rOperators) do
-	timeOverTime(pp) := t(destinationCarMoveOperator(pp)) <= timeLimit + timeLimitLastVisit;
+	timeOverTime(pp) := t(destinationCarMoveOperator(pp)) <= timeLimit;
 end-do
 
 
 ! ### End of declaration of time constraints ### !	
 
+! TIL SIMEN
+declarations
+	startTimeMosel : real;
+	endTimeMosel   : real;
+end-declarations
+
+startTimeMosel := timestamp;
+! SLUTT TIL SIMEN
 
 setparam("XPRS_MAXTIME", -MaxSolveTimeSeconds);
 minimize(Objective);
 
-writeln(" ");
-writeln("Operators:");
-forall(pp in rOperators) do
-	writeln('Number of tasks done by operator ', pp, ': ', sum(rr in carMovesAll, rr2 in carMovesAll)getsol(x(rr,rr2,pp)));
-end-do
-writeln(' ');
-writeln("Deficit Nodes:")
-forall(ii in deficitNodes) do
-	writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
-end-do
-writeln(' ');
-writeln("Cars remaining in need of charging:")
-forall(ii in carsInCNeedNodes) do
-	writeln('Remaining cars at the end of the planning period ', carsInNeedCTranslate(ii), ': ', getsol(s_c(ii)));
-end-do
-!)
-writeln(' ');
+! TIL SIMEN
+endTimeMosel := timestamp;
+! SLUTT TIL SIMEN
+
+if printResults then 
+	writeln(" ");
+	writeln("Operators:");
+	forall(pp in rOperators) do
+		writeln('Number of tasks done by operator ', pp, ': ', sum(rr in carMovesAll, rr2 in carMovesAll)getsol(x(rr,rr2,pp)));
+	end-do
+	writeln(' ');
+	writeln("Deficit Nodes:")
+	forall(ii in deficitNodes) do
+		writeln('Deficit at the end of the planning period for node ', deficitTranslate(ii), ': ', getsol(s_minus(ii)));
+	end-do
+	writeln(' ');
+	writeln("Cars remaining in need of charging:")
+	forall(ii in carsInCNeedNodes) do
+		writeln('Remaining cars at the end of the planning period ', carsInNeedCTranslate(ii), ': ', getsol(s_c(ii)));
+	end-do
+	!)
+	writeln(' ');
+end-if
+
+deviationRel := sum(ii in deficitNodes) getsol(s_minus(ii));
+deviationCharg := sum(ii in carsInCNeedNodes) getsol(s_c(ii));
 
 ! ### Variables used for printing ### !
 declarations
@@ -524,4 +539,19 @@ end-if
 
 
 !)
+
+
+if writeToFile then
+		! TIL SIMEN
+	fopen("../Mosel/runStats", F_OUTPUT);
+	writeln(getparam("XPRS_MIPOBJVAL"));
+	writeln(getparam("XPRS_BESTBOUND"));
+	writeln(endTimeMosel-startTimeMosel);
+	writeln(deviationRel);
+    writeln(deviationCharg);
+	fclose(F_OUTPUT);
+	! SLUTT TIL SIMEN
+end-if
+
+
 end-model
