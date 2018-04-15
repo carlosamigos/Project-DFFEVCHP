@@ -56,6 +56,6 @@ public class HeuristicsConstants {
     //Large Neighborhood
     public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 1.0;
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 10.0;
-    public final static double ALNS_UPDATE_FACTOR_LNS = 0.5;
+    public final static double ALNS_UPDATE_FACTOR_LNS = 0.1;
 
 }

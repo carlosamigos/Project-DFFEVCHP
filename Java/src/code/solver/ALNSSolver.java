@@ -95,8 +95,8 @@ public class ALNSSolver extends Solver {
 				EjectionSwapMutation.id,
 				InterMove.id,
 				InterSwap2.id,
-				IntraMove.id
-				//Inter2Move.id
+				IntraMove.id,
+				Inter2Move.id
 
 			};
 		
@@ -129,8 +129,8 @@ public class ALNSSolver extends Solver {
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
 				BestRepair.id,
-				RegretRepair.id,
-				RegretRepair2.id
+				RegretRepair.id
+				//RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
@@ -254,6 +254,8 @@ public class ALNSSolver extends Solver {
 				this.tabuList.clearTabu();
 				updateWeightsLNSDestroy();
 				updateWeightsLNSRepair();
+				//System.out.println(mutationToWeightLNSDestroy);
+				//System.out.println(mutationToWeightLNSRepair);
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
 				neighborhoodRepairId = getNeighborhoodLNSRepair();
 				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
