@@ -128,9 +128,9 @@ public class ALNSSolver extends Solver {
 		this.mutationScoresLNSRepair = new HashMap<>();
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
-				BestRepair.id,
-				RegretRepair.id,
-				RegretRepair2.id
+				BestRepair.id
+				//RegretRepair.id
+				//RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
@@ -254,6 +254,8 @@ public class ALNSSolver extends Solver {
 				this.tabuList.clearTabu();
 				updateWeightsLNSDestroy();
 				updateWeightsLNSRepair();
+				//System.out.println(mutationToWeightLNSDestroy);
+				//System.out.println(mutationToWeightLNSRepair);
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
 				neighborhoodRepairId = getNeighborhoodLNSRepair();
 				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
@@ -440,7 +442,7 @@ public class ALNSSolver extends Solver {
 			double r = HeuristicsConstants.ALNS_UPDATE_FACTOR;
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
-			double attempts = this.mutationToAttempts.get(id);
+			double attempts = this.mutationToAttempts.get(id) + 1;
 			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1.0);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
@@ -456,8 +458,8 @@ public class ALNSSolver extends Solver {
 			double r = HeuristicsConstants.ALNS_UPDATE_FACTOR_LNS;
 			double oldWeight = this.mutationToWeightLNSDestroy.get(id);
 			double score = this.mutationScoresLNSDestroy.get(id);
-			double attempts = this.mutationToAttemptsLNSDestroy.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
+			double attempts = this.mutationToAttemptsLNSDestroy.get(id) + 1;
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
 			this.weightSumLNSDestroy += newWeight;
 			this.mutationToWeightLNSDestroy.put(id, newWeight);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
@@ -471,8 +473,8 @@ public class ALNSSolver extends Solver {
 			double r = HeuristicsConstants.ALNS_UPDATE_FACTOR_LNS;
 			double oldWeight = this.mutationToWeightLNSRepair.get(id);
 			double score = this.mutationScoresLNSRepair.get(id);
-			double attempts = this.mutationToAttemptsLNSRepair.get(id);
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1);
+			double attempts = this.mutationToAttemptsLNSRepair.get(id) + 1;
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
 			this.weightSumLNSRepair += newWeight;
 			this.mutationToWeightLNSRepair.put(id, newWeight);
 			this.mutationScoresLNSRepair.put(id, 0.0);

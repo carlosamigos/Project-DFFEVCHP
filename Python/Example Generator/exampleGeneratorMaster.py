@@ -8,8 +8,8 @@ import os.path
 sys.path.append('../')
 from Data_Retrieval import googleTrafficInformationRetriever as gI
 
-
-
+# OLD (59.952483, 10.795069)
+# NEW (59.954105, 10.819250)
 ### CONSTANTS ####
 
 # EUCLEDIAN DISTANCE - DON'T CHANGE #
@@ -19,8 +19,8 @@ DISTANCESCALE = 3
 EXAMPLES = 3
 
 #BOARD SIZE
-XSIZE = 5
-YSIZE = 6
+XSIZE = 15
+YSIZE = 15
 
 #ALLOWED MOVES
 MOVES = 18
@@ -159,12 +159,12 @@ class World:
                 cordY = startY - i * stepY
                 cord = (cordY, cordX)
                 cords.append(cord)
-
-        for i in range(len(cords) - MAXNODES):
-            r = random.randint(0, len(cords) - 1)
-            cords.pop(r)
-            self.pNodes.pop((r))
-            self.nodes.pop((r))
+        #print(cords)
+        #for i in range(len(cords) - MAXNODES):
+        #    r = random.randint(0, len(cords) - 1)
+        #    cords.pop(r)
+        #    self.pNodes.pop((r))
+        #    self.nodes.pop((r))
         return cords
 
     def giveRealCoordinatesCluster(self):
@@ -974,14 +974,26 @@ def createCars(world):
             world.addCar(newCar)
 
 
-## - BUILDER -- ##
+# WRITETOFILE
+def writeToFile(cords):
+    file = open("cordFile.txt", "w")
+    for cord in cords:
+        string = str(cord[0]) + "," + str(cord[1]) + "\n"
+        file.write(string)
+    file.close()
+
+
+
+
+    ## - BUILDER -- ##
 def buildWorld():
     world = World()
-    world.setCordConstants((59.952483, 10.795069), (59.904574, 10.681527))
+    world.setCordConstants((59.954105, 10.819250), (59.904574, 10.681527))
     createNodes(world)
     cords = []
     if (SPREAD):
         cords = world.giveRealCoordinatesSpread()
+    writeToFile(cords)
     createCNodes(world)
     createOperators(world)
     world.createRealIdeal()

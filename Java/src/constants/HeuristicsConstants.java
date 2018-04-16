@@ -39,9 +39,9 @@ public class HeuristicsConstants {
     public final static double ALNS_DESTROY_FACTOR = 0.5;
     
     //Initial solution
-    public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.02;
-    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 5;
-    public final static double TABU_IDEAL_STATE_INITIAL_REWARD = 2;
+    public final static double TABU_TRAVEL_COST_INITIAL_CONSTRUCTION = 0.01;
+    public final static double TABU_CHARGING_UNIT_INITIAL_REWARD = 30;
+    public final static double TABU_IDEAL_STATE_INITIAL_REWARD = 10;
     public final static double TABU_INITIAL_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_INITIAL_SURPLUS_IDEAL_STATE_COST = 0;
     public final static boolean ALNS_INITIAL_GREEDY_BUILD = true;
@@ -56,6 +56,6 @@ public class HeuristicsConstants {
     //Large Neighborhood
     public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 1.0;
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 10.0;
-    public final static double ALNS_UPDATE_FACTOR_LNS = 0.5;
+    public final static double ALNS_UPDATE_FACTOR_LNS = 0.1;
 
 }
