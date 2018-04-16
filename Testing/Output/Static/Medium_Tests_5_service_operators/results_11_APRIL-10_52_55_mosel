@@ -12,3 +12,6 @@ Solver: ../Mosel/Models/test_model/main_basic_updatedForCarMoves.mos
    test_25nodes_5so_3c_15mov_5charging_0finishes_135CM_a    |7200.44s. | -208.33  | -18.45%  |    6     |    0     
     test_20nodes_5so_3c_13mov_5charging_0finishes_93CM_a    |7200.11s. |  -218.5  | -10.22%  |    3     |    0     
    test_20nodes_5so_3c_13mov_5charging_0finishes_132CM_a    |7200.12s. | -208.96  | -13.69%  |    4     |    0     
+   test_20nodes_5so_3c_13mov_5charging_0finishes_106CM_a    |7200.52s. | -202.91  | -19.34%  |    5     |    0     
+    test_15nodes_5so_3c_12mov_5charging_0finishes_87CM_a    |7200.11s. | -215.91  |  -7.99%  |    2     |    0     
+   test_15nodes_5so_3c_12mov_5charging_0finishes_111CM_b    |7200.42s. | -200.85  | -13.92%  |    4     |    0     

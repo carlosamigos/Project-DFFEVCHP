@@ -19,7 +19,7 @@ import utils.SolutionFileMaker;
 public class Main {
 
     public static void main(String[] args) {
-	boolean testing = true;
+	boolean testing = false;
     	setConstants(args);
     	createTestingFolders();
     	
