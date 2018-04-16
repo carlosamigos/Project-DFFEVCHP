@@ -95,8 +95,8 @@ public class ALNSSolver extends Solver {
 				EjectionSwapMutation.id,
 				InterMove.id,
 				InterSwap2.id,
-				IntraMove.id,
-				Inter2Move.id
+				IntraMove.id
+				//Inter2Move.id
 
 			};
 		
@@ -128,8 +128,8 @@ public class ALNSSolver extends Solver {
 		this.mutationScoresLNSRepair = new HashMap<>();
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
-				BestRepair.id,
-				RegretRepair.id
+				BestRepair.id
+				//RegretRepair.id
 				//RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {
