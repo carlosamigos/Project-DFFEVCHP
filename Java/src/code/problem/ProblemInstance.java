@@ -621,7 +621,7 @@ public class ProblemInstance implements Serializable{
 
 
             // Add Parameters for car moves mosel solver ----------------------
-            // Num car moves p fo¸rst
+            // Num car moves p forst
             HashMap<Car, ArrayList<CarMove>> carMoves = ChromosomeGenerator.generateCarMovesFrom(this);
             int numCarMovesP = 0;
             int numCarMovesC = 0;
