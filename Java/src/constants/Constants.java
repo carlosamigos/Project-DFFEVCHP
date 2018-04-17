@@ -4,7 +4,7 @@ public class Constants {
 
 
 	// General Parameters
-	public final static boolean PRINT_OUT_ACTIONS = false;
+	public final static boolean PRINT_OUT_ACTIONS = true;
 	public final static boolean DETAILED_PRINTOUTS = false;
 	
 	// Cost Parameters

@@ -35,6 +35,7 @@ public abstract class TestSuite {
 				        return name.endsWith(".txt") && pathname.isFile();
 				    }
 		});
+		Arrays.sort(testFiles);
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
