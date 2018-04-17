@@ -81,9 +81,9 @@ public class Main {
     			break;
     		case "solver":
     			String solver = input.get(key);
-    			if (solver == "mosel") {
+    			if (solver.equals("mosel")) {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
-    			} else if (solver == "alns") {
+    			} else if (solver.equals("alns")) {
     				Constants.SOLVER_TYPE = Constants.SolverType.ALNS;
     			} else {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
