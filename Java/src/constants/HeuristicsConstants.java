@@ -29,7 +29,8 @@ public class HeuristicsConstants {
     // This variable decides when to destroy the current solution
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 200;
    
-    
+    // Stopping criteria: Max iterations without improvement
+    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 2000;
     
     public final static int ALNS_SEGMENT_LENGTH = 100;
     public final static double ALNS_FOUND_NEW_SOLUTION = 1.0;
