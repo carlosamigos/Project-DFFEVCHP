@@ -393,7 +393,7 @@ public class ALNSSolver extends Solver {
 	private boolean done(int iteration) {
 		return iteration >= iterations || 
 				System.currentTimeMillis() > this.endTime ||
-				HeuristicsConstants.ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT > this.globalIterationsWithoutImprovement;
+				HeuristicsConstants.ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT < this.globalIterationsWithoutImprovement;
 	}
 	
 	/*
