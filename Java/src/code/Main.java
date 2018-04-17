@@ -64,7 +64,6 @@ public class Main {
     	}
     	
     	for(String key : input.keySet()) {
-    		System.out.println(key + ":" + input.get(key));
     		switch(key) {
     		case "static":
     			Constants.TEST_TYPE = Constants.TestType.STATIC;
@@ -82,9 +81,9 @@ public class Main {
     			break;
     		case "solver":
     			String solver = input.get(key);
-    			if (solver == "mosel") {
+    			if (solver.equals("mosel")) {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
-    			} else if (solver == "alns") {
+    			} else if (solver.equals("alns")) {
     				Constants.SOLVER_TYPE = Constants.SolverType.ALNS;
     			} else {
     				Constants.SOLVER_TYPE = Constants.SolverType.MOSEL;
@@ -104,6 +103,7 @@ public class Main {
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_OUTPUT_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

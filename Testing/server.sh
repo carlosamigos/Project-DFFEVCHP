@@ -98,7 +98,7 @@ if [ $CHOSEN == 1 ] ; then
     CHOSENSOLVER=$(( $CHOSENSOLVER - 1))
     MODELFOLDER=${AVAILSOLVER[$CHOSENSOLVER]}
 else
-    MODELFOLDER=""
+    MODELFOLDER="."
     SOLVER="alns"
 fi
 

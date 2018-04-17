@@ -102,8 +102,8 @@ public class ALNSSolver extends Solver {
 				InterMove.id,
 				InterSwap2.id,
 				IntraMove.id,
-				IntraSwap.id
-				//Inter2Move.id
+				IntraSwap.id,
+				Inter2Move.id
 
 			};
 		
@@ -174,7 +174,6 @@ public class ALNSSolver extends Solver {
 		if(!set) {
 			setVariables(problemInstance);
 		}
-//		System.out.println(bestIndividual);
 		this.startTime = System.currentTimeMillis();
 		this.endTime = this.startTime + HeuristicsConstants.ALNS_MAX_TIME_SECONDS * 1000;
 		this.tabuList = new TabuList(this.tabuSize);
@@ -294,6 +293,7 @@ public class ALNSSolver extends Solver {
 		}
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
 		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
+		this.set = false;
 		return bestIndividual;
 	}
 	

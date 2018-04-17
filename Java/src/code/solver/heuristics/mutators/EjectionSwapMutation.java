@@ -18,7 +18,10 @@ public class EjectionSwapMutation extends Mutation {
         this.carMoveIndex = carMoveIndex;
         // * A possible approach is to construct the hashcode to only include cars, to make sure the newly injected move
         // * Is not ejected.
-        String hashString = "-" + id + op.id + "" + carMoveReplace.getCar().getCarId() + "" + carMoveIndex ;
+        int carMoveReplaceId = carMoveReplace.getCar().getCarId();
+        int carMoveCurrentId = op.getCarMove(carMoveIndex).getCar().getCarId();
+        String hashString = "-" + id + op.id + ((carMoveCurrentId <= carMoveReplaceId) ? ("" + carMoveCurrentId + carMoveReplaceId) :
+                ("" + carMoveReplaceId + carMoveCurrentId));
         this.hashCode = Integer.parseInt(hashString);
     }
 
