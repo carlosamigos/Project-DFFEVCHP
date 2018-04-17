@@ -49,12 +49,6 @@ public class ALNSIndividual extends Individual {
 	public ALNSIndividual(ProblemInstance problemInstance) {
 		this.problemInstance = problemInstance;
 		this.unusedCarMoves = ChromosomeGenerator.generateCarMovesFrom(problemInstance);
-		for(Car car : unusedCarMoves.keySet()) {
-			for(CarMove carMove : unusedCarMoves.get(car)) {
-				System.out.print(carMove + "[" + carMove.getTravelTime() + "] ");
-			}
-			System.out.println();
-		}
 		this.carMovesCounter = countCarMoves();
 		this.carsNotInUse = new HashSet<Car>();
 
