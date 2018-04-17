@@ -27,6 +27,7 @@ public class StaticTestSuite extends TestSuite {
 			System.out.println("Running tests with " + solver.getInfo());
 			
 			for(String testName : testFileNames) {
+				System.out.println("Testing: " + testName);
 				printEstimatedTimeLeft(timePerRun, runsLeft);
 				ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + testName);
 				KPITrackerStatic tracker = new KPITrackerStatic(testName);
