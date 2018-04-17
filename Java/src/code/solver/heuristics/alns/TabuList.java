@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import code.solver.heuristics.mutators.Mutation;
+import constants.HeuristicsConstants;
 
 public class TabuList {
 
@@ -42,7 +43,7 @@ public class TabuList {
 	}
 	
 	public void decreaseSize() {
-		this.tabuSize = Math.max(2, this.tabuSize/2);
+		this.tabuSize = Math.max(HeuristicsConstants.TABU_SIZE, this.tabuSize/2);
 		while(tabuQueue.size() > tabuSize) {
 			Mutation pop = tabuQueue.remove(tabuSize);
 			tabuSet.remove(pop);
@@ -52,7 +53,11 @@ public class TabuList {
 	public void clearTabu(){
 		this.tabuSet = new HashSet<>();
 		this.tabuQueue = new ArrayList<>();
-		this.tabuSize = 2;
+		this.tabuSize = HeuristicsConstants.TABU_SIZE;
+	}
+
+	public int getTabuSize(){
+		return this.tabuSize;
 	}
 
 

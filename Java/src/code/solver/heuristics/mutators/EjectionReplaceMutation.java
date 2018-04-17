@@ -21,7 +21,7 @@ public class EjectionReplaceMutation extends Mutation {
         // * Is not ejected.
         int smallestDest = Math.min(carMoveReplace.getToNode().getNodeId(), toBeReplaced.getToNode().getNodeId());
         int largestDest = Math.max(carMoveReplace.getToNode().getNodeId(), toBeReplaced.getToNode().getNodeId());
-        String hashString = "-" + carMoveReplace.getCar().getCarId() + "" + smallestDest + "" + largestDest;
+        String hashString = "-" + id + carMoveReplace.getCar().getCarId() + "" + smallestDest + "" + largestDest;
         this.hashCode = Integer.parseInt(hashString);
     }
 

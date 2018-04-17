@@ -32,6 +32,7 @@ public class ALNSSolver extends Solver {
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
 	private HashMap<Integer, GenerateNeighborhood> mutationToNeighborhood;
+	private HashMap<Integer, GenerateNeighborhood> mutationToNeighborhoodFull;
 	
 	private HashMap<Integer, Double> mutationToWeight;
 	private HashMap<String, Integer> solutionsSeen;
@@ -76,7 +77,12 @@ public class ALNSSolver extends Solver {
 		this.initializeMutationWeights();
 		this.setMutationToDelta();
 		this.setMutationToPerform();
-		this.setMutationToGenerateNeighborhood();
+		if(HeuristicsConstants.ALNS_FULL_NEIGHBORHOOD){
+			this.setMutationToGenerateNeighborhoodFull();
+		}
+		else{
+			this.setMutationToGenerateNeighborhood();
+		}
 		this.solutionsSeen.put(this.individual.toString(), 1);
 		this.set = true;
 		//LNS
@@ -95,7 +101,8 @@ public class ALNSSolver extends Solver {
 				EjectionSwapMutation.id,
 				InterMove.id,
 				InterSwap2.id,
-				IntraMove.id
+				IntraMove.id,
+				IntraSwap.id
 				//Inter2Move.id
 
 			};
@@ -128,9 +135,9 @@ public class ALNSSolver extends Solver {
 		this.mutationScoresLNSRepair = new HashMap<>();
 		this.mutationToAttemptsLNSRepair = new HashMap<>();
 		int[] searchIdsRepair = {
-				BestRepair.id
-				//RegretRepair.id
-				//RegretRepair2.id
+				BestRepair.id,
+				RegretRepair.id,
+				RegretRepair2.id
 		};
 		for(int id : searchIdsRepair) {
 			this.mutationToWeightLNSRepair.put(id, 1.0);
@@ -158,6 +165,7 @@ public class ALNSSolver extends Solver {
 		this.mutationIdToDescription.put(IntraMove.id, "Intra Move");
 		this.mutationIdToDescription.put(InterSwap2.id, "Inter Swap 2");
 		this.mutationIdToDescription.put(Inter2Move.id, "Inter Move 2");
+		this.mutationIdToDescription.put(IntraSwap.id, "Intra Swap");
 	}
 
 	
@@ -173,6 +181,7 @@ public class ALNSSolver extends Solver {
 		int iteration = 0;
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
+		int destroy_counter = 0; // count number of iteration since new global best, resets each destroy
 
 		//LNS
 		int neighborhoodDestroyId = 0;
@@ -190,6 +199,9 @@ public class ALNSSolver extends Solver {
 
 			// Basic checks
 			Set<Mutation> neighborhood = this.getNeighborhood().keySet();
+			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
+			//System.out.println(this.tabuList.getTabuSize());
+			//System.out.println(this.individual.getFitness());
 			if(neighborhood.isEmpty()) {
 				iteration++;
 				continue;
@@ -217,9 +229,17 @@ public class ALNSSolver extends Solver {
 				}
 			}
 
+			//System.out.println(candidate.getId());
+
 			// Perform mutations
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
+
+			System.out.println("candidate");
+			System.out.println(candidate.hashCode());
+			//System.out.println(tabuList.isTabu(candidate));
+			//System.out.println(this.tabuList.getTabuSize() );
+			//System.out.println(solutionsSeen.get(this.individual.toString()));
 
 			// Update counters and tabulist Size
 			if(candidateDelta >= 0){
@@ -238,8 +258,11 @@ public class ALNSSolver extends Solver {
 			if(this.individual.getFitness() < this.bestIndividual.getFitness()) {
 				bestFound = true;
 				setBest();
+				global_counter = 0;
+				destroy_counter = 0;
 			} else {
 				global_counter++;
+				destroy_counter++;
 			}
 
 			updateMutationScores(candidate, candidateDelta, bestFound);
@@ -250,12 +273,10 @@ public class ALNSSolver extends Solver {
 			if(neighborhoodDestroyId != 0){
 				updateMutationScoresLNSDestroyAndRepair(neighborhoodDestroyId, neighborhoodRepairId, bestFound);
 			}
-			if(global_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
+			if(destroy_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
 				this.tabuList.clearTabu();
 				updateWeightsLNSDestroy();
 				updateWeightsLNSRepair();
-				//System.out.println(mutationToWeightLNSDestroy);
-				//System.out.println(mutationToWeightLNSRepair);
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
 				neighborhoodRepairId = getNeighborhoodLNSRepair();
 				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
@@ -264,7 +285,7 @@ public class ALNSSolver extends Solver {
 				//Repair
 				this.searchToPerformRepair.get(neighborhoodRepairId).runCommand(searchToNeighborhood.get(neighborhoodRepairId));
 				//destroyAndRepair();
-				global_counter = 0;
+				destroy_counter = 0;
 				counter = 0;
 				individual.calculateFitness();
 			}
@@ -285,7 +306,7 @@ public class ALNSSolver extends Solver {
 		// Check if the solution is seen before, and store the current solution
 		String individualString = this.individual.toString();
 		if(this.solutionsSeen.containsKey(individualString)) {
-			this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString));
+			this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString) + 1);
 		} else {
 			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
 					+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
@@ -399,8 +420,15 @@ public class ALNSSolver extends Solver {
 			accumulated += this.mutationToWeight.get(id) / this.weightSum;
 			if(p <= accumulated) {
 				this.mutationToAttempts.put(id, this.mutationToAttempts.get(id)+1);
-				return this.mutationToNeighborhood.get(id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+				if(HeuristicsConstants.ALNS_FULL_NEIGHBORHOOD){
+					return this.mutationToNeighborhoodFull.get(id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+				}else{
+					return this.mutationToNeighborhood.get(id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
+				}
 			}
+		}
+		if(HeuristicsConstants.ALNS_FULL_NEIGHBORHOOD){
+			return this.mutationToNeighborhoodFull.get(IntraMove.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 		}
 		return this.mutationToNeighborhood.get(IntraMove.id).runCommand(HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE);
 	}
@@ -443,7 +471,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeight.get(id);
 			double score = this.mutationScores.get(id);
 			double attempts = this.mutationToAttempts.get(id) + 1;
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), 1.0);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), HeuristicsConstants.ALNS_MINIMAL_WEIGHT_FACTOR);
 			this.weightSum += newWeight;
 			this.mutationToWeight.put(id, newWeight);
 			this.mutationScores.put(id, 0.0);
@@ -459,7 +487,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeightLNSDestroy.get(id);
 			double score = this.mutationScoresLNSDestroy.get(id);
 			double attempts = this.mutationToAttemptsLNSDestroy.get(id) + 1;
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), HeuristicsConstants.ALNS_MINIMAL_WEIGHT_FACTOR_LNS);
 			this.weightSumLNSDestroy += newWeight;
 			this.mutationToWeightLNSDestroy.put(id, newWeight);
 			this.mutationScoresLNSDestroy.put(id, 0.0);
@@ -474,7 +502,7 @@ public class ALNSSolver extends Solver {
 			double oldWeight = this.mutationToWeightLNSRepair.get(id);
 			double score = this.mutationScoresLNSRepair.get(id);
 			double attempts = this.mutationToAttemptsLNSRepair.get(id) + 1;
-			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / Math.max(attempts, 1)), 1);
+			double newWeight = Math.max(oldWeight * (1 - r) + r * (score / attempts), HeuristicsConstants.ALNS_MINIMAL_WEIGHT_FACTOR_LNS);
 			this.weightSumLNSRepair += newWeight;
 			this.mutationToWeightLNSRepair.put(id, newWeight);
 			this.mutationScoresLNSRepair.put(id, 0.0);
@@ -519,6 +547,10 @@ public class ALNSSolver extends Solver {
 			EjectionSwapMutation ejectionSwapMutation = (EjectionSwapMutation) mutation;
 			return this.individual.deltaFitness(ejectionSwapMutation);
 		});
+		this.mutationToDelta.put(IntraSwap.id, (Mutation mutation) -> {
+			IntraSwap intraSwap = (IntraSwap) mutation;
+			return this.individual.deltaFitness(intraSwap);
+		});
 	}
 	
 	/*
@@ -558,6 +590,10 @@ public class ALNSSolver extends Solver {
 			EjectionSwapMutation ejectionSwapMutation = (EjectionSwapMutation) mutation;
 			this.individual.performMutation(ejectionSwapMutation);
 		});
+		this.mutationToPerform.put(IntraSwap.id, (Mutation mutation) -> {
+			IntraSwap intraSwap = (IntraSwap) mutation;
+			this.individual.performMutation(intraSwap);
+		});
 	}
 	
 	/*
@@ -588,6 +624,41 @@ public class ALNSSolver extends Solver {
 		});
 		this.mutationToNeighborhood.put(EjectionSwapMutation.id, (int tabuSize) -> {
 			return this.individual.getNeighborhoodEjectionSwap(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhood.put(IntraSwap.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodIntraSwap(this.tabuList, tabuSize);
+		});
+
+	}
+
+	private void setMutationToGenerateNeighborhoodFull() {
+		this.mutationToNeighborhoodFull = new HashMap<>();
+		this.mutationToNeighborhoodFull.put(IntraMove.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodIntraMoveFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(InterMove.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodInterMoveFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(InterSwap2.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodInterSwap2Full(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(Inter2Move.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodInter2MoveFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(EjectionInsertMutation.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodEjectionInsertFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(EjectionRemoveMutation.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodEjectionRemoveFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(EjectionReplaceMutation.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodEjectionReplaceFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(EjectionSwapMutation.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodEjectionSwapFull(this.tabuList, tabuSize);
+		});
+		this.mutationToNeighborhoodFull.put(IntraSwap.id, (int tabuSize) -> {
+			return this.individual.getNeighborhoodIntraSwapFull(this.tabuList, tabuSize);
 		});
 	}
 

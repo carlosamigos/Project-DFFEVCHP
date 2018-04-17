@@ -28,6 +28,12 @@ public class MathHelper {
         return bd.doubleValue();
     }
 
+    public static int getRandomGreater(int first, int max){
+        int second;
+        second = (int) Math.floor(Math.random() * (max - first - 1)) + first + 1;
+        return second;
+    }
+
 
 
 

@@ -678,6 +678,32 @@ public class ALNSIndividual extends Individual {
 
 	}
 
+	public double deltaFitness(IntraSwap intraSwap){
+
+		Operator operator = intraSwap.getOperator1();
+		int index1 = intraSwap.getIndex1();
+		int index2 = intraSwap.getIndex2();
+
+		// Save old state
+		OperatorState operatorState = setOperatorState(operator);
+
+		//Do mutation
+		CarMove carMove1 = operator.removeCarMove(index1);
+		operator.addCarMove(index2, carMove1);
+		CarMove carMove2 = operator.removeCarMove(index2 - 1);
+		operator.addCarMove(index1, carMove2);
+
+		// Calculate fitness
+		double deltaFitness = calculateDeltaFitness(operator, operatorState);
+
+		//Revert
+		resetOperator(operatorState);
+
+		return deltaFitness;
+
+
+	}
+
 
 	//================================================================================
 	// Perform mutation
@@ -800,6 +826,20 @@ public class ALNSIndividual extends Individual {
 
 	}
 
+	public void performMutation(IntraSwap intraSwap){
+		Operator operator = intraSwap.getOperator1();
+		int index1 = intraSwap.getIndex1();
+		int index2 = intraSwap.getIndex2();
+
+		CarMove carMove1 = operator.removeCarMove(index1);
+		operator.addCarMove(index2, carMove1);
+		CarMove carMove2 = operator.removeCarMove(index2 - 1);
+		operator.addCarMove(index1, carMove2);
+		operator.getFitness();
+		this.prevCapacitiesUsed = new HashMap<>(this.capacitiesUsed);
+		this.prevDeviationFromIdealState = new HashMap<>(this.deviationFromIdealState);
+	}
+
 	//================================================================================
 	// Generate neighborhood
 	//================================================================================
@@ -812,7 +852,7 @@ public class ALNSIndividual extends Individual {
 			Operator operator = (Operator) operators.get(o);
 			// IntraMove && EjectionRemove
 			for(int i = 0; i < operator.getCarMoveListSize(); i++) {
-				for(int j = 0; j < operator.getCarMoveListSize()+1; j++) {
+				for(int j = 0; j < operator.getCarMoveListSize(); j++) {
 					if(i == j) {
 						continue;
 					}
@@ -826,21 +866,35 @@ public class ALNSIndividual extends Individual {
 				if(!tabuList.isTabu(ejectionRemoveMutation)) {
 					neighborhood.put(ejectionRemoveMutation, 1);
 				}
-				
+
+
+				// Ejection Replace
+				CarMove carMove = operator.getCarMove(i);
+				for(CarMove replaceCarMove : unusedCarMoves.get(carMove.getCar())) {
+					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, replaceCarMove, carMove);
+					if(!tabuList.isTabu(ejectionReplaceMutation)) {
+						neighborhood.put(ejectionReplaceMutation, 1);
+					}
+				}
+				//Ejection Swap
+				for(Car car: carsNotInUse){
+					for(CarMove insertCarMove: unusedCarMoves.get(car)){
+						EjectionSwapMutation ejectionSwapMutation = new EjectionSwapMutation(operator, i, insertCarMove);
+						if(!tabuList.isTabu(ejectionSwapMutation)){
+							neighborhood.put(ejectionSwapMutation,1);
+						}
+					}
+				}
+			}
+
+			// Ejection Insert
+			for (int i = 0; i < operator.getCarMoveListSize() +1; i++) {
 				for(Car car : carsNotInUse) {
 					for(CarMove carMove:  unusedCarMoves.get(car)) {
 						EjectionInsertMutation ejectionInsertMutation =  new EjectionInsertMutation(operator, i, carMove);
 						if(!tabuList.isTabu(ejectionInsertMutation)) {
 							neighborhood.put(ejectionInsertMutation, 1);
 						}
-					}
-				}
-				
-				CarMove carMove = operator.getCarMove(i);
-				for(CarMove replaceCarMove : unusedCarMoves.get(carMove.getCar())) {
-					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, replaceCarMove, carMove);
-					if(!tabuList.isTabu(ejectionReplaceMutation)) {
-						neighborhood.put(ejectionReplaceMutation, 1);
 					}
 				}
 			}
@@ -852,7 +906,7 @@ public class ALNSIndividual extends Individual {
 				}
 				Operator operator2 = (Operator) operators.get(p);
 				for(int i = 0; i < operator.getCarMoveListSize(); i++) {
-					for(int j = 0; j < operator2.getCarMoveListSize(); j++) {
+					for(int j = 0; j < operator2.getCarMoveListSize()+1; j++) {
 						InterMove interMove =  new InterMove(operator, i, operator2, j);
 						if(!tabuList.isTabu(interMove)) {
 							neighborhood.put(interMove, 1);
@@ -1057,6 +1111,212 @@ public class ALNSIndividual extends Individual {
 		return neighbors;
 
 	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodIntraSwap(TabuList tabuList, int size){
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int i = 0; i < size; i++) {
+			int operator1Index = (int) Math.floor(Math.random() * operators.size());
+			Operator operator1 = (Operator) operators.get(operator1Index);
+			if(operator1.getCarMoveListSize() == 0){
+				continue;
+			}
+			int index1 = (int)Math.floor(Math.random() * (operator1.getCarMoveListSize()-1));
+			int index2 = MathHelper.getRandomGreater(index1, operator1.getCarMoveListSize());
+			IntraSwap intraSwap = new IntraSwap(index1, index2, operator1);
+			if(!tabuList.isTabu(intraSwap)){
+				neighbors.put(intraSwap, 1);
+			}
+		}
+		return neighbors;
+	}
+
+	//================================================================================
+	// Generate full neighborhood
+	//================================================================================
+
+
+	public HashMap<Mutation, Integer> getNeighborhoodIntraMoveFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			// IntraMove
+			for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+				for(int j = 0; j < operator.getCarMoveListSize()+1; j++) {
+					if(i == j){
+						continue;
+					}
+					IntraMove intraMove = new IntraMove(operator, i, j);
+					if(!tabuList.isTabu(intraMove)) {
+						neighbors .put(intraMove, 1);
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodInterMoveFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for(int p = 0; p < operators.size(); p++) {
+				if(p == o) {
+					continue;
+				}
+				Operator operator2 = (Operator) operators.get(p);
+				for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+					for(int j = 0; j < operator2.getCarMoveListSize() + 1; j++) {
+						InterMove interMove =  new InterMove(operator, i, operator2, j);
+						if(!tabuList.isTabu(interMove)) {
+							neighbors.put(interMove, 1);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodInterSwap2Full(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for(int p = o+1; p < this.operators.size(); p++) {
+				Operator operator2 = (Operator) operators.get(p);
+				for(int i = 0; i < operator.getCarMoveListSize(); i++) {
+					for(int j = 0; j < operator2.getCarMoveListSize(); j++) {
+						InterSwap2 interSwap2 = new InterSwap2(i, j, operator, operator2);
+						if(!tabuList.isTabu(interSwap2)) {
+							neighbors.put(interSwap2, 1);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodEjectionInsertFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		if(this.carsNotInUse.size() == 0){
+			return neighbors;
+		}
+		ArrayList<Car> carsNotInSolution = new ArrayList<Car>(carsNotInUse);
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for (int i = 0; i < operator.getCarMoveListSize() + 1; i++) {
+				for (int c = 0; c < carsNotInSolution.size(); c++) {
+					Car car = carsNotInSolution.get(c);
+					for (int j = 0; j < this.unusedCarMoves.get(car).size(); j++) {
+						CarMove insertCarMove = this.unusedCarMoves.get(car).get(j);
+						EjectionInsertMutation ejectionInsertMutation = new EjectionInsertMutation(operator, i, insertCarMove);
+						if(!tabuList.isTabu(ejectionInsertMutation)) {
+							neighbors.put(ejectionInsertMutation, 1);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
+
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodEjectionRemoveFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for (int i = 0; i < operator.getCarMoveListSize(); i++) {
+				EjectionRemoveMutation ejectionRemoveMutation = new EjectionRemoveMutation(operator, i, operator.getCarMove(i));
+				if(!tabuList.isTabu(ejectionRemoveMutation)) {
+					neighbors.put(ejectionRemoveMutation, 1);
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodEjectionReplaceFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for (int i = 0; i < operator.getCarMoveListSize(); i++) {
+				for (int c = 0; c < this.unusedCarMoves.get(operator.getCarMove(i).getCar()).size(); c++) {
+					CarMove swapCarMove = this.unusedCarMoves.get(operator.getCarMove(i).getCar()).get(c);
+					EjectionReplaceMutation ejectionReplaceMutation = new EjectionReplaceMutation(operator, i, swapCarMove, operator.getCarMove(i));
+					if(!tabuList.isTabu(ejectionReplaceMutation)) {
+						neighbors.put(ejectionReplaceMutation, 1);
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodEjectionSwapFull(TabuList tabuList, int size){
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		if(this.carsNotInUse.size() == 0){
+			return neighbors;
+		}
+		ArrayList<Car> carsNotInSolution = new ArrayList<Car>(carsNotInUse);
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for (int i = 0; i < operator.getCarMoveListSize(); i++) {
+				for (int c = 0; c < carsNotInSolution.size(); c++) {
+					Car car = carsNotInSolution.get(c);
+					for (int j = 0; j < this.unusedCarMoves.get(car).size(); j++) {
+						CarMove carMoveReplace = unusedCarMoves.get(car).get(j);
+						EjectionSwapMutation ejectionSwapMutation = new EjectionSwapMutation(operator, i, carMoveReplace);
+						if(!tabuList.isTabu(ejectionSwapMutation)){
+							neighbors.put(ejectionSwapMutation, 1);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
+
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodInter2MoveFull(TabuList tabuList, int size){
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for(int p = 0; p < operators.size(); p++) {
+				if(p == o) {
+					continue;
+				}
+				Operator operator2 = (Operator) operators.get(p);
+				for(int i = 0; i < operator.getCarMoveListSize() - 1; i++) {
+					for(int j = 0; j < operator2.getCarMoveListSize() + 1; j++) {
+						Inter2Move inter2move = new Inter2Move(operator, i, i+1, operator2, j);
+						if(!tabuList.isTabu(inter2move)){
+							neighbors.put(inter2move, 1);
+						}
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+	public HashMap<Mutation, Integer> getNeighborhoodIntraSwapFull(TabuList tabuList, int size) {
+		HashMap<Mutation, Integer> neighbors = new HashMap<>();
+		for(int o = 0; o < operators.size(); o++) {
+			Operator operator = (Operator) operators.get(o);
+			for(int i = 0; i < operator.getCarMoveListSize() - 1; i++) {
+				for(int j = i+1; j < operator.getCarMoveListSize(); j++) {
+					IntraSwap intraSwap = new IntraSwap(i, j, operator);
+					if(!tabuList.isTabu(intraSwap)) {
+						neighbors.put(intraSwap, 1);
+					}
+				}
+			}
+		}
+		return neighbors;
+	}
+
+
+
 
 	//================================================================================
 	// Destroy
