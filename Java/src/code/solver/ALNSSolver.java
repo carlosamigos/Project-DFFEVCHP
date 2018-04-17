@@ -224,7 +224,7 @@ public class ALNSSolver extends Solver {
 				candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 				for(Mutation newCandidate : neighborhood) {
 					double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
-					if (newCandidateDelta < candidateDelta ) {
+					if (newCandidateDelta < candidateDelta) {
 						candidate = newCandidate;
 						candidateDelta = newCandidateDelta;
 					}

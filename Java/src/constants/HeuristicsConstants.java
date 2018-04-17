@@ -24,7 +24,7 @@ public class HeuristicsConstants {
 
     // Tabu list specifics
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
-    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
+    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 10;
     public final static int TABU_MAX_SIZE = 128;
     public final static int TABU_SIZE = 2;
    
