@@ -29,6 +29,8 @@ public class ALNSSolver extends Solver {
 	private long endTime;
 	private double timeUsed;
 	
+	private int globalIterationsWithoutImprovement;
+	
 	private HashMap<Integer, DeltaFitness> mutationToDelta;
 	private HashMap<Integer, Perform> mutationToPerform;
 	private HashMap<Integer, GenerateNeighborhood> mutationToNeighborhood;
@@ -88,6 +90,7 @@ public class ALNSSolver extends Solver {
 		//LNS
 		this.setSearchToPerformDestroy();
 		this.setSearchToPerformRepair();
+		this.globalIterationsWithoutImprovement = 0;
 	}
 	
 	private void initializeMutationWeights() {
@@ -259,10 +262,12 @@ public class ALNSSolver extends Solver {
 			if(this.individual.getFitness() < this.bestIndividual.getFitness()) {
 				bestFound = true;
 				setBest();
+				this.globalIterationsWithoutImprovement = 0;
 				global_counter = 0;
 				destroy_counter = 0;
 			} else {
 				global_counter++;
+				this.globalIterationsWithoutImprovement++;
 				destroy_counter++;
 			}
 
@@ -384,6 +389,9 @@ public class ALNSSolver extends Solver {
 			double candidateDelta;
 			candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 			for(Mutation newCandidate : neighborhood) {
+				if(HeuristicsConstants.BEST_FIRST && candidateDelta < 0) {
+					break;
+				}
 				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 				if (newCandidateDelta < candidateDelta ) {
 					candidate = newCandidate;
@@ -409,7 +417,9 @@ public class ALNSSolver extends Solver {
 	}
 
 	private boolean done(int iteration) {
-		return iteration >= iterations || System.currentTimeMillis() > this.endTime;
+		return iteration >= iterations || 
+				System.currentTimeMillis() > this.endTime ||
+				HeuristicsConstants.ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT < this.globalIterationsWithoutImprovement;
 	}
 	
 	/*
