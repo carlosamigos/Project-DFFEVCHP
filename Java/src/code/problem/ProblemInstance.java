@@ -621,7 +621,7 @@ public class ProblemInstance implements Serializable{
 
 
             // Add Parameters for car moves mosel solver ----------------------
-            // Num car moves p først
+            // Num car moves p fo�rst
             HashMap<Car, ArrayList<CarMove>> carMoves = ChromosomeGenerator.generateCarMovesFrom(this);
             int numCarMovesP = 0;
             int numCarMovesC = 0;
@@ -640,7 +640,7 @@ public class ProblemInstance implements Serializable{
             ArrayList<Integer> carMoveDestinationC = new ArrayList<>();
             ArrayList<Double> carMoveHandlingTimeC = new ArrayList<>();
             ArrayList<Double> carMoveStartingTimeC = new ArrayList<>();
-            int numCarsInCNeedNodes = 0; // Det er antall noder med biler som må lades
+            int numCarsInCNeedNodes = 0; // Det er antall noder med biler som maa lades
             ArrayList<Integer> carsInNeedCTranslate = new ArrayList<>();
             ArrayList<Integer> carsInNeedNodes = new ArrayList<>();
             ArrayList<Double> bigMP = new ArrayList<>();
