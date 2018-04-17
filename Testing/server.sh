@@ -187,12 +187,33 @@ fi
 
 
 echo "################"
+
+
+if [[ $SOLVER -eq "alns" ]] ; then
+	while true; do
+		echo -n "Number of runs per file: "
+		read N
+		if [[ $N =~ $re2 ]]; then
+			break;
+		fi
+		echo "Must choose a legal number."
+		echo " "
+	done
+	cp cleaner.sh Input/${TYPE}/${NAME}
+	cp copier.sh Input/${TYPE}/${NAME}
+	cd Input/${TYPE}/${NAME} && ./copier.sh $N
+	cd ../../../
+fi
+
+TEST_TYPE="${TYPE,,}"
 cd ../Java
 module load xpress/8.4.4
 module load Java/9.0.4
 ant clean
 ant build
 
-TEST_TYPE="${TYPE,,}"
-
 java -cp "./bin:/share/apps/xpress/8.4.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NAME" solver:$SOLVER model_folder:$MODELFOLDER
+
+if [[ $SOLVER -eq "alns" ]] ; then
+	cd ../Testing/Input/${TYPE}/${NAME} && ./cleaner.sh $N && rm cleaner.sh copier.sh
+fi
