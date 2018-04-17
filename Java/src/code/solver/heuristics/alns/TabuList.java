@@ -39,11 +39,11 @@ public class TabuList {
 	}
 	
 	public void increaseSize() {
-		this.tabuSize *= 2;
+		this.tabuSize = Math.min(this.tabuSize *= 4, HeuristicsConstants.TABU_MAX_SIZE);
 	}
 	
 	public void decreaseSize() {
-		this.tabuSize = Math.max(HeuristicsConstants.TABU_SIZE, this.tabuSize/2);
+		this.tabuSize = Math.max(HeuristicsConstants.TABU_SIZE, this.tabuSize/2 );
 		while(tabuQueue.size() > tabuSize) {
 			Mutation pop = tabuQueue.remove(tabuSize);
 			tabuSet.remove(pop);

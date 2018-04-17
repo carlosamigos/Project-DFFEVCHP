@@ -182,6 +182,7 @@ public class ALNSSolver extends Solver {
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		int destroy_counter = 0; // count number of iteration since new global best, resets each destroy
+		int tabuCounter = 0;
 
 		//LNS
 		int neighborhoodDestroyId = 0;
@@ -197,11 +198,13 @@ public class ALNSSolver extends Solver {
 				this.updateWeights();
 			}
 
-			// Basic checks
-			Set<Mutation> neighborhood = this.getNeighborhood().keySet();
-			//Set<Mutation> neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
-			//System.out.println(this.tabuList.getTabuSize());
-			//System.out.println(this.individual.getFitness());
+			Set<Mutation> neighborhood;
+			if(HeuristicsConstants.ALNS_FULL_ALL_NEIGHBORHOOD){
+				neighborhood = this.individual.generateFullNeighborhood(this.tabuList).keySet();
+			}else{
+				neighborhood = this.getNeighborhood().keySet();
+			}
+
 			if(neighborhood.isEmpty()) {
 				iteration++;
 				continue;
@@ -229,29 +232,28 @@ public class ALNSSolver extends Solver {
 				}
 			}
 
-			//System.out.println(candidate.getId());
-
 			// Perform mutations
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 
-			System.out.println("candidate");
-			System.out.println(candidate.hashCode());
-			//System.out.println(tabuList.isTabu(candidate));
-			//System.out.println(this.tabuList.getTabuSize() );
-			//System.out.println(solutionsSeen.get(this.individual.toString()));
 
 			// Update counters and tabulist Size
 			if(candidateDelta >= 0){
 				counter ++;
+				tabuCounter = 0;
 			} else {
 				counter = 0;
-				this.tabuList.decreaseSize();
+				tabuCounter++;
+				if(tabuCounter > HeuristicsConstants.TABU_MIN_IMPROVING_LOCAL_ITERATIONS){
+					this.tabuList.decreaseSize();
+				}
+
 			}
 			if(counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS) {
 				this.tabuList.increaseSize();
 				counter = 0;
 			}
+
 
 			// Update best individual
 			boolean bestFound = false;
@@ -284,9 +286,9 @@ public class ALNSSolver extends Solver {
 				this.searchToPerformDestroy.get(neighborhoodDestroyId).runCommand(searchToNeighborhood.get(neighborhoodDestroyId));
 				//Repair
 				this.searchToPerformRepair.get(neighborhoodRepairId).runCommand(searchToNeighborhood.get(neighborhoodRepairId));
-				//destroyAndRepair();
 				destroy_counter = 0;
 				counter = 0;
+				tabuCounter = 0;
 				individual.calculateFitness();
 			}
 		}

@@ -9,28 +9,26 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 100;
-    public final static int TABU_SIZE = 2;
     public final static int TABU_ITERATIONS = 200000;
     public final static int ALNS_MAX_TIME_SECONDS = 60;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
     public final static double TABU_CHARGING_UNIT_REWARD = 0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
-    public final static double TABU_SIZE_OF_OPERATOR_LIST = 0;
+    public final static double TABU_SIZE_OF_OPERATOR_LIST = 0.1;
     
     // ALNS Parameters used when comparring with Mosel
     public final static double ALNS_CHARGING_REWARD = 30;
     public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.2;
     public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10; 
     public final static double ALNS_TRAVEL_COST = 0.01;
-    
-    // This variable decides when the tabu list is increased in size (doubled)
-    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
 
-    // This variable decides when to destroy the current solution
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 200;
+    // Tabu list specifics
+    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
+    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 4;
+    public final static int TABU_MAX_SIZE = 128;
+    public final static int TABU_SIZE = 2;
    
-    
-    
+
     public final static int ALNS_SEGMENT_LENGTH = 100;
     public final static double ALNS_FOUND_NEW_SOLUTION = 1.0;
     public final static double ALNS_FOUND_NEW_BEST_REWARD = 2.0;
@@ -60,8 +58,10 @@ public class HeuristicsConstants {
     public final static double ALNS_DESTROY_FACTOR = 0.5;
     public final static double ALNS_UPDATE_FACTOR_LNS = 0.2;
     public final static double ALNS_MINIMAL_WEIGHT_FACTOR_LNS = 0.4;
+    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 100;
 
     //NeighborhoodSearches
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
+    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
 }
