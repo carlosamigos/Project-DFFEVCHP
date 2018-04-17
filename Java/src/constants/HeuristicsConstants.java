@@ -17,6 +17,9 @@ public class HeuristicsConstants {
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
     public final static double TABU_SIZE_OF_OPERATOR_LIST = 0;
     
+    // Best first
+    public final static boolean BEST_FIRST = true;
+    
     // ALNS Parameters used when comparring with Mosel
     public final static double ALNS_CHARGING_REWARD = 30;
     public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.2;
