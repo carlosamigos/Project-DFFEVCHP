@@ -105,8 +105,8 @@ public class ALNSSolver extends Solver {
 				InterMove.id,
 				InterSwap2.id,
 				IntraMove.id,
-				IntraSwap.id
-				//Inter2Move.id
+				IntraSwap.id,
+				Inter2Move.id
 
 			};
 		

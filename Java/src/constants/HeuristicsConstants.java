@@ -28,7 +28,7 @@ public class HeuristicsConstants {
     public final static double ALNS_TRAVEL_COST = 0.01;
 
     // Tabu list specifics
-    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
+    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 2;
     public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
     public final static int TABU_MAX_SIZE = 256;
     public final static int TABU_SIZE = 2;
