@@ -55,8 +55,8 @@ public class Inter2Move extends Mutation {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof InterMove){
-            return ((InterMove) o).hashCode() == this.hashCode;
+        if(o instanceof Inter2Move){
+            return ((Inter2Move) o).hashCode() == this.hashCode;
         }return false;
     }
 
