@@ -36,6 +36,9 @@ public abstract class TestSuite {
 				    }
 		});
 		Arrays.sort(testFiles);
+		for(File f : testFiles) {
+			System.out.println(f.getName());
+		}
 		this.testFileNames = (ArrayList<String>) Arrays.stream(testFiles).map(
 				file -> StringUtils.removeFileEnding(file.getName()))
 				.collect(Collectors.toList());
