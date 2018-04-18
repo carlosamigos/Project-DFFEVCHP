@@ -17,7 +17,7 @@ public class StaticTestSuite extends TestSuite {
 	
 	
 	public void runTestSuite() {
-		System.out.println("Starting static test suite... (folder: " + FileConstants.TEST_STATIC_FOLDER + ")");
+		System.out.println("\nStarting static test suite... (folder: " + FileConstants.TEST_STATIC_FOLDER + ")");
 		System.out.println("Number of test files: " + testFileNames.size());
 		int runsLeft = this.solvers.size() * this.testFileNames.size();
 		double timePerRun = calcTimePerRun();
@@ -27,8 +27,7 @@ public class StaticTestSuite extends TestSuite {
 			System.out.println("Running tests with " + solver.getInfo());
 			
 			for(String testName : testFileNames) {
-				System.out.println("Testing: " + testName);
-				printEstimatedTimeLeft(timePerRun, runsLeft);
+				printEstimatedTimeLeft(timePerRun, runsLeft, testName);
 				ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + testName);
 				KPITrackerStatic tracker = new KPITrackerStatic(testName);
 				solver.solve(problemInstance);
