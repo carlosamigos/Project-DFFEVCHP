@@ -105,8 +105,8 @@ public class ALNSSolver extends Solver {
 				InterMove.id,
 				InterSwap2.id,
 				IntraMove.id,
-				IntraSwap.id,
-				Inter2Move.id
+				IntraSwap.id
+				//Inter2Move.id
 
 			};
 		
@@ -184,7 +184,7 @@ public class ALNSSolver extends Solver {
 		int counter = 0;        // counts number of rounds with delta > 0
 		int global_counter = 0; // counts number of iterations since new global best
 		int destroy_counter = 0; // count number of iteration since new global best, resets each destroy
-		int tabuCounter = 0;
+		int tabuCounter = 0; // counts number of iterations with delta < 0
 
 		//LNS
 		int neighborhoodDestroyId = 0;
@@ -283,7 +283,7 @@ public class ALNSSolver extends Solver {
 				updateMutationScoresLNSDestroyAndRepair(neighborhoodDestroyId, neighborhoodRepairId, bestFound);
 			}
 			if(destroy_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
-				this.tabuList.clearTabu();
+				//this.tabuList.clearTabu();
 				updateWeightsLNSDestroy();
 				updateWeightsLNSRepair();
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
