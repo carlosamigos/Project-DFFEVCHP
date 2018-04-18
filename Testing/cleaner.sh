@@ -8,7 +8,11 @@ for i in ${FILES[*]}; do
 	if [[ $CHECK -ne 0 ]] ; then
 		rm $i
 	else
-		NAME="${i::-6}"
+		if [[ $1 -ge 9 ]] ; then
+			NAME="{$i::-7}"
+		else
+			NAME="${i::-6}"
+		fi
 		mv $i ${NAME}.txt
 	fi
 	let "COUNT++"
