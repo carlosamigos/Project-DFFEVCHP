@@ -28,7 +28,7 @@ public class HeuristicsConstants {
     public final static double ALNS_TRAVEL_COST = 0.01;
 
     // Tabu list specifics
-    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 2;
+    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 8;
     public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
     public final static int TABU_MAX_SIZE = 256;
     public final static int TABU_SIZE = 2;
@@ -68,7 +68,7 @@ public class HeuristicsConstants {
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 3000;
 
     //Enumeration of neighborhood
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
     public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
 }
