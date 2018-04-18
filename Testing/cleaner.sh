@@ -3,7 +3,8 @@
 FILES=(`ls -I cleaner.sh -I copier.sh`)
 COUNT=0
 
-if [[ $1 -ge 1 ]]; then
+if [[ $1 -ge 2 ]]; then
+	echo "Removing file copies..."
 	for i in ${FILES[*]}; do
 		CHECK=$(($COUNT%$1))
 		if [[ $CHECK -ne 0 ]] ; then
