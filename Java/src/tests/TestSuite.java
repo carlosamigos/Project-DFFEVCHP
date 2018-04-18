@@ -77,14 +77,14 @@ public abstract class TestSuite {
 		solvers.add(new ALNSSolver());
 	}
 	
-	protected void printEstimatedTimeLeft(Double timePerRun, int runsLeft){
+	protected void printEstimatedTimeLeft(Double timePerRun, int runsLeft, String fileName){
 		String hoursAndMinutes = "";
 		double timeLeft = timePerRun * runsLeft;
 		int totalMinutes = (int)Math.round(timeLeft/60);
 		int totalHours = (int)Math.round(totalMinutes/60);
 		int minutes = totalMinutes - totalHours*60;
 		hoursAndMinutes += totalHours + " hours and "+minutes + " minutes";
-		System.out.println("(Time left: " + hoursAndMinutes + ")");
+		System.out.println("Test file: " + fileName + " (Time left: " + hoursAndMinutes + ")");
 	}
 	
 	protected String getTimestamp() {

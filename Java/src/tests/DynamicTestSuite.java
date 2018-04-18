@@ -35,7 +35,7 @@ public class DynamicTestSuite extends TestSuite{
 		int runsLeft = testFileNames.size() * days * this.solvers.size();
 		double timePerRun = calcTimePerRun();
 
-		printEstimatedTimeLeft(timePerRun, runsLeft);
+		//printEstimatedTimeLeft(timePerRun, runsLeft);
 
 		for(String test : testFileNames) {
 			
