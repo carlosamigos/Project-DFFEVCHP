@@ -2,6 +2,7 @@ package utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 
 
 public class MathHelper {
@@ -30,11 +31,9 @@ public class MathHelper {
 
     public static int getRandomGreater(int first, int max){
         int second;
-        second = (int) Math.floor(Math.random() * (max - first - 1)) + first + 1;
+        second = (int) Math.floor(Math.random() * (max - first)) + first + 1;
         return second;
     }
-
-
 
 
 

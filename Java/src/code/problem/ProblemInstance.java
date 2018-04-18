@@ -202,6 +202,7 @@ public class ProblemInstance implements Serializable{
             operators.add(newOperator);
             operatorMap.put(operatorId,newOperator);
         }
+
         this.numROperators = this.operators.size();
     }
 
