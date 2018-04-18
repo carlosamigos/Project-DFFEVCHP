@@ -226,6 +226,9 @@ public class ALNSSolver extends Solver {
 			} else {
 				candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 				for(Mutation newCandidate : neighborhood) {
+					if(HeuristicsConstants.BEST_FIRST && candidateDelta < 0) {
+						break;
+					}
 					double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 					if (newCandidateDelta < candidateDelta) {
 						candidate = newCandidate;
@@ -389,9 +392,6 @@ public class ALNSSolver extends Solver {
 			double candidateDelta;
 			candidateDelta = this.mutationToDelta.get(candidate.getId()).runCommand(candidate);
 			for(Mutation newCandidate : neighborhood) {
-				if(HeuristicsConstants.BEST_FIRST && candidateDelta < 0) {
-					break;
-				}
 				double newCandidateDelta = this.mutationToDelta.get(newCandidate.getId()).runCommand(newCandidate);
 				if (newCandidateDelta < candidateDelta ) {
 					candidate = newCandidate;
