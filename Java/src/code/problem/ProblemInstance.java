@@ -78,7 +78,7 @@ public class ProblemInstance implements Serializable{
             addStateSpecificStrings();
             makeChargingToparkingNodeMap();
         } catch (IOException e){
-            System.out.println("File could not be read for "+fileName + " in problemInstance");
+            System.out.println("File could not be read for "+filePath + " in problemInstance");
             System.exit(1);
         }
         updateParameters();
