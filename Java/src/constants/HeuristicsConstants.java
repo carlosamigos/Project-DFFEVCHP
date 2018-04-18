@@ -68,7 +68,7 @@ public class HeuristicsConstants {
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 3000;
 
     //Enumeration of neighborhood
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
     public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
 }

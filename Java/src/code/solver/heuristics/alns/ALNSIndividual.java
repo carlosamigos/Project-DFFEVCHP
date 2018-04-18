@@ -838,7 +838,7 @@ public class ALNSIndividual extends Individual {
 	// Generate neighborhood
 	//================================================================================
 	
-	
+	// FUll
 	public HashMap<Mutation, Integer> generateFullNeighborhood(TabuList tabuList) {
 		HashMap<Mutation, Integer> neighborhood = new HashMap<>();
 		
@@ -925,7 +925,9 @@ public class ALNSIndividual extends Individual {
 		
 		return neighborhood;
 	}
-	
+
+
+	// Random
 	public HashMap<Mutation, Integer> getNeighborhoodInterMove(TabuList tabuList, int size) {
 		HashMap<Mutation, Integer> neighbors = new HashMap<>();
 		for(int i = 0; i < size; i++) {
