@@ -27,13 +27,13 @@ public class HeuristicsConstants {
 
     // Tabu list specifics
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
-    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 10;
+    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
     public final static int TABU_MAX_SIZE = 128;
     public final static int TABU_SIZE = 2;
    
 
     // Stopping criteria: Max iterations without improvement
-    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 2000;
+    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 100000;
 
     public final static int ALNS_SEGMENT_LENGTH = 100;
     public final static double ALNS_FOUND_NEW_SOLUTION = 1.0;
