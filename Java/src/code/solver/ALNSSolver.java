@@ -62,6 +62,7 @@ public class ALNSSolver extends Solver {
 
 	private int numberToHandle;
 
+	// Scalable constants
 	
 	public ALNSSolver() {}
 	
@@ -70,8 +71,11 @@ public class ALNSSolver extends Solver {
 	}
 	
 	private void setVariables(ProblemInstance problemInstance) {
+		HeuristicsConstants.TABU_LIST_NON_FINAL_SIZE = 100;
 		this.iterations = HeuristicsConstants.TABU_ITERATIONS;
 		this.individual =  new ALNSIndividual(problemInstance);
+		// Scalable constants
+
 		setBest();
 		this.tabuSize = HeuristicsConstants.TABU_SIZE;
 		this.solutionsSeen = new HashMap<>();

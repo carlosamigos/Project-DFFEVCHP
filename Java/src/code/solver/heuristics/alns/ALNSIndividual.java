@@ -40,6 +40,9 @@ public class ALNSIndividual extends Individual {
 	private HashMap<Car, Integer> carMovesCounter;
 	private Set<Car> carsNotInUse;
 
+	//Keep track of problem size
+	private int problemSize;
+
 	private ProblemInstance problemInstance;
 	
 	public ALNSIndividual(HashMap<ChargingNode, Integer> capacitiesUsed) {
@@ -56,6 +59,9 @@ public class ALNSIndividual extends Individual {
 		createOperators();
 		initateCapacities();
 		initiateDeviations();
+
+		//Store the problem size
+		this.problemSize = calculateProblemSize();
 
 		// Build the initial solution
 		if(HeuristicsConstants.ALNS_INITIAL_GREEDY_BUILD){
@@ -361,6 +367,13 @@ public class ALNSIndividual extends Individual {
 			Operator operator = (Operator) op;
 			operator.resetOperator();
 		}
+	}
+
+	private int calculateProblemSize(){
+		int problemSize = 0;
+		for(Car car: this.unusedCarMoves.keySet()){
+			problemSize += this.unusedCarMoves.get(car).size();
+		}return problemSize;
 	}
 
 	//================================================================================
@@ -1659,6 +1672,10 @@ public class ALNSIndividual extends Individual {
 		
 		int numberPostponed = Math.max(numberOfCarsToCharge - numberOfChargedCars,0);
 		this.numberOfUnchargedCars = numberPostponed;
+	}
+
+	public int getProblemSize(){
+		return this.problemSize;
 	}
 
 

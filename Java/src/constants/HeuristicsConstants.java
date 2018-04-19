@@ -2,7 +2,7 @@ package constants;
 
 public class HeuristicsConstants {
 
-    public final static boolean PRINT_OUT_PROGRESS = false;
+    public final static boolean PRINT_OUT_PROGRESS = true;
     
     // Chromosome Generator
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
@@ -30,7 +30,7 @@ public class HeuristicsConstants {
     // Tabu list specifics
     public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 8;
     public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
-    public final static int TABU_MAX_SIZE = 256;
+    public final static int TABU_MAX_SIZE = 1048;
     public final static int TABU_SIZE = 2;
    
     // Stopping criteria: Max iterations without improvement
@@ -70,5 +70,8 @@ public class HeuristicsConstants {
     //Enumeration of neighborhood
     public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
     public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
+
+    //Non Static
+    public static double TABU_LIST_NON_FINAL_SIZE = 0;
 
 }
