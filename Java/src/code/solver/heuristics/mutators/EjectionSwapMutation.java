@@ -22,7 +22,9 @@ public class EjectionSwapMutation extends Mutation {
         int carMoveCurrentId = op.getCarMove(carMoveIndex).getCar().getCarId();
         String hashString = "-" + id + op.id + ((carMoveCurrentId <= carMoveReplaceId) ? ("" + carMoveCurrentId + carMoveReplaceId) :
                 ("" + carMoveReplaceId + carMoveCurrentId));
-        this.hashCode = Integer.parseInt(hashString);
+        long conv = Long.valueOf(hashString);
+        conv = conv % 105943;
+        this.hashCode = (int) conv;
     }
 
     @Override
