@@ -1,0 +1,22 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+    test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a     |   4s.    |  131.46  |   N/A    |    1     |    0     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_38CM_a     |   5s.    |  116.41  |   N/A    |    3     |    0     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_46CM_a     |   5s.    |  107.44  |   N/A    |    4     |    0     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a     |   6s.    |  120.75  |   N/A    |    4     |    0     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_51CM_a     |   5s.    |  122.65  |   N/A    |    4     |    0     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_60CM_a     |   6s.    |  128.52  |   N/A    |    3     |    0     
+   test_15nodes_5so_3c_12mov_5charging_0finishes_111CM_a    |   17s.   |  226.14  |   N/A    |    1     |    0     
+   test_15nodes_5so_3c_12mov_5charging_0finishes_111CM_b    |   15s.   |  208.1   |   N/A    |    3     |    0     
+    test_15nodes_5so_3c_12mov_5charging_0finishes_87CM_a    |   14s.   |  217.97  |   N/A    |    2     |    0     
+  test_200nodes_7so_5c_50mov_10charging_0finishes_1886CM_a  |   60s.   |  477.14  |   N/A    |    27    |    0     
+   test_20nodes_5so_3c_13mov_5charging_0finishes_106CM_a    |   20s.   |  218.65  |   N/A    |    3     |    0     
+   test_20nodes_5so_3c_13mov_5charging_0finishes_132CM_a    |   20s.   |  212.64  |   N/A    |    3     |    0     
+    test_20nodes_5so_3c_13mov_5charging_0finishes_93CM_a    |   14s.   |  225.17  |   N/A    |    2     |    0     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_135CM_a    |   17s.   |  207.16  |   N/A    |    6     |    0     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_135CM_b    |   17s.   |  220.39  |   N/A    |    5     |    0     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_165CM_a    |   15s.   |  214.32  |   N/A    |    5     |    0     
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    |   40s.   |  245.14  |   N/A    |    5     |    0     
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_b     |   1s.    |  102.62  |   N/A    |    0     |    0     
+     test_9nodes_3so_2c_6mov_2charging_0finishes_22CM_a     |   2s.    |  79.12   |   N/A    |    2     |    0     
+     test_9nodes_3so_2c_6mov_2charging_0finishes_22CM_b     |   3s.    |  98.24   |   N/A    |    0     |    0     
