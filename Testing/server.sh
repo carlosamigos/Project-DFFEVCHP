@@ -216,4 +216,12 @@ java -cp "./bin:/share/apps/xpress/8.4.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NA
 
 if [[ $SOLVER -eq "alns" ]] ; then
 	cd ../Testing/Input/${TYPE}/${NAME} && ./cleaner.sh $N && rm cleaner.sh copier.sh
+	cd ../../../
 fi
+
+echo "Adding results to git..."
+git add Output/${TYPE}/${NAME} Output/Paths/
+git commit -m "Test results"
+git push
+
+echo "All results pushed to git. Please remember to terminate the screen by entering the command exit"
