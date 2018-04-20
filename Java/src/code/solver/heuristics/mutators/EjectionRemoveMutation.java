@@ -16,7 +16,9 @@ public class EjectionRemoveMutation extends Mutation{
         // * A possible approach is to construct the hashcode to only include cars, to make sure the newly injected move
         // * Is not ejected.
         String hashString = "-" + id + op.id + "" + carMove.getCar().getCarId() + carMoveIndex;
-        this.hashCode = Integer.parseInt(hashString);
+        long conv = Long.valueOf(hashString);
+        conv = conv % 105943;
+        this.hashCode = (int) conv;
     }
 
 

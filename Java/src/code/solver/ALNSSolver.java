@@ -71,11 +71,10 @@ public class ALNSSolver extends Solver {
 	}
 	
 	private void setVariables(ProblemInstance problemInstance) {
-		HeuristicsConstants.TABU_LIST_NON_FINAL_SIZE = 100;
 		this.iterations = HeuristicsConstants.TABU_ITERATIONS;
 		this.individual =  new ALNSIndividual(problemInstance);
 		// Scalable constants
-
+		inititalizeHeuristicConstants();
 		setBest();
 		this.tabuSize = HeuristicsConstants.TABU_SIZE;
 		this.solutionsSeen = new HashMap<>();
@@ -96,7 +95,7 @@ public class ALNSSolver extends Solver {
 		this.setSearchToPerformRepair();
 		this.globalIterationsWithoutImprovement = 0;
 	}
-	
+
 	private void initializeMutationWeights() {
 		this.mutationToWeight = new HashMap<>();
 		this.mutationScores = new HashMap<>();
@@ -161,7 +160,18 @@ public class ALNSSolver extends Solver {
 		searchToNeighborhood.put(WorstDestroy.id, new WorstDestroy());
 
 	}
-	
+
+	private void inititalizeHeuristicConstants(){
+		HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT *
+				15 * Math.log(this.individual.getProblemSize()) - 300);
+		HeuristicsConstants.TABU_WEIGHT_UPDATE = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT *
+				2 * Math.log(this.individual.getProblemSize()));
+		HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT *
+				0.05 * Math.log(this.individual.getProblemSize()) + 8);
+		HeuristicsConstants.TABU_MIN_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT *
+				0.05 * Math.log(this.individual.getProblemSize()));
+	}
+
 	private void initializeMutationIdToDescription() {
 		this.mutationIdToDescription =  new HashMap<>();
 		this.mutationIdToDescription.put(EjectionInsertMutation.id, "Ejection Insert");
@@ -195,7 +205,7 @@ public class ALNSSolver extends Solver {
 		int neighborhoodRepairId = 0;
 
 		while(!done(iteration)) {
-			if(iteration != 0 && iteration % 100 == 0){
+			if(iteration != 0 && iteration % HeuristicsConstants.TABU_WEIGHT_UPDATE == 0){
 				if(HeuristicsConstants.PRINT_OUT_PROGRESS) {
 					System.out.println("\nIteration: " + iteration + " Best fitness: "
 							+ String.format("%.1f", this.bestIndividual.getFitness()) + ", Current fitness:"

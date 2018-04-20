@@ -16,10 +16,10 @@ public class HeuristicsConstants {
     //Fitness, that does not exist in Mosel
     public final static double TABU_CHARGING_UNIT_REWARD = 0;
     public final static double TABU_BREAK_CHARGING_CAPACITY = 100;
-    public final static double TABU_SIZE_OF_OPERATOR_LIST = 0.1;
+    public final static double TABU_SIZE_OF_OPERATOR_LIST = 10;
     
     // Best first
-    public final static boolean BEST_FIRST = true;
+    public final static boolean BEST_FIRST = false;
     
     // ALNS Parameters used when comparring with Mosel
     public final static double ALNS_CHARGING_REWARD = 30;
@@ -28,8 +28,6 @@ public class HeuristicsConstants {
     public final static double ALNS_TRAVEL_COST = 0.01;
 
     // Tabu list specifics
-    public final static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 8;
-    public final static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
     public final static int TABU_MAX_SIZE = 1048;
     public final static int TABU_SIZE = 2;
    
@@ -60,18 +58,28 @@ public class HeuristicsConstants {
     public final static double EARLIEST_DEPARTURE_WEIGHT = 0.05;
 
     //Large Neighborhood
-    public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 1.0;
-    public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 10.0;
-    public final static double ALNS_DESTROY_FACTOR = 0.5;
-    public final static double ALNS_UPDATE_FACTOR_LNS = 0.2;
-    public final static double ALNS_MINIMAL_WEIGHT_FACTOR_LNS = 0.4;
-    public final static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 3000;
+    public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 9.0;
+    public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 33.0;
+    public final static double ALNS_DESTROY_FACTOR = 0.4;
+    public final static double ALNS_UPDATE_FACTOR_LNS = 0.1;
+    public final static double ALNS_MINIMAL_WEIGHT_FACTOR_LNS = 0.05;
 
     //Enumeration of neighborhood
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
     public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
     //Non Static
-    public static double TABU_LIST_NON_FINAL_SIZE = 0;
+    // Tabu list
+    public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 10;
+    public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
+
+    //Destroy
+    public static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 1000;
+
+    //Weight update
+    public static int TABU_WEIGHT_UPDATE = 100;
+
+    //Problem Scale
+    public final static int ALNS_SCALE_CONSTANT = 30;
 
 }

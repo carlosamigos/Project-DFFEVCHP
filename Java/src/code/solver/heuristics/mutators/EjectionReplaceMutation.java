@@ -23,10 +23,9 @@ public class EjectionReplaceMutation extends Mutation {
         int largestDest = Math.max(carMoveReplace.getToNode().getNodeId(), toBeReplaced.getToNode().getNodeId());
         //String hashString = "-" + id + op.id + carMoveReplace.getCar().getCarId();
         String hashString = "-" + id + op.id + carMoveReplace.getCar().getCarId() + "" + smallestDest + "" + largestDest;
-        if(hashString.length() >= 10){
-            int a;
-        }
-        this.hashCode = Integer.parseInt(hashString);
+        long conv = Long.valueOf(hashString);
+        conv = conv % 105943;
+        this.hashCode = (int) conv;
     }
 
     public Operator getOperator() {
