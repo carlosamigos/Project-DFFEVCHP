@@ -66,7 +66,7 @@ public class DynamicTestSuite extends TestSuite{
 					addKPITracker(solver, tracker);
 					runsLeft--;
 				}
-				printEstimatedTimeLeft(timePerRun, runsLeft);
+				//printEstimatedTimeLeft(timePerRun, runsLeft);
 
 			}
 			System.out.println("");

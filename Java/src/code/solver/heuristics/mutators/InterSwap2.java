@@ -19,7 +19,9 @@ public class InterSwap2 extends Mutation{
 		this.operator2 = operator2;
 		String hashString = id + ((operator1.id < operator2.id) ? ("" + operator1.id + operator2.id) : ("" + operator2.id + operator1.id)) +
 				((index1 <= index2) ? ("" + index1 + index2) : ("" + index2 + index1));
-		hashCode = Integer.parseInt(hashString);
+		long conv = Long.valueOf(hashString);
+		conv = conv % 105943;
+		this.hashCode = (int) conv;
 
 	}
 	
