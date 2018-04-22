@@ -80,6 +80,6 @@ public class HeuristicsConstants {
     public static int TABU_WEIGHT_UPDATE = 100;
 
     //Problem Scale
-    public final static int ALNS_SCALE_CONSTANT = 30;
+    public final static int ALNS_SCALE_CONSTANT = 15;
 
 }
