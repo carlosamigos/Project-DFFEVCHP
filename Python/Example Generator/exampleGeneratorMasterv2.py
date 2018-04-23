@@ -47,7 +47,7 @@ PRINT = True
 
 # FILES
 CARFILE = "travelTimesCar.txt"
-BIKEFILE = "travelTimesCar.txt"
+BIKEFILE = "travelTimesBike.txt"
 SEGMENTS = 3
 TOTALNODES = 225
 
@@ -143,12 +143,10 @@ class World:
 
     def setDistancesFromFileBike(self):
         try:
-            index = 0
-            f = open(CARFILE, "r")
+            f = open(BIKEFILE, "r")
             for line in f:
                 array = [float(format(float(x[0:len(x) - 1]), '.1f')) for x in line[1:len(line)-1].split(",")]
                 self.distancesB.append(array)
-                index += 1
         except IOError:
             return 0
 
