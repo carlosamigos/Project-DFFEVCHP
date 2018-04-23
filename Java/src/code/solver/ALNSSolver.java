@@ -323,10 +323,8 @@ public class ALNSSolver extends Solver {
 			}
 		}
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
-		System.out.println(timeUsed);
 		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
 		this.set = false;
-		System.out.println(getResults());
 		return bestIndividual;
 	}
 
