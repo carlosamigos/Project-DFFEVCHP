@@ -1,0 +1,20 @@
+Solver: ../Mosel/Models/test_model_traditional/main_basic_updatedForCarMovesTraditional.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+    test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a     | 300.12s. |  -99.18  | -38.85%  |    5     |    0     
+    test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b     | 300.09s. |   0.05   | 276320%  |    7     |    3     
+    test_10nodes_3so_2c_7mov_3charging_0finishes_41CM_a     | 300.07s. |   0.05   | 269600%  |    7     |    3     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_38CM_a     | 300.14s. |  -33.93  | -315.62% |    7     |    2     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_38CM_b     | 300.09s. |   0.05   | 284160%  |    8     |    3     
+    test_12nodes_3so_2c_8mov_3charging_0finishes_46CM_a     | 300.16s. |  -52.81  | -160.09% |    8     |    1     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_33CM_a     | 300.04s. |   0.05   | 304800%  |    9     |    3     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_51CM_a     | 300.16s. |   0.05   | 301400%  |    9     |    3     
+    test_15nodes_3so_2c_9mov_3charging_0finishes_60CM_a     | 300.2s.  |  -13.51  |-1004.62% |    7     |    3     
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_a     |  2.34s.  | -102.02  |   -0%    |    0     |    0     
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_b     |  2.57s.  | -102.62  |   -0%    |    0     |    0     
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 11.01s.  |  -97.62  |   -0%    |    1     |    0     
+     test_8nodes_3so_2c_4mov_3charging_0finishes_18CM_a     | 62.61s.  | -110.32  |   -0%    |    0     |    0     
+     test_8nodes_3so_2c_4mov_3charging_0finishes_18CM_b     | 43.98s.  | -108.37  |   -0%    |    0     |    0     
+     test_8nodes_3so_2c_4mov_3charging_0finishes_18CM_c     | 35.46s.  |  -111.3  |   -0%    |    0     |    0     
+     test_9nodes_3so_2c_5mov_3charging_0finishes_16CM_a     | 165.92s. |  -88.72  |   -0%    |    3     |    0     
+     test_9nodes_3so_2c_5mov_3charging_0finishes_21CM_a     | 300.08s. |  -91.61  | -23.72%  |    3     |    0     
+     test_9nodes_3so_2c_5mov_3charging_0finishes_26CM_a     | 300.06s. | -108.81  |  -8.49%  |    1     |    0     
