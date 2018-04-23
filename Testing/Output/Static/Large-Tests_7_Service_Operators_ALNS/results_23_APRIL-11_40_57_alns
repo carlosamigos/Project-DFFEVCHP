@@ -1,0 +1,14 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_1  |  658s.   |  381.33  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_10 |  330s.   |  376.71  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_2  |  471s.   |  383.78  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_3  |  674s.   |  376.99  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_4  |  666s.   |  377.74  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_5  |  551s.   |  378.05  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_6  |  709s.   |  377.46  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_7  |  475s.   |  377.32  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_8  |  359s.   |  377.61  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_9  |  648s.   |  382.36  |   N/A    |    13    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_1  |  928s.   |  400.03  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_10 |  570s.   |  397.14  |   N/A    |    14    |    0     
