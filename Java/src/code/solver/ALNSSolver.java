@@ -265,7 +265,6 @@ public class ALNSSolver extends Solver {
 				tabuCounter = 0;
 				if(counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS) {
 					this.tabuList.increaseSize();
-					System.out.println(tabuList.getTabuSize());
 					counter = 0;
 				}
 			} else {
