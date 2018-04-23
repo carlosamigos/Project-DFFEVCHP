@@ -1386,9 +1386,11 @@ public class ALNSIndividual extends Individual {
 
 	public void destroy(WorstDestroy bestDestroy,  TabuList tabuList, int numberToHandle){
 		for (int i = 0; i < numberToHandle; i++) {
-			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
-					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
-			Mutation candidate;
+			//ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemove(tabuList,
+					//HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionRemoveFull(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE).keySet());
+					Mutation candidate;
 			if (neighborhood.size() < 1) {
 				break;
 			}
@@ -1414,8 +1416,8 @@ public class ALNSIndividual extends Individual {
 
 	public void repair(BestRepair bestRepair, TabuList tabuList , int numberToHandle){
 		for (int i = 0; i < numberToHandle; i++) {
-			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionInsert(tabuList,
-					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE * 3).keySet());
+			ArrayList<Mutation> neighborhood = new ArrayList<>(getNeighborhoodEjectionInsertFull(tabuList,
+					HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE).keySet());
 			Mutation candidate = null;
 			if(neighborhood.size() < 1){
 				break;

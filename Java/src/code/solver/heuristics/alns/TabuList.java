@@ -39,7 +39,7 @@ public class TabuList {
 	}
 	
 	public void increaseSize() {
-		this.tabuSize = Math.min(this.tabuSize *= 4, HeuristicsConstants.TABU_MAX_SIZE);
+		this.tabuSize = Math.min(this.tabuSize *= 2, HeuristicsConstants.TABU_MAX_SIZE);
 	}
 	
 	public void decreaseSize() {
