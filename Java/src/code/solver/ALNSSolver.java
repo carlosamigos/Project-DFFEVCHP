@@ -323,8 +323,10 @@ public class ALNSSolver extends Solver {
 			}
 		}
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
+		System.out.println(timeUsed);
 		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
 		this.set = false;
+		System.out.println(getResults());
 		return bestIndividual;
 	}
 
@@ -785,7 +787,7 @@ public class ALNSSolver extends Solver {
 	public ArrayList<String> getResults() {
 		DecimalFormat df = 	new DecimalFormat("#.##");
 		String bestSolution = df.format(-bestIndividual.getFitness());
-		String timeUsed = df.format(this.timeUsed);
+		String timeUsed = Double.toString(this.timeUsed);
 		String deviation = "" + bestIndividual.getDeviationFromIdeal();
 		String uncharged = "" + bestIndividual.getNumberOfUnchargedCars();
 		
