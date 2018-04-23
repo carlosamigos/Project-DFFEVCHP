@@ -1,0 +1,3 @@
+Solver: ../Mosel/Models/test_model_traditional/main_basic_updatedForCarMovesTraditional.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    |7208.62s. |  -57.05  | -398.24% |    14    |    4     
