@@ -12,7 +12,7 @@ import code.solver.heuristics.Individual;
 import constants.Constants;
 import constants.FileConstants;
 
-//import com.dashoptimization.*;
+import com.dashoptimization.*;
 
 public class MoselSolver extends Solver {
 
@@ -20,11 +20,11 @@ public class MoselSolver extends Solver {
 	private final String bimFileName;
 	private final Constants.SolverType solverType = Constants.SolverType.MOSEL;
 
-	//private XPRM mosel;
-	//private XPRMModel model;
+	private XPRM mosel;
+	private XPRMModel model;
 
 	public MoselSolver(String moselFileName) {
-	        //this.mosel = new XPRM();
+		this.mosel = new XPRM();
 		this.moselFileName = moselFileName;
 		this.bimFileName = moselFileName.substring(0, moselFileName.length() - 3) + "bim";
 	}
@@ -36,14 +36,14 @@ public class MoselSolver extends Solver {
 		fixDataFile(problemInstance.getFilePath());
 
 		System.out.print("Solving " + problemInstance.getFilePath() + " ");
-		//this.model.run();
-		//this.model.reset();
+		this.model.run();
+		this.model.reset();
 		return null;
 	}
 
 	private void fixDataFile(String dataFile) {
 		String parameters = "DataFile=" + dataFile + ".txt";
-		//this.model.execParams += parameters;
+		this.model.execParams += parameters;
 	}
 
 	private void fixParameters(String fileName) {
@@ -56,8 +56,8 @@ public class MoselSolver extends Solver {
 
 	private void compile() {
 		try {
-			//this.mosel.compile(this.moselFileName);
-			//this.model = this.mosel.loadModel(this.bimFileName);
+			this.mosel.compile(this.moselFileName);
+			this.model = this.mosel.loadModel(this.bimFileName);
 		}
 
 		catch (Exception e) {

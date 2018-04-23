@@ -1,0 +1,17 @@
+Solver: ../Mosel/Models/test_model_traditional/main_basic_updatedForCarMovesTraditional.mos
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+    test_12nodes_5so_3c_10mov_5charging_0finishes_55CM_a    | 300.55s. |   0.05   | 421320%  |    10    |    5     
+    test_12nodes_5so_3c_10mov_5charging_0finishes_65CM_a    | 302.06s. |   0.05   | 429880%  |    10    |    5     
+    test_12nodes_5so_3c_10mov_5charging_0finishes_65CM_b    | 301.55s. |   0.05   | 431960%  |    10    |    5     
+   test_15nodes_5so_3c_12mov_5charging_0finishes_111CM_a    | 300.92s. |   0.05   | 474840%  |    12    |    5     
+   test_15nodes_5so_3c_12mov_5charging_0finishes_111CM_b    | 300.68s. |   0.05   | 459440%  |    12    |    5     
+    test_15nodes_5so_3c_12mov_5charging_0finishes_87CM_a    | 300.75s. |   0.05   | 468280%  |    12    |    5     
+   test_20nodes_5so_3c_13mov_5charging_0finishes_106CM_a    | 300.76s. |   0.05   | 485920%  |    13    |    5     
+   test_20nodes_5so_3c_13mov_5charging_0finishes_132CM_a    | 300.19s. |   0.05   | 477040%  |    13    |    5     
+    test_20nodes_5so_3c_13mov_5charging_0finishes_93CM_a    | 300.51s. |   0.05   | 483560%  |    13    |    5     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_135CM_a    | 300.21s. |   0.05   | 495680%  |    15    |    5     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_135CM_b    | 300.22s. |   0.05   | 508560%  |    15    |    5     
+   test_25nodes_5so_3c_15mov_5charging_0finishes_165CM_a    | 300.84s. |   0.05   | 512120%  |    15    |    5     
+   test_30nodes_5so_3c_18mov_5charging_0finishes_177CM_a    | 300.28s. |   0.05   | 559200%  |    18    |    5     
+   test_30nodes_5so_3c_18mov_5charging_0finishes_177CM_b    | 300.3s.  |   0.05   | 571480%  |    18    |    5     
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 300.42s. |   0.05   | 568640%  |    18    |    5     
