@@ -18,7 +18,10 @@ public class OperatorTravel extends Travel{
 
     @Override
     public String toString() {
-        return super.toString().substring(0,super.toString().length()-1) + ", operator=" + operator + "}";
+        int fromId = (this.getPickupNode()!= null)? getPickupNode().getNodeId() : -1;
+        int toId = (this.getArrivalNode()!= null)? getArrivalNode().getNodeId() : -1;
+        int carId = (getCar() != null) ? getCar().getCarId() : -1;
+        return "{Operator " + operator.getId() + ", car " +carId+ ", from->to = " + fromId+"->"+toId+ ", arrival time "+getArrivalTime()+"}";
     }
 
 }

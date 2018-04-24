@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import code.kpitracker.KPITrackerDynamic;
@@ -27,6 +28,7 @@ import code.simulation.DemandRequest;
 import code.simulation.SimulationModel;
 import code.solver.Solver;
 import utils.ChromosomeGenerator;
+import utils.MathHelper;
 
 public class DynamicProblem {
 
@@ -50,6 +52,7 @@ public class DynamicProblem {
         int subproblemNo = 1;
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         HashMap<Operator,OperatorTravel> operatorTravels = new HashMap<>();
+        addInitialOperatorTravels(operatorTravels,problemInstance, Constants.START_TIME);
         for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM*2; time += Constants.TIME_INCREMENTS) {
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("\n\n");
@@ -73,6 +76,16 @@ public class DynamicProblem {
         kpiTrackerDyanmic.updateIdleTimeForOperators();
         if(Constants.PRINT_OUT_ACTIONS){
             System.out.println(kpiTrackerDyanmic);
+        }
+    }
+
+    private void addInitialOperatorTravels(HashMap<Operator,OperatorTravel> operatorTravels, ProblemInstance problemInstance, double currentTime){
+        for(Operator operator : problemInstance.getOperators()){
+            if(operator.isHandling()){
+                OperatorTravel travel = new OperatorTravel(operator, 0, null, operator.getNextOrCurrentNode(), operator.getTimeRemainingToCurrentNextNode() + currentTime);
+                travel.setCar(operator.getCar());
+                operatorTravels.put(operator, travel);
+            }
         }
     }
 
@@ -106,7 +119,6 @@ public class DynamicProblem {
             CustomerTravel nextCustomerArrival = findNextCustomerArrival(time,endTime,customerTravels);
             OperatorTravel nextOperatorTravelArrival = findNextOperatorTravelArrival(time,endTime,operatorTravels);
 
-
             if(nextDemandRequest == null && nextOperatorDepartureOrArrival == null && nextCustomerArrival == null && nextOperatorTravelArrival==null ){
                 break;
             }
@@ -114,6 +126,7 @@ public class DynamicProblem {
             double nextOperatorHappeningTime = nextOperatorDepartureOrArrival != null ? findEarliestHappeningOverTime(nextOperatorDepartureOrArrival,time) : Double.MAX_VALUE;
             double nextCustomerArrivalTime = nextCustomerArrival != null ? nextCustomerArrival.getArrivalTime() : Double.MAX_VALUE;
             double nextOperatorTravelArrivalTime = nextOperatorTravelArrival != null ? nextOperatorTravelArrival.getArrivalTime() : Double.MAX_VALUE;
+
 
             double earliestTime = Double.min(Double.min(nextDemandReqTime, nextOperatorHappeningTime),nextCustomerArrivalTime);
             time = earliestTime;
@@ -485,7 +498,7 @@ public class DynamicProblem {
 
     public void updateBatteryLevels(double time, double previousTime){
         for (Car car : problemInstance.getCars()) {
-            if(!car.getPreviousNode().equals(car.getCurrentNextNode())){
+            if(car.getPreviousNode() != null && !car.getPreviousNode().equals(car.getCurrentNextNode())){
                 // car is on the run
                 double newBatteryLevel = 
                 		(car.getBatteryLevel() - (time - previousTime) * SimulationConstants.BATTERY_USED_PER_TIME_UNIT) 
@@ -732,12 +745,12 @@ public class DynamicProblem {
                     OperatorArrival toArrival = arrivals.get(operator).get(operatorArrivalIndex + 1);
                     travelTimeBetween = toArrival.isHandling() ? problemInstance.getTravelTimesCar().get(fromArrival.getNode().getNodeId() - Constants.START_INDEX).get(toArrival.getNode().getNodeId() - Constants.START_INDEX)
                             : problemInstance.getTravelTimesBike().get(fromArrival.getNode().getNodeId() - Constants.START_INDEX).get(toArrival.getNode().getNodeId() - Constants.START_INDEX);
-                    departureTime = toArrival.getArrivalTime() - travelTimeBetween;
+                    departureTime = toArrival.getArrivalTime() - travelTimeBetween + 0.02;
                     OperatorDeparture departure = new OperatorDeparture(fromArrival.getNode(), operator, toArrival.isHandling(), departureTime, toArrival);
                     addDepartureToMap(departures,departure);
                 }
                 OperatorArrival fromArrival = arrivals.get(operator).get(arrivals.get(operator).size()-1);
-                departureTime = fromArrival.getArrivalTime();
+                departureTime = MathHelper.round(fromArrival.getArrivalTime(),1);
                 OperatorDeparture departure = new OperatorDeparture(fromArrival.getNode(), operator, false, departureTime, null);
                 addDepartureToMap(departures,departure);
             }
@@ -888,6 +901,44 @@ public class DynamicProblem {
 
     public KPITrackerDynamic getKpiTrackerDyanmic() {
         return kpiTrackerDyanmic;
+    }
+
+
+    private int findTotalNumberOfCarsInSystem(ProblemInstance problemInstance, ArrayList<CustomerTravel> customerTravels,HashMap<Operator,OperatorTravel> operatorTravels){
+        int counter = 0;
+        HashSet<Car> cars = new HashSet<>();
+        for(Operator operator : problemInstance.getOperators()){
+            if(operator.getCar()!= null){
+                cars.add(operator.getCar());
+                counter += 1;
+            }
+        }
+        for(CustomerTravel travel : customerTravels){
+            if(travel.getCar()!= null){
+                cars.add(travel.getCar());
+                counter +=1;
+            }
+        }
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            for(Car car : parkingNode.getCarsInNeed()){
+                cars.add(car);
+                counter += 1;
+            }
+            for(Car car : parkingNode.getCarsRegular()){
+                cars.add(car);
+                counter += 1;
+            }
+        }
+        for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
+            for(Car car : chargingNode.getCarsCurrentlyCharging()){
+                counter += 1;
+                cars.add(car);
+            }
+        }
+        if(counter < 10){
+            int a = 1;
+        }
+        return  counter;
     }
 
 }
