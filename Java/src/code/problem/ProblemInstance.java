@@ -192,8 +192,6 @@ public class ProblemInstance implements Serializable{
                 car.setPreviousNode(node);
                 newOperator.setCar(car);
                 this.carIdTracker++;
-                ParkingNode pNode = (ParkingNode) node;
-                //pNode.addRegularCar(car);
                 cars.add(car);
             }
             /* STOP SIMEN */

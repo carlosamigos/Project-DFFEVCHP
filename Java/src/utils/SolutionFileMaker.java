@@ -20,40 +20,38 @@ public class SolutionFileMaker {
         // Format: operator id: (node number, visitNumber - not important, isHandling, arrival time in node)
         String writeString = "";
         String operatorString;
+
         for(int i = 0; i < problemInstance.getNumROperators(); i++){
             Operator operator = problemInstance.getOperators().get(i);
             double currentTime = operator.getTimeRemainingToCurrentNextNode();
             Node previousNode = operator.getNextOrCurrentNode();
             int numberOfNodes = problemInstance.getNodeMap().keySet().size();
-            int artificialNodeNumber = numberOfNodes + i + 1;
+            int artificialStartNodeNumber = numberOfNodes + i + 1;
             // Add artificial node:
-            operatorString = "" + (i + Constants.START_INDEX) + ": (" + artificialNodeNumber + ",1,0,0),";
+            operatorString = "" + (i + Constants.START_INDEX) + ": (" + artificialStartNodeNumber + ",1,0,0),";
             // Add operator's start node
-            operatorString += "(" + previousNode.getNodeId() + ",0,0," + currentTime + "),";
+            operatorString += "(" + previousNode.getNodeId() + ",0,"+ (operator.isHandling() ? "1": "0") +"," + currentTime + "),";
             for(CarMove carMove : operators.get(i)){
-                double travelTimeFromPrevNodeToFirstNodeInCarMove = problemInstance
-                        .getTravelTimeBike(previousNode,carMove.getFromNode());
-                double timeOfArrival = currentTime + travelTimeFromPrevNodeToFirstNodeInCarMove;
+
+
                 if(!previousNode.equals(carMove.getFromNode())){
-                    operatorString += "(" +carMove.getFromNode().getNodeId() + ",0,0," + MathHelper.round(timeOfArrival,2) + "),";
+                    currentTime += getTravelTimeBike(previousNode, carMove.getFromNode(), problemInstance);
+                    operatorString += "(" +carMove.getFromNode().getNodeId() + ",0,0," + MathHelper.round(currentTime,2) + "),";
                 }
-                currentTime += getTravelTime(previousNode, carMove, currentTime, problemInstance);
+                currentTime += carMove.getTravelTime();
                 previousNode = carMove.getToNode();
                 operatorString += "(" + carMove.getToNode().getNodeId() + ",0,1," + MathHelper.round(currentTime,2) + "),";
             }
-            operatorString = operatorString.substring(0, operatorString.length() - 1) + "\n";
+            // Add artificial destination node
+            int artificialEndNodeNumber = artificialStartNodeNumber + problemInstance.getNumROperators();
+            operatorString += "(" + artificialEndNodeNumber + ",1,0,60)\n";
             writeString += operatorString;
         }
         FileHandler fileHandler = new FileHandler(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER + fileName, false);
         fileHandler.writeFile(writeString);
     }
     
-    public static double getTravelTime(Node previous, CarMove move, double currentTime, ProblemInstance problemInstance) {
-		double travelTimeBike = getTravelTimeBike(previous, move.getFromNode(), problemInstance);
-		return travelTimeBike + Math.max(0, move.getEarliestDepartureTime() - (currentTime + travelTimeBike) )
-				+ move.getTravelTime();
-	}
-	
+
 	private static double getTravelTimeBike(Node n1, Node n2, ProblemInstance problemInstance) {
 		return problemInstance.getTravelTimeBike(n1, n2);
 	}

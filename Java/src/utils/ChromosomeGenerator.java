@@ -84,6 +84,7 @@ public class ChromosomeGenerator {
 
         double carMoveTimeThreshold = HeuristicsConstants.MAX_THRESHOLD_CARMOVE_DISTANCE;
         double travelTime;
+        int carMovesAdded = 0;
         for(ParkingNode senderNode : senderNodes){
             int incomingCars = (incomingCarsToParkingNodes.get(senderNode) == null)
                     ? 0 : incomingCarsToParkingNodes.get(senderNode).size();
@@ -92,12 +93,13 @@ public class ChromosomeGenerator {
                 throw new NullPointerException("Too few cars in node compared to ideal state");
             }
             int carsAdded = 0;
-            for(Car carInCarMove : senderNode.getCarsRegular().subList(0, numberOfCarsToMove - incomingCars)){
+            for(Car carInCarMove : senderNode.getCarsRegular().subList(0, Integer.max(numberOfCarsToMove - incomingCars,0) )){
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
                     travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
                     if(travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
                         carMoves.get(carInCarMove).add( new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0));
+                        carMovesAdded += 1;
                     }
                 }
                 carsAdded += 1;
@@ -112,6 +114,7 @@ public class ChromosomeGenerator {
                         travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
                         if (travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
                             carMoves.get(car).add(new CarMove(senderNode, receiverNode, car, travelTime, remainingTravelTime.get(car)));
+                            carMovesAdded += 1;
                         }
                     }
                     carsAdded += 1;
@@ -121,6 +124,7 @@ public class ChromosomeGenerator {
                 }
             }
         }
+        int a = 2;
     }
 
     private static void findSenderAndReceiverNodes(ProblemInstance problemInstance, ArrayList<ParkingNode> senderNodes,
