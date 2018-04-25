@@ -259,6 +259,7 @@ public class ALNSSolver extends Solver {
 			this.individual.addToFitness(candidateDelta);
 			this.mutationToPerform.get(candidate.getId()).runCommand(candidate);
 
+
 			// Update Counters and TabuList Size
 			if(candidateDelta >= 0){
 				counter ++;
@@ -319,6 +320,7 @@ public class ALNSSolver extends Solver {
 				counter = 0;
 				tabuCounter = 0;
 				individual.calculateFitness();
+				System.out.println(this.individual.getFitness());
 
 			}
 		}

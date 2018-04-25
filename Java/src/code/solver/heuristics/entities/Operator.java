@@ -146,10 +146,7 @@ public class Operator {
 	 * and when the moves happen. Fitness = chargingRewards + capacityFeasibility
 	 */
 	private void calculateFitness() {
-		if(carMoves.size() == 0) {
-			this.fitness = 100;
-			return;
-		}
+
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			int used = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
@@ -164,6 +161,10 @@ public class Operator {
 			int delta = idealState - idealStateMetByOperator;
 			this.individual.getDeviationIdealState().put(parkingNode, delta);
 			this.movesToParkingNodeByOperator.put(parkingNode, 0);
+		}
+		if(carMoves.size() == 0) {
+			this.fitness = 100;
+			return;
 		}
 		
 		double currentTime = this.startTime;
