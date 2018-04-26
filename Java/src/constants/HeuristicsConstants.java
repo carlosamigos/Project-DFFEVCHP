@@ -32,7 +32,7 @@ public class HeuristicsConstants {
     public final static int TABU_SIZE = 2;
    
     // Stopping criteria: Max iterations without improvement
-    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 100000;
+    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 30000;
 
     //LSO Weight
     public final static int ALNS_SEGMENT_LENGTH = 100;
@@ -66,7 +66,7 @@ public class HeuristicsConstants {
 
     //Enumeration of neighborhood
     public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
-    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
+    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = true;
 
     /* Dynamic Weights */
     // Tabu list
