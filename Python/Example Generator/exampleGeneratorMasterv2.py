@@ -21,22 +21,22 @@ XSIZE = 10
 YSIZE = 15
 
 #ALLOWED MOVES
-MOVES = 33
-CARSCHARGING = 10
+MOVES = 100
+CARSCHARGING = 20
 
 #PARKING NODES USED
 MAXNODES = XSIZE * YSIZE
 
 #CHARGING NODES
 NUMCHARGING = 5
-PARKINGC = [1, 25, 50, 67, 88]
-CAPACITY = [3, 3, 3, 3, 3]
-TOTALCAPACITY = [3, 3, 3, 3, 3]
+PARKINGC = [1, 35, 65, 95, 110]
+CAPACITY = [4, 4, 4, 4, 4]
+TOTALCAPACITY = [4, 4, 4, 4, 4]
 
 #OPERATORS
-NUMOPERATORS = 7
-STARTETIMEOP = [5, 0, 0, 0, 0, 0, 0]
-HANDLINGOP = [1, 0, 0, 0, 0, 0, 0]
+NUMOPERATORS = 15
+STARTETIMEOP = [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+HANDLINGOP = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 NUMTASKS = 7
 
 # MAKING NODES - DON' CHANGE #
@@ -44,6 +44,7 @@ SPREAD = True
 CLUSTER = True
 WRITETOFILE = True
 PRINT = True
+BIGM = False
 
 # FILES
 CARFILE = "travelTimesCar.txt"
@@ -739,13 +740,14 @@ class World:
             if (i < len(carsInNeedCNodes) - 1):
                 string += " "
         string += "]\n"
-        string += "bigMCars : ["
-        for i in range(len(self.bigM)):
-            string += str(self.bigM[i])
-            if(i < len(self.bigM) -1):
-                string += " "
-        string += "]"
-        string += "\n"
+        if(BIGM):
+            string += "bigMCars : ["
+            for i in range(len(self.bigM)):
+                string += str(self.bigM[i])
+                if(i < len(self.bigM) -1):
+                    string += " "
+            string += "]"
+            string += "\n"
         string += "\n"
         string += "originCarMoveOperator : ["
         count = 0
@@ -1010,7 +1012,8 @@ def buildWorld():
     maxVisit = max(world.visitList)
     createCars(world)
     world.calculateNodeDiff()
-    world.calculateBigM()
+    if(BIGM):
+        world.calculateBigM()
     for i in range(len(MODES_RUN2)):
         world.setConstants(maxVisit, MODES_RUN2[i][0], 10)
         world.setCostConstants(MODES_RUN2[i][1], MODES_RUN2[i][2], 0.5, MODES_RUN2[i][3], MODES_RUN2[i][4])
