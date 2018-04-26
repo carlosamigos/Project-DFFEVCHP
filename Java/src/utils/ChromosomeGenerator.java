@@ -49,6 +49,7 @@ public class ChromosomeGenerator {
         createCarMovesForCarsFinishingCharging(carMoves, problemInstance, receiverNodes);
 
         //System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
+        //System.out.println(generateToStringFrom(carMoves));
         return carMoves;
     }
 
@@ -94,6 +95,9 @@ public class ChromosomeGenerator {
             }
             int carsAdded = 0;
             for(Car carInCarMove : senderNode.getCarsRegular()){
+                if(carsAdded >= numberOfCarsToMove - incomingCars){
+                    break;
+                }
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
                     travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
@@ -107,12 +111,13 @@ public class ChromosomeGenerator {
                     }
                 }
                 carsAdded += 1;
-                if(carsAdded >= numberOfCarsToMove - incomingCars){
-                    break;
-                }
+
             }
             if(incomingCarsToParkingNodes.get(senderNode) != null) {
                 for (Car car : incomingCarsToParkingNodes.get(senderNode)) {
+                    if (carsAdded >= numberOfCarsToMove) {
+                        break;
+                    }
                     carMoves.put(car, new ArrayList<>());
                     for (ParkingNode receiverNode : receiverNodes) {
                         travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
@@ -125,9 +130,6 @@ public class ChromosomeGenerator {
                         }
                     }
                     carsAdded += 1;
-                    if (carsAdded >= numberOfCarsToMove) {
-                        break;
-                    }
                 }
             }
         }
