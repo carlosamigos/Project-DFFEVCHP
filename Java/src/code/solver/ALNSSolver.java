@@ -320,13 +320,15 @@ public class ALNSSolver extends Solver {
 				counter = 0;
 				tabuCounter = 0;
 				individual.calculateFitness();
-				System.out.println(this.individual.getFitness());
 
 			}
 		}
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
 		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
 		this.set = false;
+		if(HeuristicsConstants.PRINT_OUT_BEST_SOLUTION){
+			System.out.println(bestIndividual);
+		}
 		return bestIndividual;
 	}
 

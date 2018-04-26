@@ -48,7 +48,7 @@ public class ChromosomeGenerator {
         // Create car moves for cars finishing charging
         createCarMovesForCarsFinishingCharging(carMoves, problemInstance, receiverNodes);
 
-
+        //System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
         return carMoves;
     }
 
@@ -93,17 +93,21 @@ public class ChromosomeGenerator {
                 throw new NullPointerException("Too few cars in node compared to ideal state");
             }
             int carsAdded = 0;
-            for(Car carInCarMove : senderNode.getCarsRegular().subList(0, Integer.max(numberOfCarsToMove - incomingCars,0) )){
+            for(Car carInCarMove : senderNode.getCarsRegular()){
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
                     travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
                     if(travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
-                        carMoves.get(carInCarMove).add( new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0));
-                        carMovesAdded += 1;
+                        CarMove carMove = new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0);
+                        if(enoughBatteryOnCar(carMove, problemInstance)){
+                            carMoves.get(carInCarMove).add(carMove);
+                            carMovesAdded += 1;
+                        }
+
                     }
                 }
                 carsAdded += 1;
-                if(carsAdded >= numberOfCarsToMove){
+                if(carsAdded >= numberOfCarsToMove - incomingCars){
                     break;
                 }
             }
@@ -113,8 +117,11 @@ public class ChromosomeGenerator {
                     for (ParkingNode receiverNode : receiverNodes) {
                         travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
                         if (travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
-                            carMoves.get(car).add(new CarMove(senderNode, receiverNode, car, travelTime, remainingTravelTime.get(car)));
-                            carMovesAdded += 1;
+                            CarMove carMove = new CarMove(senderNode, receiverNode, car, travelTime, remainingTravelTime.get(car));
+                            if(enoughBatteryOnCar(carMove, problemInstance)){
+                                carMoves.get(car).add(carMove);
+                                carMovesAdded += 1;
+                            }
                         }
                     }
                     carsAdded += 1;
@@ -124,7 +131,6 @@ public class ChromosomeGenerator {
                 }
             }
         }
-        int a = 2;
     }
 
     private static void findSenderAndReceiverNodes(ProblemInstance problemInstance, ArrayList<ParkingNode> senderNodes,
@@ -164,7 +170,7 @@ public class ChromosomeGenerator {
         }
     }
 
-    public static void createCarMovesForCarsFinishingCharging(HashMap<Car, ArrayList<CarMove>> carMoves, ProblemInstance problemInstance,
+    private static void createCarMovesForCarsFinishingCharging(HashMap<Car, ArrayList<CarMove>> carMoves, ProblemInstance problemInstance,
                                                               ArrayList<ParkingNode> receiverNodes){
         for(ChargingNode chargingNode : problemInstance.getChargingNodes()){
             for(Car car : chargingNode.getCarsCurrentlyCharging()){
@@ -182,8 +188,29 @@ public class ChromosomeGenerator {
         }
     }
 
+    private static boolean enoughBatteryOnCar(CarMove carMove, ProblemInstance problemInstance){
+        ParkingNode from = carMove.getFromNode();
+        Node to = carMove.getToNode();
+        Car car = carMove.getCar();
+        double travelTimeBetween = problemInstance.getTravelTimeCar(from, to);
+        double remainingTravelTime = car.getBatteryLevel() * SimulationConstants.BATTERY_RANGE;
+        //return true;
+        return travelTimeBetween <= remainingTravelTime;
+    }
 
-    public static String generateToStringFrom(HashMap<Car, ArrayList<CarMove>> carMoves){
+
+    private static int getNumberOfCarMovesInTotal(HashMap<Car, ArrayList<CarMove>> carmoves){
+        int counter = 0;
+        for(Car car : carmoves.keySet()){
+            for(CarMove carMove : carmoves.get(car)){
+                counter ++;
+            }
+        }
+        return counter;
+    }
+
+
+    private static String generateToStringFrom(HashMap<Car, ArrayList<CarMove>> carMoves){
         String ret = "\n";
         for(Car car: carMoves.keySet()){
             ret += "Car " + car.getCarId() + ": ";
