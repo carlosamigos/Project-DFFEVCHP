@@ -12,7 +12,7 @@ public class HeuristicsConstants {
 	// Tabu Search
     public final static int TABU_NEIGHBORHOOD_SIZE = 100;
     public final static int TABU_ITERATIONS = 20000;
-    public final static int ALNS_MAX_TIME_SECONDS = 3600;
+    public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
     //Fitness, that does not exist in Mosel
@@ -34,7 +34,7 @@ public class HeuristicsConstants {
     public final static int TABU_SIZE = 2;
    
     // Stopping criteria: Max iterations without improvement
-    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 30000;
+    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 100000;
 
     //LSO Weight
     public final static int ALNS_SEGMENT_LENGTH = 100;
