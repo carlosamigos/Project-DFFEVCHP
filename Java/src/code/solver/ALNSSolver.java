@@ -325,6 +325,9 @@ public class ALNSSolver extends Solver {
 		this.timeUsed = (System.currentTimeMillis() - this.startTime)/1000;
 		SolutionFileMaker.writeSolutionToFile(bestIndividual, problemInstance, problemInstance.getFileName() + ".txt");
 		this.set = false;
+		if(HeuristicsConstants.PRINT_OUT_BEST_SOLUTION){
+			System.out.println(bestIndividual);
+		}
 		return bestIndividual;
 	}
 
