@@ -66,8 +66,8 @@ public class HeuristicsConstants {
     public final static double ALNS_MINIMAL_WEIGHT_FACTOR_LNS = 0.05; //0.4
 
     //Enumeration of neighborhood
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
-    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = true;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
+    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
     /* Dynamic Weights */
     // Tabu list
