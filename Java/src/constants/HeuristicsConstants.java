@@ -10,7 +10,6 @@ public class HeuristicsConstants {
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
-    public final static int TABU_NEIGHBORHOOD_SIZE = 100;
     public final static int TABU_ITERATIONS = 20000;
     public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
@@ -67,13 +66,14 @@ public class HeuristicsConstants {
     public final static double ALNS_MINIMAL_WEIGHT_FACTOR_LNS = 0.05; //0.4
 
     //Enumeration of neighborhood
-    public final static boolean ALNS_FULL_NEIGHBORHOOD = true;
-    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = true;
+    public final static boolean ALNS_FULL_NEIGHBORHOOD = false;
+    public final static boolean ALNS_FULL_ALL_NEIGHBORHOOD = false;
 
     /* Dynamic Weights */
     // Tabu list
     public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 4;
     public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
+    public static int TABU_NEIGHBORHOOD_SIZE = 100;
 
     //Destroy
     public static int TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = 500;
@@ -82,6 +82,9 @@ public class HeuristicsConstants {
     public static int TABU_WEIGHT_UPDATE = 100;
 
     //Problem Scale
-    public final static int ALNS_SCALE_CONSTANT = 30;
+    public final static int ALNS_SCALE_CONSTANT_MUTATION = 20;
+    public final static int ALNS_SCALE_CONSTANT_DESTROY = 0;
+    public final static int ALNS_SCALE_CONSTANT_WEIGHT = 0;
+    public final static double ALNS_SCALE_CONSTANT_TABU = 0;
 
 }

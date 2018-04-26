@@ -77,7 +77,7 @@ public class ALNSSolver extends Solver {
 		this.iterations = HeuristicsConstants.TABU_ITERATIONS;
 		this.individual =  new ALNSIndividual(problemInstance);
 		// Scalable constants
-		//initializeHeuristicConstants();
+		initializeHeuristicConstants();
 		setBest();
 		this.tabuSize = HeuristicsConstants.TABU_SIZE;
 		this.solutionsSeen = new HashMap<>();
@@ -165,14 +165,21 @@ public class ALNSSolver extends Solver {
 	}
 
 	private void initializeHeuristicConstants(){
-		HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT *
-				15 * Math.log(this.individual.getProblemSize()) - 300);
-		HeuristicsConstants.TABU_WEIGHT_UPDATE = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT *
-				2 * Math.log(this.individual.getProblemSize()));
-		HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT *
-				0.05 * Math.log(this.individual.getProblemSize()) +4);
-		HeuristicsConstants.TABU_MIN_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT *
-				0.05 * Math.log(this.individual.getProblemSize()));
+		if(HeuristicsConstants.ALNS_SCALE_CONSTANT_DESTROY > 0){
+			HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_DESTROY *
+				 Math.log(this.individual.getProblemSize()));
+		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_MUTATION > 0){
+			HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_MUTATION *
+				Math.log(this.individual.getProblemSize()));
+		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_WEIGHT > 0){
+			HeuristicsConstants.TABU_WEIGHT_UPDATE = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_WEIGHT *
+					Math.log(this.individual.getProblemSize()));
+		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU > 0){
+			HeuristicsConstants.TABU_MIN_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU *
+					Math.log(this.individual.getProblemSize()));
+			HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS= (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU *
+					2 * Math.log(this.individual.getProblemSize()));
+		}
 	}
 
 	private void initializeMutationIdToDescription() {
