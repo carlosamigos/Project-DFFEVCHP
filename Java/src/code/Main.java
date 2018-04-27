@@ -24,7 +24,7 @@ public class Main {
     	createTestingFolders();
     	
     	if(testing) {
-    		String fileName = "test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a";
+    		String fileName = "test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c";
         	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
         	for(int i = 0; i < 1; i++) {
         		ALNSSolver solver = new ALNSSolver(problemInstance);
