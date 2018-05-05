@@ -11,7 +11,7 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
     public final static int TABU_ITERATIONS = 200000;
-    public final static int ALNS_MAX_TIME_SECONDS = 3600;
+    public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
     //Fitness, that does not exist in Mosel
@@ -33,7 +33,7 @@ public class HeuristicsConstants {
     public final static int TABU_SIZE = 2;
    
     // Stopping criteria: Max iterations without improvement
-    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 100000;
+    public final static int ALNS_MAX_ITERATIONS_WITHOUT_IMPROVEMENT = 125000;
 
     //LSO Weight
     public final static int ALNS_SEGMENT_LENGTH = 100;
@@ -71,8 +71,8 @@ public class HeuristicsConstants {
 
     /* Dynamic Weights */
     // Tabu list
-    public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 4;
-    public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 2;
+    public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 6;
+    public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 3;
     public static int TABU_NEIGHBORHOOD_SIZE = 100;
 
     //Destroy
@@ -82,9 +82,9 @@ public class HeuristicsConstants {
     public static int TABU_WEIGHT_UPDATE = 100;
 
     //Problem Scale
-    public final static int ALNS_SCALE_CONSTANT_MUTATION = 20;
-    public final static int ALNS_SCALE_CONSTANT_DESTROY = 0;
-    public final static int ALNS_SCALE_CONSTANT_WEIGHT = 0;
-    public final static double ALNS_SCALE_CONSTANT_TABU = 0.35;
+    public final static int ALNS_SCALE_CONSTANT_MUTATION = 25;
+    public final static int ALNS_SCALE_CONSTANT_DESTROY = 120;
+    public final static int ALNS_SCALE_CONSTANT_WEIGHT = 5;
+    public final static double ALNS_SCALE_CONSTANT_TABU = 0;
 
 }
