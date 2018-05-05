@@ -85,6 +85,6 @@ public class HeuristicsConstants {
     public final static int ALNS_SCALE_CONSTANT_MUTATION = 20;
     public final static int ALNS_SCALE_CONSTANT_DESTROY = 0;
     public final static int ALNS_SCALE_CONSTANT_WEIGHT = 0;
-    public final static double ALNS_SCALE_CONSTANT_TABU = 0;
+    public final static double ALNS_SCALE_CONSTANT_TABU = 0.35;
 
 }

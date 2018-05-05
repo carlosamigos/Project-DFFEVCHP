@@ -318,7 +318,8 @@ public class ALNSSolver extends Solver {
 				updateWeightsLNSRepair();
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
 				neighborhoodRepairId = getNeighborhoodLNSRepair();
-				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
+				this.numberToHandle = (int) (Math.random() * HeuristicsConstants.ALNS_DESTROY_FACTOR * this.individual.getTotalNumberOfCarMoves());
+				//this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
 				//Destroy
 				this.searchToPerformDestroy.get(neighborhoodDestroyId).runCommand(searchToNeighborhood.get(neighborhoodDestroyId));
 				//Repair
