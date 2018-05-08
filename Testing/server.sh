@@ -34,22 +34,6 @@ echo "################"
 echo " "
 echo "################"
 
-echo -n "If you want to use the default constants please enter 'D': "
-read DEFAULT
-
-if [ "$DEFAULT" == "D" ] ; then
-    if [ -f "../Java/src/constants/DefaultConstants.java" ] ; then
-        mv "../Java/src/constants/DefaultConstants.java" "../Java/src/constants/Constants.java"
-    fi
-    cd ../Java
-    ./runner.sh
-    echo "################"
-    exit
-fi
-
-echo "################"
-echo " "
-echo "################"
 re='[1-2]'
 re2='[1-9][0-9]*'
 
@@ -174,18 +158,6 @@ if [ ! -d "Output/$TYPE/$NAME" ] ; then
     mkdir Output/$TYPE/$NAME
 fi
 
-if [ -f "Input/$TYPE/$NAME/Constants.java" ] ; then 
-    if [ ! -f "../Java/src/constants/DefaultConstants.java" ] ; then
-        mv "../Java/src/constants/Constants.java" "../Java/src/constants/DefaultConstants.java"
-    fi
-    cp "Input/$TYPE/$NAME/Constants.java" "../Java/src/constants/Constants.java"
-else
-    if [ -f "../Java/src/constants/DefaultConstants.java" ] ; then
-        mv "../Java/src/constants/DefaultConstants.java" "../Java/src/constants/Constants.java"
-    fi
-fi
-
-
 echo "################"
 
 
@@ -199,10 +171,17 @@ if [[ $SOLVER -eq "alns" ]] ; then
 		echo "Must choose a legal number."
 		echo " "
 	done
-	cp cleaner.sh Input/${TYPE}/${NAME}
-	cp copier.sh Input/${TYPE}/${NAME}
-	cd Input/${TYPE}/${NAME} && ./copier.sh $N
-	cd ../../../
+    if [[ $TYPE -eq "Dynamic" ]] ; then
+        cp cleaner.sh Input/${TYPE}/${NAME}/Initial
+        cp copier.sh Input/${TYPE}/${NAME}/Initial
+        cd Input/${TYPE}/${NAME}/Initial && ./copier.sh $N
+        cd ../../../../
+    else
+	    cp cleaner.sh Input/${TYPE}/${NAME}
+	    cp copier.sh Input/${TYPE}/${NAME}
+	    cd Input/${TYPE}/${NAME} && ./copier.sh $N
+	    cd ../../../
+    fi
 fi
 
 TEST_TYPE="${TYPE,,}"
@@ -215,8 +194,13 @@ ant build
 java -cp "./bin:/share/apps/xpress/8.4.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NAME" solver:$SOLVER model_folder:$MODELFOLDER
 
 if [[ $SOLVER -eq "alns" ]] ; then
-	cd ../Testing/Input/${TYPE}/${NAME} && ./cleaner.sh $N && rm cleaner.sh copier.sh
-	cd ../../../
+    if [[ $TYPE -eq "Dynamic" ]] ; then
+	    cd ../Testing/Input/${TYPE}/${NAME}/Initial && ./cleaner.sh $N && rm cleaner.sh copier.sh
+	    cd ../../../../
+    else
+	    cd ../Testing/Input/${TYPE}/${NAME} && ./cleaner.sh $N && rm cleaner.sh copier.sh
+	    cd ../../../
+    fi
 fi
 
 echo "Adding results to git..."

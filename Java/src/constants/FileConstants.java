@@ -24,7 +24,7 @@ public class FileConstants {
     public static String STATIC_TEST_SUITE_RESULTS_FILE = TEST_STATIC_OUTPUT_FOLDER + "results_";
     public static String TEST_DYNAMIC_OUTPUT_FOLDER = TEST_OUTPUT_FOLDER + "Dynamic/" + DEFAULT_DYNAMIC_TEST_FOLDER;
 	public static String DYNAMIC_TEST_SUITE_RESULTS_FILE = TEST_DYNAMIC_OUTPUT_FOLDER + "dynamic_test_results_";
-    public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_OUTPUT_FOLDER + "static_results_";
+    public static String DYNAMIC_SINGLE_TEST_RESULTS_FILE = TEST_DYNAMIC_OUTPUT_FOLDER + "static/" + "static_results_";
 
     public static String OPERATOR_PATH_OUTPUT_FOLDER = TEST_OUTPUT_FOLDER + OPERATOR_PATH_FOLDER_NAME;
 
