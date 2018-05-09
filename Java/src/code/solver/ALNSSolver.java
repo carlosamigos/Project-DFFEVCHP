@@ -387,7 +387,7 @@ public class ALNSSolver extends Solver {
 				}else {
 					this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
 							+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
-				}
+				}this.solutionsSeen.put(individualString, 1);
 			}
 		}
 	}
@@ -410,7 +410,7 @@ public class ALNSSolver extends Solver {
 				this.mutationScoresLNSRepair.put(repairId, this.mutationScoresLNSRepair.get(repairId)
 						+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION_LNS);
 
-			}
+			}this.solutionsSeen.put(individualString, 1);
 		}
 	}
 	*/
