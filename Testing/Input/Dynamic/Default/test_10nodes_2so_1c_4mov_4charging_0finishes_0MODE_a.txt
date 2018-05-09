@@ -41,6 +41,7 @@ numAOperators : 0
 travelTimeToParkingA : []
 chargingNodeAOperator : []
 parkingNodeAOperator : []
+<<<<<<< HEAD
 travelTimeToOriginR : [0.0 13.100000000000023]
 startNodeROperator : [1 11]
 initialInNeedP : [0 0 0 0 0 0 0 0 0 0]
@@ -71,3 +72,4 @@ numCarsInCNeedNodes : 0
 carsInNeedCTranslate : []
 carsInNeedNodes : []
 bigMCars : [-1.0]
+

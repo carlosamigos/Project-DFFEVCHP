@@ -39,7 +39,7 @@ public class ProblemInstance implements Serializable{
     private int numCNodes = 0;
     private int numROperators = 0;
     private int carsInNeedOfCharging = 0;
-    private double maxTravelTimeCar = Double.MAX_VALUE;
+    private double maxTravelTimeCar = 0;
     private double handlingTimeP = 0;
     private double handlingTimeC = 0;
 
