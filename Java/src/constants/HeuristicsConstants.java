@@ -71,8 +71,8 @@ public class HeuristicsConstants {
 
     /* Dynamic Weights */
     // Tabu list
-    public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 6;
-    public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 3;
+    public static int TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS = 2; 
+    public static int TABU_MIN_IMPROVING_LOCAL_ITERATIONS = 1;
     public static int TABU_NEIGHBORHOOD_SIZE = 100;
 
     //Destroy
