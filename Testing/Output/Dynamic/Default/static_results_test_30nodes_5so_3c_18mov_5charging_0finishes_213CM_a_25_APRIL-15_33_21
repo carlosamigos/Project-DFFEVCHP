@@ -1,0 +1,31 @@
+
+Test test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a
+
+ALNS search
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 9.0s.s.  |  214.95  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  188.46  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 4.0s.s.  |  192.33  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 3.0s.s.  |  189.3   |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 2.0s.s.  |  131.13  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 3.0s.s.  |  117.81  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 6.0s.s.  |  165.31  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  157.42  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  158.27  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 6.0s.s.  |   179    |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 7.0s.s.  |  173.28  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  130.32  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  112.8   |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 4.0s.s.  |  118.68  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 4.0s.s.  |  148.84  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  140.57  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 8.0s.s.  |  166.82  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 8.0s.s.  |  184.66  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 7.0s.s.  |  196.21  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  178.52  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 5.0s.s.  |  200.62  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 9.0s.s.  |  207.32  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 7.0s.s.  |  189.59  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 9.0s.s.  |  189.47  |   N/A%   
+   test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a    | 11.0s.s. |  202.48  |   N/A%   

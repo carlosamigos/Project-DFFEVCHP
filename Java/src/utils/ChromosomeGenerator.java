@@ -48,7 +48,7 @@ public class ChromosomeGenerator {
         // Create car moves for cars finishing charging
         createCarMovesForCarsFinishingCharging(carMoves, problemInstance, receiverNodes);
 
-        System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
+        //System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
         //System.out.println(generateToStringFrom(carMoves));
         return carMoves;
     }
@@ -83,7 +83,8 @@ public class ChromosomeGenerator {
                                                      HashMap<ParkingNode, ArrayList<Car>> incomingCarsToParkingNodes,
                 HashMap<Car,Double> remainingTravelTime) throws NullPointerException{
 
-        double carMoveTimeThreshold = HeuristicsConstants.MAX_THRESHOLD_CARMOVE_DISTANCE;
+        double carMoveTimeThreshold = HeuristicsConstants.MAX_THRESHOLD_CARMOVE_DISTANCE
+                * problemInstance.getMaxTravelTimeCar() ;
         double travelTime;
         int carMovesAdded = 0;
         for(ParkingNode senderNode : senderNodes){
@@ -101,7 +102,7 @@ public class ChromosomeGenerator {
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
                     travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
-                    if(travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
+                    if(travelTime <=  carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
                         CarMove carMove = new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0);
                         if(enoughBatteryOnCar(carMove, problemInstance)){
                             carMoves.get(carInCarMove).add(carMove);

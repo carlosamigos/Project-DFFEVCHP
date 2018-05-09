@@ -1,0 +1,31 @@
+
+Test test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c
+
+ALNS search
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  102.78  |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  97.62   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  83.87   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  64.17   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  71.21   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  57.14   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  69.88   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  63.39   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  64.48   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  56.24   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  64.22   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  71.17   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  41.57   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  31.52   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  28.17   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  20.18   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  29.82   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  -5.54   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  11.33   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |   6.56   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  -0.37   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |   2.84   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |   9.79   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |  10.74   |   N/A%   
+     test_6nodes_3so_2c_3mov_3charging_0finishes_12CM_c     | 0.0s.s.  |   0.05   |   N/A%   
