@@ -1,3 +1,0 @@
-                                      Test                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
-             test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_1             |       44.34       |        NA         |        0         |        4         |      161.2      |      429.68      |    429.68     |      460.47       |     116.84      
-             test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2             |       42.42       |        NA         |        0         |        5         |      116.2      |      460.4       |     460.4     |      210.32       |     134.64      
