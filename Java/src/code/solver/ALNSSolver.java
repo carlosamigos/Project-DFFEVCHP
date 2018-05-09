@@ -166,19 +166,14 @@ public class ALNSSolver extends Solver {
 
 	private void initializeHeuristicConstants(){
 		if(HeuristicsConstants.ALNS_SCALE_CONSTANT_DESTROY > 0){
-			HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_DESTROY *
-				 Math.log(this.individual.getProblemSize()));
+			HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY = (int) Math.max(Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_DESTROY *
+				 Math.log(this.individual.getProblemSize())), 1);
 		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_MUTATION > 0){
-			HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE = (int) Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_MUTATION *
-				Math.log(this.individual.getProblemSize()));
+			HeuristicsConstants.TABU_NEIGHBORHOOD_SIZE = (int) Math.max(Math.floor(HeuristicsConstants.ALNS_SCALE_CONSTANT_MUTATION *
+				Math.log(this.individual.getProblemSize())), 1);
 		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_WEIGHT > 0){
-			HeuristicsConstants.TABU_WEIGHT_UPDATE = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_WEIGHT *
-					Math.log(this.individual.getProblemSize()));
-		}if(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU > 0){
-			HeuristicsConstants.TABU_MIN_IMPROVING_LOCAL_ITERATIONS = (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU *
-					Math.log(this.individual.getProblemSize()));
-			HeuristicsConstants.TABU_MAX_NON_IMPROVING_LOCAL_ITERATIONS= (int) Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_TABU *
-					2 * Math.log(this.individual.getProblemSize()));
+			HeuristicsConstants.TABU_WEIGHT_UPDATE = (int) Math.max(Math.ceil(HeuristicsConstants.ALNS_SCALE_CONSTANT_WEIGHT *
+					Math.log(this.individual.getProblemSize())), 1);
 		}
 	}
 
