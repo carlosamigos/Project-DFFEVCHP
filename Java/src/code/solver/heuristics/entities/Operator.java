@@ -147,6 +147,10 @@ public class Operator {
 	 */
 	private void calculateFitness() {
 
+		if(carMoves.size() == 0) {
+			this.fitness = 100;
+			return;
+		}
 		for(ChargingNode chargingNode : this.chargingCapacityUsedOperator.keySet()) {
 			int used = this.individual.getCapacitiesUsed().get(chargingNode);
 			int usedByOperator = this.chargingCapacityUsedOperator.get(chargingNode);
@@ -154,7 +158,7 @@ public class Operator {
 			this.individual.getCapacitiesUsed().put(chargingNode, delta);
 			this.chargingCapacityUsedOperator.put(chargingNode, 0);
 		}
-		
+
 		for(ParkingNode parkingNode : this.movesToParkingNodeByOperator.keySet()) {
 			int idealState = this.individual.getDeviationIdealState().get(parkingNode);
 			int idealStateMetByOperator = this.movesToParkingNodeByOperator.get(parkingNode);
@@ -162,11 +166,7 @@ public class Operator {
 			this.individual.getDeviationIdealState().put(parkingNode, delta);
 			this.movesToParkingNodeByOperator.put(parkingNode, 0);
 		}
-		if(carMoves.size() == 0) {
-			this.fitness = 100;
-			return;
-		}
-		
+
 		double currentTime = this.startTime;
 		double travelTimeCarMove = 0.0;
 		Node previousNode = this.startNode;
