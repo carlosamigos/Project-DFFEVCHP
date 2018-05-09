@@ -1,0 +1,27 @@
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  75.98   |   N/A    |    2     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  58.68   |   N/A    |    1     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  50.83   |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  49.95   |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  35.63   |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  14.36   |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |   0.91   |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  -80.22  |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  -95.96  |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   | -105.81  |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  -84.07  |   N/A    |    0     |    2     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  15.67   |   N/A    |    0     |    1     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |   5.57   |   N/A    |    0     |    1     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  13.92   |   N/A    |    0     |    1     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |    21    |   N/A    |    0     |    1     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  38.57   |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  39.84   |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |   37.6   |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  1.0s.   |  13.42   |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |    -0    |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |   7.98   |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |    -0    |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |    -0    |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |    -0    |   N/A    |    0     |    0     
+   test_10nodes_2so_1c_4mov_4charging_0finishes_0MODE_a_2   |  0.0s.   |    -0    |   N/A    |    0     |    0     
