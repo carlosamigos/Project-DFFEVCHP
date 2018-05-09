@@ -1,0 +1,4 @@
+
+Test test_30nodes_5so_3c_18mov_5charging_0finishes_213CM_a
+                                     Model                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+                                  ALNS search                                   |       58.75       |         �         |        0         |        13        |     438.58      |     1078.76      |    1078.76    |      494.99       |     298.75      

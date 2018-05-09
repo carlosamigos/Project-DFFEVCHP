@@ -22,7 +22,7 @@ public class HeuristicsConstants {
     // Best first
     public final static boolean BEST_FIRST = false;
     
-    // ALNS Parameters used when comparring with Mosel
+    // ALNS Parameters used when comparing with Mosel
     public final static double ALNS_CHARGING_REWARD = 30;
     public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.2;
     public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10; 
