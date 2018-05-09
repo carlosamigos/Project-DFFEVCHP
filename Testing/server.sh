@@ -196,7 +196,8 @@ java -cp "./bin:/share/apps/xpress/8.4.4/lib/xprm.jar" code.Main "$TEST_TYPE:$NA
 if [[ $SOLVER -eq "alns" ]] ; then
     if [[ $TYPE -eq "Dynamic" ]] ; then
 	    cd ../Testing/Input/${TYPE}/${NAME}/Initial && ./cleaner.sh $N && rm cleaner.sh copier.sh
-	    cd ../../../../
+	    cd ../ && rm *.txt
+	    cd ../../../
     else
 	    cd ../Testing/Input/${TYPE}/${NAME} && ./cleaner.sh $N && rm cleaner.sh copier.sh
 	    cd ../../../
