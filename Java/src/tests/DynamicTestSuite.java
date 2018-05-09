@@ -34,21 +34,20 @@ public class DynamicTestSuite extends TestSuite{
 		System.out.println("Number of test files, days, and models: " + testFileNames.size() + ", " + this.days + ", " + this.solvers.size() + "\n");
 		int runsLeft = testFileNames.size() * days * this.solvers.size();
 		double timePerRun = calcTimePerRun();
-
-		//printEstimatedTimeLeft(timePerRun, runsLeft);
-
+		writeTestHeader();
 		for(String test : testFileNames) {
 			
+			this.staticKPIfh = new FileHandler(FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + test + "_" + getTimestamp(), true, true);
 			System.out.println("Solving " + test);
+			printEstimatedTimeLeft(timePerRun, runsLeft, test);
 			ProblemInstance cleanProblemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER + test);
-			this.writeTestHeader(test);
 			this.kpiTrackers =  new HashMap<>();
 			
 			for (int day = 0; day < days; day++) {
 				
 				// Simulate demand requests during day
 				SimulationModel simModel = new SimulationModel(day, cleanProblemInstance);
-				simModel.createNewDaySimulationModel(); // I konstruktoren til SimulationModel?
+				simModel.createNewDaySimulationModel();
 				simModel.saveDaySimulationModel();
 				//Solve for each solver
 				
@@ -57,7 +56,7 @@ public class DynamicTestSuite extends TestSuite{
 					// Read clean demand requests
 					ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER  + test);
 					SimulationModel solverSimulationModel = new SimulationModel(day, problemInstance);
-					solverSimulationModel.readSimulationModelFromFile(); // Burde vaert i konstruktoren til SimulationModel?
+					solverSimulationModel.readSimulationModelFromFile();
 					DynamicProblem problem = new DynamicProblem(problemInstance, solverSimulationModel, solver, test);
 					problem.solve();
 					
@@ -66,14 +65,13 @@ public class DynamicTestSuite extends TestSuite{
 					addKPITracker(solver, tracker);
 					runsLeft--;
 				}
-				//printEstimatedTimeLeft(timePerRun, runsLeft);
 
 			}
 			System.out.println("");
-			writeKPIs();
+			writeKPIs(test);
 		}
 		
-		System.out.println("\nDone with all tests. See the file " + FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE + " for results.");
+		System.out.println("\nDone with all tests. See the file " + FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE + this.timeStamp + " for results.");
 	}
 	
 	private void addKPITracker(Solver solver, KPITrackerDynamic tracker) {
@@ -83,25 +81,13 @@ public class DynamicTestSuite extends TestSuite{
 		this.kpiTrackers.get(solver).add(tracker);
 	}
 	
-	private void writeKPIs() {
-		String solv = StringUtils.center("Model", 80);
-		String ds = StringUtils.center("DS (%)", 19);
-		String dsVariance = StringUtils.center("DS var", 19);
-		String abandoned = StringUtils.center("Abondoned (op)", 18);
-		String charged = StringUtils.center("Charged (cars)", 18);
-		String carDist = StringUtils.center("CarDist (min)", 17);
-		String bikeDist = StringUtils.center("BikeDist (min)", 18);
-		String elDist = StringUtils.center("EL-Used (%)", 15);
-		String chargeWait = StringUtils.center("ChargeWait (min)", 19);
-		String idleTime = StringUtils.center("IdleTime (min)", 17);
-		String data = solv + "|" + ds + "|" +dsVariance + "|" + abandoned + "|" + charged +
-		              "|" + carDist + "|" + bikeDist + "|" + elDist + "|" + chargeWait +
-		              "|" + idleTime + "\n";
+	private void writeKPIs(String test) {
+		String data = "";
 		
 		DecimalFormat df = 	new DecimalFormat("#.##");
 		for(Solver solver : this.kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> trackers = this.kpiTrackers.get(solver);
-			String solverName = StringUtils.center(solver.getInfo(), 80);
+			String testName = StringUtils.center(test, 80);
 			Double expectedValueCalculated = trackers.stream().map(t ->
 					t.calculateDemandServedFraction()*100)
 					.collect(Collectors.summingDouble(Double::doubleValue))/this.days;
@@ -112,8 +98,14 @@ public class DynamicTestSuite extends TestSuite{
 				double demandServedFraction = tracker.calculateDemandServedFraction();
 				squaredSum += Math.pow(demandServedFraction - expectedValueCalculated/100,2);
 			}
-			Double variance = squaredSum /(trackers.size() -1);
-			String dsVarianceVal = StringUtils.center("" + df.format(variance).toString(), 19);
+			
+			String dsVarianceVal;
+			if(trackers.size()-1 == 0) {
+				dsVarianceVal = StringUtils.center("NA", 19);
+			} else {
+				Double variance = squaredSum /(trackers.size() -1);
+				dsVarianceVal = StringUtils.center("" + df.format(variance).toString(), 19);
+			}
 
 			String abandonedVal = StringUtils.center("" + df.format(trackers.stream().map(t -> 
 				t.getNumberOfOperatorsAbandoned().stream().collect(Collectors.summingInt(Integer::intValue)))
@@ -143,7 +135,7 @@ public class DynamicTestSuite extends TestSuite{
 				t.getIdleTimeForServiceOperators().stream().collect(Collectors.summingDouble(Double::doubleValue)))
 				.collect(Collectors.summingDouble(Double::doubleValue))/this.days), 17);
 			
-			data += solverName + "|" + dsPercentage + "|" + dsVarianceVal +  "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
+			data += testName + "|" + dsPercentage + "|" + dsVarianceVal +  "|" + abandonedVal + "|" + chargedVal + "|" + carDistVal
 					+ "|" + bikeDistVal + "|" + elDistVal + "|" + chargeWaitVal + "|" + idleTimeVal + "\n";
 		}
 		fh.writeFile(data);
@@ -155,11 +147,9 @@ public class DynamicTestSuite extends TestSuite{
 	private void writeStaticKPIs() {
 		for(Solver solver : kpiTrackers.keySet()) {
 			ArrayList<KPITrackerDynamic> dynamicTrackers = kpiTrackers.get(solver);
-			String solverName = solver.getInfo();
-			this.staticKPIfh.writeFile("\n" + solverName);
 			for(int day = 0; day < this.days; day++) {
-				this.staticKPIfh.writeFile("\nDay " + day + "\n");
-				writeTestHeader();
+				this.staticKPIfh.writeFile("Day " + day + "\n");
+				writeTestHeaderStatic();
 				for(KPITrackerStatic staticTracker : dynamicTrackers.get(day).getStaticKPITrackers()) {
 					writeTestResult(staticTracker);
 				}
@@ -168,35 +158,50 @@ public class DynamicTestSuite extends TestSuite{
 	}
 	
 	
-	private void writeTestHeader(String testName) {
-		String data = "\nTest " + testName + "\n";
-		this.staticKPIfh = new FileHandler(FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE + testName + "_" + getTimestamp(), true, true);
-		
-		fh.writeFile(data);
-		staticKPIfh.writeFile(data);
-	}
-	
 	private void writeTestHeader() {
-		String name = StringUtils.center("Test", 60);
-		String time = StringUtils.center("Time", 10);
-		String value = StringUtils.center("Value", 10);
-		String gap = StringUtils.center("Gap", 10);
-		String headerLine = name + "|" + time + "|" + value + "|" + gap;
-		staticKPIfh.writeFile(headerLine);
-
+		String solv = StringUtils.center("Test", 80);
+		String ds = StringUtils.center("DS (%)", 19);
+		String dsVariance = StringUtils.center("DS var", 19);
+		String abandoned = StringUtils.center("Abondoned (op)", 18);
+		String charged = StringUtils.center("Charged (cars)", 18);
+		String carDist = StringUtils.center("CarDist (min)", 17);
+		String bikeDist = StringUtils.center("BikeDist (min)", 18);
+		String elDist = StringUtils.center("EL-Used (%)", 15);
+		String chargeWait = StringUtils.center("ChargeWait (min)", 19);
+		String idleTime = StringUtils.center("IdleTime (min)", 17);
+		String data = solv + "|" + ds + "|" +dsVariance + "|" + abandoned + "|" + charged +
+		              "|" + carDist + "|" + bikeDist + "|" + elDist + "|" + chargeWait +
+		              "|" + idleTime + "\n";
+		fh.writeFile(data);
 	}
 	
 	private void writeTestResult(KPITrackerStatic tracker) {
 		String[] namePath = tracker.getName().split("/");
 		String data = "\n" + StringUtils.center(namePath[namePath.length - 1], 60);
 		data += "|";
-		data += StringUtils.center(tracker.getTimeUsed() + "s.", 10);
+		data += StringUtils.center(tracker.getTimeUsed(), 10);
 		data += "|";
 		data += StringUtils.center(tracker.getBestSolution(),10);
 		data += "|";
-		data += StringUtils.center(tracker.getGap() + "%", 10);
+		data += StringUtils.center(tracker.getGap(), 10);
+		data += "|";
+		data += StringUtils.center(tracker.getRdev(), 10);
+		data += "|";
+		data += StringUtils.center(tracker.getCdev(), 10);
 		
 		staticKPIfh.writeFile(data);
+	}
+	
+	private void writeTestHeaderStatic() {
+		String name =  StringUtils.center("Test",  60);
+		String time =  StringUtils.center("Time",  10);
+		String value = StringUtils.center("Value", 10);
+		String gap =   StringUtils.center("Gap",   10);
+		String rdev =  StringUtils.center("rDev",  10);
+		String cdev =  StringUtils.center("cDev",  10);
+		String headerLine = name + "|" + time + "|" + value + "|" + gap + "|" + rdev + "|" + cdev;
+		staticKPIfh.writeFile(headerLine);
+
 	}
 	
 	@Override

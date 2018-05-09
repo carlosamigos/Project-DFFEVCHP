@@ -9,7 +9,7 @@ public class FileHandler {
 	private BufferedWriter bw;
 	private FileWriter fw;
 	private File file;
-	private final String filePath;
+	public final String filePath;
 	private final boolean append;
 	private boolean clear = false;
 	private boolean cleared = false;

@@ -77,7 +77,7 @@ public class Main {
     			FileConstants.TEST_DYNAMIC_INITIAL_FOLDER = FileConstants.TEST_DYNAMIC_FOLDER + "Initial/";
     			FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER = FileConstants.TEST_OUTPUT_FOLDER + "Dynamic/" + input.get(key) + "/";
     			FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE = FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "dynamic_test_results_";
-    		    FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE = FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "static_results_";
+    		    FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE = FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "static/" + "static_results_";
     			break;
     		case "solver":
     			String solver = input.get(key);
@@ -101,6 +101,7 @@ public class Main {
     	try {
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_INITIAL_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER));
+			Files.createDirectories(Paths.get(FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "static/"));
 			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.TEST_STATIC_OUTPUT_FOLDER));
 			Files.createDirectories(Paths.get(FileConstants.OPERATOR_PATH_OUTPUT_FOLDER));
