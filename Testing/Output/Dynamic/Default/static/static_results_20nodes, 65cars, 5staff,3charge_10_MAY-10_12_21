@@ -1,0 +1,35 @@
+Day 0
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+              20nodes, 65cars, 5staff,3charge               |  22.0s.  |  224.03  |   N/A    |    10    |    0     
+              20nodes, 65cars, 5staff,3charge               |  19.0s.  |  145.23  |   N/A    |    7     |    0     
+              20nodes, 65cars, 5staff,3charge               |  10.0s.  |  82.38   |   N/A    |    3     |    0     
+              20nodes, 65cars, 5staff,3charge               |  10.0s.  |  81.98   |   N/A    |    3     |    0     
+              20nodes, 65cars, 5staff,3charge               |  16.0s.  |    99    |   N/A    |    3     |    0     
+              20nodes, 65cars, 5staff,3charge               |  13.0s.  |  100.45  |   N/A    |    1     |    0     
+              20nodes, 65cars, 5staff,3charge               |  16.0s.  |  97.83   |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  11.0s.  |  49.89   |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  13.0s.  |  54.27   |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  19.0s.  |  89.67   |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  14.0s.  |  61.78   |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  12.0s.  |  73.97   |   N/A    |    1     |    0     
+              20nodes, 65cars, 5staff,3charge               |  13.0s.  |    88    |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  11.0s.  |  84.41   |   N/A    |    1     |    0     
+              20nodes, 65cars, 5staff,3charge               |  13.0s.  |  68.88   |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  16.0s.  |  120.16  |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  11.0s.  |  131.27  |   N/A    |    3     |    0     
+              20nodes, 65cars, 5staff,3charge               | 327.0s.  |  241.71  |   N/A    |    4     |    0     
+              20nodes, 65cars, 5staff,3charge               |  19.0s.  |  235.02  |   N/A    |    3     |    0     
+              20nodes, 65cars, 5staff,3charge               |  16.0s.  |  247.97  |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  21.0s.  |  319.27  |   N/A    |    4     |    0     
+              20nodes, 65cars, 5staff,3charge               |  20.0s.  |  266.06  |   N/A    |    4     |    0     
+              20nodes, 65cars, 5staff,3charge               |  30.0s.  |  266.9   |   N/A    |    5     |    0     
+              20nodes, 65cars, 5staff,3charge               |  19.0s.  |  219.33  |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  13.0s.  |  209.46  |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  25.0s.  |  252.62  |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  20.0s.  |  163.87  |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  18.0s.  |  153.15  |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  20.0s.  |  180.61  |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  15.0s.  |  217.35  |   N/A    |    2     |    0     
+              20nodes, 65cars, 5staff,3charge               |  24.0s.  |  269.89  |   N/A    |    1     |    0     
+              20nodes, 65cars, 5staff,3charge               |  26.0s.  |  207.91  |   N/A    |    0     |    0     
+              20nodes, 65cars, 5staff,3charge               |  26.0s.  |  266.48  |   N/A    |    0     |    0     
