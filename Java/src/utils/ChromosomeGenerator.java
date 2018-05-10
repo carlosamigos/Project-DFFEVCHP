@@ -48,7 +48,7 @@ public class ChromosomeGenerator {
         // Create car moves for cars finishing charging
         createCarMovesForCarsFinishingCharging(carMoves, problemInstance, receiverNodes);
 
-        System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
+        //System.out.println("Number of car moves: " + getNumberOfCarMovesInTotal(carMoves));
         //System.out.println(generateToStringFrom(carMoves));
         return carMoves;
     }
