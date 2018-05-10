@@ -621,10 +621,14 @@ public class ProblemInstance implements Serializable{
 
             // Add Parameters for car moves mosel solver ----------------------
             // Num car moves p forst
-            HashMap<Car, ArrayList<CarMove>> carMoves = ChromosomeGenerator.generateCarMovesFrom(this);
+            HashMap<Car, ArrayList<CarMove>> carMoves = new HashMap<>();
+            if(Constants.SOLVER_TYPE == Constants.SolverType.MOSEL){
+                carMoves = ChromosomeGenerator.generateCarMovesFrom(this);
+            }
+            int numCars = carMoves.keySet().size();
             int numCarMovesP = 0;
             int numCarMovesC = 0;
-            int numCars = carMoves.keySet().size();
+
             int numTasks = (int) Constants.TIME_LIMIT_STATIC_PROBLEM / 10;
             int numDeficitNodes = 0;
             ArrayList<Integer> deficitTranslate = new ArrayList<>();

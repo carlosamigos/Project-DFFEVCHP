@@ -101,9 +101,10 @@ public class ChromosomeGenerator {
                 }
                 carMoves.put(carInCarMove, new ArrayList<>());
                 for(ParkingNode receiverNode : receiverNodes){
-                    travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
+                    travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode);
                     if(travelTime <=  carMoveTimeThreshold && carInCarMove.getCurrentNextNode() == carInCarMove.getPreviousNode()){
-                        CarMove carMove = new CarMove(senderNode, receiverNode, carInCarMove, travelTime, 0.0);
+                        CarMove carMove = new CarMove(senderNode, receiverNode, carInCarMove,
+                                travelTime + problemInstance.getHandlingTimeP(), 0.0);
                         if(enoughBatteryOnCar(carMove, problemInstance)){
                             carMoves.get(carInCarMove).add(carMove);
                             carMovesAdded += 1;
@@ -121,9 +122,10 @@ public class ChromosomeGenerator {
                     }
                     carMoves.put(car, new ArrayList<>());
                     for (ParkingNode receiverNode : receiverNodes) {
-                        travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode) + problemInstance.getHandlingTimeP();
-                        if (travelTime < problemInstance.getMaxTravelTimeCar() * carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
-                            CarMove carMove = new CarMove(senderNode, receiverNode, car, travelTime, remainingTravelTime.get(car));
+                        travelTime = problemInstance.getTravelTimeCar(senderNode, receiverNode);
+                        if (travelTime <=  carMoveTimeThreshold && car.getCurrentNextNode() == car.getPreviousNode()) {
+                            CarMove carMove = new CarMove(senderNode, receiverNode, car,
+                                    travelTime + problemInstance.getHandlingTimeP(), remainingTravelTime.get(car));
                             if(enoughBatteryOnCar(carMove, problemInstance)){
                                 carMoves.get(car).add(carMove);
                                 carMovesAdded += 1;
