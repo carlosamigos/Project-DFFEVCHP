@@ -10,7 +10,7 @@ public class HeuristicsConstants {
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
-    public final static int TABU_ITERATIONS = 200000;
+    public final static int TABU_ITERATIONS = 20;
     public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
