@@ -17,7 +17,7 @@ public class Constants {
     public final static int NUMBER_OF_DAYS_TO_TEST = 30;
     public final static int START_TIME = 60*8; // Minutes from midnight
     public final static int END_TIME = 60*18;
-    public final static int TIME_INCREMENTS = 10;
+    public final static int TIME_INCREMENTS = 15;
 
     // Parameters for Mosel
     public final static int START_INDEX = 1; //1 means 1 indexed mosel
