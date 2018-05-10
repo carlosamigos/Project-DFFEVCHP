@@ -15,8 +15,8 @@ cToP: [1 12 18]
 parkingNodeAOperator: [] 
 chargingNodeAOperator: [] 
 
-chargingSlotsAvailable: [8 8 8] 
-totalNumberOfChargingSlots: [8 8 8] 
+chargingSlotsAvailable: [6 6 6] 
+totalNumberOfChargingSlots: [6 6 6] 
 
 costOfDeviation : 10
 costOfPostponedCharging : 30
