@@ -14,7 +14,7 @@ public class Constants {
     // Test Parameters
     public static SolverType SOLVER_TYPE = SolverType.ALNS;
     public static TestType TEST_TYPE = TestType.DYNAMIC;
-    public final static int NUMBER_OF_DAYS_TO_TEST = 60;
+    public final static int NUMBER_OF_DAYS_TO_TEST = 30;
     public final static int START_TIME = 60*8; // Minutes from midnight
     public final static int END_TIME = 60*18;
     public final static int TIME_INCREMENTS = 15;
