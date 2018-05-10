@@ -3,7 +3,7 @@ package constants;
 public class HeuristicsConstants {
 
 
-    public final static boolean PRINT_OUT_PROGRESS = true;
+    public final static boolean PRINT_OUT_PROGRESS = false;
     public final static boolean PRINT_OUT_BEST_SOLUTION = false;
     
     // Chromosome Generator
