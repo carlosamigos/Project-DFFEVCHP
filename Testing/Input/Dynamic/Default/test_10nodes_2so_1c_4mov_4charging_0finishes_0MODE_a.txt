@@ -36,40 +36,38 @@ originNodeROperator : [12 13]
 timeLimitLastVisit : 10
 timeLimit : 60
 chargingSlotsAvailable : [2]
-finishedDuringC : [0]
-numAOperators : 0
-travelTimeToParkingA : []
-chargingNodeAOperator : []
-parkingNodeAOperator : []
-<<<<<<< HEAD
-travelTimeToOriginR : [0.0 13.100000000000023]
-startNodeROperator : [1 11]
+finishedDuringC : [1]
+numAOperators : 1
+travelTimeToParkingA : [39.95200000000004]
+chargingNodeAOperator : [11]
+parkingNodeAOperator : [1]
+travelTimeToOriginR : [0.0 0.0]
+startNodeROperator : [7 2]
 initialInNeedP : [0 0 0 0 0 0 0 0 0 0]
 idealStateP : [1 1 1 1 3 3 3 1 1 1]
-initialRegularInP : [2 1 1 1 3 3 2 1 1 1]
+initialRegularInP : [1 1 1 1 3 3 3 1 1 1]
 demandP : [1 1 1 1 3 3 3 1 1 1]
-initialHandling :[0 1]
+initialHandling :[0 0]
 mode : 4
 visitList : [2 2 2 2 3 3 4 2 2 2 2 1 1 1 1]
 numVisits : 4
 costOfPostponedCharging : 30.0
 costOfDeviation : 10.0
 
-numCarMovesP : 1
+numCarMovesP : 0
 numCarMovesC : 0
 numCars : 1
 numTasks : 6
-numDeficitNodes : 1
+numDeficitNodes : 0
 
-deficitTranslate : [7]
-deficitCarsInNode : [1]
-carMoveCars : [8]
-carMoveOrigin : [1]
-carMoveDestination : [7]
-carMoveHandlingTime : [11.9]
-carMoveStartingTime : [0.0]
+deficitTranslate : []
+deficitCarsInNode : []
+carMoveCars : []
+carMoveOrigin : []
+carMoveDestination : []
+carMoveHandlingTime : []
+carMoveStartingTime : []
 numCarsInCNeedNodes : 0
 carsInNeedCTranslate : []
 carsInNeedNodes : []
-bigMCars : [-1.0]
-
+bigMCars : []
