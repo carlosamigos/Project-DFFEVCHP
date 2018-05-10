@@ -205,9 +205,9 @@ if [[ "$SOLVER" = "alns" ]] ; then
     fi
 fi
 
-echo "Adding results to git..."
-git add Output/${TYPE}/${NAME} Output/Paths/
-git commit -m "Test results"
-git push
-
-echo "All results pushed to git. Please remember to terminate the screen by entering the command exit"
+#echo "Adding results to git..."
+#git add Output/${TYPE}/${NAME} Output/Paths/
+#git commit -m "Test results"
+#git push
+echo "Results are NOT pushed to Git. This must be done manually because of the nature of the dynamic results."
+#echo "All results pushed to git. Please remember to terminate the screen by entering the command exit"
