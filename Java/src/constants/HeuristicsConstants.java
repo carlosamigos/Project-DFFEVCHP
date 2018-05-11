@@ -37,7 +37,7 @@ public class HeuristicsConstants {
 
     //LSO Weight
     public final static int ALNS_SEGMENT_LENGTH = 100;
-    public final static double ALNS_FOUND_NEW_SOLUTION = 1; //1.0
+    public final static double ALNS_FOUND_NEW_SOLUTION = 2; //1.0
     public final static double ALNS_FOUND_NEW_BEST_REWARD = 8.0; //2.0
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 23.0; //10.0
     public final static double ALNS_UPDATE_FACTOR = 0.1; //0.5
