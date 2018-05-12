@@ -7,7 +7,7 @@ public class HeuristicsConstants {
     public final static boolean PRINT_OUT_BEST_SOLUTION = false;
     
     // Chromosome Generator
-    public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 20.0;
+    public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
     public final static int TABU_ITERATIONS = 200000;
@@ -82,8 +82,8 @@ public class HeuristicsConstants {
     public static int TABU_WEIGHT_UPDATE = 100;
 
     //Problem Scale
-    public final static int ALNS_SCALE_CONSTANT_MUTATION = 25;
-    public final static int ALNS_SCALE_CONSTANT_DESTROY = 140;
+    public final static int ALNS_SCALE_CONSTANT_MUTATION = 35; 
+    public final static int ALNS_SCALE_CONSTANT_DESTROY = 0;
     public final static int ALNS_SCALE_CONSTANT_WEIGHT = 0;
     public final static double ALNS_SCALE_CONSTANT_TABU = 0;
 
