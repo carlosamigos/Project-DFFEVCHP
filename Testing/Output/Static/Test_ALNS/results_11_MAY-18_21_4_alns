@@ -1,0 +1,3 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_1  | 180.0s.  |  384.88  |   N/A    |    13    |    0     
