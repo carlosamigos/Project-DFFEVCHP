@@ -7,7 +7,7 @@ public class HeuristicsConstants {
     public final static boolean PRINT_OUT_BEST_SOLUTION = false;
     
     // Chromosome Generator
-    public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 20.0;
+    public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
     public final static int TABU_ITERATIONS = 200000;
@@ -37,8 +37,8 @@ public class HeuristicsConstants {
 
     //LSO Weight
     public final static int ALNS_SEGMENT_LENGTH = 100;
-    public final static double ALNS_FOUND_NEW_SOLUTION = 3; //1.0
-    public final static double ALNS_FOUND_NEW_BEST_REWARD = 18.0; //2.0
+    public final static double ALNS_FOUND_NEW_SOLUTION = 1; //1.0
+    public final static double ALNS_FOUND_NEW_BEST_REWARD = 13.0; //2.0
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD = 23.0; //10.0
     public final static double ALNS_UPDATE_FACTOR = 0.1; //0.5
     public final static double ALNS_MINIMAL_WEIGHT_FACTOR = 0.05; //0.4
@@ -59,7 +59,7 @@ public class HeuristicsConstants {
     public final static double EARLIEST_DEPARTURE_WEIGHT = 0.05;
 
     //Large Neighborhood
-    public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 18.0; //1.0
+    public final static double ALNS_FOUND_NEW_SOLUTION_LNS = 13.0; //1.0
     public final static double ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS = 23.0; //2.0
     public final static double ALNS_DESTROY_FACTOR = 0.4;
     public final static double ALNS_UPDATE_FACTOR_LNS = 0.1; //0.5
