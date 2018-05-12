@@ -1,0 +1,19 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_1  | 180.0s.  |  384.55  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_2  | 180.0s.  |  383.87  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_3  | 180.0s.  |  385.13  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_4  | 180.0s.  |  383.39  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_5  | 180.0s.  |  385.38  |   N/A    |    13    |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_1    |  12.0s.  |  135.99  |   N/A    |    0     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_2    |  11.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_3    |  11.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_4    |  11.0s.  |  135.99  |   N/A    |    0     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_5    |  11.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_1    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_2    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_3    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_4    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_5    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_1  | 180.0s.  |  402.07  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_2  | 180.0s.  |  402.38  |   N/A    |    14    |    0     
