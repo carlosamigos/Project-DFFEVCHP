@@ -299,13 +299,7 @@ public class ALNSSolver extends Solver {
 			iteration++;
 
 			// LNS - DESTROY AND REPAIR
-			/*
-			if(neighborhoodDestroyId != 0){
-				updateMutationScoresLNSDestroyAndRepair(neighborhoodDestroyId, neighborhoodRepairId, bestFound);
-			}
-			*/
 			if(destroy_counter > HeuristicsConstants.TABU_MAX_NON_IMPROVING_ITERATIONS_DESTROY){
-				//this.tabuList.clearTabu();
 				if(neighborhoodDestroyId != 0) {
 					updateMutationScoresLNSDestroyAndRepair(neighborhoodDestroyId, neighborhoodRepairId, bestFound);
 				}
@@ -313,8 +307,7 @@ public class ALNSSolver extends Solver {
 				updateWeightsLNSRepair();
 				neighborhoodDestroyId = getNeighborhoodLNSDestroy();
 				neighborhoodRepairId = getNeighborhoodLNSRepair();
-				this.numberToHandle = (int) (Math.random() * HeuristicsConstants.ALNS_DESTROY_FACTOR * this.individual.getTotalNumberOfCarMoves());
-				//this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
+				this.numberToHandle = (int) (this.individual.getTotalNumberOfCarMoves() * HeuristicsConstants.ALNS_DESTROY_FACTOR);
 				//Destroy
 				this.searchToPerformDestroy.get(neighborhoodDestroyId).runCommand(searchToNeighborhood.get(neighborhoodDestroyId));
 				//Repair
@@ -339,28 +332,7 @@ public class ALNSSolver extends Solver {
 	/*
 		* Updates mutation scores
 	 */
-	/*
-	public void updateMutationScores(Mutation candidate, double candidateDelta, boolean bestFound){
-		// Check if the solution is seen before, and store the current solution
-		String individualString = this.individual.toString();
-		if(this.solutionsSeen.containsKey(individualString)) {
-			this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString) + 1);
-		} else {
-			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
-					+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
-			this.solutionsSeen.put(individualString, 1);
-		}
-		// Give reward to mutation type if new solution is better than the current one (locally, not globally)
-		if(candidateDelta < 0) {
-			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
-					+ HeuristicsConstants.ALNS_FOUND_NEW_BEST_REWARD);
-		}
-		if(bestFound){
-			this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
-					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD);
-		}
-	}
-	*/
+
 
 	public void updateMutationScores(Mutation candidate, double candidateDelta, boolean bestFound){
 		// Check if the solution is seen before, and store the current solution
@@ -382,33 +354,12 @@ public class ALNSSolver extends Solver {
 				}else {
 					this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
 							+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
-				}//this.solutionsSeen.put(individualString, 1);
+				}this.solutionsSeen.put(individualString, 1);
 			}
 		}
 	}
 
 	//LNS
-	/*
-	public void updateMutationScoresLNSDestroyAndRepair(int destroyId, int repairId, boolean bestFound){
-		String individualString = this.individual.toString();
-		if(bestFound){
-			this.mutationScoresLNSDestroy.put(destroyId, this.mutationScoresLNSDestroy.get(destroyId)
-					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS);
-			this.mutationScoresLNSRepair.put(repairId, this.mutationScoresLNSRepair.get(repairId)
-					+ HeuristicsConstants.ALNS_FOUND_NEW_GLOBAL_BEST_REWARD_LNS);
-		}else{
-			if(this.solutionsSeen.containsKey(individualString)){
-				this.solutionsSeen.put(individualString, this.solutionsSeen.get(individualString) + 1);
-			}else{
-				this.mutationScoresLNSDestroy.put(destroyId, this.mutationScoresLNSDestroy.get(destroyId)
-						+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION_LNS);
-				this.mutationScoresLNSRepair.put(repairId, this.mutationScoresLNSRepair.get(repairId)
-						+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION_LNS);
-
-			}this.solutionsSeen.put(individualString, 1);
-		}
-	}
-	*/
 	public void updateMutationScoresLNSDestroyAndRepair(int destroyId, int repairId, boolean bestFound){
 		if(newBestFound){
 			this.newBestFound = false;
