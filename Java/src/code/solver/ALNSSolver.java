@@ -382,7 +382,7 @@ public class ALNSSolver extends Solver {
 				}else {
 					this.mutationScores.put(candidate.getId(), this.mutationScores.get(candidate.getId())
 							+ HeuristicsConstants.ALNS_FOUND_NEW_SOLUTION);
-				}this.solutionsSeen.put(individualString, 1);
+				}//this.solutionsSeen.put(individualString, 1);
 			}
 		}
 	}
