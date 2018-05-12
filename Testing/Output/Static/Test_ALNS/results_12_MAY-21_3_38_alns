@@ -1,0 +1,23 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_1  | 180.0s.  |  385.18  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_2  | 180.0s.  |  384.42  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_3  | 180.0s.  |  382.27  |   N/A    |    13    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_4  | 180.0s.  |  378.54  |   N/A    |    14    |    0     
+ test_100nodes_7so_5c_27mov_10charging_0finishes_509CM_a_5  | 180.0s.  |  385.38  |   N/A    |    13    |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_1    |  10.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_2    |  10.0s.  |  135.99  |   N/A    |    0     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_3    |  11.0s.  |  135.99  |   N/A    |    0     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_4    |  11.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_a_5    |  10.0s.  |  131.53  |   N/A    |    1     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_1    |  10.0s.  |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_2    |  10.0s.  |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_3    |  9.0s.   |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_4    |  10.0s.  |  113.49  |   N/A    |    3     |    0     
+   test_10nodes_3so_2c_7mov_3charging_0finishes_34CM_b_5    |  10.0s.  |  113.49  |   N/A    |    3     |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_1  | 180.0s.  |  402.71  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_2  | 180.0s.  |  402.33  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_3  | 180.0s.  |  402.91  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_4  | 180.0s.  |  402.34  |   N/A    |    14    |    0     
+ test_120nodes_7so_5c_30mov_10charging_0finishes_650CM_a_5  | 180.0s.  |  403.15  |   N/A    |    14    |    0     
+ test_150nodes_7so_5c_33mov_10charging_0finishes_908CM_a_1  | 180.0s.  |  412.32  |   N/A    |    16    |    0     
