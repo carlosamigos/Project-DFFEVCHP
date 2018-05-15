@@ -1,0 +1,2 @@
+                                      Test                                      |      DS (%)       |      DS var       |  Abondoned (op)  |  Charged (cars)  |  CarDist (min)  |  BikeDist (min)  |  EL-Used (%)  | ChargeWait (min)  | IdleTime (min)  
+             test_50nodes_12so_12c_5mov_4charging_0finishes_73CM_a              |       60.78       |         0         |        0         |       100        |     1733.02     |     2644.09      |    2644.09    |      4148.05      |     2958.22     
