@@ -27,6 +27,7 @@ public class Constants {
     public final static boolean PRINT_MOSEL_PARAMETERS = false;
     public final static int TIME_LIMIT_LAST_VISIT = 10;
     public final static int TIME_LIMIT_STATIC_PROBLEM = 60;
+    public final static int END_TIME_DEMAND = END_TIME + 2*TIME_LIMIT_STATIC_PROBLEM;
 
     public enum SolverType {
     	MOSEL,

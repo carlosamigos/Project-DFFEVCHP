@@ -27,7 +27,7 @@ public class KPITrackerDynamic {
 
 
     public KPITrackerDynamic(DynamicProblem dynamicProblem) {
-        int numberOfSubProblems = (Constants.END_TIME - Constants.START_TIME)/Constants.TIME_INCREMENTS - (int)(Constants.TIME_LIMIT_STATIC_PROBLEM/Constants.TIME_INCREMENTS) +1;
+        int numberOfSubProblems = (Constants.END_TIME - Constants.START_TIME)/Constants.TIME_INCREMENTS;
         this.dynamicProblem = dynamicProblem;
         demandsNotServed = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));
         demandServed = new ArrayList<>(Collections.nCopies(numberOfSubProblems, 0));

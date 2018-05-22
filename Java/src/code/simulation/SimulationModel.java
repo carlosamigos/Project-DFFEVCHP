@@ -120,11 +120,11 @@ public class SimulationModel {
         if(parkingNode.getDemandGroup()== SimulationConstants.nodeDemandGroup.MIDDAY_RUSH){
             return (SimulationConstants.HIGH_RATE_LAMBDA - SimulationConstants.LOW_RATE_LAMBDA) * 
             		Math.sin((time-Constants.START_TIME) * 
-            				Math.asin(1)/Constants.END_TIME)+SimulationConstants.LOW_RATE_LAMBDA;
+            				Math.asin(1)/Constants.END_TIME_DEMAND)+SimulationConstants.LOW_RATE_LAMBDA;
         } else if (parkingNode.getDemandGroup()== SimulationConstants.nodeDemandGroup.MORNING_RUSH){
             return (SimulationConstants.HIGH_RATE_LAMBDA - SimulationConstants.LOW_RATE_LAMBDA) * 
             		Math.cos((time-Constants.START_TIME) * 
-            				Math.asin(1)/Constants.END_TIME)+SimulationConstants.LOW_RATE_LAMBDA;
+            				Math.asin(1)/Constants.END_TIME_DEMAND)+SimulationConstants.LOW_RATE_LAMBDA;
         } else {
             return SimulationConstants.MEDIUM_RATE_LAMBDA;
         }
@@ -137,7 +137,7 @@ public class SimulationModel {
     private void createAllDemandRequestsForNode(ParkingNode parkingNode){
         double startTime = Constants.START_TIME;
         double time = startTime+0;
-        while (time < Constants.END_TIME){
+        while (time < Constants.END_TIME_DEMAND){
             time += drawFromExponentialDistribution(getDemandRateForNodeAtTime(parkingNode,time));
             DemandRequest newDemandRequest = new DemandRequest(parkingNode,time);
             addDemandRequestToMap(newDemandRequest);
@@ -157,7 +157,7 @@ public class SimulationModel {
     }
 
     public double findExpectedNumberOfArrivalsMorningRushBetween(double start, double end){
-        if(end > Constants.END_TIME){
+        if(end > Constants.END_TIME_DEMAND){
            return  (lambdaMorningRushIntegral(Constants.START_TIME)- lambdaMorningRushIntegral(Constants.START_TIME + Constants.TIME_INCREMENTS));
         }
         double result = (lambdaMorningRushIntegral(end)- lambdaMorningRushIntegral(start));
@@ -165,7 +165,7 @@ public class SimulationModel {
     }
 
     public double findExpectedNumberOfArrivalsMiddayRushBetween(double start, double end){
-        if(end > Constants.END_TIME){
+        if(end > Constants.END_TIME_DEMAND){
             return  (lambdaMiddayRushIntegral(Constants.START_TIME)- lambdaMiddayRushIntegral(Constants.START_TIME + Constants.TIME_INCREMENTS));
         }
         double result = (lambdaMiddayRushIntegral(end)- lambdaMiddayRushIntegral(start));
@@ -179,7 +179,7 @@ public class SimulationModel {
     private double lambdaMorningRushIntegral(double time){
         double low = SimulationConstants.LOW_RATE_LAMBDA;
         double high = SimulationConstants.HIGH_RATE_LAMBDA;
-        double gradient = -(high-low)/(Constants.END_TIME-Constants.START_TIME);
+        double gradient = -(high-low)/(Constants.END_TIME_DEMAND-Constants.START_TIME);
         double intersection = high - gradient*Constants.START_TIME;
         return 0.5*gradient*time*time + intersection*time;
     }
@@ -187,9 +187,17 @@ public class SimulationModel {
     private double lambdaMiddayRushIntegral(double time){
         double low = SimulationConstants.LOW_RATE_LAMBDA;
         double high = SimulationConstants.HIGH_RATE_LAMBDA;
-        double gradient = (high-low)/(Constants.END_TIME-Constants.START_TIME);
+        double gradient = (high-low)/(Constants.END_TIME_DEMAND-Constants.START_TIME);
         double intersection = low - gradient*Constants.START_TIME;
         return 0.5*gradient*time*time + intersection*time;
+    }
+
+    public void printNumberOfDemandRequests(){
+        int count = 0;
+        for(ParkingNode parkingNode : demandRequests.keySet()){
+            count += demandRequests.get(parkingNode).size();
+        }
+        System.out.println(count);
     }
 
 
