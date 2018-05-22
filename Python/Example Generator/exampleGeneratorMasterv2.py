@@ -28,15 +28,15 @@ CARSCHARGING = 20
 MAXNODES = XSIZE * YSIZE
 
 #CHARGING NODES
-NUMCHARGING = 10
-PARKINGC = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45]
-CAPACITY = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
-TOTALCAPACITY = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+NUMCHARGING = 24
+PARKINGC = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48]
+CAPACITY = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+TOTALCAPACITY = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
 
 #OPERATORS
 NUMOPERATORS = 12
-STARTETIMEOP = [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-HANDLINGOP = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+STARTETIMEOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+HANDLINGOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 NUMTASKS = 7
 
 # MAKING NODES - DON' CHANGE #
