@@ -11,7 +11,7 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
     public final static int TABU_ITERATIONS = 200000;
-    public final static int ALNS_MAX_TIME_SECONDS = 60;
+    public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
     //Fitness, that does not exist in Mosel
