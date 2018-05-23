@@ -1,0 +1,7 @@
+Solver: ALNS search
+                            Test                            |   Time   |  Value   |   Gap    |   rDev   |   cDev   
+  test_50nodes_7so_5c_25mov_10charging_0finishes_450CM_a_1  | 125.0s.  |  403.31  |   N/A    |    9     |    0     
+  test_50nodes_7so_5c_25mov_10charging_0finishes_450CM_a_2  |  78.0s.  |  403.74  |   N/A    |    9     |    0     
+  test_50nodes_7so_5c_25mov_10charging_0finishes_450CM_a_3  | 100.0s.  |  403.78  |   N/A    |    9     |    0     
+  test_50nodes_7so_5c_25mov_10charging_0finishes_450CM_a_4  |  92.0s.  |  403.58  |   N/A    |    9     |    0     
+  test_50nodes_7so_5c_25mov_10charging_0finishes_450CM_a_5  | 123.0s.  |  403.88  |   N/A    |    9     |    0     
