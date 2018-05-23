@@ -75,6 +75,7 @@ public class Main {
     			Constants.TEST_TYPE = Constants.TestType.DYNAMIC;
     			FileConstants.TEST_DYNAMIC_FOLDER = FileConstants.TEST_INPUT_FOLDER + "Dynamic/" + input.get(key) + "/";
     			FileConstants.TEST_DYNAMIC_INITIAL_FOLDER = FileConstants.TEST_DYNAMIC_FOLDER + "Initial/";
+    			FileConstants.OPERATOR_PATH_OUTPUT_FOLDER = FileConstants.TEST_DYNAMIC_FOLDER + "Paths/";
     			FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER = FileConstants.TEST_OUTPUT_FOLDER + "Dynamic/" + input.get(key) + "/";
     			FileConstants.DYNAMIC_TEST_SUITE_RESULTS_FILE = FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "dynamic_test_results_";
     		    FileConstants.DYNAMIC_SINGLE_TEST_RESULTS_FILE = FileConstants.TEST_DYNAMIC_OUTPUT_FOLDER + "static/" + "static_results_";

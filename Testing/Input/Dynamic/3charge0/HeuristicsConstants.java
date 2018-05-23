@@ -11,7 +11,7 @@ public class HeuristicsConstants {
 	 
 	// Tabu Search
     public final static int TABU_ITERATIONS = 200000;
-    public final static int ALNS_MAX_TIME_SECONDS = 180;
+    public final static int ALNS_MAX_TIME_SECONDS = 60 ;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
     //Fitness, that does not exist in Mosel
@@ -23,7 +23,7 @@ public class HeuristicsConstants {
     public final static boolean BEST_FIRST = false;
     
     // ALNS Parameters used when comparing with Mosel
-    public final static double ALNS_CHARGING_REWARD = 30;
+    public final static double ALNS_CHARGING_REWARD = 0;
     public final static double ALNS_TRAVEL_TIME_CAR_MOVE_PENALTY = 0.2;
     public final static double ALNS_IDEAL_STATE_UNIT_REWARD = 10; 
     public final static double ALNS_TRAVEL_COST = 0.01;
@@ -82,7 +82,7 @@ public class HeuristicsConstants {
     public static int TABU_WEIGHT_UPDATE = 100;
 
     //Problem Scale
-    public final static int ALNS_SCALE_CONSTANT_MUTATION = 25; 
+    public final static int ALNS_SCALE_CONSTANT_MUTATION = 25;
     public final static int ALNS_SCALE_CONSTANT_DESTROY = 120;
     public final static int ALNS_SCALE_CONSTANT_WEIGHT = 5;
     public final static double ALNS_SCALE_CONSTANT_TABU = 0;

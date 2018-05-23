@@ -53,12 +53,14 @@ public class DynamicProblem {
         ArrayList<CustomerTravel> customerTravels = new ArrayList<>();
         HashMap<Operator,OperatorTravel> operatorTravels = new HashMap<>();
         addInitialOperatorTravels(operatorTravels,problemInstance, Constants.START_TIME);
-        for (int time = Constants.START_TIME; time <= Constants.END_TIME - Constants.TIME_LIMIT_STATIC_PROBLEM*2; time += Constants.TIME_INCREMENTS) {
+        for (int time = Constants.START_TIME; time < Constants.END_TIME; time += Constants.TIME_INCREMENTS) {
+            //System.out.print(getNumberOfCarsInNeed(problemInstance) + ",");
             if(Constants.PRINT_OUT_ACTIONS){
                 System.out.println("\n\n");
                 System.out.println("Sub problem "+subproblemNo+" starting at time: "+timeToHHMM(time));
             }
             updateOptimalNumberOfCarsInParking(time);
+            //updateUniformOptimalNumberOfCarsInParking(time);
             predictNumberOfCarsPickedUpNextPeriod(time);
             problemInstance.updateParameters();
             problemInstance.writeProblemInstanceToFile();
@@ -72,11 +74,19 @@ public class DynamicProblem {
             tracker.setResults(solver);
             kpiTrackerDyanmic.addStaticKPItracker(tracker);
         }
-        
+        //System.out.println(kpiTrackerDyanmic.getNumberOfCarsSetToCharging());
         kpiTrackerDyanmic.updateIdleTimeForOperators();
         if(Constants.PRINT_OUT_ACTIONS){
             System.out.println(kpiTrackerDyanmic);
         }
+    }
+
+    private int getNumberOfCarsInNeed(ProblemInstance problemInstance){
+        int a = 0;
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            a += parkingNode.getCarsInNeed().size();
+        }
+        return a;
     }
 
     private void addInitialOperatorTravels(HashMap<Operator,OperatorTravel> operatorTravels, ProblemInstance problemInstance, double currentTime){
@@ -845,8 +855,62 @@ public class DynamicProblem {
         for(ParkingNode parkingNode : idealState.keySet()){
             parkingNode.setIdealNumberOfAvailableCarsThisPeriod(idealState.get(parkingNode));
         }
+    }
 
+    private void updateUniformOptimalNumberOfCarsInParking(double time){
+        // Find number of available cars
+        int totalCarsAvailableThisPeriod = 0;
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            totalCarsAvailableThisPeriod += parkingNode.getCarsRegular().size();
+        }
+        int basicUniform = totalCarsAvailableThisPeriod / problemInstance.getParkingNodes().size();
+        HashMap<ParkingNode,Integer> ideal = new HashMap<>();
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            ideal.put(parkingNode, basicUniform);
+        }
 
+        // Add remaining cars based on the demand:
+        int remaining = totalCarsAvailableThisPeriod - basicUniform * problemInstance.getParkingNodes().size();
+        double nextPeriodDemand;
+        HashMap<ParkingNode,Double> demandMap = new HashMap<>();
+        for (ParkingNode pNode: problemInstance.getParkingNodes()) {
+            if(pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MIDDAY_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMiddayRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
+            } else if (pNode.getDemandGroup().equals(SimulationConstants.nodeDemandGroup.MORNING_RUSH)){
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsMorningRushBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
+            } else {
+                nextPeriodDemand = simulationModel.findExpectedNumberOfArrivalsNormalBetween(time+Constants.TIME_LIMIT_STATIC_PROBLEM, time + Constants.TIME_LIMIT_STATIC_PROBLEM*2);
+            }
+            demandMap.put(pNode,nextPeriodDemand);
+        }
+        HashSet<ParkingNode> nodesAdded = new HashSet<>();
+        while(remaining > 0){
+            ParkingNode parkingNode = findNodeWithMostDemandNotAlreadyChosen(nodesAdded, demandMap);
+            nodesAdded.add(parkingNode);
+            ideal.put(parkingNode, ideal.get(parkingNode) + 1);
+            remaining --;
+        }
+
+        // update ideal state
+        String test = "";
+        for(ParkingNode parkingNode : problemInstance.getParkingNodes()){
+            test += ideal.get(parkingNode) + ", ";
+        }
+    }
+
+    private ParkingNode findNodeWithMostDemandNotAlreadyChosen(HashSet<ParkingNode> nodesAdded, HashMap<ParkingNode,Double> demandMap){
+        ParkingNode best = null;
+        double highest = 0;
+
+        for(ParkingNode parkingNode : demandMap.keySet()){
+            if(!nodesAdded.contains(parkingNode)){
+                if(best == null || demandMap.get(parkingNode) > highest){
+                    highest = demandMap.get(parkingNode);
+                    best = parkingNode;
+                }
+            }
+        }
+        return best;
     }
 
     private ParkingNode findNodeWithMostCarsInIdealState(HashMap<ParkingNode, Integer> idealState){
