@@ -39,6 +39,7 @@ STARTETIMEOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 HANDLINGOP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 NUMTASKS = 7
 
+
 # MAKING NODES - DON' CHANGE #
 SPREAD = True
 CLUSTER = True

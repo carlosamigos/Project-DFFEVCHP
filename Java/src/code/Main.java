@@ -19,12 +19,12 @@ import utils.SolutionFileMaker;
 public class Main {
 
     public static void main(String[] args) {
-	boolean testing = false;
+	boolean testing = true;
     	setConstants(args);
     	createTestingFolders();
     	
     	if(testing) {
-    		String fileName = "test_25nodes_5so_3c_15mov_5charging_0finishes_165CM_a";
+    		String fileName = "test_50nodes_12so_10c_25mov_20charging_0finishes_650CM_a";
         	ProblemInstance problemInstance = new ProblemInstance(FileConstants.TEST_STATIC_FOLDER + fileName);
         	for(int i = 0; i < 1; i++) {
         		ALNSSolver solver = new ALNSSolver(problemInstance);

@@ -3,14 +3,14 @@ package constants;
 public class HeuristicsConstants {
 
 
-    public final static boolean PRINT_OUT_PROGRESS = false;
+    public final static boolean PRINT_OUT_PROGRESS = true;
     public final static boolean PRINT_OUT_BEST_SOLUTION = false;
     
     // Chromosome Generator
     public final static double MAX_THRESHOLD_CARMOVE_DISTANCE = 1.0;
 	 
 	// Tabu Search
-    public final static int TABU_ITERATIONS = 1;
+    public final static int TABU_ITERATIONS = 100000;
     public final static int ALNS_MAX_TIME_SECONDS = 180;
     public final static int TABU_MAX_NON_IMPROVING_ITERATIONS = 250000;
 
